@@ -1,33 +1,29 @@
-# Quickstart Guide
+# Quickstart Guide (V6.1 Autonomous Terminal)
 
-## 1. Launching the Dashboard
-The easiest way to view the supply chain terminal is to double-click:
-`start.bat`
+## 1. Launching the Command Center
+The terminal now operates via a Web Server Bridge for real-time synchronization. To launch:
+1. Double-click **`start.bat`**.
+2. Select **Option 2 (Full Intelligence Refresh & Bridge Start)**.
 
-This will automatically:
-- Sync your latest `cpo_master_ultimate.csv` changes.
-- Open `cpo_plays.html` in your default browser.
+This will:
+- Initialize the **Web Server Bridge** (server.py).
+- Refresh real-time market data across the 117-ticker universe.
+- Open **`cpo_plays.html`** via the local server.
 
-## 2. Adding New Stocks
-1. Open `cpo_master_ultimate.csv` in Excel or VS Code.
-2. Add a new row.
-3. Run `start.bat` to see it reflected in the dashboard.
+## 2. Automated Synchronization
+The terminal is configured for a **"Set and Forget"** production environment:
+- **Daily Sync**: Automated market-close update at **4:20 PM EST**.
+- **Stealth Extraction**: Uses Ghost-Mode (Playwright) to bypass anti-bot protections.
 
-## 3. Intelligence Refresh (Automation)
-To audit real-time financials and generate research bundles for other LLMs:
-1. Run `start.bat`.
-2. Select **Option 2 (Full Intelligence Refresh)**.
-3. This will update prices, P/S ratios, and generate:
-   - `database/CPO_BRAIN.json`
-   - `infographs/cpo_supply_chain.png`
+## 3. Adding New Research
+1. Add new stocks to **`cpo_master_ultimate.csv`**.
+2. Update technical deep-dives in **`KNOWLEDGE.md`**.
+3. Run `start.bat` Option 4 to force-refresh market cap and price data.
 
-## 4. Documentation & Research
-- All technical research is kept in: `KNOWLEDGE.md`
-- Automation setup for WSL/Linux: `AUTOMATION_GUIDE.md`
+## 4. Maintenance & Testing
+- **Audit Logs**: Check `logs/server.txt` for autonomous sync status.
+- **Handoff**: Run `generate_handoff.bat` to prepare context for Gemini/Claude.
+- **Verification**: Run `python tests/verify_stealth.py` to confirm Ghost-Mode integrity.
 
-## 5. Running Tests
-If you modify the dashboard code:
-```powershell
-# Run from root
-npm test
-```
+---
+**Troubleshooting**: If the dashboard table appears empty, check `logs/server.txt` for JSON syntax errors or database locks.
