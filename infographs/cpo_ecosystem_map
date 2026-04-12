@@ -1,0 +1,131 @@
+// Co-Packaged Optics Ecosystem Map
+digraph CPO_Supply_Chain {
+	bgcolor="#0f172a" fontname="Inter, Roboto, sans-serif"
+	node [color="#38bdf8" fillcolor="#1e293b" fontcolor=white fontsize=12 shape=box style=filled]
+	edge [color="#64748b" penwidth=1.5]
+	rankdir=BT
+	subgraph "cluster_Systems_&_ETFs" {
+		color="#a78bfa" fontcolor="#a78bfa" fontsize=16 label="Systems & ETFs" style=dashed
+		KLIC [label="KLIC
+(Kulicke & Soffa)" fillcolor="#1e293b"]
+		NDSN [label="NDSN
+(Nordson)" fillcolor="#1e293b"]
+		TWCPY [label="TWCPY
+(Towa Corp)" fillcolor="#1e293b"]
+		AIXNY [label="AIXNY
+(Aixtron)" fillcolor="#1e293b"]
+		MKSI [label="MKSI
+(MKS Instruments)" fillcolor="#1e293b"]
+		VECO [label="VECO
+(Veeco)" fillcolor="#1e293b"]
+		ASMIY [label="ASMIY
+(ASM International)" fillcolor="#1e293b"]
+		NOVT [label="NOVT
+(Novanta)" fillcolor="#1e293b"]
+		MTRN [label="MTRN
+(Materion)" fillcolor="#1e293b"]
+		SHWDY [label="SHWDY
+(Resonac)" fillcolor="#1e293b"]
+		APH [label="APH
+(Amphenol)" fillcolor="#1e293b"]
+		INNO [label="INNO
+(InnoLight)" fillcolor="#1e293b"]
+		EOPT [label="EOPT
+(Eoptolink)" fillcolor="#1e293b"]
+		"PROB.MI" [label="PROB.MI
+(Technoprobe)" fillcolor="#1e293b"]
+		"6941.T" [label="6941.T
+(Yamaichi)" fillcolor="#1e293b"]
+		CLS [label="CLS
+(Celestica)" fillcolor="#1e293b"]
+		GLW [label="GLW
+(Corning)" fillcolor="#1e293b"]
+		LITE [label="LITE
+(Lumentum)" fillcolor="#1e293b"]
+		MRVL [label="MRVL
+(Marvell)" fillcolor="#1e293b"]
+		AVGO [label="AVGO
+(Broadcom)" fillcolor="#1e293b"]
+		SIVE [label="SIVE
+(Sivers Semi)" fillcolor="#78350f"]
+		MTSI [label="MTSI
+(MACOM)" fillcolor="#1e293b"]
+		NVDA [label="NVDA
+(NVIDIA)" fillcolor="#1e293b"]
+		AAOI [label="AAOI
+(Applied Opto)" fillcolor="#78350f"]
+		AEHR [label="AEHR
+(Aehr)" fillcolor="#78350f"]
+		XSD [label="XSD
+(SPDR S&P Semi ETF)" fillcolor="#1e293b"]
+		PTF [label="PTF
+(Invesco Tech Momentum ETF)" fillcolor="#1e293b"]
+		LADR [label="LADR
+(L&G Optical & Photonics ETF)" fillcolor="#1e293b"]
+	}
+	subgraph "cluster_Assembly_&_Integration" {
+		color="#fbbf24" fontcolor="#fbbf24" fontsize=16 label="Assembly & Integration" style=dashed
+		BESIY [label="BESIY
+(Besi (BE Semi))" fillcolor="#1e293b"]
+		ONTO [label="ONTO
+(Onto Innovation)" fillcolor="#1e293b"]
+		CAMT [label="CAMT
+(Camtek)" fillcolor="#1e293b"]
+		NVMI [label="NVMI
+(Nova)" fillcolor="#1e293b"]
+		ASE [label="ASE
+(ASE Tech)" fillcolor="#1e293b"]
+		KLAC [label="KLAC
+(KLA)" fillcolor="#1e293b"]
+		FN [label="FN
+(Fabrinet)" fillcolor="#1e293b"]
+		AMKR [label="AMKR
+(Amkor)" fillcolor="#1e293b"]
+		POET [label="POET
+(POET Tech)" fillcolor="#78350f"]
+	}
+	subgraph "cluster_Silicon_Photonics_&_Dies" {
+		color="#f472b6" fontcolor="#f472b6" fontsize=16 label="Silicon Photonics & Dies" style=dashed
+		CRDO [label="CRDO
+(Credo Technology)" fillcolor="#1e293b"]
+		ASMPT [label="ASMPT
+(ASMPT)" fillcolor="#1e293b"]
+		TSEM [label="TSEM
+(Tower Semi)" fillcolor="#1e293b"]
+		MYCRF [label="MYCRF
+(Mycronic (MRSI))" fillcolor="#1e293b"]
+		LWLG [label="LWLG
+(Lightwave Logic)" fillcolor="#78350f"]
+		GFS [label="GFS
+(GlobalFoundries)" fillcolor="#1e293b"]
+	}
+	subgraph "cluster_Materials_&_Core_Supply" {
+		color="#38bdf8" fontcolor="#38bdf8" fontsize=16 label="Materials & Core Supply" style=dashed
+		ENTG [label="ENTG
+(Entegris)" fillcolor="#1e293b"]
+		DNPCY [label="DNPCY
+(Dai Nippon Printing)" fillcolor="#1e293b"]
+		"6890.T" [label="6890.T
+(Ferrotec)" fillcolor="#1e293b"]
+		COHU [label="COHU
+(Cohu)" fillcolor="#1e293b"]
+		IBIEY [label="IBIEY
+(Ibiden)" fillcolor="#1e293b"]
+		LPKF [label="LPKF
+(LPKF)" fillcolor="#1e293b"]
+		DSCSY [label="DSCSY
+(Disco Corp)" fillcolor="#1e293b"]
+		SOI [label="SOI
+(Soitec)" fillcolor="#1e293b"]
+		COHR [label="COHR
+(Coherent)" fillcolor="#1e293b"]
+		IQE [label="IQE
+(IQE)" fillcolor="#1e293b"]
+		"ALRIB.PA" [label="ALRIB.PA
+(Riber)" fillcolor="#78350f"]
+		AXTI [label="AXTI
+(AXT Inc)" fillcolor="#1e293b"]
+		SMTOY [label="SMTOY
+(Sumitomo Electric)" fillcolor="#1e293b"]
+	}
+}

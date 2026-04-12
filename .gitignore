@@ -1,0 +1,17 @@
+node_modules/
+__pycache__/
+*.pyc
+logs/
+*.txt
+scratch/
+backup/
+archive/
+gigacpo_llm_handoff.md
+cpo_master_ultimate.csv
+database/live_prices.js
+database/dashboard_data.js
+.gemini/
+.agent/
+.agents/
+.pytest_cache/
+.cursorrules

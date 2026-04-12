@@ -1,0 +1,26 @@
+Rank,Ticker,Company,Country,Role,AlphaScore,RiskAdjScore,Hiddenness,Notes
+1,ASMPT,ASMPT,Hong Kong,Die bonders / assembly equipment,9,8,9,AMICRA sub-micron bonding for CPO assembly.
+2,6890.T,Ferrotec,Japan,Micro-TECs / thermal control,9,8,9,Cooling bottleneck for laser stability.
+5,LPKF,LPKF,Germany,Glass via drilling / TGV tools,9,7,9,Glass substrate bottleneck and TGV process lever.
+12,6941.T,Yamaichi,Japan,Test sockets / connectors,8,7,9,Socket bottleneck for high-speed optical test.
+3,VECO,Veeco,USA,MOCVD / epitaxy tools,9,8,8,InP laser growth tools; hidden equipment winner.
+9,FURX,Furukawa Electric,Japan,Cables / lasers / optical components,8,8,8,Remote laser source / FITEL activity.
+10,SMHN,SUSS MicroTec,Germany,Advanced packaging equipment,8,8,8,Hybrid bonding / advanced backend exposure.
+11,3587.TW,MA-tek,Taiwan,Metrology / inspection,8,8,8,Testing / process control leverage.
+20,4979.TW,LuxNet,Taiwan,Optical modules,8,7,8,Module supplier exposure.
+21,3450.TW,Elaser,Taiwan,Laser / optical parts,8,7,8,Laser supply chain exposure.
+29,FOCI,FOCI,Taiwan,Optical components,7,7,8,Taiwan optical supplier cluster.
+30,6451.TW,ShunSin,Taiwan,Optical components,7,7,8,Supplier to optical ecosystem.
+31,4977.TW,PCL,Taiwan,Optical components,7,7,8,Niche supplier exposure.
+32,1FINITY,1Finity,Japan,Optical modules,7,7,8,Japanese optical ecosystem supplier.
+33,BROADX,Broadex,China,Optical components,7,7,8,Module/component supplier.
+34,HSBB,Hisense Broadband,China,Optical modules,7,7,8,Large Asia optical assembler.
+35,AGC,AGC,Japan,Glass / materials,7,7,8,Glass substrate optionality.
+36,ASGLY,Asahi Glass ADR,Japan,Glass / materials,7,7,8,Glass substrate optionality.
+14,5801.T,Furukawa Electric,Japan,Cables / lasers / optical components,8,8,7,Restructuring could unlock photonics value.
+16,FURXF,Furukawa Electric ADR,Japan,Cables / optics,8,8,7,US-accessible foreign exposure.
+41,AXTI,AXT,USA,Compound substrates,8,6,7,Upstream materials leverage if volume ramps.
+27,FORM,FormFactor,USA,Test / probe / validation,7,8,7,Useful if optical validation expands.
+28,EXFO,EXFO,Canada,Test / instrumentation,7,8,7,Validation and test leverage.
+47,3289.TW,IST,Taiwan,Optical / industrial tech,7,7,7,Adjacent supplier exposure.
+78,OI,O-I Glass,USA,Glass manufacturing,5,6,7,Optionality only; glass thesis is less direct.

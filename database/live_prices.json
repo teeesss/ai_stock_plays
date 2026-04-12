@@ -1,0 +1,56 @@
+{
+  "CRDO": {
+    "price": 119.59,
+    "change_pct": 10.94,
+    "volume": 8549800,
+    "avg_volume": 6960070,
+    "vol_spike": 1.23,
+    "updated": "2026-04-12T20:14:50.743900+00:00"
+  },
+  "BESIY": {
+    "price": 248.9,
+    "change_pct": 1.81,
+    "volume": 5300,
+    "avg_volume": 6991,
+    "vol_spike": 0.76,
+    "updated": "2026-04-12T20:14:50.743900+00:00"
+  },
+  "ASMVY": {
+    "price": 43.7,
+    "change_pct": 3.17,
+    "volume": 180500,
+    "avg_volume": 44983,
+    "vol_spike": 4.01,
+    "updated": "2026-04-12T20:14:50.743900+00:00"
+  },
+  "_meta": {
+    "refreshed_at": "2026-04-12T20:14:59.253374+00:00",
+    "total_tickers": 3,
+    "with_price": 3,
+    "top_gainers": [
+      {
+        "ticker": "CRDO",
+        "change_pct": 10.94,
+        "price": 119.59
+      },
+      {
+        "ticker": "ASMVY",
+        "change_pct": 3.17,
+        "price": 43.7
+      },
+      {
+        "ticker": "BESIY",
+        "change_pct": 1.81,
+        "price": 248.9
+      }
+    ],
+    "top_losers": [],
+    "volume_spikes": [
+      {
+        "ticker": "ASMVY",
+        "vol_spike": 4.01,
+        "change_pct": 3.17
+      }
+    ]
+  }
+}

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIGACPO Intelligence Terminal — Pure Play SiPh/CPO Ecosystem</title>
+    <script src="database/dashboard_data.js"></script>
+    <!-- Live prices: run 'python engine/live_prices.py' to refresh -->
+    <script>
+    // Graceful load: LIVE_PRICES is optional, terminal works without it
+    window.LIVE_PRICES = window.LIVE_PRICES || {};
+    </script>
+    <script src="database/live_prices.js" onerror="console.warn('live_prices.js not found. Run: python engine/live_prices.py')"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+        .sync-btn { display:flex; align-items:center; gap:5px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.35); color:var(--green); padding:4px 12px; border-radius:6px; font-size:10px; font-weight:900; cursor:pointer; transition:all 0.2s; text-transform:uppercase; letter-spacing:0.5px; font-family:inherit; white-space:nowrap; }
+        .sync-btn:hover { background:rgba(16,185,129,0.22); box-shadow:0 0 10px rgba(16,185,129,0.2); }
+        .sync-btn.busy { color:var(--gold); border-color:rgba(245,158,11,0.4); background:rgba(245,158,11,0.08); cursor:not-allowed; }
+        .sync-btn.error { color:var(--danger); border-color:rgba(244,63,94,0.4); background:rgba(244,63,94,0.08); }
+        .sync-dot { width:7px; height:7px; border-radius:50%; background:var(--green); display:inline-block; }
+        .sync-dot.pulse { animation:pulse 1.2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+        .ticker-link { color:var(--gold); font-weight:800; font-size:12px; text-decoration:none; transition:color 0.15s; font-family:inherit; }
+        .ticker-link:hover { color:#fcd34d; text-decoration:underline; }
+        .ticker-sep { color:var(--text-dim); font-size:10px; margin:0 2px; }
+        .ticker-otc { color:var(--accent); font-size:11px; }
+        :root {
+            --bg-main: #020617; --bg-card: #0f172a; --text-main: #f8fafc;
+            --text-dim: #64748b; --accent: #0ea5e9; --gold: #f59e0b;
+            --green: #10b981; --danger: #f43f5e; --border: #1e293b;
+            --purple: #a855f7;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'JetBrains Mono','Courier New',monospace; background: var(--bg-main); color: var(--text-main); margin: 0; padding: 10px; font-size: 11px; line-height: 1.2; overflow-x: hidden; }
+
+        .pulse-bar { display:flex; align-items:center; gap:0; background:rgba(10,15,30,0.9); border:1px solid rgba(245,158,11,0.2); border-radius:8px; padding:6px 12px; margin-bottom:10px; overflow:hidden; }
+        .pulse-sep { color:#334155; margin:0 6px; font-size:12px; }
+        .pulse-item { display:flex; align-items:center; gap:5px; font-size:10px; font-weight:800; white-space:nowrap; }
+        .pulse-label { font-size:8px; text-transform:uppercase; font-weight:900; color:var(--gold); margin-right:8px; letter-spacing:1px; }
+        .pulse-time { font-size:8px; color:var(--text-dim); margin-left:auto; }
+        .pulse-vol { font-size:8px; color:var(--purple); font-weight:700; }
+        .no-pulse { display:flex; align-items:center; gap:8px; font-size:9px; color:var(--text-dim); background:rgba(10,15,30,0.5); border:1px dashed #1e293b; border-radius:8px; padding:6px 12px; margin-bottom:10px; }
+        .no-pulse code { background:#1e293b; padding:1px 6px; border-radius:3px; font-size:9px; color:var(--accent); }
+        .logo { font-weight: 900; font-size: 16px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+        .logo-sub { font-size: 9px; color: var(--text-dim); font-weight: 700; }
+        .stat { display: flex; align-items: center; gap: 5px; }
+        .stat span { color: var(--text-dim); font-size: 8px; text-transform: uppercase; font-weight: 800; }
+        .stat .val { color: var(--accent); font-weight: 900; font-size: 14px; }
+        .search-container { flex-grow: 1; }
+        .search-bar { width: 100%; background: #1e293b; border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 6px; outline: none; font-size: 11px; font-family: inherit; }
+        .search-bar:focus { border-color: var(--accent); }
+
+        /* Chart */
+        .chart-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin-bottom: 10px; height: 230px; display: none; }
+        .chart-panel.active { display: block; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .chart-controls { display: flex; gap: 5px; }
+        .chart-btn { background: #1e293b; border: 1px solid var(--border); color: var(--text-dim); padding: 2px 8px; border-radius: 4px; font-size: 9px; cursor: pointer; font-weight: 800; }
+        .chart-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .clear-btn { background: rgba(244,63,94,0.1); border: 1px solid var(--danger); color: var(--danger); padding: 2px 8px; border-radius: 4px; font-size: 9px; cursor: pointer; font-weight: 800; }
+
+        /* Filters */
+        .filter-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+        .filter-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; margin-bottom: 10px; }
+        .filter-group { display: flex; flex-direction: column; gap: 4px; }
+        .filter-group label { font-size: 11px; color: var(--gold); text-transform: uppercase; font-weight: 900; letter-spacing: 0.5px; }
+        .input-pair { display: flex; gap: 4px; }
+        .filter-group input[type="number"] { background: #1e293b; border: 1px solid var(--border); color: white; padding: 5px 8px; border-radius: 4px; width: 62px; font-size: 11px; font-family: inherit; outline: none; }
+        .filter-group input:focus { border-color: var(--accent); }
+
+        /* Aggressiveness */
+        .agg-group { display: flex; flex-direction: column; gap: 4px; min-width: 280px; }
+        .agg-group label { font-size: 11px; color: var(--gold); font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+        .agg-inner { display: flex; align-items: center; gap: 8px; }
+        #aggressiveness { width: 190px; accent-color: var(--gold); cursor: pointer; }
+        #agg-val { color: var(--gold); font-weight: 900; font-size: 18px; min-width: 22px; text-align: center; }
+        #agg-mode-label { font-size: 9px; color: var(--text-dim); font-weight: 700; margin-top: 2px; min-height: 12px; }
+
+        /* Ranking explanation */
+        .rank-explain { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2); border-radius: 6px; padding: 6px 10px; margin-bottom: 10px; font-size: 9px; color: var(--text-dim); }
+        .rank-explain span { color: var(--gold); font-weight: 900; }
+
+        /* Pills */
+        .bucket-pills { display: flex; flex-direction: column; gap: 6px; }
+        .section-label { font-size: 11px; color: var(--gold); font-weight: 900; text-transform: uppercase; margin-bottom: 2px; display: block; }
+        .pill-row { display: flex; flex-wrap: wrap; gap: 4px; }
+        .pill { background: #1e293b; color: var(--text-dim); padding: 4px 10px; border-radius: 5px; cursor: pointer; font-size: 10px; font-weight: 700; border: 1px solid transparent; transition: all 0.15s; }
+        .pill:hover { background: #26334d; color: var(--text-main); }
+        .pill.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 0 8px rgba(14,165,233,0.2); }
+        .pill.priv-pill { border-color: var(--purple); color: var(--purple); background: rgba(168,85,247,0.05); }
+        .pill.priv-pill.active { background: var(--purple); color: white; }
+
+        /* Table */
+        .table-area { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; flex-grow: 1; min-height: 400px; display: flex; flex-direction: column; }
+        .table-scroll { overflow-y: auto; flex-grow: 1; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #1e293b; padding: 10px 8px; text-align: left; font-size: 10px; text-transform: uppercase; color: var(--text-dim); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 20; cursor: pointer; user-select: none; white-space: nowrap; }
+        th:hover { color: var(--accent); background: #26334d; }
+        th.sort-asc::after { content: ' ▲'; color: var(--gold); }
+        th.sort-desc::after { content: ' ▼'; color: var(--gold); }
+        td { padding: 8px; border-bottom: 1px solid var(--border); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        tr:hover td { background: rgba(14,165,233,0.04); }
+        tr.pinned td { background: rgba(245,158,11,0.04); border-left: 3px solid var(--gold); }
+        tr.private-row td { opacity: 0.8; }
+        tr.private-row:hover td { opacity: 1; }
+
+        .pin-btn { cursor: pointer; color: #334155; font-size: 14px; }
+        .pin-btn.active { color: var(--gold); }
+        .ticker { color: var(--gold); font-weight: 800; font-size: 13px; font-family: inherit; }
+        .private-badge { font-size: 8px; color: var(--purple); font-weight: 700; display: block; margin-top: 1px; }
+        .chip { background: #1e293b; padding: 2px 5px; border-radius: 4px; font-weight: 700; font-size: 10px; display: inline-block; min-width: 28px; text-align: center; }
+        .up { color: var(--green); } .down { color: var(--danger); }
+        .momentum-strip { display: flex; gap: 2px; margin-top: 3px; }
+        .mb { width: 10px; height: 3px; border-radius: 1px; background: #334155; }
+        .mb-up { background: var(--green); box-shadow: 0 0 4px rgba(16,185,129,0.4); }
+        .mb-dn { background: var(--danger); }
+        .region-tag { font-size: 10px; font-weight: 900; padding: 1px 5px; border-radius: 3px; background: rgba(14,165,233,0.1); color: var(--accent); border: 1px solid rgba(14,165,233,0.25); text-transform: uppercase; }
+        .watchlist-divider td { background: rgba(168,85,247,0.08) !important; color: var(--purple); font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; border-top: 2px solid rgba(168,85,247,0.4); }
+        .rank-num { color: var(--text-dim); font-size: 10px; font-weight: 700; min-width: 28px; display: inline-block; text-align: right; margin-right: 4px; }
+    </style>
+</head>
+<body style="display:flex;flex-direction:column;min-height:100vh;">
+
+<div class="command-bar">
+    <div>
+        <div class="logo">⚡ GIGACPO</div>
+        <div class="logo-sub">V6.0 · Pure Play SiPh/CPO Intelligence Terminal · Web Bridge Active</div>
+    </div>
+    <div class="stat"><span>UNIVERSE</span><div class="val" id="stat-total">—</div></div>
+    <div class="stat"><span>WATCHLIST</span><div class="val" id="stat-private" style="color:var(--purple)">—</div></div>
+    <div class="stat"><span>PINNED</span><div class="val" id="stat-pinned">0</div></div>
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-bar" placeholder="SEARCH TICKERS, ROLES, COMPANIES...">
+    </div>
+    <button class="sync-btn" id="syncBtn" onclick="triggerSync()" title="Trigger full data sync via web bridge (also auto-runs at 4:20 PM EST)">
+        <span class="sync-dot" id="syncDot"></span> SYNC
+    </button>
+</div>
+
+<!-- CPO PULSE: Powered by live_prices.js (run 'python engine/live_prices.py' to refresh) -->
+<div id="pulseContainer"></div>
+
+<div class="chart-panel" id="chartPanel">
+    <div class="chart-header">
+        <button class="clear-btn" onclick="clearPins()">CLEAR PINS</button>
+        <div class="chart-controls">
+            <button class="chart-btn" data-range="1m">1M</button>
+            <button class="chart-btn" data-range="6m">6M</button>
+            <button class="chart-btn active" data-range="1y">1Y</button>
+            <button class="chart-btn" data-range="3y">3Y</button>
+            <button class="chart-btn" data-range="5y">5Y</button>
+        </div>
+    </div>
+    <div id="mainChart"></div>
+</div>
+
+<div class="filter-panel">
+    <div class="filter-row">
+        <div class="filter-group"><label>MCap (B)</label><div class="input-pair"><input type="number" id="minMcap" placeholder="MIN"><input type="number" id="maxMcap" placeholder="MAX"></div></div>
+        <div class="filter-group"><label>Alpha (0-10)</label><div class="input-pair"><input type="number" id="minAlpha" placeholder="MIN"><input type="number" id="maxAlpha" placeholder="MAX"></div></div>
+        <div class="filter-group"><label>Risk (0-10)</label><div class="input-pair"><input type="number" id="minRisk" placeholder="MIN"><input type="number" id="maxRisk" placeholder="MAX"></div></div>
+        <div class="filter-group"><label>Hidden (0-10)</label><div class="input-pair"><input type="number" id="minHidden" placeholder="MIN"><input type="number" id="maxHidden" placeholder="MAX"></div></div>
+        <div class="filter-group"><label>Min Rev Growth %</label><input type="number" id="minRev" placeholder="e.g. 10" style="width:85px;background:#1e293b;border:1px solid var(--border);color:white;padding:5px 8px;border-radius:4px;font-size:11px;font-family:inherit;outline:none;"></div>
+        <div class="agg-group">
+            <label>Aggressiveness (how we rank)</label>
+            <div class="agg-inner">
+                <span style="font-size:9px;color:var(--text-dim);font-weight:700;">SAFE</span>
+                <input type="range" id="aggressiveness" min="1" max="10" value="5">
+                <span id="agg-val">5</span>
+                <span style="font-size:9px;color:var(--text-dim);font-weight:700;">ALPHA</span>
+            </div>
+            <div id="agg-mode-label"></div>
+        </div>
+    </div>
+    <div id="rankExplain" class="rank-explain"></div>
+    <div class="bucket-pills" id="bucketPills"></div>
+</div>
+
+<div class="table-area">
+    <div class="table-scroll">
+        <table id="masterTable">
+            <thead>
+                <tr>
+                    <th style="width:30px;" onclick="setSort('pinned')">★</th>
+                    <th style="width:30px;">#</th>
+                    <th style="width:85px;" onclick="setSort('ticker')">Ticker</th>
+                    <th style="width:155px;" onclick="setSort('company')">Company</th>
+                    <th style="width:50px;" onclick="setSort('alpha')" title="Alpha Score 0-10: Supply chain conviction">Alpha</th>
+                    <th style="width:50px;" onclick="setSort('risk')" title="Risk 0-10: Higher = riskier">Risk</th>
+                    <th style="width:50px;" onclick="setSort('hidden')" title="Hiddenness 0-10: Higher = less known">Hidden</th>
+                    <th style="width:65px;" onclick="setSort('country')">Exchange</th>
+                    <th style="width:80px;" onclick="setSort('mcap')">MCap</th>
+                    <th style="width:62px;" onclick="setSort('pe26')">P/E '26</th>
+                    <th style="width:62px;" onclick="setSort('pe27')">P/E '27</th>
+                    <th style="width:60px;" onclick="setSort('upside')">Upside</th>
+                    <th style="width:65px;" onclick="setSort('perf1y')">1y Rtn</th>
+                    <th style="width:62px;" onclick="setSort('today')" title="Today’s price change (from live_prices.js)">🟢 Today</th>
+                    <th style="width:78px;" onclick="setSort('rev')">Rev Growth</th>
+                    <th onclick="setSort('info')">Research Info / Role</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+'use strict';
+const data = window.CPO_MASTER_DATA || {};
+
+// ========== RANKING ENGINE V5.3 ==========
+const BUCKET_MULT = {
+    'Core':     1.00, 'Alpha': 1.00, 'Moonshot': 0.88, 'Hidden': 0.85,
+    'Customer': 0.45, 'AI Hub': 0.20, 'ETF': 0.22, 'Services': 0.30,
+    'Consumer': 0.20, 'Security': 0.20, 'Private': 0.00
+};
+
+const AGG_MODES = {
+    1: 'ULTRA-SAFE', 2: 'STABLE CORE', 3: 'BALANCED', 4: 'GROWTH-ORIENTED',
+    5: 'ALPHA HUNTER', 6: 'SUPPLY CHAIN GEM', 7: 'DEEP DISCOVERY',
+    8: 'MOONSHOT FOCUS', 9: 'MAX DISCOVERY', 10: 'SCORCHED EARTH'
+};
+
+const RANK_EXPLAIN = {
+    1: 'Ranking by: <span>Safety (40%)</span> + Alpha (38%) + Discovery (0%) + Momentum (10%). Preservation focus.',
+    2: 'Ranking by: Safety (36%) + Alpha (38%) + Discovery (4%) + Momentum (11%). Large cap core prioritized.',
+    3: 'Ranking by: Safety (31%) + Alpha (38%) + Discovery (8%) + Momentum (13%). Balanced growth.',
+    4: 'Ranking by: Safety (27%) + Alpha (38%) + Discovery (12%) + Momentum (14%). Shifting to CPO hardware.',
+    5: 'Ranking by: Safety (22%) + Alpha (38%) + Discovery (17%) + Momentum (16%). Balanced. Proven movers with headroom prioritized.',
+    6: 'Ranking by: Alpha (38%) + <span>Discovery (22%)</span> + Momentum (18%) + Safety (13%). Shifting focus to hidden supply chain gems.',
+    7: 'Ranking by: Alpha (38%) + <span>Discovery (27%)</span> + Momentum (19%) + Safety (9%). Aggressive hunt for overlooked plays.',
+    8: 'Ranking by: Alpha (38%) + <span>Discovery (31%)</span> + Momentum (20%) + Safety (4%). Tier 3/4 supply chain bottlenecks prioritized.',
+    9: 'Ranking by: Alpha (38%) + <span>Discovery (35%)</span> + Momentum (21%) + Safety (0%). Maximum undiscovered-company weighting.',
+    10: 'Ranking by: Alpha (38%) + <span>Discovery (35%)</span> + Momentum (22%) + Safety (0%). 💀 Pure conviction and discovery — risk ignored.',
+};
+
+const sfloat = v => { try { return parseFloat(String(v).replace('%','').trim())||0; } catch { return 0; } };
+const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+function getWeights(agg) {
+    const a = (agg - 1) / 9;
+    return { alpha: 0.38, safety: 0.40 * (1 - a), discovery: 0.35 * a, momentum: 0.10 + (0.12 * a) };
+}
+
+function momentumScore(perf1y) {
+    if (perf1y === undefined || perf1y === null) return 4;
+    if (perf1y > 300) return 5; if (perf1y > 100) return 9;
+    if (perf1y > 40) return 10; if (perf1y > 10) return 7;
+    if (perf1y > 0) return 5; if (perf1y > -25) return 3; return 1;
+}
+
+function buildTickerHTML(ticker) {
+    if (!ticker.includes('/')) return `<a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" class="ticker-link">${ticker}</a>`;
+    const parts = ticker.split('/').map(t => t.trim());
+    return `<a href="https://finance.yahoo.com/quote/${parts[0]}" target="_blank" class="ticker-link">${parts[0]}</a><span class="ticker-sep">/</span><a href="https://finance.yahoo.com/quote/${parts[1]}" target="_blank" class="ticker-link ticker-otc">${parts[1]}</a>`;
+}
+
+function calcScore(h, perf1y, agg) {
+    const w = getWeights(agg);
+    const alpha = sfloat(h['Alpha Score'] || 0);
+    const safety = 10 - sfloat(h['Risk Adj'] || 5);
+    const discovery = sfloat(h['Hiddenness'] || 5);
+    const mom = momentumScore(perf1y);
+    const multiplier = BUCKET_MULT[h.Bucket] || 0.20;
+    return (alpha * w.alpha + safety * w.safety + discovery * w.discovery + mom * w.momentum) * multiplier * 10;
+}
+
+function parseUpside(str) {
+    if (!str || str === '--') return 0;
+    const m = String(str).match(/([\d.]+)/); if (!m) return 0;
+    const n = parseFloat(m[1]); return str.includes('%') ? n / 100 : n - 1;
+}
+
+const state = {
+    search: '', minMcap: -Infinity, maxMcap: Infinity, minAlpha: 0, maxAlpha: 10, minRisk: 0, maxRisk: 10, minHidden: 0, maxHidden: 10, minRev: -Infinity,
+    selectedBuckets: [], selectedExchanges: [], pinned: [], range: '1y', sortCol: '', sortDir: -1, aggressiveness: 5, showPrivate: true
+};
+
+function get1yPerf(entry) {
+    const p = entry.performance || {}; if (p['1y'] !== undefined) return p['1y'];
+    const h = entry.history || []; if (h.length < 2) return undefined;
+    const now = Date.now(), ya = now - 365*86400000;
+    const s = h.find(pt => pt.x >= ya) || h[0]; const e = h[h.length-1];
+    return (e.x - s.x > 300*86400000) ? Math.round(((e.y/s.y)-1)*100) : undefined;
+}
+
+function buildEntries() {
+    return Object.entries(data).map(([ticker, entry]) => {
+        const h = entry.human_research || {}, f = entry.financials || {};
+        const trend = f.earningsTrend?.trend || [];
+        const live = (window.LIVE_PRICES || {})[ticker] || {};
+        const price = live.price || f.price?.regularMarketPrice?.raw || f.summaryDetail?.regularMarketPrice?.raw || 0;
+        const eps26 = trend.find(t => t.period==='0y')?.earningsEstimate?.avg?.raw;
+        const eps27 = trend.find(t => t.period==='+1y')?.earningsEstimate?.avg?.raw;
+        const pe26 = eps26 > 0 ? price/eps26 : 999;
+        const pe27 = eps27 > 0 ? price/eps27 : 999;
+        const mcapB = (f.summaryDetail?.marketCap?.raw || 0) / 1e9;
+        const perf1y = get1yPerf(entry);
+        const growth_str = h['Rev Growth Est'] || '';
+        let rev_num = growth_str.includes('%') ? parseFloat(growth_str) : 0;
+        if (!rev_num) {
+            const fg = trend.find(t => t.period==='0y')?.revenueEstimate?.growth?.raw;
+            if (fg !== undefined) rev_num = Math.round(fg*100);
+        }
+        return { 
+            ticker, h, mcapB, pe26, pe27, rev_num, perf1y, isPrivate: h.Bucket === 'Private', 
+            score: calcScore(h, perf1y, state.aggressiveness),
+            todayPct: live.change_pct ?? null, p: entry.performance || {},
+            searchStr: `${ticker} ${h.Company||''} ${h.Role||''} ${h.Notes||''}`.toLowerCase()
+        };
+    });
+}
+
+function render() {
+    const entries = buildEntries();
+    const pub = entries.filter(e => !e.isPrivate && passesFilters(e)).sort(sortFn);
+    const priv = entries.filter(e => e.isPrivate).sort((a,b) => sfloat(b.h['Alpha Score'])-sfloat(a.h['Alpha Score']));
+    const tbody = document.getElementById('tableBody');
+    const frag = document.createDocumentFragment();
+    let rank = 1;
+    const getMom = (p, k) => { const v=(p||{})[k]; return v===undefined?'':(v>=0?'mb-up':'mb-dn'); };
+
+    pub.forEach(e => {
+        const isPinned = state.pinned.includes(e.ticker);
+        const tr = document.createElement('tr'); if (isPinned) tr.classList.add('pinned');
+        const pe26f = e.pe26 < 999 ? e.pe26.toFixed(1) : '--';
+        const pe27f = e.pe27 < 999 ? e.pe27.toFixed(1) : '--';
+        const todayStr = e.todayPct !== null ? (e.todayPct > 0 ? '+'+e.todayPct.toFixed(2)+'%' : e.todayPct.toFixed(2)+'%') : '--';
+        const todayCls = (e.todayPct||0) >= 0 ? 'up' : 'down';
+        tr.innerHTML = `
+            <td><span class="pin-btn ${isPinned?'active':''}" onclick="togglePin('${esc(e.ticker)}')">★</span></td>
+            <td><span class="rank-num">${rank}</span></td>
+            <td class="ticker">${buildTickerHTML(e.ticker)}<div class="momentum-strip"><div class="mb ${getMom(e.p,'1m')}"></div><div class="mb ${getMom(e.p,'3m')}"></div><div class="mb ${getMom(e.p,'6m')}"></div><div class="mb ${getMom(e.p,'1y')}"></div></div></td>
+            <td title="${esc(e.h.Company)}"><b>${esc(e.h.Company)}</b></td>
+            <td><div class="chip" style="border:1px solid var(--gold);">${esc(e.h['Alpha Score']||'?')}</div></td>
+            <td><div class="chip" style="border:1px solid var(--danger);">${esc(e.h['Risk Adj']||'?')}</div></td>
+            <td><div class="chip" style="border:1px solid var(--accent);">${esc(e.h['Hiddenness']||'?')}</div></td>
+            <td><span class="region-tag">${esc(e.h.Country||'??')}</span></td>
+            <td style="font-weight:700;">${e.mcapB > 0.01 ? e.mcapB.toFixed(2)+'B' : '--'}</td>
+            <td><span class="chip">${pe26f}</span></td>
+            <td><span class="chip" style="color:var(--accent);">${pe27f}</span></td>
+            <td style="color:var(--gold);font-weight:800;">${esc(e.h['Target Upside']||'--')}</td>
+            <td class="${(e.perf1y||0)>=0?'up':'down'}">${e.perf1y!==undefined?e.perf1y+'%':'--'}</td>
+            <td class="${todayCls}" style="font-weight:bold;">${todayStr}</td>
+            <td style="font-weight:700;color:var(--accent);">${e.rev_num?e.rev_num+'%':'--'}</td>
+            <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${esc(e.h.Role)}</div><div style="font-size:10px;color:var(--text-dim);margin-top:1px;">${esc(e.h.Notes||'')}</div></td>
+        `;
+        frag.appendChild(tr); rank++;
+    });
+
+    if (state.showPrivate && priv.length > 0) {
+        const divRow = document.createElement('tr'); divRow.className = 'watchlist-divider';
+        divRow.innerHTML = `<td colspan="16">🔒 PRIVATE / PRE-IPO WATCHLIST</td>`;
+        frag.appendChild(divRow);
+        priv.forEach(e => {
+            const tr = document.createElement('tr'); tr.className='private-row';
+            const todayStr = e.todayPct !== null ? (e.todayPct > 0 ? '+'+e.todayPct.toFixed(2)+'%' : e.todayPct.toFixed(2)+'%') : '--';
+            tr.innerHTML = `<td>★</td><td><span class="rank-num" style="color:var(--purple)">🔒</span></td><td class="ticker" style="color:var(--purple)">$${esc(e.ticker)}</td><td><b>${esc(e.h.Company)}</b></td><td><div class="chip">${esc(e.h['Alpha Score'])}</div></td><td><div class="chip">${esc(e.h['Risk Adj'])}</div></td><td><div class="chip">${esc(e.h['Hiddenness'])}</div></td><td><span class="region-tag">${esc(e.h.Country)}</span></td><td>PRIVATE</td><td>--</td><td>--</td><td>${esc(e.h['Target Upside'])}</td><td>--</td><td>${todayStr}</td><td>--</td><td><div style="font-weight:800;">${esc(e.h.Role)}</div></td>`;
+            frag.appendChild(tr);
+        });
+    }
+    tbody.innerHTML = ''; tbody.appendChild(frag);
+    document.getElementById('stat-total').innerText = pub.length;
+    document.getElementById('stat-private').innerText = priv.length;
+    document.getElementById('stat-pinned').innerText = state.pinned.length;
+    document.getElementById('rankExplain').innerHTML = (state.sortCol === '' || state.sortCol === 'best') ? (RANK_EXPLAIN[state.aggressiveness] || '') : '&nbsp;';
+}
+
+function passesFilters(e) {
+    if (state.search && !e.searchStr.includes(state.search)) return false;
+    if (e.mcapB < state.minMcap || e.mcapB > state.maxMcap) return false;
+    if (e.rev_num < state.minRev) return false;
+    if (state.selectedBuckets.length > 0 && !state.selectedBuckets.includes(e.h.Bucket)) return false;
+    if (state.selectedExchanges.length > 0 && !state.selectedExchanges.includes(e.h.Country)) return false;
+    if (sfloat(e.h['Alpha Score']) < state.minAlpha || sfloat(e.h['Alpha Score']) > state.maxAlpha) return false;
+    if (sfloat(e.h['Risk Adj']) < state.minRisk || sfloat(e.h['Risk Adj']) > state.maxRisk) return false;
+    if (sfloat(e.h['Hiddenness']) < state.minHidden || sfloat(e.h['Hiddenness']) > state.maxHidden) return false;
+    return true;
+}
+
+function sortFn(a, b) {
+    let av, bv; const col = state.sortCol || 'best';
+    if (col === 'best') { av = a.score; bv = b.score; }
+    else if (col === 'pinned') { av = state.pinned.includes(a.ticker)?1:0; bv = state.pinned.includes(b.ticker)?1:0; }
+    else if (col === 'ticker') { av = a.ticker; bv = b.ticker; }
+    else if (col === 'company') { av = (a.h.Company||'').toLowerCase(); bv = (b.h.Company||'').toLowerCase(); }
+    else if (col === 'alpha') { av = sfloat(a.h['Alpha Score']); bv = sfloat(b.h['Alpha Score']); }
+    else if (col === 'risk') { av = sfloat(a.h['Risk Adj']); bv = sfloat(b.h['Risk Adj']); }
+    else if (col === 'upside') { av = parseUpside(a.h['Target Upside']); bv = parseUpside(b.h['Target Upside']); }
+    else if (col === 'mcap') { av = a.mcapB; bv = b.mcapB; }
+    else if (col === 'pe26') { av = a.pe26; bv = b.pe26; }
+    else if (col === 'pe27') { av = a.pe27; bv = b.pe27; }
+    else if (col === 'perf1y') { av = a.perf1y??-9999; bv = b.perf1y??-9999; }
+    else if (col === 'rev') { av = a.rev_num; bv = b.rev_num; }
+    else if (col === 'today') { av = a.todayPct??-9999; bv = b.todayPct??-9999; }
+    else { av = (a.h.Role||'')+(a.h.Notes||''); bv = (b.h.Role||'')+(b.h.Notes||''); }
+    if (typeof av === 'string' && typeof bv === 'string') return av.localeCompare(bv) * state.sortDir;
+    return (av < bv ? -1 : (av > bv ? 1 : 0)) * state.sortDir;
+}
+
+function initBuckets() {
+    const buckets = new Set(), exchanges = new Set();
+    Object.values(data).forEach(e => { if (e.human_research?.Bucket!=='Private') buckets.add(e.human_research.Bucket); if (e.human_research.Country) exchanges.add(e.human_research.Country); });
+    const container = document.getElementById('bucketPills'); container.innerHTML = '';
+    const pp = document.createElement('div'); pp.className='pill priv-pill active'; pp.innerText='🔒 SHOW PRIVATE';
+    pp.onclick = () => { state.showPrivate = !state.showPrivate; pp.classList.toggle('active', state.showPrivate); render(); };
+    container.appendChild(pp);
+    const mk = (t, s, k) => {
+        const h = document.createElement('div'); h.className='section-label'; h.innerText=t; container.appendChild(h);
+        const row = document.createElement('div'); row.className='pill-row';
+        Array.from(s).filter(Boolean).sort().forEach(i => {
+            const p = document.createElement('div'); p.className='pill'; p.innerText=i.toUpperCase();
+            p.onclick = () => { p.classList.toggle('active'); state[k].includes(i) ? state[k]=state[k].filter(x=>x!==i) : state[k].push(i); render(); };
+            row.appendChild(p);
+        });
+        container.appendChild(row);
+    };
+    mk('SECTORS', buckets, 'selectedBuckets'); mk('EXCHANGES', exchanges, 'selectedExchanges');
+}
+
+let chart = null;
+function initChart() {
+    chart = new ApexCharts(document.querySelector('#mainChart'), {
+        series: [], chart: { height: 180, type: 'area', background: 'transparent', toolbar: {show:false} },
+        colors: ['#f59e0b','#0ea5e9','#10b981','#f43f5e','#a855f7'],
+        stroke: { curve: 'smooth', width: 1.5 }, grid: { borderColor: '#1e293b' },
+        xaxis: { type: 'datetime', labels: { style: { colors: '#64748b', fontSize: '9px' } } },
+        yaxis: { labels: { formatter: v => v.toFixed(0)+'%', style: { colors: '#64748b', fontSize: '9px' } } },
+        tooltip: { theme: 'dark' }, dataLabels: { enabled: false }
+    });
+    chart.render();
+}
+
+function updateChart() {
+    const panel = document.getElementById('chartPanel');
+    if (!state.pinned.length) { panel.classList.remove('active'); return; }
+    panel.classList.add('active');
+    const limits = {'1m':30,'6m':182,'1y':365,'3y':1095,'5y':1825};
+    const limit = Date.now() - (limits[state.range]*86400000);
+    const series = state.pinned.map(t => {
+        const h = data[t]?.history || []; const f = h.filter(p=>p.x>=limit);
+        if (f.length < 2) return null; const b = f[0].y;
+        return { name: t, data: f.map(p=>({x:p.x, y:Math.round(((p.y/b)-1)*100)})) };
+    }).filter(Boolean);
+    chart.updateSeries(series);
+}
+
+function setSortBtn(col) { setSort(col); }
+window.togglePin = t => { state.pinned.includes(t) ? state.pinned=state.pinned.filter(x=>x!==t) : state.pinned.push(t); render(); updateChart(); };
+window.clearPins = () => { state.pinned = []; render(); updateChart(); };
+document.getElementById('searchInput').oninput = e => { state.search = e.target.value.toLowerCase(); render(); };
+const bind = (id, k, f=v=>v) => { const el=document.getElementById(id); if (el) el.oninput=e=> { state[k]=e.target.value===''?(k.startsWith('min')?-Infinity:Infinity):f(e.target.value); render(); } };
+bind('minMcap','minMcap',parseFloat); bind('maxMcap','maxMcap',parseFloat);
+bind('minAlpha','minAlpha',parseFloat); bind('maxAlpha','maxAlpha',parseFloat);
+bind('minRisk','minRisk',parseFloat); bind('maxRisk','maxRisk',parseFloat);
+bind('minHidden','minHidden',parseFloat); bind('maxHidden','maxHidden',parseFloat);
+bind('minRev','minRev',parseFloat);
+const aggEl = document.getElementById('aggressiveness');
+aggEl.oninput = () => { state.aggressiveness = parseInt(aggEl.value); document.getElementById('agg-val').innerText = state.aggressiveness; document.getElementById('agg-mode-label').innerText = AGG_MODES[state.aggressiveness]; state.sortCol = ''; render(); };
+
+// WEB BRIDGE SYNC
+const BRIDGE_BASE = 'http://localhost:5174';
+const syncBtn = document.getElementById('syncBtn');
+async function triggerSync() {
+    if (syncBtn.classList.contains('busy')) return;
+    syncBtn.classList.add('busy'); try {
+        const r = await fetch(`${BRIDGE_BASE}/api/sync`, { method: 'POST' });
+        if (r.ok || r.status === 409) pollSyncStatus();
+    } catch { syncBtn.classList.remove('busy'); syncBtn.classList.add('error'); }
+}
+function pollSyncStatus() {
+    const i = setInterval(async () => {
+        try {
+            const r = await fetch(`${BRIDGE_BASE}/api/status`); const d = await r.json();
+            if (d.status === 'idle') { clearInterval(i); syncBtn.classList.remove('busy'); setTimeout(()=>location.reload(), 1000); }
+        } catch { clearInterval(i); }
+    }, 3000);
+}
+
+initChart(); initBuckets(); render();
+</script>
+</body>
+</html>

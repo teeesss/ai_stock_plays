@@ -1,0 +1,87 @@
+Rank,Ticker,Company,Country,Bucket,AlphaScore,RiskAdjScore,Hiddenness
+1,ASMPT,ASMPT,Hong Kong,Hidden,9,8,9
+2,6890.T,Ferrotec,Japan,Hidden,9,8,9
+3,VECO,Veeco,USA,Hidden,9,8,8
+4,TSEM,Tower Semiconductor,Israel,Core,9,9,6
+5,LPKF,LPKF,Germany,Hidden,9,7,9
+6,ASE,ASE Technology,Taiwan,Core,8,9,7
+7,INNO,InnoLight,China,Core,9,7,8
+8,EOPT,Eoptolink,China,Core,9,7,8
+9,FURX,Furukawa Electric,Japan,Hidden,8,8,8
+10,SMHN,SUSS MicroTec,Germany,Hidden,8,8,8
+11,3587.TW,MA-tek,Taiwan,Hidden,8,8,8
+12,6941.T,Yamaichi,Japan,Hidden,8,7,9
+13,SOI,Soitec,France,Core,8,8,7
+14,5801.T,Furukawa Electric,Japan,Hidden,8,8,7
+15,JCET,JCET,China,Core,8,8,7
+16,FURXF,Furukawa Electric ADR,Japan,Hidden,8,8,7
+17,GLW,Corning,USA,Core,8,9,5
+18,COHR,Coherent,USA,Core,9,8,4
+19,LITE,Lumentum,USA,Core,9,8,4
+20,4979.TW,LuxNet,Taiwan,Hidden,8,7,8
+21,3450.TW,Elaser,Taiwan,Hidden,8,7,8
+22,MRVL,Marvell,USA,Core,8,9,4
+23,AVGO,Broadcom,USA,Core,8,9,4
+24,AMPH,Amphenol,USA,Core,8,9,4
+25,TEL,TE Connectivity,Switzerland,Core,8,9,4
+26,IQE,IQE,UK,Core,8,7,7
+27,FORM,FormFactor,USA,Hidden,7,8,7
+28,EXFO,EXFO,Canada,Hidden,7,8,7
+29,FOCI,FOCI,Taiwan,Hidden,7,7,8
+30,6451.TW,ShunSin,Taiwan,Hidden,7,7,8
+31,4977.TW,PCL,Taiwan,Hidden,7,7,8
+32,1FINITY,1Finity,Japan,Hidden,7,7,8
+33,BROADX,Broadex,China,Hidden,7,7,8
+34,HSBB,Hisense Broadband,China,Hidden,7,7,8
+35,AGC,AGC,Japan,Hidden,7,7,8
+36,ASGLY,Asahi Glass ADR,Japan,Hidden,7,7,8
+37,VIAV,Viavi,USA,Hidden,7,8,6
+38,ONTO,Onto Innovation,USA,Hidden,7,8,6
+39,CAMT,Camtek,Israel,Hidden,7,8,6
+40,LWLG,Lightwave Logic,USA,Alpha,9,3,10
+41,AXTI,AXT,USA,Hidden,8,6,7
+42,SIVE,Sivers Semiconductors,Sweden,Alpha,8,6,7
+43,KLAC,KLA,USA,Core,7,9,4
+44,KEYS,Keysight,USA,Core,7,9,4
+45,KLA,KLA,USA,Core,7,9,4
+46,ADI,Analog Devices,USA,Core,7,9,4
+47,3289.TW,IST,Taiwan,Hidden,7,7,7
+48,MTSI,MACOM,USA,Core,7,8,5
+49,FN,Fabrinet,Thailand,Core,7,8,5
+50,AMKR,Amkor,USA,Core,7,8,5
+51,CLS,Celestica,Canada,Core,7,8,5
+52,CIEN,Ciena,USA,Core,7,8,4
+53,MKS,MKS Instruments,USA,Hidden,6,8,6
+54,AMAT,Applied Materials,USA,Core,6,9,4
+55,LRCX,Lam Research,USA,Core,6,9,4
+56,POET,POET Technologies,Canada,Alpha,8,4,8
+57,NVDA,NVIDIA,USA,Core,6,10,2
+58,AAOI,Applied Optoelectronics,USA,Alpha,8,5,6
+59,AEHR,Aehr,USA,Alpha,7,5,8
+60,FLEX,Flex,USA,Core,6,8,5
+61,JBL,Jabil,USA,Core,6,8,5
+62,SANM,Sanmina,USA,Core,6,8,5
+63,PLXS,Plexus,USA,Core,6,8,5
+64,DUPUY,DuPont,USA,Hidden,6,8,5
+65,ROG,Rogers,USA,Hidden,6,8,5
+66,ACLS,Axcelis,USA,Hidden,6,7,6
+67,ADVA,Adtran,Germany,Hidden,6,7,6
+68,GUC,Global Unichip,Taiwan,Hidden,6,7,6
+69,ALCHIP,Alchip,Taiwan,Hidden,6,7,6
+70,TER,Teradyne,USA,Core,6,8,4
+71,CSCO,Cisco,USA,Core,6,8,4
+72,SKHYNIX,SK Hynix,Korea,Core,6,8,4
+73,MU,Micron,USA,Core,6,8,4
+74,IPGP,IPG Photonics,USA,Hidden,6,7,5
+75,MURATA,Murata,Japan,Hidden,5,7,6
+76,YAGEO,Yageo,Taiwan,Hidden,5,7,6
+77,MXL,MaxLinear,USA,Alpha,6,6,5
+78,OI,O-I Glass,USA,Hidden,5,6,7
+79,UMC,UMC,Taiwan,Alpha,5,7,5
+80,CRNT,Ceragon,Israel,Hidden,5,6,6
+81,NOK,Nokia,Finland,Hidden,5,6,6
+82,NXPI,NXP,Netherlands,Alpha,5,7,3
+83,QCOM,Qualcomm,USA,Alpha,5,7,3
+84,MCHP,Microchip,USA,Alpha,5,6,4
+85,ATKR,Atkore,USA,Hidden,4,6,5
+86,MELI,MercadoLibre,LatAm,Noise,1,1,1

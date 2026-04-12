@@ -1,0 +1,697 @@
+# CPO & SiPh Supply Chain — Living Knowledge Base
+
+> **Purpose**: This is the permanent, append-only research document for All Co-Packaged Optics (CPO), Silicon Photonics (SiPh), and Advanced Packaging (CoWoS/COS) stock plays. Every discovery, thesis, revenue signal, and catalyst is recorded here with timestamps. **NEVER DELETE — ONLY APPEND.**
+
+---
+
+## Table of Contents
+1. [The Core Thesis](#the-core-thesis)
+2. [Supply Chain Map](#supply-chain-map)
+3. [Layer 1: AI Demand Anchors](#layer-1-ai-demand-anchors)
+4. [Layer 2: Lasers & Light Sources (InP)](#layer-2-lasers--light-sources-inp)
+5. [Layer 3: Optical Engines & CPO Integration](#layer-3-optical-engines--cpo-integration)
+6. [Layer 4: Foundry & Photonics Manufacturing](#layer-4-foundry--photonics-manufacturing)
+7. [Layer 5: OSAT & Packaging Assembly](#layer-5-osat--packaging-assembly)
+8. [Layer 6: Assembly Equipment (Bonding, Molding, Dicing)](#layer-6-assembly-equipment)
+9. [Layer 7: Substrates & Materials](#layer-7-substrates--materials)
+10. [Layer 8: Chemicals & Compounds](#layer-8-chemicals--compounds)
+11. [Layer 9: Testing & Inspection](#layer-9-testing--inspection)
+12. [Layer 10: Thermal Management](#layer-10-thermal-management)
+13. [Layer 11: Connectivity & Interconnects](#layer-11-connectivity--interconnects)
+14. [Layer 12: Precision Motion & Alignment](#layer-12-precision-motion--alignment)
+15. [Layer 13: Dispensing & Process Equipment](#layer-13-dispensing--process-equipment)
+16. [Layer 14: Contract Manufacturing](#layer-14-contract-manufacturing)
+17. [Layer 15: Speculative / Holy Grail Materials](#layer-15-speculative--holy-grail-materials)
+18. [Layer 16: ETFs (Backdoor Exposure)](#layer-16-etfs)
+19. [Theme: The Modulator Materials War (Silicon vs TFLN vs Polymer)](#theme-the-modulator-materials-war)
+20. [Theme: The Upstream InP Substrate Bottleneck](#theme-the-upstream-inp-substrate-bottleneck)
+21. [Research Queue](#research-queue)
+22. [Catalyst Watchlist](#catalyst-watchlist)
+23. [Thesis Invalidation Tracker](#thesis-invalidation-tracker)
+24. [Speculative Partnership Map](#speculative-partnership-map)
+
+---
+
+## The Core Thesis
+**Date Established**: 2026-04-10
+
+As AI GPU racks reach 100kW–200kW+, traditional copper interconnects are hitting a physical wall. To solve the heat, power, and bandwidth bottlenecks, hyperscalers are being forced to transition to Co-Packaged Optics (CPO) much earlier than the industry anticipated.
+
+**Key Data Points**:
+- NVIDIA invested **$4 billion** into Lumentum ($2B) and Coherent ($2B) on March 2, 2026 — locking up U.S. CW laser capacity.
+- ASE CEO Tien Wu announced on April 10, 2026, that ASE is **breaking ground on 6 new plants globally** — their largest expansion year in history.
+- ASE officially confirmed **mass production of CPO will begin in 2026**.
+- Ayar Labs closed a **$500M Series E** at $3.75B valuation (backed by NVIDIA, AMD, MediaTek) on March 3, 2026.
+- Marvell acquired **Celestial AI** — consolidating the optical interconnect space.
+- The entire CPO industry relies on **Indium Phosphide (InP) external laser sources** — silicon cannot emit light.
+
+**The Investment Framework**: The market is focused on WHO is designing CPO ($NVDA, $MRVL). The true alpha lies in asking: **"What physical laws of physics must be overcome to build this, and who owns the patent to fix it?"** That leads you to Micro-TECs, Glass Drilling, Polymers, Sub-micron Bonders, MOCVD machines, precision dispensing, and waveguide cladding.
+
+**Time Horizon**: 3, 5, 10, 15, 20 year re-rating cycle. Companies will be repriced as the market realizes their CPO/SiPh exposure.
+
+---
+
+## Supply Chain Map
+
+```
+GPU/Switch Design ($NVDA, $AVGO, $MRVL)
+    ↓
+Networking Silicon / DSP ($CRDO SerDes, $MTSI)
+    ↓
+Optical Engines & CPO Integration ($POET, Ayar Labs [Private])
+    ↓
+Lasers & Light Sources ($LITE, $COHR, $SIVE, Furukawa)
+    ↓ requires
+InP Substrates & Epiwafers ($AXTI, $IQE, $SOI)
+    ↓ grown on
+MOCVD / MBE Equipment ($VECO, $AIXNY, Riber)
+    ↓
+Optical Modules / Transceivers ($AAOI, InnoLight, Eoptolink)
+    ↓ assembled by
+OSAT / Packaging ($ASE, $AMKR, ShunSin)
+    ↓ using
+Bonding Equipment ($BESIY, $KLIC, $ASMPT, $MYCRF)
+    ↓
+Molding Equipment ($TWCPY)
+    ↓
+Dicing Equipment ($DSCSY)
+    ↓
+Dispensing Equipment ($NDSN)
+    ↓
+Optical Compute Fabric ($MRVL [Celestial AI Acquired])
+    ↓
+Odin Photonic Engine (Ranovus [Private])
+    ↓
+Raw Material Precursors / Recycling ($5713.T, $UMI.BR, $NEO.TO)
+    ↓ on
+Substrates ($IBIEY ABF, $DNPCY glass, $LPKF TGV drilling, SKC Absolics)
+    ↓ with
+Chemicals ($ENTG CMP slurries, $SHWDY epoxies/underfill)
+ALD Cladding ($ASMIY waveguide oxide layers)
+Thin-Film Materials ($MTRN sputtering targets)
+    ↓ tested by
+Inspection ($ONTO, $CAMT, $NVMI, $KLAC)
+Probe Cards ($FORM, $PROB.MI, MJC)
+Test Sockets ($COHU, Yamaichi, $AEHR burn-in)
+    ↓ cooled by
+Thermal ($Ferrotec micro-TECs)
+    ↓ connected by
+Fiber/Connectors ($APH, $GLW, FAU suppliers: FOCI, Suzhou TFC)
+Precision Alignment ($NOVT Celera Motion stages)
+    ↓ assembled into racks by
+Contract Mfg ($FN, $CLS)
+```
+
+---
+
+## Layer 1: AI Demand Anchors
+
+### NVIDIA ($NVDA) — USA
+- **Role**: AI demand catalyst. Drives the entire CPO ecosystem via NVL72/Rubin rack requirements.
+- **CPO Relevance**: Invested $4B into LITE+COHR. Backed Ayar Labs $500M Series E.
+- **Alpha Score**: 6 | **Risk Adj**: 10 | **Hiddenness**: 2
+- **Notes**: Not a pure CPO supplier — the demand anchor. Everyone knows this.
+- **Date Added**: 2026-04-10
+
+### Broadcom ($AVGO) — USA
+- **Role**: Networking silicon / custom ASICs. Major CPO push for switching.
+- **Alpha Score**: 8 | **Risk Adj**: 9 | **Hiddenness**: 4
+- **Date Added**: 2026-04-10
+
+### Marvell ($MRVL) — USA
+- **Role**: Networking silicon / DSP. Acquired Celestial AI for optical interconnect IP.
+- **Alpha Score**: 8 | **Risk Adj**: 9 | **Hiddenness**: 4
+- **Date Added**: 2026-04-10
+
+---
+
+## Layer 2: Lasers & Light Sources (InP)
+
+> **Why This Matters**: Silicon cannot emit light. EVERY CPO system requires external laser sources (ELS) made from Indium Phosphide (InP). GPU processors run too hot (500W+) — lasers must remain external. This makes ELS modules a mandatory, non-substitutable component.
+
+### Lumentum ($LITE) — USA
+- **Role**: CW laser duopoly with Coherent. NVDA invested $2B (March 2, 2026).
+- **Revenue Signal**: 58% revenue growth, 219% stock gain over 1 year.
+- **Alpha Score**: 9 | **Risk Adj**: 8 | **Hiddenness**: 4
+- **Thesis**: Supply protection moat from NVDA investment. Locked-up capacity.
+- **Date Added**: 2026-04-10
+
+### Coherent ($COHR) — USA
+- **Role**: CW laser duopoly with Lumentum. NVDA invested $2B. Also building world's first 6-inch (150mm) InP wafer line ($33M CHIPS Act funding).
+- **Revenue Signal**: Vertical integration strategy — will produce both the InP substrates AND the laser chips. High visibility due to NVIDIA preferred customer status.
+- **Alpha Score**: 10 | **Risk Adj**: 8 | **Hiddenness**: 4
+- **Date Added**: 2026-04-10 (Updated 2026-04-11 Phase 4)
+
+### Sivers Semiconductors ($SIVE / OTC: $SIVEF) — Sweden
+- **Role**: "Independent Switzerland" of the laser world. Owns one of the last independent InP foundries on Earth (Glasgow).
+- **Revenue Signal**: $130M–$300M market cap — massively mispriced vs. $LITE/$COHR billions.
+- **Supply Chain Position**: Supplies Ayar Labs and POET. CHIPS Act grants ($11.6M) for beamformer ICs with Ericsson and Raytheon.
+- **Alpha Score**: 8 | **Risk Adj**: 6 | **Hiddenness**: 7
+- **Thesis**: The neutral arms dealer. If NVDA locked up LITE/COHR, every OTHER optical engine maker (Ayar, POET, Broadcom) needs SIVE.
+- **Date Added**: 2026-04-10
+
+### Furukawa Electric (5801.T / OTC: FURX) — Japan
+- **Role**: Via FITEL brand, makes the most advanced high-power C-band and O-band lasers. Remote Laser Sources for CPO.
+- **Revenue Signal**: Restructuring could unlock photonics value. Conglomerate discount.
+- **Alpha Score**: 8 | **Risk Adj**: 8 | **Hiddenness**: 8
+- **Thesis**: If they spin out FITEL or report breakout photonics revenue, aggressive re-rate.
+- **Date Added**: 2026-04-10
+
+### Applied Optoelectronics ($AAOI) — USA
+- **Role**: Vertically integrated transceiver maker. 119% sales growth projection.
+- **Alpha Score**: 8 | **Risk Adj**: 5 | **Hiddenness**: 6
+- **Date Added**: 2026-04-10
+
+---
+
+## Layer 3: Optical Engines & CPO Integration
+
+### POET Technologies ($POET) — Canada/USA
+- **Role**: Optical Interposer technology. Uses 50% fewer lasers than traditional methods (huge advantage given InP shortage).
+- **Partnerships**: Foxconn Interconnect Technology (FIT), LITEON, Lessengers.
+- **Alpha Score**: 8 | **Risk Adj**: 4 | **Hiddenness**: 8
+- **Risk**: Tiny revenue base vs. market expectations. Execution-sensitive.
+- **Date Added**: 2026-04-10
+
+---
+
+## Layer 4: Foundry & Photonics Manufacturing
+
+### Tower Semiconductor ($TSEM) — Israel/USA
+- **Role**: Key upstream SiPh foundry. "The TSMC of photonics."
+- **Alpha Score**: 9 | **Risk Adj**: 9 | **Hiddenness**: 6
+- **Date Added**: 2026-04-10
+
+### GlobalFoundries ($GFS) — USA 🆕 Phase 4
+- **Role**: Key neutral SiPh foundry (alongside Tower). Building massive PDK (Process Design Kit) ecosystems. Specifically integrating organic EO polymers (like Lightwave Logic's) into their 90WG PDK.
+- **Alpha Score**: 8 | **Risk Adj**: 9 | **Hiddenness**: 6
+- **Thesis**: Foundry finish line. The foundry that offers the best PDK for hyper-fast modulators will win the 400G/800G/1.6T production war.
+- **Date Added**: 2026-04-11 (Phase 4)
+
+---
+
+## Layer 5: OSAT & Packaging Assembly
+
+### ASE Technology ($ASX) — Taiwan/USA ADR
+- **Role**: Undisputed OSAT king. CEO confirmed CPO mass production begins 2026. Breaking ground on 6 new plants globally — largest expansion year in history.
+- **Alpha Score**: 8 | **Risk Adj**: 9 | **Hiddenness**: 7
+- **Date Added**: 2026-04-10
+
+### Amkor ($AMKR) — USA
+- **Role**: Advanced packaging / OSAT leverage if CPO ramps.
+- **Alpha Score**: 7 | **Risk Adj**: 8 | **Hiddenness**: 5
+- **Date Added**: 2026-04-10
+
+### ShunSin Technology (6451.TW) — Taiwan
+- **Role**: Foxconn subsidiary. Advanced SiPh packaging. If Foxconn builds NVIDIA racks, ShunSin handles internal optical packaging.
+- **Alpha Score**: 7 | **Hiddenness**: 8
+- **Date Added**: 2026-04-10
+
+---
+
+## Layer 6: Assembly Equipment
+
+> **Why This Matters**: To build CPO, you place a microscopic InP laser onto a silicon die with sub-micron accuracy. Off by a fraction of a hair → light misses waveguide → signal dies → $40,000 GPU rack fails. Hand-assembly is impossible.
+
+### Besi / BE Semiconductor ($BESIY OTC) — Netherlands
+- **Role**: Undisputed king of **Hybrid Bonding** equipment. Required as I/O density scales and bump pitches shrink below 10 micrometers.
+- **Alpha Score**: 10 | **Risk Adj**: 9 | **Hiddenness**: 9
+- **Thesis**: Every advanced packaging line doing hybrid bonding (the future of CoWoS/CPO) uses Besi machines.
+- **Date Added**: 2026-04-10 (Phase 1)
+
+### Kulicke & Soffa ($KLIC) — USA
+- **Role**: Advanced Thermocompression Bonders. Stacking logic chips next to optical I/O.
+- **Alpha Score**: 10 | **Risk Adj**: 8 | **Hiddenness**: 9
+- **Thesis**: Long viewed as "legacy wire bonding" — market hasn't priced in their advanced packaging pivot.
+- **Date Added**: 2026-04-10 (Phase 2)
+
+### ASMPT (0522.HK / OTC: ASMVY) — Hong Kong
+- **Role**: AMICRA division holds near-monopoly on ultra-high-precision die bonders (sub-0.3μm accuracy). Every OSAT and foundry attempting CPO must buy AMICRA machines.
+- **Financials**: Trades at massive discount to Western semi-cap equipment. Mid-to-high teens P/E.
+- **Alpha Score**: 9 | **Risk Adj**: 8 | **Hiddenness**: 9
+- **Date Added**: 2026-04-10 (Phase 1)
+
+### Mycronic ($MYCRF OTC) — Sweden
+- **Role**: Owns MRSI Systems — ultra-precision die bonders specifically for photonics/optoelectronics. Direct ASMPT competitor.
+- **Alpha Score**: 8 | **Risk Adj**: 9 | **Hiddenness**: 9
+- **Date Added**: 2026-04-10 (Phase 1)
+
+### Towa Corporation ($TWCPY OTC) — Japan
+- **Role**: Near-monopoly (~60%+) on compression molding equipment for TSMC CoWoS packaging. Protects fragile CPO optics during assembly.
+- **Alpha Score**: 9 | **Risk Adj**: 8 | **Hiddenness**: 9
+- **Date Added**: 2026-04-10 (Phase 1)
+
+### Disco Corporation ($DSCSY OTC) — Japan
+- **Role**: Global leader in wafer dicing, grinding, and polishing. Mandatory for silicon interposer and glass substrate fabrication.
+- **Alpha Score**: 8 | **Risk Adj**: 7 | **Hiddenness**: 8
+- **Date Added**: 2026-04-10 (Phase 1)
+
+---
+
+## Layer 7: Substrates & Materials
+
+> **Why This Matters**: Before you can build CPO, you need the substrate it sits on. ABF substrates are reaching their physical limits. The industry is transitioning to Glass Core Substrates (GCS) — and only a handful of companies can make them.
+
+### Ibiden ($IBIEY OTC) — Japan
+- **Role**: Alongside Shinko Electric, the absolute tier-1 supplier of ABF substrates for advanced AI packaging.
+- **Alpha Score**: 9 | **Risk Adj**: 7 | **Hiddenness**: 8
+- **Date Added**: 2026-04-10 (Phase 1)
+
+### Dai Nippon Printing ($DNPCY OTC) — Japan
+- **Role**: Transitioning massive printing/display IP into Glass Core Substrates (GCS) for next-gen AI chips.
+- **Alpha Score**: 10 | **Risk Adj**: 8 | **Hiddenness**: 10
+- **Thesis**: Nobody connects "DNP = printing company" to "GCS = CPO substrate revolution."
+- **Date Added**: 2026-04-10 (Phase 1)
+
+### LPKF Laser & Electronics (LPK.DE) — Germany
+- **Role**: Invented and patented the LIDE (Laser Induced Deep Etching) process — currently the only commercially viable way to drill millions of flawless Through-Glass Vias (TGVs) at scale.
+- **Alpha Score**: 9 | **Risk Adj**: 7 | **Hiddenness**: 9
+- **Thesis**: If LPKF's LIDE becomes the industry standard for TSMC/Intel/ASE glass packaging → 5x–10x over 3–5 years.
+- **Date Added**: 2026-04-10
+
+### SKC / Absolics (011790.KS) — South Korea
+- **Role**: Building massive glass substrate facility in Georgia, USA (backed by US grants).
+- **Alpha Score**: 8 | **Risk Adj**: 7 | **Hiddenness**: 7
+- **Date Added**: 2026-04-10 (Phase 1)
+
+### Soitec ($SOI) — France
+- **Role**: Advanced engineered substrates (SOI wafers). Upstream bottleneck for photonics.
+- **Alpha Score**: 8 | **Risk Adj**: 8 | **Hiddenness**: 7
+- **Date Added**: 2026-04-10
+
+### AXT Inc ($AXTI) — USA (Manufactured in Beijing)
+- **Role**: InP substrate provider. Produces approximately 35% of global InP substrates out of Beijing.
+- **Revenue Signal**: Already 5x+ YTD. China's export controls on indium-related compounds add massive supply chain instability, placing a premium on secured supply.
+- **Alpha Score**: 10 | **Risk Adj**: 6 | **Hiddenness**: 7
+- **Thesis**: Top-of-chain raw material bottleneck. If Greensboro laser fabs can't get InP from AXTI or SMTOY, NVDA's $6B optical supply chain stops.
+- **Date Added**: 2026-04-10 (Updated 2026-04-11 Phase 4)
+
+### Sumitomo Electric (SMTOY OTC) — Japan 🆕 Phase 4
+- **Role**: World's leading supplier of Indium Phosphide (InP) substrates, holding ~60% market share.
+- **Alpha Score**: 9 | **Risk Adj**: 8 | **Hiddenness**: 8
+- **Thesis**: With total 2025 InP demand at roughly 2M units and production capacity at only 600K, there is a 70% supply gap. Sumitomo is the undisputed raw material king.
+- **Date Added**: 2026-04-11 (Phase 4)
+
+### IQE ($IQE) — UK
+- **Role**: Premier epiwafer supplier. Critical compound semiconductor substrate for InP lasers.
+- **Revenue Signal**: Already 2x+ YTD. Trading update shows stronger demand visibility into 2026.
+- **Alpha Score**: 8 | **Risk Adj**: 7 | **Hiddenness**: 7
+- **Date Added**: 2026-04-10
+
+### Materion ($MTRN) — USA 🆕 Phase 3
+- **Role**: Supplies sputtering targets and evaporation materials for PVD thin-film optical coatings on SiPh chips. Covers 70%+ of the periodic table in high-purity targets.
+- **Alpha Score**: 8 | **Risk Adj**: 8 | **Hiddenness**: 9
+- **Thesis**: Every waveguide, every anti-reflection coating, every metal layer on a CPO chip uses their materials. Nobody connects "Materion = specialty materials" to "CPO optical coatings."
+- **Date Added**: 2026-04-11 (Phase 3)
+
+---
+
+## Layer 8: Chemicals & Compounds
+
+### Entegris ($ENTG) — USA
+- **Role**: Supplier of hyper-specialized CMP (Chemical Mechanical Planarization) slurries and fluid handling systems. Required to polish wafers to atomic smoothness for hybrid bonding.
+- **Alpha Score**: 10 | **Risk Adj**: 9 | **Hiddenness**: 8
+- **Thesis**: Without ENTG, you cannot achieve hybrid bonding. Period.
+- **Date Added**: 2026-04-10 (Phase 2)
+
+### Resonac ($SHWDY OTC) — Japan
+- **Role**: Formerly Showa Denko. Massive supplier of epoxy molding compounds and underfill materials that hold CPO/CoWoS structures together.
+- **Alpha Score**: 9 | **Risk Adj**: 8 | **Hiddenness**: 8
+- **Date Added**: 2026-04-10 (Phase 1)
+
+---
+
+## Layer 9: Testing & Inspection
+
+### Onto Innovation ($ONTO) — USA 🆕 Phase 3
+- **Role**: Advanced packaging inspection/metrology. Dragonfly G5 specifically optimized for AI/HBM packaging.
+- **Revenue Signal**: **$240M+ multi-year HBM purchase agreement** secured. 2.5D packaging orders **more than doubled** in Q4 2025. Segment revenue projected **30%+ growth in 2026**, setting a record.
+- **Alpha Score**: 10 | **Risk Adj**: 8 | **Hiddenness**: 7
+- **Thesis**: This was a completely unrepresented inspection category in our lists. The sheer volume of 2.5D/3D packaging for AI requires unprecedented metrology intensity.
+- **Date Added**: 2026-04-11 (Phase 3)
+
+### Camtek ($CAMT) — Israel/USA
+- **Role**: Dominant 2D/3D Optical Metrology for advanced packaging bump inspection.
+- **Alpha Score**: 9 | **Risk Adj**: 8 | **Hiddenness**: 7
+- **Date Added**: 2026-04-10 (Phase 2)
+
+### Nova ($NVMI) — Israel/USA
+- **Role**: World-class metrology equipment for CPO inspection cycles.
+- **Alpha Score**: 9 | **Risk Adj**: 8 | **Hiddenness**: 7
+- **Date Added**: 2026-04-10 (Phase 2)
+
+### FormFactor ($FORM) — USA
+- **Role**: Specialized optical wafer probe cards for testing SiPh before packaging.
+- **Alpha Score**: 7 | **Risk Adj**: 7 | **Hiddenness**: 7
+- **Date Added**: 2026-04-10
+
+### Aehr Test Systems ($AEHR) — USA
+- **Role**: Pivoting from SiC testing into SiPh burn-in. 100% wafer-level burn-in becoming mandatory because replacing a failed CPO chip inside a $40,000 GPU is catastrophically expensive.
+- **Alpha Score**: 7 | **Risk Adj**: 5 | **Hiddenness**: 8
+- **Date Added**: 2026-04-10
+
+### Technoprobe ($PROB.MI) — Italy
+- **Role**: World's fastest-growing advanced probe card manufacturer. Competing with FormFactor.
+- **Alpha Score**: 8 | **Risk Adj**: 8 | **Hiddenness**: 8
+- **Date Added**: 2026-04-10 (Phase 1)
+
+### Yamaichi Electronics (6941.T) — Japan
+- **Role**: Ultra-high-speed test sockets for 800G/1.6T transceivers and CPO modules. Profitable, trading at steep discount to US equivalents.
+- **Alpha Score**: 8 | **Risk Adj**: 7 | **Hiddenness**: 9
+- **Date Added**: 2026-04-10
+
+### Cohu ($COHU) — USA
+- **Role**: Thermal testing handlers for stress-testing hot optics and CPO modules.
+- **Alpha Score**: 8 | **Risk Adj**: 7 | **Hiddenness**: 8
+- **Date Added**: 2026-04-10 (Phase 2)
+
+### KLA ($KLAC) — USA
+- **Role**: Broad process control / inspection beneficiary.
+- **Alpha Score**: 7 | **Risk Adj**: 9 | **Hiddenness**: 4
+- **Date Added**: 2026-04-10
+
+### SÜSS MicroTec (SMHN.DE) — Germany
+- **Role**: Nano-imprint lithography and photomask equipment for micro-optics manufacturing. Hybrid bonding / advanced backend.
+- **Alpha Score**: 8 | **Risk Adj**: 8 | **Hiddenness**: 8
+- **Date Added**: 2026-04-10
+
+---
+
+## Layer 10: Thermal Management
+
+### Ferrotec Holdings (6890.T) — Japan
+- **Role**: Undisputed king of Micro-TECs (Thermo-Electric Coolers). Every high-end optical transceiver/ELS module needs a microscopic TEC to cool the laser diode and keep light stable. CPO cannot exist without this.
+- **Financials**: Often trades below 10x P/E with strong dividends. Japanese small-cap discount.
+- **Alpha Score**: 9 | **Risk Adj**: 8 | **Hiddenness**: 9
+- **Thesis**: Textbook "buy and hold" supply chain anchor. Could 2x–3x as international funds discover the micro-TEC bottleneck.
+- **Date Added**: 2026-04-10
+
+---
+
+## Layer 11: Connectivity & Interconnects
+
+### Credo Technology ($CRDO) — USA 🆕 Phase 3
+- **Role**: High-speed SerDes chips and Active Electrical Cables (AECs) that sit RIGHT NEXT to CPO engines. Also: ZeroFlap (ZF) Optics and OmniConnect gearboxes — the copper-to-optics bridge in AI racks.
+- **Revenue Signal**: **Q3 FY2026 revenue $407M — up 201.5% YoY**, 51.9% sequential. Management projects **50%+ YoY growth for FY2027**.
+- **Alpha Score**: 10 | **Risk Adj**: 9 | **Hiddenness**: 7
+- **Thesis**: **THE SINGLE MOST IMPORTANT MISS IN OUR ENTIRE ANALYSIS.** The community treats this as a "copper play" but their ZeroFlap optics and OmniConnect gearboxes ARE the copper-to-optics bridge. They are literally the interface layer between the old world (copper) and the new world (CPO). 201% YoY revenue growth is the highest organic growth rate in the entire CPO ecosystem right now.
+- **Upcoming Catalysts**: ZF Optics production ramp beginning Q1 FY2027. OFC 2026 1.6T LRO transceiver demos.
+- **Date Added**: 2026-04-11 (Phase 3)
+
+### Amphenol ($APH) — USA 🆕 Phase 3
+- **Role**: ~33% of all AI data center interconnect market share. Primary connector supplier for NVIDIA NVL72/Rubin racks. Completed $10.5B CommScope CCS acquisition (Jan 2026) — now owns fiber AND copper infrastructure feeding CPO switches.
+- **Revenue Signal**: Q1 2026 guidance $6.9–$7.0B. Record AI-driven bookings. ~35% YoY revenue growth.
+- **Alpha Score**: 8 | **Risk Adj**: 9 | **Hiddenness**: 5
+- **Thesis**: "The roads and bridges of CPO." Large-cap, but the CPO angle is underappreciated. They are the physical connection layer between every CPO module and the network.
+- **Date Added**: 2026-04-11 (Phase 3)
+
+### Corning ($GLW) — USA
+- **Role**: AI data-center fiber/cable connectivity and glass infrastructure.
+- **Alpha Score**: 8 | **Risk Adj**: 9 | **Hiddenness**: 5
+- **Date Added**: 2026-04-10
+
+---
+
+## Layer 12: Precision Motion & Alignment
+
+### Novanta ($NOVT) — USA 🆕 Phase 3
+- **Role**: Through Celera Motion, makes sub-nanometer precision motion stages and encoders for active optical alignment in CPO assembly. When ASMPT/Mycronic bonders need to place a laser onto a waveguide with 0.1μm accuracy, Novanta's piezo stages provide the positioning.
+- **Alpha Score**: 8 | **Risk Adj**: 8 | **Hiddenness**: 9
+- **Thesis**: **The arms dealer's arms dealer's arms dealer.** Nobody connecting "Novanta = medical/industrial motion" to "CPO = active optical alignment." Every assembly machine in Layers 6 needs their stages.
+- **Date Added**: 2026-04-11 (Phase 3)
+
+---
+
+## Layer 13: Dispensing & Process Equipment
+
+### Nordson ($NDSN) — USA 🆕 Phase 3
+- **Role**: ASYMTEK Vantage platform and IntelliJet jetting systems are THE STANDARD for underfill/epoxy dispensing in advanced packaging. MARCH plasma treatment systems prepare surfaces for die attach. Every single CPO assembly line needs Nordson dispensing equipment.
+- **Alpha Score**: 9 | **Risk Adj**: 9 | **Hiddenness**: 9
+- **Thesis**: **NOBODY in the CPO community has mentioned this company.** As ASE builds 6 new CPO plants, every single assembly line will have Nordson machines. New cleanroom Vantage (Class-100) previewed March 2026 specifically for advanced packaging.
+- **Date Added**: 2026-04-11 (Phase 3)
+
+### MKS Instruments ($MKSI) — USA
+- **Role**: Through ESI and Atotech acquisitions, leading US supplier of laser drilling equipment for micro-vias in ABF and Glass Core Substrates.
+- **Alpha Score**: 9 | **Risk Adj**: 8 | **Hiddenness**: 8
+- **Date Added**: 2026-04-10 (Phase 2)
+
+---
+
+## Layer 14: Contract Manufacturing
+
+### Fabrinet ($FN) — Cayman Islands/Thailand
+- **Role**: Critical contract manufacturer in optics.
+- **Alpha Score**: 7 | **Risk Adj**: 8 | **Hiddenness**: 5
+- **Date Added**: 2026-04-10
+
+### Celestica ($CLS) — Canada/USA
+- **Role**: The massive US-listed contract manufacturer quietly building the 400G/800G/1.6T networking switches for hyperscalers that will utilize CPO optics.
+- **Alpha Score**: 8 | **Risk Adj**: 8 | **Hiddenness**: 7
+- **Date Added**: 2026-04-10 (Phase 2)
+
+---
+
+## Layer 15: Speculative / Holy Grail Materials
+
+### Lightwave Logic ($LWLG) — USA
+- **Role**: Electro-Optic Polymers ("Perkinamine"). Apply thin polymer layer to SiPh chip via BEOL spin-coating (<150°C) → modulate light at 3x speed (>100GHz) using sub-1V drive.
+- **Status**: Pre-revenue. Extreme reliability claimed (100-year lifespan). Integrating into GlobalFoundries and Tower Semiconductor PDKs.
+- **Alpha Score**: 9 | **Risk Adj**: 4 | **Hiddenness**: 10
+- **Thesis**: Silicon modulators hard-cap at 50GHz (Free-Carrier Dispersion limitation). TFLN requires >1000°C annealing and suffers from CTE mismatch causing mode divergence/loss. If polymers prove reliable, they win the >100GHz Modulator War.
+- **Date Added**: 2026-04-10 (Updated 2026-04-11 Phase 4)
+
+### Riber (ALRIB.PA) — France 🆕 Phase 3
+- **Role**: Makes the **ONLY industrial-scale MBE (Molecular Beam Epitaxy) machines on Earth**. MBE is the alternative to MOCVD for growing InP — produces higher-purity crystal structures required for quantum-dot lasers.
+- **Revenue Signal**: ~€80M market cap. ~€9/share. New MBE 6000 industrial orders for quantum-dot laser production for Datacom sector announced early 2026. Board proposed 25% dividend increase.
+- **Alpha Score**: 10 | **Risk Adj**: 3 | **Hiddenness**: 10
+- **Thesis**: **THE ULTIMATE MICRO-CAP MOONSHOT.** A single hyperscaler contract could cause 5x–10x revenue inflection. The community doesn't even know this company exists. MBE produces higher purity than MOCVD — as quantum-dot lasers emerge for next-gen datacom, Riber is the only game in town.
+- **Date Added**: 2026-04-11 (Phase 3)
+
+---
+
+## Layer 16: ETFs (Backdoor Exposure)
+
+### SPDR S&P Semiconductor ETF ($XSD) — USA
+- **Strategy**: Equal-weighted. Forces massive exposure to small/mid-cap optical equipment that market-cap weighted ETFs ($SMH, $SOXX) miss. When Tier-2/3 CPO stocks run, $XSD captures the alpha.
+- **Alpha Score**: 9 | **Hiddenness**: 6
+- **Date Added**: 2026-04-10 (Phase 2)
+
+### L&G Optical Technology & Photonics ETF ($LADR) — Europe
+- **Strategy**: The ONLY pure-play photonics index ETF in the world (Solactive EPIC Optical Technology & Photonics Index).
+- **Alpha Score**: 8 | **Hiddenness**: 9
+- **Date Added**: 2026-04-10 (Phase 2)
+
+### Invesco DWA Technology Momentum ETF ($PTF) — USA
+- **Strategy**: Rules-based momentum captures small-cap CPO equipment names at S-curve breakouts.
+- **Alpha Score**: 8 | **Hiddenness**: 8
+- **Date Added**: 2026-04-10 (Phase 2)
+
+---
+
+## MOCVD & Epitaxy Equipment
+
+> **Critical Note**: We originally had only HALF of the global MOCVD duopoly. This has been corrected.
+
+### Veeco Instruments ($VECO) — USA
+- **Role**: Virtual duopoly (with Aixtron) on InP MOCVD systems. InP laser growth tools.
+- **Financials**: Historically viewed as legacy LED/data storage — suppressing multiple. Compound semi backlog quietly exploding.
+- **Alpha Score**: 9 | **Risk Adj**: 8 | **Hiddenness**: 8
+- **Date Added**: 2026-04-10
+
+### Aixtron (AIXA.DE / OTC: $AIXNY) — Germany 🆕 Phase 3
+- **Role**: The OTHER half of the global MOCVD duopoly. G10-AsP platform is primary tool for high-volume InP production.
+- **Revenue Signal**: FY2026 guidance ~€520M. Explicitly named **optoelectronics as strongest growth area** for 2026, driven by AI laser demand. SiC softness offset by optoelectronics recovery.
+- **Alpha Score**: 9 | **Risk Adj**: 8 | **Hiddenness**: 8
+- **Thesis**: We had Veeco but completely missed Aixtron. If NVIDIA needs millions of CW lasers, BOTH Veeco AND Aixtron must sell machines. The total addressable equipment market is split between these two, nobody else.
+- **Date Added**: 2026-04-11 (Phase 3)
+
+---
+
+## ALD & Waveguide Cladding
+
+### ASM International (ASMI.AS / OTC: $ASMIY) — Netherlands 🆕 Phase 3
+- **Role**: Global leader in single-wafer Atomic Layer Deposition (ALD). Deposits the precise oxide/nitride layers that form waveguide cladding in SiPh chips. Without ALD cladding, light leaks out of the waveguide and the entire CPO engine fails.
+- **Revenue Signal**: New Arizona fab capacity ramping H2 2026. ALD layers per wafer increasing with every node shrink.
+- **Alpha Score**: 9 | **Risk Adj**: 9 | **Hiddenness**: 6
+- **Thesis**: Front-end equipment maker, but the SiPh angle is completely underappreciated. As photonics goes from R&D to mass production, ALD intensity increases dramatically.
+- **Date Added**: 2026-04-11 (Phase 3)
+
+---
+
+## Theme: The Modulator Materials War (Silicon vs TFLN vs Polymer)
+> **Why This Matters**: CPO isn't just about putting a laser near a processor. You must "modulate" the continuous wave (CW) of light into 1s and 0s. As required bandwidth approaches 1.6T and beyond (>100GHz per lane), traditional Silicon modulators hit a physical ceiling.
+
+1. **Silicon Depletion Ceiling**: Free-Carrier Dispersion (FCD) in silicon is too weak. Silicon modulators hit an EO bandwidth boundary around 50 GHz. They literally cannot switch light fast enough to meet hyperscaler roadmaps.
+2. **TFLN (Thin-Film Lithium Niobate)**: The leading alternative (HyperLight, Lumentum). Fantastic speeds (110+ GHz) and low drive voltages. **The Problem**: Reliability. TFLN requires very high-temperature processing. Worse, there's >15x CTE (Coefficient of Thermal Expansion) mismatch between the LN thin film and the SiO2 cladding. Over time, thermal cycling causes mode divergence and light leaks out of the waveguide (insertion loss).
+3. **Organic EO Polymers**: Lightwave Logic (Perkinamine) and NLM Photonics (Selerion). Pockels effect like TFLN, but CMOS compatible. Can be spin-coated at < 150°C (BEOL post-process). Raw performance is best-in-class (r33=1000 pm/V). **The Risk**: Historically plagued by photo-oxidation and depoling.
+**The Battleground**: Foundries (Tower, GFS) are the finish line. Whoever's material integrates most cleanly into standard PDKs wins a $26B market opportunity by 2026.
+
+---
+
+## Theme: The Upstream InP Substrate Bottleneck
+> **Why This Matters**: NVIDIA is spending $6B to build a Western-based optical supply chain. Their Greensboro fab makes laser chips. But laser chips require Indium Phosphide (InP) wafer substrates as raw material. Who controls those?
+
+- **The Duopoly**: Sumitomo Electric (Japan, ~60%) and AXT Inc (Beijing-manufactured, ~35%).
+- **The Shortage**: 2025 demand is roughly 2 million units, vs production capacity of 600,000. A 70% supply gap.
+- **Export Controls**: In Feb 2025, China enacted export controls on Indium-related compounds, jeopardizing AXT's output.
+- **The Vertical Integration Solution**: NVIDIA gave Coherent ($COHR) $2B. Coherent is using early CHIPS Act funding ($33M) to build the world's FIRST 6-inch (150mm) InP wafer production line in the US.
+**The Investment Formula**: Investment → manufacturing infrastructure expansion → NVIDIA becomes the preferential customer for the expanded capacity.
+
+---
+
+## Research Queue
+> _Leads that need further investigation. Add new items with dates._
+
+- [ ] **Clearfield ($CLFD)** — Fiber management/distribution in data centers. Could benefit from CPO fiber build-out. (Added 2026-04-11)
+- [ ] **IPG Photonics ($IPGP)** — High-power fiber lasers. Could pivot to CPO pump lasers? Less direct than LITE/COHR. (Added 2026-04-11)
+- [ ] **nLIGHT ($LASR)** — High-power semiconductor lasers. Core expertise could pivot to ELS/CW lasers for CPO, but currently focused on defense/industrial. Monitor for any CPO pivot announcement. (Added 2026-04-11)
+- [ ] **Atomera ($ATOM)** — MST technology could improve SiPh waveguide performance. Currently focused on GAA transistors and GaN. Photonics listed as potential application. Pre-revenue licensing model. (Added 2026-04-11)
+- [ ] **Henkel / DELO (private)** — UV-cure optical epoxies. Monitor for public-market exposure. (Added 2026-04-11)
+- [ ] **Senko Group (private)** — High-density fiber optic connectors for CPO. Watch for IPO. (Added 2026-04-11)
+- [ ] **Suzhou TFC (300394.SZ)** — China-based FAU maker reportedly outpacing FOCI in commercial CPO execution. (Added 2026-04-11)
+- [ ] **Micronics Japan (6871.T)** — High-frequency probe cards. Needs deeper financial analysis. (Added 2026-04-11)
+- [ ] **Nitto Boseki** — Already 2x+ YTD per Serenity's callouts. Glass fiber / substrate play. Needs deeper analysis. (Added 2026-04-11)
+- [ ] **Unimicron** — Already 2x+ YTD. Substrate / PCB play adjacent to ABF. (Added 2026-04-11)
+- [ ] **Macronix** — Flash memory / specialty semiconductor. Serenity mentioned as adjacent play. (Added 2026-04-11)
+
+---
+
+## Catalyst Watchlist
+> _Upcoming events that could move thesis stocks. Update continuously._
+
+| Date | Event | Stocks Affected | Impact |
+|------|-------|----------------|--------|
+| Q1 FY2027 | CRDO ZeroFlap Optics production ramp | $CRDO | Validates optical pivot |
+| H2 2026 | ASM International Arizona fab ramp | $ASMIY | ALD capacity expansion |
+| 2026 ongoing | ASE 6 new plant groundbreakings | $ASE, $NDSN, $ASMPT, $BESIY | Equipment orders visible |
+| 2026 ongoing | ONTO Dragonfly G5 shipments begin | $ONTO | Revenue acceleration |
+| TBD | Riber MBE 6000 delivery confirmations | ALRIB.PA | Revenue inflection proof |
+| TBD | LWLG Tier-1 foundry partnership announcement | $LWLG | 200-300% gap up potential |
+| TBD | Ayar Labs IPO / liquidity event | $SIVE (supplier) | Validation of ecosystem |
+| Quarterly | Aixtron optoelectronics revenue breakout | $AIXNY | Confirms AI laser demand |
+| Quarterly | CRDO earnings (watch for optical rev mix) | $CRDO | Copper vs optics shift |
+
+---
+
+## Thesis Invalidation Tracker
+> _Track when we are WRONG. Honesty is critical._
+
+| Date | Stock | Original Thesis | What Happened | Status |
+|------|-------|----------------|---------------|--------|
+| — | — | — | No invalidations recorded yet | — |
+
+---
+
+## Speculative Partnership Map
+> _Educated guesses about undisclosed partnerships or orders based on product lines, geography, and context._
+
+| Supplier | Likely Customer | Evidence / Reasoning | Confidence |
+|----------|----------------|---------------------|------------|
+| $SIVE (Sivers) | Ayar Labs | SIVE owns independent InP foundry. Ayar needs non-LITE/COHR laser sources since NVDA locked those up. | 85% |
+| $SIVE (Sivers) | POET Technologies | POET partnered with Lessengers for ELS; SIVE is the logical InP fabricator. | 75% |
+| $NDSN (Nordson) | ASE Technology | ASE building 6 new CPO plants. Every line needs dispensing equipment. Nordson is the standard. | 90% |
+| $BESIY (Besi) | TSMC | TSMC's CoWoS hybrid bonding lines need Besi's equipment. Besi is the market leader. | 90% |
+| $TWCPY (Towa) | TSMC | Towa holds ~60%+ of compression molding for CoWoS. TSMC is the primary customer. | 95% |
+| $VECO / $AIXNY | $LITE, $COHR, $SIVE | All InP laser makers need MOCVD machines from the Veeco/Aixtron duopoly. | 95% |
+| Riber (ALRIB.PA) | Unknown Datacom customer | MBE 6000 orders for quantum-dot laser production. Customer undisclosed. | 70% |
+| $ONTO | HBM customer (likely SK Hynix or Samsung) | $240M+ multi-year purchase agreement for bump metrology. | 85% |
+| $CRDO | NVIDIA / hyperscalers | CRDO's AECs are the dominant short-reach connectivity in AI racks. NVDA is likely primary customer. | 90% |
+
+---
+
+## Serenity / @aleabitoreddit Source Tracking
+> _Key callouts from the original X/Twitter source that inspired this research._
+
+**Profile**: Serenity (@aleabitoreddit) — AI/Semi Supply Chain Analyst, ex RISC-V FDN, AI research scientist. 155K+ followers. WSB trader on X.
+
+**Key Callouts (YTD multibaggers)**:
+- $AXTI → 5x+ | $AAOI → 5x | $SIVE → 2x+ | $LITE → 2x+ | $IQE → 2x+
+- $AEHR → 2x+ | $CRCL → 2x+ | $OSS → 2x+ | $GDRZF → 2x+
+- Unimicron → 2x+ | Nitto Boseki → 2x+
+- Near-triples: $TSEM, $RPI
+
+**Taiwanese CPO Names Mentioned**: FOCI (3363), LuxNet (4979), Elaser (3450), ShunSin (6451), PCL (4977), MA-tek (3587), IST (3289)
+
+**Key Thesis Points**:
+- CPO timelines accelerating faster than expected.
+- "$NVDA is driving CPO, extremely, extremely hard."
+- " $POET vs $SIVE — there's clear winners if you understand supply chain enough."
+- CHIPS Act funding as signal of national security importance.
+
+---
+
+## Technical Intelligence Update: 2026-04-11
+
+## Layer 16: Raw Precursors & Recyclers (The Indium Bottleneck)
+
+### Sumitomo Metal Mining ($5713.T) — Japan
+- **Role**: World leader in high-purity Indium. 
+- **Thesis**: As laser volumes move from 800G to 3.2T, the demand for high-purity Indium Phosphide (InP) substrates explodes. 5713.T is the ultimate source at the very top of the funnel.
+- **Moat**: Refining expertise and global market share in photonic-grade metals.
+
+### Umicore ($UMI.BR) — Belgium
+- **Role**: Indium Recycling & specialty materials.
+- **Thesis**: Laser fabrication generates significant waste ("Indium Dross"). Umicore's ability to recycle this back into photonic-grade precursors makes it a high-margin "Circular Economy" bottleneck.
+- **Note**: Crucial for European and Western supply chains seeking to bypass Chinese export restrictions.
+
+### Neo Performance Materials ($NEO.TO) — Canada
+- **Role**: Rare earths and specialty metal precursors.
+- **Thesis**: Pure-play on the specialty chemistry (precursors) needed for MOCVD/MBE growth. Highly volatile but direct leverage to laser fab starts.
+
+---
+
+### 4. Technical Intelligence Update: 2026-04-11 (Late Session)
+- **The "Bottleneck Premium"**: As Western/Chinese export controls tighten on Indium/Gallium, the market is mispricing the **recycling and metallurgy** sub-tier. Companies like **$5801.T (Furukawa)** and **$3105.TW (Win Semi)** are entering a supercycle of "secured demand" where price is secondary to delivery speed.
+- **The Portfolio Logic**: We have successfully implemented a tactical scoring model in `cpo_plays.html` that weights these structural bottlenecks 2x–3x higher for aggressive profiles. 
+- **The 130+ Play Ecosystem**: We have achieved full supply chain coverage across 16 layers, from raw material precursors ($5713.T, $UMI.BR) to rack-level interconnects ($CRDO, $APH).
+
+### 5. Catalyst Alert: The "Rubin Ultra" Communication Wall (2026-04-11)
+- **The Shortage**: As of April 2026, 1.6T optical transceivers are facing a **30% supply gap** due to 200G-per-lane InP laser (EML) bottlenecks.
+- **The Pivot**: This shortage is forcing hyperscalers to evaluate **CPO (Co-Packaged Optics)** earlier than the 2028 baseline. 
+- **Nvidia Rubin Ultra**: The upcoming NVL576 systems (H2 2026) are the primary demand anchor. Any delay in pluggable 1.6T optics makes CPO the "release valve" for the industry.
+- **Winner**: Companies that bypass EML shortages with Silicon Photonics engines (**$TSEM, $POET, $ASX**) or control the InP metallurgy (**$5713.T, $UMI.BR**).
+
+---
+
+## The Pre-IPO & Private Ecosystem (Watchlist Only)
+> **Why This Is Here**: While not directly tradable, these companies define the next-generation architecture that public companies ($LITE, $POET, $ASX) are building for.
+
+### Ayar Labs (Private)
+- **Role**: Monolithic in-package optical I/O.
+- **Public Alternative**: $CRDO (Credo), $ALAB (Astera Labs).
+
+### Celestial AI (Private / Acquired by MRVL)
+- **Role**: Optical compute fabric.
+- **Public Alternative**: $MRVL (Marvell), $AVGO (Broadcom).
+
+### Ranovus (Private)
+- **Role**: Odin direct-drive CPO engine.
+- **Public Alternative**: $POET (POET Technologies), $LITE (Lumentum).
+
+### Scintil Photonics (Private)
+- **Role**: III-V on Silicon monolithic integration.
+- **Public Alternative**: $TSEM (Tower Semi), $GFS (GlobalFoundries).
+
+### Alumea (Private)
+- **Role**: 1.6T/3.2T SiPh engines.
+- **Public Alternative**: $COHR (Coherent), $LITE (Lumentum).
+
+---
+
+> **Last Updated**: 2026-04-11T23:32:00Z
+> **Total Plays Tracked**: 130 (Command Center Active)
+> **Phases Complete**: 7 (Real-time Catalyst Integration)
+
+
+### 6. Technical Intelligence Update: 2026-04-12 (ParadisLabs & Market Catalysts)
+- **Glass Substrate Supercycle (The 'Why Now')**: Organic ABF hits thermal/mechanical limits with next-gen AI packaging. Glass offers rigidity, atomic flatness, low dielectric constant, and high thermal stability (CTE matching silicon).
+  - **LPKF Laser (LPK.DE / )**: Holds ~80% market share in qualifications for Through-Glass-Vias (TGV) using LIDE (Laser-Induced Deep Etching) which eliminates micro-cracks.
+  - **Ecosystem Movers**: Intel (+ Chandler AZ fab), SKC Absolics ( Georgia fab), Samsung Electro-Mechanics (sampling Apple/Broadcom target 2027), LG Innotek (target 2028).
+- **Ajinomoto ()**: MSG maker up 40% YTD. The undisputed monopoly on ABF (Ajinomoto Build-up Film) substrates that power current-gen AI packaging.
+- **ASE Technology ()**: Groundbreaking on 6 new plants in 2026. CPO mass production confirmed to begin this year.
+- **Win Semiconductors (3105.TWO)**: World's largest pure-play Gallium Arsenide (GaAs) foundry sold a 4% stake (20M shares) to Avago (Broadcom) for .57M in a private placement.
+- **Sivers Semiconductors ()**: Runway effectively stretches to late 2026 (~SEK 43.5M cash, burning ~15M/qtr). This limited runway is viewed as a catalyst for either a US listing or an acquisition (speculation centers on Marvell  acquiring them to secure external laser supplies and block competitors).
+- **Browave (3163.TWO)**: A .4B MC supplier of fiber arrays and 'Fiber Shuffle Boxes' — the mechanical bridge organizing 1000+ fibers inside AI servers. Scaling production 10x from 1,000 units/mo to 10,000 units/mo by Q1 2027. Partnered with Corning ().
+- **Memory & InP Trends**: 
+  - Nanya Tech (2408.TW): Taiwanese memory maker receiving .5B capital raise from SanDisk/SK Hynix/Cisco to fund Taipei fabs and 10nm nodes.
+  - AXT Inc () vs Soitec (): Soitec's patent monopoly on SOI wafers makes it the preferred core bet over AXTI which faces dilution risks, though both act as raw bottleneck plays.
