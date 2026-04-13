@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GIGACPO Intelligence Terminal — Pure Play SiPh/CPO Ecosystem</title>
+    <title>GIGACPO Intelligence Terminal (V6.1) — Pure Play SiPh/CPO Ecosystem</title>
     <script src="database/dashboard_data.js"></script>
     <!-- Live prices: run 'python engine/live_prices.py' to refresh -->
     <script>
@@ -124,7 +124,7 @@
 <div class="command-bar">
     <div>
         <div class="logo">⚡ GIGACPO</div>
-        <div class="logo-sub">V6.0 · Pure Play SiPh/CPO Intelligence Terminal · Web Bridge Active</div>
+        <div id="versionLabel" class="logo-sub">V6.1 · Pure Play SiPh/CPO Intelligence Terminal · Web Bridge Active</div>
     </div>
     <div class="stat"><span>UNIVERSE</span><div class="val" id="stat-total">—</div></div>
     <div class="stat"><span>WATCHLIST</span><div class="val" id="stat-private" style="color:var(--purple)">—</div></div>
@@ -137,8 +137,24 @@
     </button>
 </div>
 
+<script>
+// Handle Remote vs Local UI
+document.addEventListener('DOMContentLoaded', () => {
+    const isRemote = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && !window.location.hostname.startsWith('192.168.');
+    if (isRemote) {
+        const lbl = document.getElementById('versionLabel');
+        lbl.innerHTML = 'V6.1 · Remote Intelligence Mode · <span style="color:var(--gold)">Sync Managed by Master Bridge</span>';
+        const btn = document.getElementById('syncBtn');
+        btn.innerHTML = '<span class="sync-dot"></span> MASTER SYNC';
+        btn.title = "Sync is automated at 4:20 PM EST by the Master Bridge. Manual trigger unavailable from remote viewing mode.";
+        btn.classList.add('busy');
+        btn.onclick = () => alert("This terminal is in Remote Mode. The data is automatically synchronized daily at 4:20 PM EST by the Master Bridge. Manual sync must be triggered from the local machine hosting the bridge.");
+    }
+});
+</script>
+
 <!-- CPO PULSE: Powered by live_prices.js (run 'python engine/live_prices.py' to refresh) -->
-<div id="pulseContainer"></div>
+<div id="pulseContainer" style="min-height:40px;"></div>
 
 <div class="chart-panel" id="chartPanel">
     <div class="chart-header">
@@ -222,24 +238,32 @@ const AGG_MODES = {
 };
 
 const RANK_EXPLAIN = {
-    1: 'Ranking by: <span>Safety (40%)</span> + Alpha (38%) + Discovery (0%) + Momentum (10%). Preservation focus.',
-    2: 'Ranking by: Safety (36%) + Alpha (38%) + Discovery (4%) + Momentum (11%). Large cap core prioritized.',
-    3: 'Ranking by: Safety (31%) + Alpha (38%) + Discovery (8%) + Momentum (13%). Balanced growth.',
-    4: 'Ranking by: Safety (27%) + Alpha (38%) + Discovery (12%) + Momentum (14%). Shifting to CPO hardware.',
-    5: 'Ranking by: Safety (22%) + Alpha (38%) + Discovery (17%) + Momentum (16%). Balanced. Proven movers with headroom prioritized.',
-    6: 'Ranking by: Alpha (38%) + <span>Discovery (22%)</span> + Momentum (18%) + Safety (13%). Shifting focus to hidden supply chain gems.',
-    7: 'Ranking by: Alpha (38%) + <span>Discovery (27%)</span> + Momentum (19%) + Safety (9%). Aggressive hunt for overlooked plays.',
-    8: 'Ranking by: Alpha (38%) + <span>Discovery (31%)</span> + Momentum (20%) + Safety (4%). Tier 3/4 supply chain bottlenecks prioritized.',
-    9: 'Ranking by: Alpha (38%) + <span>Discovery (35%)</span> + Momentum (21%) + Safety (0%). Maximum undiscovered-company weighting.',
-    10: 'Ranking by: Alpha (38%) + <span>Discovery (35%)</span> + Momentum (22%) + Safety (0%). 💀 Pure conviction and discovery — risk ignored.',
+    1: 'Ranking by: <span>Safety (70%)</span> + Alpha (20%) + Momentum (10%). Micro-caps mathematically penalized.',
+    2: 'Ranking by: <span>Safety (60%)</span> + Alpha (25%) + Momentum (11%). Large cap core prioritization heavily active.',
+    3: 'Ranking by: <span>Safety (50%)</span> + Alpha (30%) + Discovery (4%) + Momentum (12%). Still very conservative.',
+    4: 'Ranking by: <span>Safety (40%)</span> + Alpha (35%) + Discovery (8%) + Momentum (14%). Shifting to CPO hardware.',
+    5: 'Ranking by: Alpha (40%) + <span>Safety (30%)</span> + Discovery (15%) + Momentum (15%). Balanced. Objective risk adjusted.',
+    6: 'Ranking by: Alpha (40%) + <span>Discovery (22%)</span> + Momentum (15%) + Safety (25%). Rewarding revenue growth.',
+    7: 'Ranking by: Alpha (40%) + <span>Discovery (29%)</span> + Momentum (15%) + Safety (20%). Aggressive hunt for overlooked plays.',
+    8: 'Ranking by: Alpha (40%) + <span>Discovery (36%)</span> + Momentum (15%) + Safety (15%). Tier 3/4 supply chain bottlenecks.',
+    9: 'Ranking by: Alpha (40%) + <span>Discovery (43%)</span> + Momentum (15%) + Safety (10%). Maximum undiscovered-company weighting.',
+    10: 'Ranking by: <span>Discovery (50%)</span> + Alpha (40%) + Momentum (15%) + Safety (5%). 💀 Pure conviction. Risk ignored.',
 };
 
 const sfloat = v => { try { return parseFloat(String(v).replace('%','').trim())||0; } catch { return 0; } };
 const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
 function getWeights(agg) {
-    const a = (agg - 1) / 9;
-    return { alpha: 0.38, safety: 0.40 * (1 - a), discovery: 0.35 * a, momentum: 0.10 + (0.12 * a) };
+    const w1 = { s: 0.70, a: 0.20, d: 0.00, m: 0.00 }; // As requested
+    const w5 = { s: 0.30, a: 0.40, d: 0.15, m: 0.15 };
+    const w10= { s: 0.05, a: 0.40, d: 0.50, m: 0.15 }; // As requested
+    if (agg <= 5) {
+        const ratio = (agg - 1) / 4;
+        return { safety: w1.s + ratio*(w5.s - w1.s), alpha: w1.a + ratio*(w5.a - w1.a), discovery: w1.d + ratio*(w5.d - w1.d), momentum: w1.m + ratio*(w5.m - w1.m) };
+    } else {
+        const ratio = (agg - 5) / 5;
+        return { safety: w5.s + ratio*(w10.s - w5.s), alpha: w5.a + ratio*(w10.a - w5.a), discovery: w5.d + ratio*(w10.d - w5.d), momentum: w5.m + ratio*(w10.m - w5.m) };
+    }
 }
 
 function momentumScore(perf1y) {
@@ -255,14 +279,42 @@ function buildTickerHTML(ticker) {
     return `<a href="https://finance.yahoo.com/quote/${parts[0]}" target="_blank" class="ticker-link">${parts[0]}</a><span class="ticker-sep">/</span><a href="https://finance.yahoo.com/quote/${parts[1]}" target="_blank" class="ticker-link ticker-otc">${parts[1]}</a>`;
 }
 
-function calcScore(h, perf1y, agg) {
+function calcScore(h, mcapB, perf1y, rev_num, pe26, agg) {
     const w = getWeights(agg);
     const alpha = sfloat(h['Alpha Score'] || 0);
-    const safety = 10 - sfloat(h['Risk Adj'] || 5);
+    const subjectiveSafety = 10 - sfloat(h['Risk Adj'] || 5);
     const discovery = sfloat(h['Hiddenness'] || 5);
     const mom = momentumScore(perf1y);
     const multiplier = BUCKET_MULT[h.Bucket] || 0.20;
-    return (alpha * w.alpha + safety * w.safety + discovery * w.discovery + mom * w.momentum) * multiplier * 10;
+
+    let mcapAdj = 0;
+    if (mcapB > 200) mcapAdj = 2.0;
+    else if (mcapB > 10) mcapAdj = 1.0;
+    else if (mcapB >= 2) mcapAdj = 0;
+    else if (mcapB >= 0.3) mcapAdj = -1.0;
+    else if (mcapB > 0) mcapAdj = -2.0;
+    else mcapAdj = -2.0; // Default penalty for unknowns
+
+    let safety = subjectiveSafety + mcapAdj;
+    if (safety < 0) safety = 0;
+    if (safety > 10) safety = 10;
+
+    let finalMult = 1.0;
+    
+    // Aggressive micro/small cap suppression on Safe settings to break through Bucket multipliers
+    if (agg <= 3 && mcapB < 2.0) {
+        finalMult *= 0.15; // Mathematically vanish from top 20
+    } else if (agg <= 5 && mcapB < 0.3) {
+        finalMult *= 0.30; 
+    }
+
+    if (agg >= 6) {
+        if (rev_num > 100) finalMult *= 1.20;
+        else if (rev_num > 30) finalMult *= 1.10;
+        if (pe26 > 100 && pe26 < 999 && rev_num < 20) finalMult *= 0.90; // Overvalued trap
+    }
+
+    return (alpha * w.alpha + safety * w.safety + discovery * w.discovery + mom * w.momentum) * multiplier * 10 * finalMult;
 }
 
 function parseUpside(str) {
@@ -304,8 +356,9 @@ function buildEntries() {
         }
         return { 
             ticker, h, mcapB, pe26, pe27, rev_num, perf1y, isPrivate: h.Bucket === 'Private', 
-            score: calcScore(h, perf1y, state.aggressiveness),
+            score: calcScore(h, mcapB, perf1y, rev_num, pe26, state.aggressiveness),
             todayPct: live.change_pct ?? null, p: entry.performance || {},
+            obb: h.openbb_supplement || {},
             searchStr: `${ticker} ${h.Company||''} ${h.Role||''} ${h.Notes||''}`.toLowerCase()
         };
     });
@@ -327,6 +380,14 @@ function render() {
         const pe27f = e.pe27 < 999 ? e.pe27.toFixed(1) : '--';
         const todayStr = e.todayPct !== null ? (e.todayPct > 0 ? '+'+e.todayPct.toFixed(2)+'%' : e.todayPct.toFixed(2)+'%') : '--';
         const todayCls = (e.todayPct||0) >= 0 ? 'up' : 'down';
+        let obbHtml = '';
+        if (e.obb.analyst_count || e.obb.inst_ownership_pct) {
+            obbHtml = `<div style="margin-top:4px;display:flex;gap:4px;">`;
+            if (e.obb.analyst_count) obbHtml += `<span style="background:rgba(14,165,233,0.1);color:var(--accent);padding:1px 4px;border-radius:3px;font-size:9px;font-weight:800;border:1px solid rgba(14,165,233,0.2);">ANALYSTS: ${e.obb.analyst_count}</span>`;
+            if (e.obb.inst_ownership_pct) obbHtml += `<span style="background:rgba(16,185,129,0.1);color:var(--green);padding:1px 4px;border-radius:3px;font-size:9px;font-weight:800;border:1px solid rgba(16,185,129,0.2);">INST: ${e.obb.inst_ownership_pct}%</span>`;
+            if (e.obb.short_interest_pct) obbHtml += `<span style="background:rgba(244,63,94,0.1);color:var(--danger);padding:1px 4px;border-radius:3px;font-size:9px;font-weight:800;border:1px solid rgba(244,63,94,0.2);">SHORT: ${e.obb.short_interest_pct}%</span>`;
+            obbHtml += `</div>`;
+        }
         tr.innerHTML = `
             <td><span class="pin-btn ${isPinned?'active':''}" onclick="togglePin('${esc(e.ticker)}')">★</span></td>
             <td><span class="rank-num">${rank}</span></td>
@@ -343,7 +404,7 @@ function render() {
             <td class="${(e.perf1y||0)>=0?'up':'down'}">${e.perf1y!==undefined?e.perf1y+'%':'--'}</td>
             <td class="${todayCls}" style="font-weight:bold;">${todayStr}</td>
             <td style="font-weight:700;color:var(--accent);">${e.rev_num?e.rev_num+'%':'--'}</td>
-            <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${esc(e.h.Role)}</div><div style="font-size:10px;color:var(--text-dim);margin-top:1px;">${esc(e.h.Notes||'')}</div></td>
+            <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${esc(e.h.Role)}</div><div style="font-size:10px;color:var(--text-dim);margin-top:1px;">${esc(e.h.Notes||'')}</div>${obbHtml}</td>
         `;
         frag.appendChild(tr); rank++;
     });
@@ -445,6 +506,12 @@ function updateChart() {
     chart.updateSeries(series);
 }
 
+window.setSort = function(col) {
+    if (state.sortCol === col) state.sortDir *= -1;
+    else { state.sortCol = col; state.sortDir = -1; }
+    render();
+};
+
 function setSortBtn(col) { setSort(col); }
 window.togglePin = t => { state.pinned.includes(t) ? state.pinned=state.pinned.filter(x=>x!==t) : state.pinned.push(t); render(); updateChart(); };
 window.clearPins = () => { state.pinned = []; render(); updateChart(); };
@@ -477,7 +544,38 @@ function pollSyncStatus() {
     }, 3000);
 }
 
-initChart(); initBuckets(); render();
+function initPulse() {
+    const pulse = document.getElementById('pulseContainer');
+    const meta = (window.LIVE_PRICES || {})._meta;
+    if (!meta || !meta.top_gainers) {
+        pulse.innerHTML = `<div class="no-pulse"><span class="sync-dot"></span> <div>LIVE PRICES NOT LOADED. RUN <code>python engine/live_prices.py</code> TO ACTIVATE TERMINAL PULSE.</div></div>`;
+        return;
+    }
+    
+    let html = `<div class="pulse-bar"><div class="pulse-label">CPO PULSE</div>`;
+    
+    // Top Gainers
+    meta.top_gainers.slice(0,3).forEach(g => {
+        html += `<div class="pulse-item"><span style="color:var(--text-dim)">$</span>${g.ticker} <span class="up">+${g.change_pct.toFixed(1)}%</span></div><div class="pulse-sep">|</div>`;
+    });
+    
+    // Top Losers
+    meta.top_losers.slice(0,2).forEach(l => {
+        html += `<div class="pulse-item"><span style="color:var(--text-dim)">$</span>${l.ticker} <span class="down">${l.change_pct.toFixed(1)}%</span></div><div class="pulse-sep">|</div>`;
+    });
+    
+    // Volume Spikes
+    meta.volume_spikes.slice(0,2).forEach(v => {
+        html += `<div class="pulse-item"><span class="pulse-vol">VOL!</span> ${v.ticker} <span style="color:var(--purple)">${v.vol_spike}x</span></div><div class="pulse-sep">|</div>`;
+    });
+    
+    const d = new Date(meta.refreshed_at);
+    const timeStr = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    html += `<div class="pulse-time"><span class="sync-dot pulse"></span> UPDATED ${timeStr}</div></div>`;
+    pulse.innerHTML = html;
+}
+
+initChart(); initBuckets(); initPulse(); render();
 </script>
 </body>
 </html>

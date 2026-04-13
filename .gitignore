@@ -15,3 +15,4 @@ database/dashboard_data.js
 .agents/
 .pytest_cache/
 .cursorrules
+credentials/

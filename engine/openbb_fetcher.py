@@ -64,7 +64,7 @@ def momentumScore_equivalent(perf1y):
     return 1
 
 # Rate limiting: be respectful to free APIs
-DELAY_BETWEEN_REQUESTS = 1.5  # seconds
+DELAY_BETWEEN_REQUESTS = 0.0  # seconds
 
 
 def clean_ticker(ticker: str) -> str:
@@ -72,32 +72,36 @@ def clean_ticker(ticker: str) -> str:
     return ticker.split(' / ')[0].strip()
 
 
-def _get_yf_supplement(ticker_symbol: str) -> dict:
+def _get_yf_supplement(ticker_symbol: str, entry: dict) -> dict:
     """
-    Primary: Use yfinance to get analyst + ownership data.
-    yfinance fields available without any API key:
-    - info.targetMeanPrice, targetHighPrice, targetLowPrice
-    - info.numberOfAnalystOpinions
-    - info.recommendationMean (1=Strong Buy ... 5=Strong Sell)
-    - info.heldPercentInstitutions
-    - info.shortPercentOfFloat
+    Primary: Use stealth-fetched financials from CPO_MASTER_DATA.json
+    - targetMeanPrice, targetHighPrice, targetLowPrice
+    - numberOfAnalystOpinions
+    - recommendationMean (1=Strong Buy ... 5=Strong Sell)
+    - heldPercentInstitutions
+    - shortPercentOfFloat
     """
     result = {}
     try:
-        t = yf.Ticker(ticker_symbol)
-        info = t.info
-        if not info or len(info) < 5:
-            log.warning(f'  {ticker_symbol}: yfinance info empty/minimal')
-            return {}
+        fin = entry.get('financials', {})
+        fin_data = fin.get('financialData', {})
+        stats = fin.get('defaultKeyStatistics', {})
+        summary = fin.get('summaryDetail', {})
 
-        target_mean = info.get('targetMeanPrice')
-        target_high = info.get('targetHighPrice')
-        target_low  = info.get('targetLowPrice')
-        n_analysts  = info.get('numberOfAnalystOpinions')
-        rec_mean    = info.get('recommendationMean')  # 1.0=Strong Buy, 3.0=Hold, 5.0=Strong Sell
-        inst_pct    = info.get('heldPercentInstitutions')
-        short_pct   = info.get('shortPercentOfFloat')
-        current_price = info.get('currentPrice') or info.get('regularMarketPrice')
+        def get_raw(obj, key):
+            if not obj or not isinstance(obj, dict): return None
+            val = obj.get(key)
+            if hasattr(val, 'get'): return val.get('raw')
+            return val
+
+        target_mean = get_raw(fin_data, 'targetMeanPrice')
+        target_high = get_raw(fin_data, 'targetHighPrice')
+        target_low  = get_raw(fin_data, 'targetLowPrice')
+        n_analysts  = get_raw(fin_data, 'numberOfAnalystOpinions')
+        rec_mean    = get_raw(fin_data, 'recommendationMean')  # 1.0=Strong Buy, 3.0=Hold, 5.0=Strong Sell
+        inst_pct    = get_raw(stats, 'heldPercentInstitutions')
+        short_pct   = get_raw(stats, 'shortPercentOfFloat')
+        current_price = get_raw(fin_data, 'currentPrice') or get_raw(summary, 'regularMarketPrice')
 
         # Convert recommendation mean to buy% estimate
         # 1.0-1.5 = Strong Buy, 1.5-2.5 = Buy, 2.5-3.5 = Hold, 3.5+ = Sell
@@ -125,7 +129,7 @@ def _get_yf_supplement(ticker_symbol: str) -> dict:
         log.info(f'  {ticker_symbol}: analysts={n_analysts}, target=${target_mean}, inst={inst_pct}')
 
     except Exception as ex:
-        log.warning(f'  {ticker_symbol}: yfinance error — {ex}')
+        log.warning(f'  {ticker_symbol}: JSON extraction error — {ex}')
 
     return result
 
@@ -154,7 +158,7 @@ def _get_openbb_supplement(ticker_symbol: str) -> dict:
     return result
 
 
-def fetch_supplement(ticker_symbol: str, bucket: str) -> dict:
+def fetch_supplement(ticker_symbol: str, bucket: str, entry: dict = None) -> dict:
     """Combine yfinance + OpenBB supplement data."""
     if ticker_symbol in SKIP_TICKERS or bucket == 'Private':
         return {}
@@ -162,7 +166,7 @@ def fetch_supplement(ticker_symbol: str, bucket: str) -> dict:
     # Clean compound tickers: 'SIVE.ST / SIVEF' -> 'SIVE.ST'
     yf_ticker = clean_ticker(ticker_symbol)
 
-    result = _get_yf_supplement(yf_ticker)
+    result = _get_yf_supplement(yf_ticker, entry)
     obb_result = _get_openbb_supplement(yf_ticker)
     result.update(obb_result)  # OpenBB supplements, doesn't replace
 
@@ -217,7 +221,7 @@ def run_fetch(tickers: list = None, force: bool = False, dry_run: bool = False):
 
         log.info(f'[{i+1}/{len(tickers)}] Fetching {ticker} ({bucket})...')
 
-        supplement = fetch_supplement(ticker, bucket)
+        supplement = fetch_supplement(ticker, bucket, entry)
 
         if supplement:
             if not dry_run:

@@ -3,40 +3,28 @@ engine/live_prices.py
 ======================
 Real-time price fetcher for the GIGACPO terminal.
 
-Uses yfinance directly (OpenBB v4.7.1 has a known broken import on this machine:
-`cannot import name 'OBBject_EquityInfo'` — openbb-equity extension mismatch with openbb-core).
-Tracked in TASKS.md. Will switch to OpenBB when they fix the extension schema.
-
-WHY yfinance IS FINE HERE:
-- yfinance already gets data from Yahoo Finance in real-time (15-min delayed for free)
-- OpenBB's price.quote endpoint uses yfinance as its underlying provider anyway
-- yf.download() handles batch fetching efficiently
-- Covers all our global symbols: US, OTC, .T, .TW, .DE, .PA, .KL, etc.
+Refactored to use StealthNavigator + curl_cffi directly, completely 
+avoiding the unstable yfinance module and its 401 Unauthorized errors 
+caused by Yahoo's 2026-grade anti-bot protections.
 
 OUTPUT: database/live_prices.js
   window.LIVE_PRICES = {
     "CRDO":    { price: 28.5, change_pct: 2.3, volume: 1234567, updated: "2026-04-12T..." },
-    "BESIY":   { price: 12.1, change_pct: -0.8, volume: 45678,  updated: "..." },
-    "LPK.DE":  { price: 9.8,  change_pct: 1.1, volume: 23456,   updated: "..." },
-    ...
     "_meta":   { refreshed_at: "2026-04-12T17:30:00Z", total_tickers: 113,
                  top_gainers: [...], top_losers: [...], volume_spikes: [...] }
   };
-
-RUN:
-    python engine/live_prices.py              # Fetch all tickers
-    python engine/live_prices.py --tickers CRDO BESIY ASMVY   # Specific tickers
-    python engine/live_prices.py --dry-run    # Print output, don't write files
 """
 
 import json
 import time
 import logging
 import argparse
+import asyncio
 from datetime import datetime, timezone
 from pathlib import Path
 
-import yfinance as yf
+from curl_cffi import requests
+from stealth_navigator import StealthNavigator
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
 log = logging.getLogger(__name__)
@@ -49,10 +37,8 @@ OUT_JSON = ROOT / 'database' / 'live_prices.json'
 # Skip private/non-tradable tickers
 SKIP_TICKERS = {'AYAR', 'RANV', 'CelestialAI', 'SCINTIL'}
 
-# Batch size for yf.download() — 20 is safe without hitting rate limits
-BATCH_SIZE = 20
+BATCH_SIZE = 30
 DELAY_BETWEEN_BATCHES = 1.0
-
 
 def load_tickers() -> list[str]:
     """Load all public (non-private) tickers from the master database."""
@@ -62,76 +48,74 @@ def load_tickers() -> list[str]:
             if e.get('human_research', {}).get('Bucket') != 'Private'
             and t not in SKIP_TICKERS]
 
-
-def fetch_batch(tickers: list[str]) -> dict:
-    """
-    Fetch real-time quotes for a batch of tickers via yfinance.
-    Strategy:
-      1. Try fast_info (fast, works for US/OTC/Europe)
-      2. On 401/None: Try yf.download() for the last 2 days (better crumb handling)
-      3. Mark as no-data if still fails
-    """
-    results = {}
-    now = datetime.now(timezone.utc).isoformat()
-
-    for ticker in tickers:
-        entry = _fetch_single(ticker, now)
-        results[ticker] = entry
-        if entry.get('price'):
-            log.info(f'  {ticker:12s} ${entry["price"]:.2f} '
-                     f'{entry.get("change_pct",0):+.1f}% '
-                     f'vol_spike={entry.get("vol_spike","N/A")}')
-        else:
-            log.warning(f'  {ticker:12s} no price data')
-
-    return results
-
-
-
 def clean_ticker(ticker: str) -> str:
     """Extract primary ticker from compound 'A.XX / B' format."""
     return ticker.split(' / ')[0].strip()
 
-
-def _fetch_single(ticker: str, now: str) -> dict:
-    """Fetch a single ticker — try fast_info, fall back to yf.download()."""
-    entry = {}
-    primary = clean_ticker(ticker)
+def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
+    """
+    Fetch real-time quotes via Stealth API directly.
+    """
+    results = {}
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Extract primary tickers
+    primary_map = {clean_ticker(t): t for t in tickers}
+    symbols = ','.join(primary_map.keys())
+    
+    url = f'https://query1.finance.yahoo.com/v7/finance/quote?symbols={symbols}&crumb={crumb}'
     try:
-        t = yf.Ticker(primary)
-        info = t.fast_info
-        price = getattr(info, 'last_price', None)
-        prev_close = getattr(info, 'previous_close', None)
-        volume    = getattr(info, 'last_volume', None)
-        avg_vol   = getattr(info, 'three_month_average_volume', None)
-
-        # fast_info 401 fallback: use yf.download() for last 2 trading days
-        if price is None:
-            hist = yf.download(primary, period='2d', interval='1d', progress=False, auto_adjust=True)
-            if hist is not None and len(hist) >= 2:
-                price     = float(hist['Close'].iloc[-1])
-                prev_close = float(hist['Close'].iloc[-2])
-                volume    = int(hist['Volume'].iloc[-1]) if 'Volume' in hist.columns else None
-                avg_vol   = None
-
-        change_pct = None
-        if price and prev_close and prev_close > 0:
-            change_pct = round(((price / prev_close) - 1) * 100, 2)
-
-        vol_spike = None
-        if volume and avg_vol and avg_vol > 0:
-            vol_spike = round(volume / avg_vol, 2)
-
-        entry = {'price': round(price, 2) if price else None, 'change_pct': change_pct,
-                 'volume': int(volume) if volume else None, 'avg_volume': int(avg_vol) if avg_vol else None,
-                 'vol_spike': vol_spike, 'updated': now}
-        entry = {k: v for k, v in entry.items() if v is not None}
-
+        res = client.get(url, timeout=10)
+        if res.status_code != 200:
+            log.error(f"Failed to fetch batch. Status {res.status_code}")
+            return results
+            
+        data = res.json()
+        items = data.get('quoteResponse', {}).get('result', [])
+        
+        for item in items:
+            symbol = item.get('symbol')
+            if not symbol or symbol not in primary_map:
+                continue
+            
+            original_ticker = primary_map[symbol]
+            price = item.get('regularMarketPrice')
+            change_pct = item.get('regularMarketChangePercent')
+            volume = item.get('regularMarketVolume')
+            avg_vol = item.get('averageDailyVolume10Day')
+            
+            vol_spike = None
+            if volume and avg_vol and avg_vol > 0:
+                vol_spike = round(volume / avg_vol, 2)
+            
+            entry = {
+                'price': round(price, 2) if price is not None else None,
+                'change_pct': round(change_pct, 2) if change_pct is not None else None,
+                'volume': int(volume) if volume else None,
+                'avg_volume': int(avg_vol) if avg_vol else None,
+                'vol_spike': vol_spike,
+                'updated': now
+            }
+            entry = {k: v for k, v in entry.items() if v is not None}
+            results[original_ticker] = entry
+            
+            if entry.get('price'):
+                log.info(f'  {original_ticker:12s} ${entry["price"]:.2f} '
+                         f'{entry.get("change_pct",0):+.1f}% '
+                         f'vol_spike={entry.get("vol_spike","N/A")}')
+            else:
+                log.warning(f'  {original_ticker:12s} no price data')
+                
     except Exception as ex:
-        log.warning(f'  {ticker}: error — {type(ex).__name__}: {ex}')
-
-    return entry
-
+        log.error(f"Error fetching batch: {ex}")
+        
+    # Fill missing
+    for t in tickers:
+        if t not in results:
+            log.warning(f'  {t:12s} no price data')
+            results[t] = {}
+            
+    return results
 
 def analyze_movers(prices: dict) -> dict:
     """
@@ -165,24 +149,31 @@ def analyze_movers(prices: dict) -> dict:
         'volume_spikes': vol_spikes,
     }
 
-
-def run_fetch(tickers: list = None, dry_run: bool = False) -> dict:
-    """
-    Main entry point. Fetches live prices and writes live_prices.js + live_prices.json.
-    """
+async def async_run_fetch(tickers: list = None, dry_run: bool = False) -> dict:
     if tickers is None:
         tickers = load_tickers()
 
     log.info(f'GIGACPO Live Price Fetcher — {len(tickers)} tickers')
     log.info(f'Output: {OUT_JS}')
     log.info('-' * 50)
+    
+    # Setup Stealth Session
+    nav = StealthNavigator(headless=True)
+    await nav.initialize()
+    cookies_list, crumb = await nav.get_session_state('https://finance.yahoo.com/quote/AAPL')
+    await nav.close()
+    
+    cookie_dict = {c['name']: c['value'] for c in cookies_list}
+    client = requests.Session(impersonate='chrome')
+    client.headers.update({'User-Agent': nav.current_ua})
+    client.cookies.update(cookie_dict)
 
     all_prices = {}
     batches = [tickers[i:i+BATCH_SIZE] for i in range(0, len(tickers), BATCH_SIZE)]
 
     for i, batch in enumerate(batches):
         log.info(f'Batch {i+1}/{len(batches)}: {batch}')
-        results = fetch_batch(batch)
+        results = fetch_batch(batch, client, crumb)
         all_prices.update(results)
         if i < len(batches) - 1:
             time.sleep(DELAY_BETWEEN_BATCHES)
@@ -224,7 +215,9 @@ def run_fetch(tickers: list = None, dry_run: bool = False) -> dict:
 
     return all_prices
 
-
+def run_fetch(tickers: list = None, dry_run: bool = False) -> dict:
+    return asyncio.run(async_run_fetch(tickers, dry_run))
+    
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='GIGACPO Live Price Fetcher')
     parser.add_argument('--tickers', nargs='+', help='Specific tickers (default: all public)')

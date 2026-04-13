@@ -62,7 +62,7 @@ log = logging.getLogger("gigacpo")
 ROOT    = Path(__file__).parent
 DB_PATH = ROOT / "database" / "CPO_MASTER_DATA.json"
 
-app = FastAPI(title="GIGACPO Terminal", version="6.0")
+app = FastAPI(title="GIGACPO Terminal", version="6.1")
 
 # ── Static File Serving ───────────────────────────────────────────────────────
 # Mount the database folder so JS can fetch dashboard_data.js + live_prices.js
@@ -110,9 +110,11 @@ def _run_pipeline(pipeline: str = "full") -> dict:
                 ["python", "engine/financial_auditor.py"],
                 ["python", "engine/live_prices.py"],
                 ["python", "engine/generate_CPO_BRAIN.py"],
+                ["python", "engine/remote_sync.py"],
             ],
             "prices": [
                 ["python", "engine/live_prices.py"],
+                ["python", "engine/remote_sync.py"],
             ],
         }.get(pipeline, [])
 

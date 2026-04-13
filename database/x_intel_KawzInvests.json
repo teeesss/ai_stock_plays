@@ -1,0 +1,77 @@
+[
+  {
+    "id": "2043482107037557060#m",
+    "username": "KawzInvests",
+    "text": "youtu.be/wmwVQMWTqD0?is=w2wY\u2026TimeStamp: 7:28",
+    "timestamp": "Apr 13, 2026 \u00b7 12:11 AM UTC",
+    "url": "https://x.com/KawzInvests/status/2043482107037557060#m",
+    "is_pinned": false,
+    "stats": {
+      "icon-comment": "",
+      "icon-retweet": "",
+      "icon-heart": "1",
+      "icon-views": "2,367"
+    },
+    "fetched_at": "2026-04-13T00:36:31.243898+00:00"
+  },
+  {
+    "id": "2043457536112689593#m",
+    "username": "KawzInvests",
+    "text": "The US just announced a blockade of the Strait of Hormuz starting Monday 10am ET. Peace talks failed.\n\nTrump went on air within hours and said this:\n\"A laser melts the drone. It's a beautiful thing to see.\"\nThe US is spending $2,000,000 per Patriot interceptor to kill $2,000 Iranian drones. A laser costs $10 per shot.$LASRis the only US publicly traded pure-play directed energy weapons stock. Supplier to Iron Beam. Holds a $171M contract to demonstrate a 1MW laser for Golden Dome this year.$EOS.AXis the only ITAR-free 100kW laser weapon in the world. AUD $459M order book. Every allied nation that can't buy from Raytheon is calling them.",
+    "timestamp": "Apr 12, 2026 \u00b7 10:33 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2043457536112689593#m",
+    "is_pinned": false,
+    "stats": {
+      "icon-comment": "5",
+      "icon-retweet": "28",
+      "icon-heart": "211",
+      "icon-views": "21,105"
+    },
+    "fetched_at": "2026-04-13T00:36:31.244448+00:00"
+  },
+  {
+    "id": "2043413927527125399#m",
+    "username": "KawzInvests",
+    "text": "$OPTX(~$350M) is North America's largest polymer optics manufacturer. Every step under one roof. Raw polymer in, finished electro-optic assembly out, without touching a foreign subcontractor.\n\nChina controls the majority of global polymer optics production. Anduril has an internal policy against sourcing from China. NDAA Section 834 bans adversary-nation optics by 2030. Those constraints together eliminate most of the field. Syntec is one of the only domestic companies that qualifies.$OPTXis not just an Anduril supplier. That framing captures maybe one chapter of what this company actually is.\n\nSix revenue streams either ramping or already in production. Missile guidance optics with multiyear agreements signed. Night vision goggle eyepieces since 2018, $5.2M in NVG orders in 2025 alone. Military scopes on a program expected to run over a decade. LEO satellite optics expected to nearly triple in 2026. Microlens arrays for AI datacenter interconnects entering production this year. And new defense product lines management guided to add revenue in Q2 and beyond, program undisclosed due to NDAs.\n\nThat last one is the line worth sitting with. The language used to describe it in December was \"the most significant opportunity in the company's 25-year history.\"\n\nThe bear case. Revenue flat at $28M for three years. Gross margin jumped from 12% to 24% in Q4, which is real, but margin alone does not build a growth story. Cash under $400K with a credit facility maturing in November.\n\nQ2 is the quarter where this either shows up in the numbers or it doesn't.$OPTX",
+    "timestamp": "Apr 12, 2026 \u00b7 7:40 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2043413927527125399#m",
+    "is_pinned": false,
+    "stats": {
+      "icon-comment": "14",
+      "icon-retweet": "23",
+      "icon-heart": "300",
+      "icon-views": "49,003"
+    },
+    "fetched_at": "2026-04-13T00:36:31.245512+00:00"
+  },
+  {
+    "id": "2042608287447707909#m",
+    "username": "KawzInvests",
+    "text": "$LITEjust extended its sold-out window from end of 2027 to all of 2028.\n\nYOU NEED to understand why that matters$LITEmakes the EML lasers that power every 800G and 1.6T optical transceiver going into AI data centers. They hold greater than 50% global share in high-speed EMLs per BofA. There is no alternative supply chain that comes close.$NVDArecognized this two months ago and put $2B into$LITEin exchange for non-cancelable purchase agreements through end of decade. Not LOIs. Non-cancelable. That locked in LITE's capacity before the other hyperscalers could get there.\n\nNow the CEO is saying even that $2B commitment and a 12-fold capacity expansion at their Tokyo factory is not enough to keep up. New capex target is $100M to $250M and they are actively scouting additional factory sites in Japan. Every hyperscaler is asking the same question right now: how many units can you make this quarter, next quarter, the quarter after. The CEO called it \"the bottleneck right now for the industry.\"",
+    "timestamp": "Apr 10, 2026 \u00b7 2:19 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2042608287447707909#m",
+    "is_pinned": false,
+    "stats": {
+      "icon-comment": "5",
+      "icon-retweet": "13",
+      "icon-heart": "316",
+      "icon-views": "49,386"
+    },
+    "fetched_at": "2026-04-13T00:36:31.246041+00:00"
+  },
+  {
+    "id": "2042337208951325062#m",
+    "username": "KawzInvests",
+    "text": "Nvidia paid $6.01 per share for 2.9% of$NOKin October. Nokia is now at $9.55\n\nI was at GTC and met with some of the Nokia exec team. What they described changes how you think about what a cell tower actually is.\n\nJensen Huang called it \"Robotic AI Radio.\" The idea is simple: a factory robot cannot wait 200 milliseconds for a cloud server to process its next move. So instead of sending that data back to a centralized data center, you run the inference directly at the cell tower. Every tower becomes a distributed AI compute node.$NOKis deploying$NVDARTX PRO 4500 Blackwell GPUs directly into its AI-RAN base stations to make this possible, running on$DELLPowerEdge servers.$TMUSwas the first US carrier to pilot it.\n\nThere are roughly 100,000 distributed network sites worldwide with enough spare capacity to add over 100 gigawatts of new AI compute over time. Nokia is the western vendor building the software stack that runs on top of Nvidia's hardware to make those sites intelligent.\n\nNokia's acquisition of Infinera gave it 800G ZR coherent pluggables at exactly the moment hyperscalers started treating optical backbones as AI infrastructure, not telecom infrastructure.$CIENis seeing the same demand and just guided $5.7 to $6.1 billion in revenue for fiscal 2026, up nearly 24%.$NOKOptical Networks grew 17% in Q4 2025, with \u20ac2.4B in hyperscaler orders for the full year. Management is targeting \u20ac3.1 to \u20ac3.7B in operating profit by 2028, up from just over \u20ac2B in 2025. The RAN market alone is projected to reach $200B by 2030.\n\nNvidia did not buy into Nokia because they needed the equity exposure. They bought in because they needed the distribution.",
+    "timestamp": "Apr 9, 2026 \u00b7 8:21 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2042337208951325062#m",
+    "is_pinned": false,
+    "stats": {
+      "icon-comment": "29",
+      "icon-retweet": "80",
+      "icon-heart": "743",
+      "icon-views": "108,749"
+    },
+    "fetched_at": "2026-04-13T00:36:31.246591+00:00"
+  }
+]
