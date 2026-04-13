@@ -6,7 +6,7 @@
     <title>GIGACPO Intelligence Terminal (V6.1) — Pure Play SiPh/CPO Ecosystem</title>
     <script src="database/dashboard_data.js"></script>
     <script src="database/live_prices.js"></script>
-    <script src="database/x_intel_master.js"></script>
+    <script src="intel.js"></script>
     <!-- Live prices: run 'python engine/live_prices.py' to refresh -->
     <script>
     // Graceful load: LIVE_PRICES is optional, terminal works without it
@@ -79,12 +79,15 @@
         .buzz-tag b { color: var(--gold); margin-right: 4px; }
         .buzz-tag span { color: var(--green); font-size: 7px; margin-left: 4px; }
 
-        .intel-item { background: rgba(15,23,42,0.6); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 8px; transition: border-color 0.2s; }
+        .intel-item { background: rgba(15,23,42,0.6); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 8px; transition: border-color 0.2s; }
         .intel-item:hover { border-color: var(--accent); }
         .intel-item .meta { font-size: 8px; color: var(--text-dim); margin-bottom: 4px; display: flex; justify-content: space-between; }
         .intel-item .user { color: var(--gold); font-weight: 900; }
-        .intel-item .text { font-size: 10px; line-height: 1.4; color: var(--text-main); white-space: normal; word-break: break-word; }
+        .intel-item .text { font-size: 11px; line-height: 1.5; color: var(--text-main); white-space: normal; word-break: break-word; }
         .intel-item .highlight { background: rgba(245,158,11,0.2); color: var(--gold); border-radius: 2px; padding: 0 2px; }
+        .post-images { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 10px 0; }
+        .post-img { width: 100%; border-radius: 6px; border: 1px solid #333; cursor: zoom-in; transition: transform 0.2s; }
+        .post-img:hover { transform: scale(1.02); border-color: var(--accent); }
 
         .search-row { display: flex; gap: 10px; width: 100%; }
         .search-box { flex: 1; position: relative; }
@@ -196,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modalIntelSearch').addEventListener('input', filterIntel);
 
     initPulse();
-    filterData();
+    render();
     filterIntel();
 });
 </script>
@@ -507,6 +510,44 @@ function render() {
 function passesFilters(e) {
     if (state.search && !e.searchStr.includes(state.search)) return false;
     if (e.mcapB < state.minMcap || e.mcapB > state.maxMcap) return false;
+    const alpha = sfloat(e.h['Alpha Score']); if (alpha < state.minAlpha || alpha > state.maxAlpha) return false;
+    const risk = sfloat(e.h['Risk Adj']); if (risk < state.minRisk || risk > state.maxRisk) return false;
+    const hide = sfloat(e.h['Hiddenness']); if (hide < state.minHidden || hide > state.maxHidden) return false;
+    if (e.rev_num < state.minRev) return false;
+    return true;
+}
+
+function setSort(col) {
+    if (state.sortCol === col) state.sortDir *= -1;
+    else { state.sortCol = col; state.sortDir = 1; }
+    render();
+}
+
+function sortFn(a, b) {
+    let vA, vB;
+    const c = state.sortCol;
+    if (c === 'pinned') { vA = state.pinned.includes(a.ticker)?1:0; vB = state.pinned.includes(b.ticker)?1:0; }
+    else if (c === 'ticker') { vA = a.ticker; vB = b.ticker; }
+    else if (c === 'company') { vA = a.h.Company; vB = b.h.Company; }
+    else if (c === 'alpha') { vA = sfloat(a.h['Alpha Score']); vB = sfloat(b.h['Alpha Score']); }
+    else if (c === 'risk') { vA = sfloat(a.h['Risk Adj']); vB = sfloat(b.h['Risk Adj']); }
+    else if (c === 'hidden') { vA = sfloat(a.h['Hiddenness']); vB = sfloat(b.h['Hiddenness']); }
+    else if (c === 'mcap') { vA = a.mcapB; vB = b.mcapB; }
+    else if (c === 'pe26') { vA = a.pe26; vB = b.pe26; }
+    else if (c === 'pe27') { vA = a.pe27; vB = b.pe27; }
+    else if (c === 'upside') { vA = parseUpside(a.h['Target Upside']); vB = parseUpside(b.h['Target Upside']); }
+    else if (c === 'perf1y') { vA = a.perf1y||-999; vB = b.perf1y||-999; }
+    else if (c === 'today') { vA = a.todayPct||-999; vB = b.todayPct||-999; }
+    else if (c === 'rev') { vA = a.rev_num; vB = b.rev_num; }
+    else { vA = a.score; vB = b.score; }
+    
+    if (typeof vA === 'string') return state.sortDir * vA.localeCompare(vB);
+    return state.sortDir * (b.score - a.score); // Default to score if equal
+}
+
+function passesFilters(e) {
+    if (state.search && !e.searchStr.includes(state.search)) return false;
+    if (e.mcapB < state.minMcap || e.mcapB > state.maxMcap) return false;
     if (e.rev_num < state.minRev) return false;
     if (state.selectedBuckets.length > 0 && !state.selectedBuckets.includes(e.h.Bucket)) return false;
     if (state.selectedExchanges.length > 0 && !state.selectedExchanges.includes(e.h.Country)) return false;
@@ -581,6 +622,61 @@ function updateChart() {
         return { name: t, data: f.map(p=>({x:p.x, y:Math.round(((p.y/b)-1)*100)})) };
     }).filter(Boolean);
     chart.updateSeries(series);
+}
+
+// ========== INTELLIGENCE ENGINE V7.4 ==========
+function filterIntel() {
+    const module = window.X_INTEL_MODULE;
+    const body = document.getElementById('intelBody');
+    if (!module || !module.posts) {
+        body.innerHTML = `<div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">INITIALIZING INTEL ENGINE...</div>`;
+        return;
+    }
+    const posts = module.posts;
+    const query = document.getElementById('modalIntelSearch').value.toLowerCase();
+    const timeFilter = document.getElementById('intelTimeFilter').value;
+    
+    let filtered = posts;
+    if (query) {
+        filtered = posts.filter(p => (p.text||"").toLowerCase().includes(query) || (p.username||"").toLowerCase().includes(query));
+    }
+    
+    // Time filter logic
+    if (timeFilter !== 'all') {
+        const now = new Date();
+        const hours = timeFilter === '24h' ? 24 : 168;
+        const cutoff = new Date(now.getTime() - (hours * 60 * 60 * 1000));
+        filtered = filtered.filter(p => new Date(p.timestamp) >= cutoff);
+    }
+    
+    renderIntel(filtered, query);
+    renderBuzz(module.buzz);
+}
+
+function openIntelModal() {
+    document.getElementById('intelModal').classList.add('active');
+    filterIntel();
+}
+
+function closeIntelModal() {
+    document.getElementById('intelModal').classList.remove('active');
+}
+
+function renderBuzz(buzz = {}) {
+    const bar = document.getElementById('buzzBar');
+    const sorted = Object.entries(buzz)
+        .sort((a,b) => b[1]['7d'] - a[1]['7d'])
+        .slice(0, 12);
+    
+    if (sorted.length === 0) {
+        bar.innerHTML = '<div style="font-size:8px;color:var(--text-dim);padding:4px;">NO TRENDING TICKERS IN CACHE.</div>';
+        return;
+    }
+    
+    bar.innerHTML = sorted.map(([t, stats]) => {
+        const change = stats['24h'] > 0 ? `<span>+${stats['24h']}</span>` : '';
+        return `<div class="buzz-tag" onclick="syncIntelSearch('${t}')"><b>$${t}</b> ${stats['7d']}w ${change}</div>`;
+    }).join('');
 }
 
 window.setSort = function(col) {
@@ -664,6 +760,14 @@ function renderIntel(posts, query = "") {
         // Highlight ticker-like words ($ABCD)
         text = text.replace(/(\$[A-Z]+)/g, '<span style="color:var(--gold);font-weight:700;">$1</span>');
 
+        // Render images
+        let imagesHtml = '';
+        if (p.images && p.images.length > 0) {
+            imagesHtml = `<div class="post-images">` + 
+                p.images.map(img => `<img src="${img}" class="post-img" onclick="window.open('${img}', '_blank')" onerror="this.style.display='none'">`).join('') + 
+                `</div>`;
+        }
+
         const item = document.createElement('div');
         item.className = 'intel-item';
         item.innerHTML = `
@@ -672,6 +776,7 @@ function renderIntel(posts, query = "") {
                 <span>${date}</span>
             </div>
             <div class="text">${text}</div>
+            ${imagesHtml}
             <div style="margin-top:6px; text-align:right;">
                 <a href="${p.url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;">VIEW SOURCE ↗</a>
             </div>

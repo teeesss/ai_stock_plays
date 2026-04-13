@@ -39,7 +39,8 @@ def sync():
     files_to_sync = {
         "cpo_plays.html": "index.html",
         "database/dashboard_data.js": "database/dashboard_data.js",
-        "database/live_prices.js": "database/live_prices.js"
+        "database/live_prices.js": "database/live_prices.js",
+        "database/intel.js": "intel.js"
     }
 
     transport = None
@@ -58,6 +59,7 @@ def sync():
             except FileNotFoundError:
                 log.info(f"Creating directory {part}")
                 sftp.mkdir(part)
+                sftp.chmod(part, 0o755)
                 sftp.chdir(part)
 
         # Ensure database subdir exists
@@ -66,6 +68,7 @@ def sync():
         except FileNotFoundError:
             log.info("Creating database directory")
             sftp.mkdir("database")
+            sftp.chmod("database", 0o755)
 
         for local_rel, remote_rel in files_to_sync.items():
             local_path = ROOT / local_rel
@@ -77,6 +80,7 @@ def sync():
             # Since we are already in the 'stocks' dir, database/dashboard_data.js is correct
             log.info(f"Uploading {local_rel} -> {remote_rel}...")
             sftp.put(str(local_path), remote_rel)
+            sftp.chmod(remote_rel, 0o644)
 
         sftp.close()
         transport.close()

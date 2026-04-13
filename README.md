@@ -1,4 +1,4 @@
-# RetireFire: CPO Supply Chain Intelligence (V6.1)
+# RetireFire: CPO Supply Chain Intelligence (V6.2)
 
 This project tracks the Co-Packaged Optics (CPO) and Silicon Photonics (SiPh) supply chain to identify high-alpha investment opportunities in the AI infrastructure build-out.
 

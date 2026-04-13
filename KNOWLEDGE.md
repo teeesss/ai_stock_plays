@@ -689,9 +689,37 @@ Contract Mfg ($FN, $CLS)
   - **Ecosystem Movers**: Intel (+ Chandler AZ fab), SKC Absolics ( Georgia fab), Samsung Electro-Mechanics (sampling Apple/Broadcom target 2027), LG Innotek (target 2028).
 - **Ajinomoto ()**: MSG maker up 40% YTD. The undisputed monopoly on ABF (Ajinomoto Build-up Film) substrates that power current-gen AI packaging.
 - **ASE Technology ()**: Groundbreaking on 6 new plants in 2026. CPO mass production confirmed to begin this year.
+
+
+### 6. Technical Intelligence Update: 2026-04-12 (ParadisLabs & Market Catalysts)
+- **Glass Substrate Supercycle (The 'Why Now')**: Organic ABF hits thermal/mechanical limits with next-gen AI packaging. Glass offers rigidity, atomic flatness, low dielectric constant, and high thermal stability (CTE matching silicon).
+  - **LPKF Laser (LPK.DE / )**: Holds ~80% market share in qualifications for Through-Glass-Vias (TGV) using LIDE (Laser-Induced Deep Etching) which eliminates micro-cracks.
+  - **Ecosystem Movers**: Intel (+ Chandler AZ fab), SKC Absolics ( Georgia fab), Samsung Electro-Mechanics (sampling Apple/Broadcom target 2027), LG Innotek (target 2028).
+- **Ajinomoto ()**: MSG maker up 40% YTD. The undisputed monopoly on ABF (Ajinomoto Build-up Film) substrates that power current-gen AI packaging.
+- **ASE Technology ()**: Groundbreaking on 6 new plants in 2026. CPO mass production confirmed to begin this year.
 - **Win Semiconductors (3105.TWO)**: World's largest pure-play Gallium Arsenide (GaAs) foundry sold a 4% stake (20M shares) to Avago (Broadcom) for .57M in a private placement.
 - **Sivers Semiconductors ()**: Runway effectively stretches to late 2026 (~SEK 43.5M cash, burning ~15M/qtr). This limited runway is viewed as a catalyst for either a US listing or an acquisition (speculation centers on Marvell  acquiring them to secure external laser supplies and block competitors).
 - **Browave (3163.TWO)**: A .4B MC supplier of fiber arrays and 'Fiber Shuffle Boxes' — the mechanical bridge organizing 1000+ fibers inside AI servers. Scaling production 10x from 1,000 units/mo to 10,000 units/mo by Q1 2027. Partnered with Corning ().
 - **Memory & InP Trends**: 
   - Nanya Tech (2408.TW): Taiwanese memory maker receiving .5B capital raise from SanDisk/SK Hynix/Cisco to fund Taipei fabs and 10nm nodes.
   - AXT Inc () vs Soitec (): Soitec's patent monopoly on SOI wafers makes it the preferred core bet over AXTI which faces dilution risks, though both act as raw bottleneck plays.
+
+---
+
+### 25. X-Intelligence Scraper: Resilience & Architecture (2026-04-12)
+
+**Current Status**: 180-day backfill active (KawzInvests complete).
+
+**Key Architectural Hardening (V8.0)**:
+1. **The Pagination Fix**: Nitter/XCancel pages often display two `.show-more` items: "Load newest" at the top and "Load more" at the bottom. The scraper MUST select the **LAST** `.show-more a` element to advance backwards in time. Selecting the first one causes an infinite loop on the first two pages.
+2. **Crash Resilience**: Implemented `scraper_state.json` which tracks the `last_cursor` per username. The scraper saves data incrementally after every page. If the process crashes or is blocked, it can resume exactly where it left off.
+3. **Visual Archival System**: 
+   - Images are archived locally under `images/<username>/<tweet_id>_<index>.jpg`.
+   - The JSON database stores relative paths (`images/<username>/...`) allowing the dashboard to render local images without hitting external CDNs (improving privacy and reliability).
+   - Downloads use `curl_cffi` with `chrome110` impersonation and randomized delays (0.5s–2.0s) to avoid IP flagging.
+4. **Stealth Strategy**:
+   - Playwright (Chromium) is required for initial page loads to handle JS-based anti-bot protection.
+   - Randomized sleep intervals (12s–20s) between pages.
+   - Instance rotation: Cursors are **instance-specific**. The scraper stays on a single instance for a full user session to maintain cursor validity.
+
+**Maintenance Rule**: If the scraper begins looping or skipping dates, verify that `all_showmore = soup.select(".show-more a")` is still targeting the bottom element.

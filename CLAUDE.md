@@ -20,8 +20,17 @@
 - Every new stock, thesis, or data point discovered must be captured in `knowledge.md` with a timestamp.
 
 ### 3. Research Standards
-- We are hunting for **hidden, undiscovered, or underappreciated** stocks tied to CPO, SiPh, and CoWoS.
 - **Monopolies, duopolies, and micro-caps with massive room to run** are the highest priority.
+
+### 4. X-Intelligence (Scraper) Logic
+- **Forward Harvest Mode (V8.6)**: Use targeted chronological forward jumps (`since` -> `until`) for deep historical backfilling. This bypasses the Nitter pagination index bugs.
+- **Garbage Purge**: Automatically filter out "Whoops...", "Fetching...", and Nitter block messages from the production database.
+- **Loop Prevention & Fallback**: Track `seen_cursors` and apply a 3-page 0-post stale detection limit. If caught in a loop, pivot to Search Fallback to bypass defective timeline pagination safely. Do NOT simply terminate the scrape without triggering the fallback.
+- **Instance Rotation**: Cycle instances (`LIVE_INSTANCES`) automatically upon fatal blocks.
+- **Categorization**: Images MUST be stored in `images/<username>/`.
+- **Text Formatting**: All text must pass through `clean_text_spacing` to enforce spaces around `$TICKERS` and `@USERNAMES`.
+- **JSON Integrity**: Save with `indent=2` and `ensure_ascii=False` (un-escaped Unicode).
+- **Deduplication**: Automatic ID-based deduplication on every save.
 
 ---
 
@@ -69,6 +78,6 @@ z:/COS_Stock_Plays/
 
 ---
 
-**Last Updated**: 2024-04-12 (V4.5 Absolute Clean-Research Alignment)
+**Last Updated**: 2024-04-12 (V8.1 Scraper Hardening & Image Categorization)
 **Review**: At the start of every session
 **Enforcement**: Mandatory
