@@ -28,6 +28,15 @@ except ImportError:
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
 log = logging.getLogger(__name__)
 
+INSTANCES = [
+    "https://xcancel.com",
+    "https://nitter.net",
+    "https://nitter.nl",
+    "https://nitter.cz",
+    "https://nitter.it",
+    "https://nitter.sethforprivacy.com"
+]
+
 ROOT = Path(__file__).parent.parent
 DB_PATH = ROOT / 'database' / 'x_intel_master.json'
 
@@ -61,7 +70,6 @@ def parse_nitter_date(date_str: str) -> datetime:
             return now
 
 async def scrape_user_history(username: str, max_days: int = 90):
-    url = f"https://xcancel.com/{username}"
     cutoff_date = datetime.now(timezone.utc) - timedelta(days=max_days)
     
     nav = StealthNavigator(headless=True)
@@ -69,7 +77,10 @@ async def scrape_user_history(username: str, max_days: int = 90):
     
     all_posts = []
     seen_ids = set()
-    current_url = url
+    instance_idx = 0
+    current_instance = INSTANCES[instance_idx]
+    
+    current_url = f"{current_instance}/{username}"
     
     page_count = 1
     while current_url:
@@ -77,16 +88,18 @@ async def scrape_user_history(username: str, max_days: int = 90):
         
         try:
             page = await nav.context.new_page()
-            await page.goto(current_url, wait_until="load", timeout=30000)
-            await asyncio.sleep(5) # Wait for content
+            # Set a shorter timeout for instance rotation
+            await page.goto(current_url, wait_until="load", timeout=15000)
+            await asyncio.sleep(4) 
             
             content = await page.content()
+            if "Rate limited" in content or "Internal Server Error" in content or not content:
+                raise Exception("Instance blocked or error")
+
             soup = BeautifulSoup(content, 'html.parser')
-            
             items = soup.select('.timeline-item')
             if not items:
-                log.warning(f"No items found on page {page_count}.")
-                break
+                raise Exception("No items found - possible block")
                 
             page_oldest_date = datetime.now(timezone.utc)
             
@@ -127,7 +140,8 @@ async def scrape_user_history(username: str, max_days: int = 90):
             # Find 'More' button
             more_btn = soup.select_one('.show-more a')
             if more_btn:
-                current_url = f"https://xcancel.com{more_btn.get('href')}"
+                # Use current instance base
+                current_url = f"{current_instance}{more_btn.get('href')}"
                 page_count += 1
                 await page.close()
             else:
@@ -135,8 +149,24 @@ async def scrape_user_history(username: str, max_days: int = 90):
                 break
                 
         except Exception as e:
-            log.error(f"Error on page {page_count}: {e}")
-            break
+            log.warning(f"Instance {current_instance} failed: {e}. Rotating...")
+            instance_idx = (instance_idx + 1) % len(INSTANCES)
+            current_instance = INSTANCES[instance_idx]
+            # Reconstruct URL with new instance
+            if page_count == 1:
+                current_url = f"{current_instance}/{username}"
+            else:
+                # We can't easily preserve cursors across instances usually, 
+                # so we might restart or try to find a way to map them.
+                # For now, just try to restart on new instance or stop.
+                log.info("Restarting on new instance to catch updates...")
+                current_url = f"{current_instance}/{username}"
+            
+            await page.close()
+            if instance_idx == 0: # Cycled all
+                log.error("All instances failed.")
+                break
+            continue
             
     await nav.close()
     return all_posts
@@ -146,25 +176,52 @@ def save_master(posts: list):
     if DB_PATH.exists():
         try:
             with open(DB_PATH, 'r', encoding='utf-8') as f:
-                master_data = json.load(f)
+                decoded = json.load(f)
+                if isinstance(decoded, list): master_data = decoded
+                elif isinstance(decoded, dict): master_data = decoded.get('posts', [])
         except: pass
         
     seen_ids = {p['id'] for p in master_data if 'id' in p}
     new_filtered = [p for p in posts if p['id'] not in seen_ids]
     
     combined = new_filtered + master_data
-    # Sort by date desc
     combined.sort(key=lambda x: x['timestamp'], reverse=True)
+
+    # Momentum Analysis
+    now = datetime.now(timezone.utc)
+    periods = {
+        '24h': now - timedelta(days=1),
+        '7d':  now - timedelta(days=7),
+        '30d': now - timedelta(days=30)
+    }
+    
+    buzz = {}
+    for p in combined:
+        dt = datetime.fromisoformat(p['timestamp'])
+        # Find all $TICKERS
+        tickers = re.findall(r'\$([A-Z]{2,5})', p['text'].upper())
+        for t in set(tickers): # unique tickers per post
+            if t not in buzz: buzz[t] = {'24h':0, '7d':0, '30d':0, 'total':0}
+            buzz[t]['total'] += 1
+            if dt > periods['24h']: buzz[t]['24h'] += 1
+            if dt > periods['7d']:  buzz[t]['7d'] += 1
+            if dt > periods['30d']: buzz[t]['30d'] += 1
+
+    final_payload = {
+        'posts': combined,
+        'buzz': buzz,
+        'last_updated': now.isoformat()
+    }
     
     with open(DB_PATH, 'w', encoding='utf-8') as f:
-        json.dump(combined, f, indent=2)
+        json.dump(final_payload, f, indent=2)
     
     # Save as JS for dashboard
     js_path = DB_PATH.with_suffix('.js')
     with open(js_path, 'w', encoding='utf-8') as f:
         f.write('// GIGACPO Intelligence Data - Auto-generated\n')
-        f.write('window.X_INTEL = ')
-        json.dump(combined, f)
+        f.write('window.X_INTEL_MODULE = ')
+        json.dump(final_payload, f)
         f.write(';')
         
     log.info(f"Master intelligence updated. Total posts: {len(combined)} ({len(new_filtered)} new).")

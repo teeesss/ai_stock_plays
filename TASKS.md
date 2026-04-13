@@ -61,17 +61,21 @@
 - [x] V6.1 Research Integration: Added Browave (Fiber Shuffle), LPKF (Glass Substrates), SIVE (Runway/M&A), and Win Semi (Avago stake).
 
 ## 📏 Data Quality Rules (ENFORCED)
-- **AI Hub bucket ONLY for**: Companies that consume/buy CPO (NVDA, AVGO, MRVL) — demand anchors only.
-- **Core bucket for**: Companies that physically produce a required component (materials, equipment, substrates).
-- **Any company with Role containing "Film/Substrate/Material/Chemical/Equipment/Wafer" = NEVER AI Hub**.
-- **Private bucket weight = 0**: Private/acquired companies always appear in separate Watchlist section, never inflate public equity rankings.
 # 📋 CPO Dashboard Task List
 
-## 🚀 Next Sprint: V7.0 Intelligence & Social Extraction
+## 🚀 Next Sprint: V7.3 — Visual Intelligence & OCR
+- [ ] **AUTO-IMAGE ARCHIVE**: Download and OCR images from X-Intel posts.
+- [ ] **CHART INTEGRATION**: Show Buzz Momentum (7d) as a line chart on stock expand.
+- [ ] **PORTFOLIO MIRROR**: Track specific 'Best Plays' mentioned by Kawz/Photon in a dedicated sub-view.
 
-### 🔍 Pending / Future Work
+### 🔍 Completed Work (Latest)
+- [x] **V7.2 SOCIAL BUZZ MOMENTUM**: Built multi-instance rotation scraper & dashboard buzz tracking (24h/7d/30d).
+- [x] **V7.0 INTELLIGENCE HUB**: Implemented dual-pane UI with 𝕏 Intelligence Feed.
+- [x] **X-INTEL SYSTEM**: Deep scraper (3-month hist) and 3x daily auto-sync functional.
+- [x] **OPENBB HARDENING**: Switched to TMX provider for zero-401 analyst data.
+- [x] **REMOTE DEPLOYMENT**: V7.2 live on bimmerinfo.com web server.
 - [x] **OPENBB SUPPLEMENT — FETCH DATA**: Run `python engine/openbb_fetcher.py` to actually populate `openbb_supplement{}` for all 113 public equities. (Bypassed the 401 Unauthorized errors by switching to local stealth JSON instead of raw yfinance queries).
-- [x] **DASHBOARD DASHBOARD DISPLAY — openbb_supplement**: Once data is fetched, update cpo_plays.html to display `analyst_count` and `inst_ownership_pct` as small inline pills in the Research Info column.
+- [x] **DASHBOARD DISPLAY — openbb_supplement**: Once data is fetched, update cpo_plays.html to display `analyst_count` and `inst_ownership_pct` as small inline pills in the Research Info column.
 - [x] **LIVE PRICES REFACTOR**: Rewrote `engine/live_prices.py` to utilize `curl_cffi` and `stealth_navigator.py` in batches of 30, entirely bypassing the unmaintained `yfinance` module and securing 100% reliable Live Pricing without 401 crashes.
 - [x] **OPENBB FIX**: Resolved `cannot import name OBBject_EquityInfo` in `openbb` v4.7.1 by injecting a global `__getattr__` patch into `openbb_core.app.provider_interface`. However, OpenBB's reliance on legacy standard libraries means it will continue to trigger Yahoo 401 blockers. The terminal's robust Stealth Navigator architecture is fully active instead.
 - [x] **NITTO BOSEKI**: Add Japan substrate/glass fiber play — already 2x+ YTD per Serenity research.

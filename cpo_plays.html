@@ -68,6 +68,13 @@
         
         .intel-header { padding: 8px 12px; background: #1e293b; border-bottom: 2px solid var(--border); font-weight: 900; font-size: 10px; color: var(--accent); letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
         .intel-scroll { overflow-y: auto; flex-grow: 1; padding: 10px; }
+        
+        .buzz-bar { display: flex; gap: 8px; padding: 8px; background: rgba(14,165,233,0.05); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; }
+        .buzz-tag { font-size: 8px; font-weight: 800; background: #1e293b; border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; color: var(--text-dim); cursor: pointer; }
+        .buzz-tag:hover { border-color: var(--accent); color: var(--accent); }
+        .buzz-tag b { color: var(--gold); margin-right: 4px; }
+        .buzz-tag span { color: var(--green); font-size: 7px; margin-left: 4px; }
+
         .intel-item { background: rgba(15,23,42,0.6); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 8px; transition: border-color 0.2s; }
         .intel-item:hover { border-color: var(--accent); }
         .intel-item .meta { font-size: 8px; color: var(--text-dim); margin-bottom: 4px; display: flex; justify-content: space-between; }
@@ -261,7 +268,19 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="intel-area">
         <div class="intel-header">
             𝕏 INTELLIGENCE FEED
-            <div style="font-size:8px;color:var(--text-dim);" id="intel-count">0 POSTS</div>
+            <div style="display:flex;gap:10px;align-items:center;">
+                <div style="font-size:8px;color:var(--text-dim);" id="intel-count">0 POSTS</div>
+                <div class="filter-group" style="flex-direction:row;gap:5px;">
+                    <select id="intelTimeFilter" style="font-size:8px;padding:2px;background:#0f172a;color:var(--text-dim);border:1px solid var(--border);" onchange="filterIntel()">
+                        <option value="all">ALL TIME</option>
+                        <option value="24h">LAST 24H</option>
+                        <option value="7d">LAST 7D</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="buzz-bar" id="buzzBar">
+            <div style="font-size:8px;color:var(--text-dim);padding:4px;">TRENDING: NONE</div>
         </div>
         <div class="intel-scroll" id="intelBody">
             <div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">LOADING INTEL CACHE...</div>
@@ -411,6 +430,7 @@ function buildEntries() {
             score: calcScore(h, mcapB, perf1y, rev_num, pe26, state.aggressiveness),
             todayPct: live.change_pct ?? null, p: entry.performance || {},
             obb: h.openbb_supplement || {},
+            buzz: (window.X_INTEL_MODULE?.buzz || {})[ticker] || null,
             searchStr: `${ticker} ${h.Company||''} ${h.Role||''} ${h.Notes||''}`.toLowerCase()
         };
     });
@@ -440,6 +460,11 @@ function render() {
             if (e.obb.short_interest_pct) obbHtml += `<span style="background:rgba(244,63,94,0.1);color:var(--danger);padding:1px 4px;border-radius:3px;font-size:9px;font-weight:800;border:1px solid rgba(244,63,94,0.2);">SHORT: ${e.obb.short_interest_pct}%</span>`;
             obbHtml += `</div>`;
         }
+        let buzzHtml = '';
+        if (e.buzz && e.buzz.total > 0) {
+            buzzHtml = `<span onclick="syncIntelSearch('${e.ticker}'); event.stopPropagation();" style="display:inline-flex;align-items:center;gap:3px;background:rgba(212,163,115,0.1);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;border:1px solid rgba(212,163,115,0.3);cursor:pointer;margin-right:5px;" title="Social Buzz: ${e.buzz['7d']} mentions last 7d">𝕏 ${e.buzz['7d']}</span>`;
+        }
+
         tr.innerHTML = `
             <td><span class="pin-btn ${isPinned?'active':''}" onclick="togglePin('${esc(e.ticker)}')">★</span></td>
             <td><span class="rank-num">${rank}</span></td>
@@ -456,7 +481,7 @@ function render() {
             <td class="${(e.perf1y||0)>=0?'up':'down'}">${e.perf1y!==undefined?e.perf1y+'%':'--'}</td>
             <td class="${todayCls}" style="font-weight:bold;">${todayStr}</td>
             <td style="font-weight:700;color:var(--accent);">${e.rev_num?e.rev_num+'%':'--'}</td>
-            <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${esc(e.h.Role)}</div><div style="font-size:10px;color:var(--text-dim);margin-top:1px;">${esc(e.h.Notes||'')}</div>${obbHtml}</td>
+            <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${buzzHtml}${esc(e.h.Role)}</div><div style="font-size:10px;color:var(--text-dim);margin-top:1px;">${esc(e.h.Notes||'')}</div>${obbHtml}</td>
         `;
         frag.appendChild(tr); rank++;
     });
@@ -567,14 +592,39 @@ window.setSort = function(col) {
 // Filter intelligence
 function filterIntel() {
     const query = document.getElementById('intelSearch').value.toLowerCase();
-    const posts = window.X_INTEL || [];
+    const timeFilter = document.getElementById('intelTimeFilter').value;
+    const module = window.X_INTEL_MODULE || { posts: [] };
+    const posts = module.posts;
     
     let filtered = posts;
     if (query) {
         filtered = posts.filter(p => p.text.toLowerCase().includes(query) || p.username.toLowerCase().includes(query));
     }
     
+    // Time filter logic
+    if (timeFilter !== 'all') {
+        const now = new Date();
+        const hours = timeFilter === '24h' ? 24 : 168;
+        const cutoff = new Date(now.getTime() - (hours * 60 * 60 * 1000));
+        filtered = filtered.filter(p => new Date(p.timestamp) >= cutoff);
+    }
+    
     renderIntel(filtered, query);
+    renderBuzz(module.buzz);
+}
+
+function renderBuzz(buzz = {}) {
+    const bar = document.getElementById('buzzBar');
+    const sorted = Object.entries(buzz)
+        .sort((a,b) => b[1]['7d'] - a[1]['7d'])
+        .slice(0, 8);
+    
+    if (sorted.length === 0) return;
+    
+    bar.innerHTML = sorted.map(([t, stats]) => {
+        const change = stats['24h'] > 0 ? `<span>+${stats['24h']}</span>` : '';
+        return `<div class="buzz-tag" onclick="syncIntelSearch('${t}')"><b>$${t}</b> ${stats['7d']}w ${change}</div>`;
+    }).join('');
 }
 
 function renderIntel(posts, query = "") {
