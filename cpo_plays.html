@@ -61,15 +61,19 @@
         .chart-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
         .clear-btn { background: rgba(244,63,94,0.1); border: 1px solid var(--danger); color: var(--danger); padding: 2px 8px; border-radius: 4px; font-size: 9px; cursor: pointer; font-weight: 800; }
 
-        /* Split Layout */
-        .main-container { display: flex; gap: 10px; flex-grow: 1; overflow: hidden; }
-        .table-area { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; flex: 1.8; min-height: 400px; display: flex; flex-direction: column; }
-        .intel-area { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; flex: 1; min-height: 400px; display: flex; flex-direction: column; }
+        /* Full Width Layout */
+        .table-area { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; width: 100%; min-height: 400px; display: flex; flex-direction: column; }
         
-        .intel-header { padding: 8px 12px; background: #1e293b; border-bottom: 2px solid var(--border); font-weight: 900; font-size: 10px; color: var(--accent); letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
-        .intel-scroll { overflow-y: auto; flex-grow: 1; padding: 10px; }
+        /* Intelligence Modal Overlay */
+        .intel-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2,6,23,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .intel-modal-content { width: 95%; height: 90%; background: var(--bg-card); border: 2px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        .intel-modal.active { display: flex; }
+
+        .intel-header { padding: 12px 20px; background: #1e293b; border-bottom: 2px solid var(--border); font-weight: 900; font-size: 14px; color: var(--accent); letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
+        .intel-scroll { overflow-y: auto; flex-grow: 1; padding: 20px; }
         
-        .buzz-bar { display: flex; gap: 8px; padding: 8px; background: rgba(14,165,233,0.05); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; }
+        .close-modal { cursor: pointer; color: var(--text-dim); font-size: 24px; line-height: 1; margin-left: 20px; transition: color 0.2s; }
+        .close-modal:hover { color: var(--danger); }
         .buzz-tag { font-size: 8px; font-weight: 800; background: #1e293b; border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; color: var(--text-dim); cursor: pointer; }
         .buzz-tag:hover { border-color: var(--accent); color: var(--accent); }
         .buzz-tag b { color: var(--gold); margin-right: 4px; }
@@ -164,7 +168,7 @@
                 <span class="search-tag">DASHBOARD</span>
             </div>
             <div class="search-box">
-                <input type="text" id="intelSearch" class="search-bar" placeholder="SEARCH XPEL INTEL / NEWS...">
+                <input type="text" id="intelSearch" class="search-bar" placeholder="CLICK FOR XPEL INTEL / NEWS..." readonly onclick="openIntelModal()">
                 <span class="search-tag" style="color:var(--accent)">XPEL INTELLIGENCE</span>
             </div>
         </div>
@@ -189,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Intel listeners
-    document.getElementById('intelSearch').addEventListener('input', filterIntel);
+    document.getElementById('modalIntelSearch').addEventListener('input', filterIntel);
 
     initPulse();
     filterData();
@@ -236,55 +240,51 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="bucket-pills" id="bucketPills"></div>
 </div>
 
-<div class="main-container">
-    <div class="table-area">
-        <div class="table-scroll">
-            <table id="masterTable">
-                <thead>
-                    <tr>
-                        <th style="width:30px;" onclick="setSort('pinned')">★</th>
-                        <th style="width:30px;">#</th>
-                        <th style="width:85px;" onclick="setSort('ticker')">Ticker</th>
-                        <th style="width:155px;" onclick="setSort('company')">Company</th>
-                        <th style="width:50px;" onclick="setSort('alpha')">Alpha</th>
-                        <th style="width:50px;" onclick="setSort('risk')">Risk</th>
-                        <th style="width:50px;" onclick="setSort('hidden')">Hidden</th>
-                        <th style="width:65px;" onclick="setSort('country')">Exchange</th>
-                        <th style="width:80px;" onclick="setSort('mcap')">MCap</th>
-                        <th style="width:62px;" onclick="setSort('pe26')">P/E '26</th>
-                        <th style="width:62px;" onclick="setSort('pe27')">P/E '27</th>
-                        <th style="width:60px;" onclick="setSort('upside')">Upside</th>
-                        <th style="width:65px;" onclick="setSort('perf1y')">1y Rtn</th>
-                        <th style="width:62px;" onclick="setSort('today')">🟢 Today</th>
-                        <th style="width:78px;" onclick="setSort('rev')">Rev Growth</th>
-                        <th onclick="setSort('info')">Research Info / Role</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
-        </div>
+<div class="table-area">
+    <div class="table-scroll">
+        <table id="masterTable">
+            <thead>
+                <tr>
+                    <th style="width:30px;" onclick="setSort('pinned')">★</th>
+                    <th style="width:30px;">#</th>
+                    <th style="width:85px;" onclick="setSort('ticker')">Ticker</th>
+                    <th style="width:155px;" onclick="setSort('company')">Company</th>
+                    <th style="width:50px;" onclick="setSort('alpha')">Alpha</th>
+                    <th style="width:50px;" onclick="setSort('risk')">Risk</th>
+                    <th style="width:50px;" onclick="setSort('hidden')">Hidden</th>
+                    <th style="width:65px;" onclick="setSort('country')">Exchange</th>
+                    <th style="width:80px;" onclick="setSort('mcap')">MCap</th>
+                    <th style="width:62px;" onclick="setSort('pe26')">P/E '26</th>
+                    <th style="width:62px;" onclick="setSort('pe27')">P/E '27</th>
+                    <th style="width:60px;" onclick="setSort('upside')">Upside</th>
+                    <th style="width:65px;" onclick="setSort('perf1y')">1y Rtn</th>
+                    <th style="width:62px;" onclick="setSort('today')">🟢 Today</th>
+                    <th style="width:78px;" onclick="setSort('rev')">Rev Growth</th>
+                    <th onclick="setSort('info')">Research Info / Role</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
     </div>
+</div>
 
-    <div class="intel-area">
+<div class="intel-modal" id="intelModal">
+    <div class="intel-modal-content">
         <div class="intel-header">
-            𝕏 INTELLIGENCE FEED
-            <div style="display:flex;gap:10px;align-items:center;">
-                <div style="font-size:8px;color:var(--text-dim);" id="intel-count">0 POSTS</div>
-                <div class="filter-group" style="flex-direction:row;gap:5px;">
-                    <select id="intelTimeFilter" style="font-size:8px;padding:2px;background:#0f172a;color:var(--text-dim);border:1px solid var(--border);" onchange="filterIntel()">
-                        <option value="all">ALL TIME</option>
-                        <option value="24h">LAST 24H</option>
-                        <option value="7d">LAST 7D</option>
-                    </select>
-                </div>
+            <div>𝕏 SOCIAL INTELLIGENCE TERMINAL</div>
+            <div style="display:flex;gap:15px;align-items:center;">
+                <input type="text" id="modalIntelSearch" class="search-bar" style="width:400px;background:#0f172a;" placeholder="SEARCH POSTS / KEYWORDS...">
+                <select id="intelTimeFilter" style="font-size:10px;padding:4px;background:#0f172a;color:var(--text-dim);border:1px solid var(--border);" onchange="filterIntel()">
+                    <option value="all">ALL TIME ARCHIVE</option>
+                    <option value="24h">LAST 24 HOURS</option>
+                    <option value="7d">LAST 7 DAYS</option>
+                </select>
+                <div style="font-size:10px;color:var(--text-dim);" id="intel-count">0 POSTS</div>
+                <div class="close-modal" onclick="closeIntelModal()">&times;</div>
             </div>
         </div>
-        <div class="buzz-bar" id="buzzBar">
-            <div style="font-size:8px;color:var(--text-dim);padding:4px;">TRENDING: NONE</div>
-        </div>
-        <div class="intel-scroll" id="intelBody">
-            <div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">LOADING INTEL CACHE...</div>
-        </div>
+        <div class="buzz-bar" id="buzzBar"></div>
+        <div class="intel-scroll" id="intelBody"></div>
     </div>
 </div>
 
@@ -591,14 +591,14 @@ window.setSort = function(col) {
 
 // Filter intelligence
 function filterIntel() {
-    const query = document.getElementById('intelSearch').value.toLowerCase();
+    const query = document.getElementById('modalIntelSearch').value.toLowerCase();
     const timeFilter = document.getElementById('intelTimeFilter').value;
     const module = window.X_INTEL_MODULE || { posts: [] };
-    const posts = module.posts;
+    const posts = module.posts || [];
     
     let filtered = posts;
     if (query) {
-        filtered = posts.filter(p => p.text.toLowerCase().includes(query) || p.username.toLowerCase().includes(query));
+        filtered = posts.filter(p => (p.text||"").toLowerCase().includes(query) || (p.username||"").toLowerCase().includes(query));
     }
     
     // Time filter logic
@@ -613,13 +613,25 @@ function filterIntel() {
     renderBuzz(module.buzz);
 }
 
+function openIntelModal() {
+    document.getElementById('intelModal').classList.add('active');
+    filterIntel();
+}
+
+function closeIntelModal() {
+    document.getElementById('intelModal').classList.remove('active');
+}
+
 function renderBuzz(buzz = {}) {
     const bar = document.getElementById('buzzBar');
     const sorted = Object.entries(buzz)
         .sort((a,b) => b[1]['7d'] - a[1]['7d'])
-        .slice(0, 8);
+        .slice(0, 12);
     
-    if (sorted.length === 0) return;
+    if (sorted.length === 0) {
+        bar.innerHTML = '<div style="font-size:8px;color:var(--text-dim);padding:4px;">NO TRENDING TICKERS IN CACHE.</div>';
+        return;
+    }
     
     bar.innerHTML = sorted.map(([t, stats]) => {
         const change = stats['24h'] > 0 ? `<span>+${stats['24h']}</span>` : '';
@@ -669,9 +681,9 @@ function renderIntel(posts, query = "") {
 }
 
 function syncIntelSearch(ticker) {
-    const intelSearch = document.getElementById('intelSearch');
+    const intelSearch = document.getElementById('modalIntelSearch');
     intelSearch.value = ticker.startsWith('$') ? ticker : '$' + ticker;
-    filterIntel();
+    openIntelModal();
 }
 
 window.togglePin = t => { state.pinned.includes(t) ? state.pinned=state.pinned.filter(x=>x!==t) : state.pinned.push(t); render(); updateChart(); };
