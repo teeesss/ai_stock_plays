@@ -136,24 +136,30 @@ def _get_yf_supplement(ticker_symbol: str, entry: dict) -> dict:
 
 def _get_openbb_supplement(ticker_symbol: str) -> dict:
     """
-    Secondary: Use OpenBB for additional data where yfinance fails.
-    OpenBB uses yfinance as underlying provider for free tier.
-    Advantage: standardized schema, better for international symbols.
+    Secondary: Use OpenBB for additional data where raw yfinance JSON fails.
+    Prioritizes 'tmx' provider for estimates as it is often more stable than yfinance.
     """
     if not OPENBB_AVAILABLE:
         return {}
     result = {}
     try:
-        # Analyst estimates consensus
-        est = obb.equity.estimates.consensus(symbol=ticker_symbol, provider='yfinance')
+        # 1. Try TMX for Consensus (Usually returns buy/sell/hold counts)
+        est = obb.equity.estimates.consensus(symbol=ticker_symbol, provider='tmx')
         if est and hasattr(est, 'results') and est.results:
             r = est.results[0]
-            if hasattr(r, 'target_consensus'): result['obb_target_consensus'] = r.target_consensus
-            if hasattr(r, 'target_high'):      result['obb_target_high']      = r.target_high
-            if hasattr(r, 'target_low'):       result['obb_target_low']       = r.target_low
-            if hasattr(r, 'recommendation'):   result['obb_recommendation']   = r.recommendation
+            if getattr(r, 'target_consensus', None): result['analyst_target_mean'] = r.target_consensus
+            if getattr(r, 'total_analysts', None):   result['analyst_count'] = r.total_analysts
+            if getattr(r, 'buy_ratings', None):     result['analyst_buy_count'] = r.buy_ratings
+            if getattr(r, 'sell_ratings', None):    result['analyst_sell_count'] = r.sell_ratings
+            
+            # Derived Buy %
+            if r.buy_ratings is not None and r.total_analysts:
+                result['analyst_buy_pct'] = round((r.buy_ratings / r.total_analysts) * 100, 1)
+
+        # 2. Try for Institutional / Short Interest (Often redundant but good fallback)
+        # obb.equity.ownership.institutional (often requires FMP/Intrinio key)
     except Exception as ex:
-        log.debug(f'  {ticker_symbol}: openbb estimates skipped — {ex}')
+        log.debug(f'  {ticker_symbol}: openbb supplement skipped — {ex}')
 
     return result
 

@@ -67,7 +67,7 @@
 - **Private bucket weight = 0**: Private/acquired companies always appear in separate Watchlist section, never inflate public equity rankings.
 # 📋 CPO Dashboard Task List
 
-## 🚀 Next Sprint
+## 🚀 Next Sprint: V7.0 Intelligence & Social Extraction
 
 ### 🔍 Pending / Future Work
 - [x] **OPENBB SUPPLEMENT — FETCH DATA**: Run `python engine/openbb_fetcher.py` to actually populate `openbb_supplement{}` for all 113 public equities. (Bypassed the 401 Unauthorized errors by switching to local stealth JSON instead of raw yfinance queries).

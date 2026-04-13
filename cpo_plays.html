@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GIGACPO Intelligence Terminal (V6.1) — Pure Play SiPh/CPO Ecosystem</title>
     <script src="database/dashboard_data.js"></script>
+    <script src="database/live_prices.js"></script>
+    <script src="database/x_intel_master.js"></script>
     <!-- Live prices: run 'python engine/live_prices.py' to refresh -->
     <script>
     // Graceful load: LIVE_PRICES is optional, terminal works without it
@@ -59,7 +61,23 @@
         .chart-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
         .clear-btn { background: rgba(244,63,94,0.1); border: 1px solid var(--danger); color: var(--danger); padding: 2px 8px; border-radius: 4px; font-size: 9px; cursor: pointer; font-weight: 800; }
 
-        /* Filters */
+        /* Split Layout */
+        .main-container { display: flex; gap: 10px; flex-grow: 1; overflow: hidden; }
+        .table-area { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; flex: 1.8; min-height: 400px; display: flex; flex-direction: column; }
+        .intel-area { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; flex: 1; min-height: 400px; display: flex; flex-direction: column; }
+        
+        .intel-header { padding: 8px 12px; background: #1e293b; border-bottom: 2px solid var(--border); font-weight: 900; font-size: 10px; color: var(--accent); letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
+        .intel-scroll { overflow-y: auto; flex-grow: 1; padding: 10px; }
+        .intel-item { background: rgba(15,23,42,0.6); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 8px; transition: border-color 0.2s; }
+        .intel-item:hover { border-color: var(--accent); }
+        .intel-item .meta { font-size: 8px; color: var(--text-dim); margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .intel-item .user { color: var(--gold); font-weight: 900; }
+        .intel-item .text { font-size: 10px; line-height: 1.4; color: var(--text-main); white-space: normal; word-break: break-word; }
+        .intel-item .highlight { background: rgba(245,158,11,0.2); color: var(--gold); border-radius: 2px; padding: 0 2px; }
+
+        .search-row { display: flex; gap: 10px; width: 100%; }
+        .search-box { flex: 1; position: relative; }
+        .search-tag { position: absolute; right: 8px; top: 6px; font-size: 8px; font-weight: 900; color: #334155; pointer-events: none; }
         .filter-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
         .filter-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; margin-bottom: 10px; }
         .filter-group { display: flex; flex-direction: column; gap: 4px; }
@@ -117,6 +135,9 @@
         .region-tag { font-size: 10px; font-weight: 900; padding: 1px 5px; border-radius: 3px; background: rgba(14,165,233,0.1); color: var(--accent); border: 1px solid rgba(14,165,233,0.25); text-transform: uppercase; }
         .watchlist-divider td { background: rgba(168,85,247,0.08) !important; color: var(--purple); font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; border-top: 2px solid rgba(168,85,247,0.4); }
         .rank-num { color: var(--text-dim); font-size: 10px; font-weight: 700; min-width: 28px; display: inline-block; text-align: right; margin-right: 4px; }
+        
+        .x-intel-icon { font-size: 10px; margin-left: 5px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s, color 0.2s; color: var(--text-dim); }
+        .x-intel-icon:hover { opacity: 1; color: var(--accent); }
     </style>
 </head>
 <body style="display:flex;flex-direction:column;min-height:100vh;">
@@ -130,7 +151,16 @@
     <div class="stat"><span>WATCHLIST</span><div class="val" id="stat-private" style="color:var(--purple)">—</div></div>
     <div class="stat"><span>PINNED</span><div class="val" id="stat-pinned">0</div></div>
     <div class="search-container">
-        <input type="text" id="searchInput" class="search-bar" placeholder="SEARCH TICKERS, ROLES, COMPANIES...">
+        <div class="search-row">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-bar" placeholder="SEARCH TICKERS / COMPANIES...">
+                <span class="search-tag">DASHBOARD</span>
+            </div>
+            <div class="search-box">
+                <input type="text" id="intelSearch" class="search-bar" placeholder="SEARCH XPEL INTEL / NEWS...">
+                <span class="search-tag" style="color:var(--accent)">XPEL INTELLIGENCE</span>
+            </div>
+        </div>
     </div>
     <button class="sync-btn" id="syncBtn" onclick="triggerSync()" title="Trigger full data sync via web bridge (also auto-runs at 4:20 PM EST)">
         <span class="sync-dot" id="syncDot"></span> SYNC
@@ -150,6 +180,13 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.classList.add('busy');
         btn.onclick = () => alert("This terminal is in Remote Mode. The data is automatically synchronized daily at 4:20 PM EST by the Master Bridge. Manual sync must be triggered from the local machine hosting the bridge.");
     }
+    
+    // Intel listeners
+    document.getElementById('intelSearch').addEventListener('input', filterIntel);
+
+    initPulse();
+    filterData();
+    filterIntel();
 });
 </script>
 
@@ -192,31 +229,43 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="bucket-pills" id="bucketPills"></div>
 </div>
 
-<div class="table-area">
-    <div class="table-scroll">
-        <table id="masterTable">
-            <thead>
-                <tr>
-                    <th style="width:30px;" onclick="setSort('pinned')">★</th>
-                    <th style="width:30px;">#</th>
-                    <th style="width:85px;" onclick="setSort('ticker')">Ticker</th>
-                    <th style="width:155px;" onclick="setSort('company')">Company</th>
-                    <th style="width:50px;" onclick="setSort('alpha')" title="Alpha Score 0-10: Supply chain conviction">Alpha</th>
-                    <th style="width:50px;" onclick="setSort('risk')" title="Risk 0-10: Higher = riskier">Risk</th>
-                    <th style="width:50px;" onclick="setSort('hidden')" title="Hiddenness 0-10: Higher = less known">Hidden</th>
-                    <th style="width:65px;" onclick="setSort('country')">Exchange</th>
-                    <th style="width:80px;" onclick="setSort('mcap')">MCap</th>
-                    <th style="width:62px;" onclick="setSort('pe26')">P/E '26</th>
-                    <th style="width:62px;" onclick="setSort('pe27')">P/E '27</th>
-                    <th style="width:60px;" onclick="setSort('upside')">Upside</th>
-                    <th style="width:65px;" onclick="setSort('perf1y')">1y Rtn</th>
-                    <th style="width:62px;" onclick="setSort('today')" title="Today’s price change (from live_prices.js)">🟢 Today</th>
-                    <th style="width:78px;" onclick="setSort('rev')">Rev Growth</th>
-                    <th onclick="setSort('info')">Research Info / Role</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
+<div class="main-container">
+    <div class="table-area">
+        <div class="table-scroll">
+            <table id="masterTable">
+                <thead>
+                    <tr>
+                        <th style="width:30px;" onclick="setSort('pinned')">★</th>
+                        <th style="width:30px;">#</th>
+                        <th style="width:85px;" onclick="setSort('ticker')">Ticker</th>
+                        <th style="width:155px;" onclick="setSort('company')">Company</th>
+                        <th style="width:50px;" onclick="setSort('alpha')">Alpha</th>
+                        <th style="width:50px;" onclick="setSort('risk')">Risk</th>
+                        <th style="width:50px;" onclick="setSort('hidden')">Hidden</th>
+                        <th style="width:65px;" onclick="setSort('country')">Exchange</th>
+                        <th style="width:80px;" onclick="setSort('mcap')">MCap</th>
+                        <th style="width:62px;" onclick="setSort('pe26')">P/E '26</th>
+                        <th style="width:62px;" onclick="setSort('pe27')">P/E '27</th>
+                        <th style="width:60px;" onclick="setSort('upside')">Upside</th>
+                        <th style="width:65px;" onclick="setSort('perf1y')">1y Rtn</th>
+                        <th style="width:62px;" onclick="setSort('today')">🟢 Today</th>
+                        <th style="width:78px;" onclick="setSort('rev')">Rev Growth</th>
+                        <th onclick="setSort('info')">Research Info / Role</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="intel-area">
+        <div class="intel-header">
+            𝕏 INTELLIGENCE FEED
+            <div style="font-size:8px;color:var(--text-dim);" id="intel-count">0 POSTS</div>
+        </div>
+        <div class="intel-scroll" id="intelBody">
+            <div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">LOADING INTEL CACHE...</div>
+        </div>
     </div>
 </div>
 
@@ -274,9 +323,12 @@ function momentumScore(perf1y) {
 }
 
 function buildTickerHTML(ticker) {
-    if (!ticker.includes('/')) return `<a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" class="ticker-link">${ticker}</a>`;
+    const primary = ticker.includes('/') ? ticker.split('/')[0].trim() : ticker;
+    const xIcon = `<span class="x-intel-icon" onclick="syncIntelSearch('${primary}'); event.stopPropagation();" title="Search 𝕏 Intelligence for $${primary}">𝕏</span>`;
+    
+    if (!ticker.includes('/')) return `<a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" class="ticker-link">${ticker}</a>${xIcon}`;
     const parts = ticker.split('/').map(t => t.trim());
-    return `<a href="https://finance.yahoo.com/quote/${parts[0]}" target="_blank" class="ticker-link">${parts[0]}</a><span class="ticker-sep">/</span><a href="https://finance.yahoo.com/quote/${parts[1]}" target="_blank" class="ticker-link ticker-otc">${parts[1]}</a>`;
+    return `<a href="https://finance.yahoo.com/quote/${parts[0]}" target="_blank" class="ticker-link">${parts[0]}</a><span class="ticker-sep">/</span><a href="https://finance.yahoo.com/quote/${parts[1]}" target="_blank" class="ticker-link ticker-otc">${parts[1]}</a>${xIcon}`;
 }
 
 function calcScore(h, mcapB, perf1y, rev_num, pe26, agg) {
@@ -512,7 +564,66 @@ window.setSort = function(col) {
     render();
 };
 
-function setSortBtn(col) { setSort(col); }
+// Filter intelligence
+function filterIntel() {
+    const query = document.getElementById('intelSearch').value.toLowerCase();
+    const posts = window.X_INTEL || [];
+    
+    let filtered = posts;
+    if (query) {
+        filtered = posts.filter(p => p.text.toLowerCase().includes(query) || p.username.toLowerCase().includes(query));
+    }
+    
+    renderIntel(filtered, query);
+}
+
+function renderIntel(posts, query = "") {
+    const container = document.getElementById('intelBody');
+    const countLabel = document.getElementById('intel-count');
+    
+    countLabel.innerText = `${posts.length} POSTS`;
+    container.innerHTML = "";
+    
+    if (posts.length === 0) {
+        container.innerHTML = `<div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">NO MATCHING INTEL FOUND.</div>`;
+        return;
+    }
+
+    posts.forEach(p => {
+        const date = new Date(p.timestamp).toLocaleDateString();
+        let text = p.text;
+        
+        // Highlight search query
+        if (query && query.length > 2) {
+            const regex = new RegExp(`(${query})`, 'gi');
+            text = text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        // Highlight ticker-like words ($ABCD)
+        text = text.replace(/(\$[A-Z]+)/g, '<span style="color:var(--gold);font-weight:700;">$1</span>');
+
+        const item = document.createElement('div');
+        item.className = 'intel-item';
+        item.innerHTML = `
+            <div class="meta">
+                <span class="user">@${p.username}</span>
+                <span>${date}</span>
+            </div>
+            <div class="text">${text}</div>
+            <div style="margin-top:6px; text-align:right;">
+                <a href="${p.url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;">VIEW SOURCE ↗</a>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+function syncIntelSearch(ticker) {
+    const intelSearch = document.getElementById('intelSearch');
+    intelSearch.value = ticker.startsWith('$') ? ticker : '$' + ticker;
+    filterIntel();
+}
+
 window.togglePin = t => { state.pinned.includes(t) ? state.pinned=state.pinned.filter(x=>x!==t) : state.pinned.push(t); render(); updateChart(); };
 window.clearPins = () => { state.pinned = []; render(); updateChart(); };
 document.getElementById('searchInput').oninput = e => { state.search = e.target.value.toLowerCase(); render(); };
