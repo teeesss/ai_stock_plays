@@ -1,77 +1,209 @@
 [
   {
-    "id": "2043482107037557060#m",
+    "id": "2043482107037557060",
     "username": "KawzInvests",
     "text": "youtu.be/wmwVQMWTqD0?is=w2wY\u2026TimeStamp: 7:28",
-    "timestamp": "Apr 13, 2026 \u00b7 12:11 AM UTC",
-    "url": "https://x.com/KawzInvests/status/2043482107037557060#m",
-    "is_pinned": false,
-    "stats": {
-      "icon-comment": "",
-      "icon-retweet": "",
-      "icon-heart": "1",
-      "icon-views": "2,367"
-    },
-    "fetched_at": "2026-04-13T00:36:31.243898+00:00"
+    "timestamp": "2026-04-13T00:00:00+00:00",
+    "raw_date": "Apr 13, 2026 \u00b7 12:11 AM UTC",
+    "url": "https://x.com/KawzInvests/status/2043482107037557060",
+    "fetched_at": "2026-04-13T00:55:14.257903+00:00"
   },
   {
-    "id": "2043457536112689593#m",
+    "id": "2043457536112689593",
     "username": "KawzInvests",
     "text": "The US just announced a blockade of the Strait of Hormuz starting Monday 10am ET. Peace talks failed.\n\nTrump went on air within hours and said this:\n\"A laser melts the drone. It's a beautiful thing to see.\"\nThe US is spending $2,000,000 per Patriot interceptor to kill $2,000 Iranian drones. A laser costs $10 per shot.$LASRis the only US publicly traded pure-play directed energy weapons stock. Supplier to Iron Beam. Holds a $171M contract to demonstrate a 1MW laser for Golden Dome this year.$EOS.AXis the only ITAR-free 100kW laser weapon in the world. AUD $459M order book. Every allied nation that can't buy from Raytheon is calling them.",
-    "timestamp": "Apr 12, 2026 \u00b7 10:33 PM UTC",
-    "url": "https://x.com/KawzInvests/status/2043457536112689593#m",
-    "is_pinned": false,
-    "stats": {
-      "icon-comment": "5",
-      "icon-retweet": "28",
-      "icon-heart": "211",
-      "icon-views": "21,105"
-    },
-    "fetched_at": "2026-04-13T00:36:31.244448+00:00"
+    "timestamp": "2026-04-12T00:00:00+00:00",
+    "raw_date": "Apr 12, 2026 \u00b7 10:33 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2043457536112689593",
+    "fetched_at": "2026-04-13T00:55:14.257903+00:00"
   },
   {
-    "id": "2043413927527125399#m",
+    "id": "2043413927527125399",
     "username": "KawzInvests",
     "text": "$OPTX(~$350M) is North America's largest polymer optics manufacturer. Every step under one roof. Raw polymer in, finished electro-optic assembly out, without touching a foreign subcontractor.\n\nChina controls the majority of global polymer optics production. Anduril has an internal policy against sourcing from China. NDAA Section 834 bans adversary-nation optics by 2030. Those constraints together eliminate most of the field. Syntec is one of the only domestic companies that qualifies.$OPTXis not just an Anduril supplier. That framing captures maybe one chapter of what this company actually is.\n\nSix revenue streams either ramping or already in production. Missile guidance optics with multiyear agreements signed. Night vision goggle eyepieces since 2018, $5.2M in NVG orders in 2025 alone. Military scopes on a program expected to run over a decade. LEO satellite optics expected to nearly triple in 2026. Microlens arrays for AI datacenter interconnects entering production this year. And new defense product lines management guided to add revenue in Q2 and beyond, program undisclosed due to NDAs.\n\nThat last one is the line worth sitting with. The language used to describe it in December was \"the most significant opportunity in the company's 25-year history.\"\n\nThe bear case. Revenue flat at $28M for three years. Gross margin jumped from 12% to 24% in Q4, which is real, but margin alone does not build a growth story. Cash under $400K with a credit facility maturing in November.\n\nQ2 is the quarter where this either shows up in the numbers or it doesn't.$OPTX",
-    "timestamp": "Apr 12, 2026 \u00b7 7:40 PM UTC",
-    "url": "https://x.com/KawzInvests/status/2043413927527125399#m",
-    "is_pinned": false,
-    "stats": {
-      "icon-comment": "14",
-      "icon-retweet": "23",
-      "icon-heart": "300",
-      "icon-views": "49,003"
-    },
-    "fetched_at": "2026-04-13T00:36:31.245512+00:00"
+    "timestamp": "2026-04-12T00:00:00+00:00",
+    "raw_date": "Apr 12, 2026 \u00b7 7:40 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2043413927527125399",
+    "fetched_at": "2026-04-13T00:55:14.257903+00:00"
   },
   {
-    "id": "2042608287447707909#m",
+    "id": "2042610902541684851",
+    "username": "KawzInvests",
+    "text": "@CitronResearchis short$AAOIon three claims. Here is what the capacity ramp plan actually shows why he is wrong.\n\nClaim one: Oracle is the anchor and Oracle is financially stressed. The ramp AAOI published guides to 420,000 800G units per month and 230,000 1.6T units per month by Q4 2026. Oracle's entire AI buildout cannot absorb that volume. A ramp of this scale requires multiple hyperscaler customers. The concentration thesis does not survive contact with the output numbers.\n\nClaim two: 31% gross margins at 112x earnings is uninvestable. This ignores what happens to revenue mix as speeds scale. 100G sells at $20 per unit. 800G sells at $320. 1.6T sells at $640. Each generation expands ASP far beyond the throughput increase. The ELSFP module contributes essentially zero to today's revenue and scales to 400,000 units per month by Q4 2027. That mix shift changes the earnings picture entirely.\n\nClaim three: 112x forward earnings is beyond peak bubble Nvidia. That multiple is being applied to today's earnings base on a company mid-ramp. By Q4 2026 the capacity guide implies roughly $303 million per month in revenue. The multiple compresses faster than any static comparison accounts for.\n\nThe real bear case is manufacturing execution. If the fab ramp slips, the numbers slip. Citron is not making that argument. They are using today's earnings to value a company whose revenue mix will be unrecognizable in two quarters.$AAOI$LITE$COHR$NVDA",
+    "timestamp": "2026-04-10T00:00:00+00:00",
+    "raw_date": "Apr 10, 2026 \u00b7 2:29 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2042610902541684851",
+    "fetched_at": "2026-04-13T01:02:33.655458+00:00"
+  },
+  {
+    "id": "2042608287447707909",
     "username": "KawzInvests",
     "text": "$LITEjust extended its sold-out window from end of 2027 to all of 2028.\n\nYOU NEED to understand why that matters$LITEmakes the EML lasers that power every 800G and 1.6T optical transceiver going into AI data centers. They hold greater than 50% global share in high-speed EMLs per BofA. There is no alternative supply chain that comes close.$NVDArecognized this two months ago and put $2B into$LITEin exchange for non-cancelable purchase agreements through end of decade. Not LOIs. Non-cancelable. That locked in LITE's capacity before the other hyperscalers could get there.\n\nNow the CEO is saying even that $2B commitment and a 12-fold capacity expansion at their Tokyo factory is not enough to keep up. New capex target is $100M to $250M and they are actively scouting additional factory sites in Japan. Every hyperscaler is asking the same question right now: how many units can you make this quarter, next quarter, the quarter after. The CEO called it \"the bottleneck right now for the industry.\"",
-    "timestamp": "Apr 10, 2026 \u00b7 2:19 PM UTC",
-    "url": "https://x.com/KawzInvests/status/2042608287447707909#m",
-    "is_pinned": false,
-    "stats": {
-      "icon-comment": "5",
-      "icon-retweet": "13",
-      "icon-heart": "316",
-      "icon-views": "49,386"
-    },
-    "fetched_at": "2026-04-13T00:36:31.246041+00:00"
+    "timestamp": "2026-04-10T00:00:00+00:00",
+    "raw_date": "Apr 10, 2026 \u00b7 2:19 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2042608287447707909",
+    "fetched_at": "2026-04-13T00:55:14.258918+00:00"
   },
   {
-    "id": "2042337208951325062#m",
+    "id": "2042337208951325062",
     "username": "KawzInvests",
     "text": "Nvidia paid $6.01 per share for 2.9% of$NOKin October. Nokia is now at $9.55\n\nI was at GTC and met with some of the Nokia exec team. What they described changes how you think about what a cell tower actually is.\n\nJensen Huang called it \"Robotic AI Radio.\" The idea is simple: a factory robot cannot wait 200 milliseconds for a cloud server to process its next move. So instead of sending that data back to a centralized data center, you run the inference directly at the cell tower. Every tower becomes a distributed AI compute node.$NOKis deploying$NVDARTX PRO 4500 Blackwell GPUs directly into its AI-RAN base stations to make this possible, running on$DELLPowerEdge servers.$TMUSwas the first US carrier to pilot it.\n\nThere are roughly 100,000 distributed network sites worldwide with enough spare capacity to add over 100 gigawatts of new AI compute over time. Nokia is the western vendor building the software stack that runs on top of Nvidia's hardware to make those sites intelligent.\n\nNokia's acquisition of Infinera gave it 800G ZR coherent pluggables at exactly the moment hyperscalers started treating optical backbones as AI infrastructure, not telecom infrastructure.$CIENis seeing the same demand and just guided $5.7 to $6.1 billion in revenue for fiscal 2026, up nearly 24%.$NOKOptical Networks grew 17% in Q4 2025, with \u20ac2.4B in hyperscaler orders for the full year. Management is targeting \u20ac3.1 to \u20ac3.7B in operating profit by 2028, up from just over \u20ac2B in 2025. The RAN market alone is projected to reach $200B by 2030.\n\nNvidia did not buy into Nokia because they needed the equity exposure. They bought in because they needed the distribution.",
-    "timestamp": "Apr 9, 2026 \u00b7 8:21 PM UTC",
-    "url": "https://x.com/KawzInvests/status/2042337208951325062#m",
-    "is_pinned": false,
-    "stats": {
-      "icon-comment": "29",
-      "icon-retweet": "80",
-      "icon-heart": "743",
-      "icon-views": "108,749"
-    },
-    "fetched_at": "2026-04-13T00:36:31.246591+00:00"
+    "timestamp": "2026-04-09T00:00:00+00:00",
+    "raw_date": "Apr 9, 2026 \u00b7 8:21 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2042337208951325062",
+    "fetched_at": "2026-04-13T00:55:14.258918+00:00"
+  },
+  {
+    "id": "2042000716860887098",
+    "username": "KawzInvests",
+    "text": "This is a multi-year cycle and every layer runs.\n\nTransceiver testing is happening now. CPO testing is the next leg. InP laser burn-in after that.\n\nThe market keeps repricing the same supply chain as each wave becomes visible. We're in wave one.$AEHR$VIAV$COHR$LITE$AAOI",
+    "timestamp": "2026-04-08T00:00:00+00:00",
+    "raw_date": "Apr 8, 2026 \u00b7 10:04 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2042000716860887098",
+    "fetched_at": "2026-04-13T00:55:14.259913+00:00"
+  },
+  {
+    "id": "2041964653765431717",
+    "username": "KawzInvests",
+    "text": "Now up almost ~50% in 5 days$AAOI",
+    "timestamp": "2026-04-08T00:00:00+00:00",
+    "raw_date": "Apr 8, 2026 \u00b7 7:41 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2041964653765431717",
+    "fetched_at": "2026-04-13T00:55:14.259913+00:00"
+  },
+  {
+    "id": "2041866094898487553",
+    "username": "KawzInvests",
+    "text": "Real-time intelligence from the Moon!\u00a0Our Ocula lunar imaging service will leverage@nvidia's Jetson module and Firefly's AI software to enable on-orbit processing in lunar orbit and transmit more timely, actionable insights to customers. The high-res telescopes that power Ocula were delivered to our spacecraft facility and fit checked on our Elytra orbital spacecraft. Learn more here:fireflyspace.com/news/firefl\u2026",
+    "timestamp": "2026-04-08T00:00:00+00:00",
+    "raw_date": "Apr 8, 2026 \u00b7 1:09 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2041866094898487553",
+    "fetched_at": "2026-04-13T00:55:14.260418+00:00"
+  },
+  {
+    "id": "2041894267052777570",
+    "username": "KawzInvests",
+    "text": "$RKLBtrades at roughly 45x 2026 revenue estimates.$FLYguides for $420 to $450 million this year and trades at about 13x that. The market cap gap between them is 7 to 1.\n\nBut$RKLBis a launch and spacecraft company.$FLYis a launch company, a lunar lander company, a defense software company already inside the Pentagon's Golden Dome contracting framework, and an orbital transfer vehicle company. Firefly and SciTec were onboarded to the MDA's Golden Dome vehicle earlier this year. The ceiling on that contract is $151 billion. Imagine if SciTec gets 1% of this. \n\nSciTec is also the first new prime contractor for U.S. missile warning ground systems in 50 years. That position exists inside$FLYat a 7x valuation discount to its closest public comp.\n\nMiranda has crossed 100 hot fires. Eclipse first flight is 2027. Four Alpha launches guided this year with potential for 6 to 8 with Block II debuting on Flight 8.$FLY$RKLB$LUNR",
+    "timestamp": "2026-04-08T00:00:00+00:00",
+    "raw_date": "Apr 8, 2026 \u00b7 3:01 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2041894267052777570",
+    "fetched_at": "2026-04-13T00:55:14.261017+00:00"
+  },
+  {
+    "id": "2041887287290536165",
+    "username": "KawzInvests",
+    "text": "$AAOIis up 37.66% in 5 days.\n\nThe OFC numbers we posted are why.\n\n~$64 million per month in current revenue. ~$303 million per month by Q4 2026. ~$701 million per month by Q4 2027. These are not annual figures.\n\nThe mechanism is ASP mix shift, not volume growth. The ELSFP module goes from effectively zero today to ~$256 million per month by Q4 2027. Each product generation that ships carries materially more revenue per unit than the one before it.\n\nThe bear case is manufacturing execution. That has not changed. But even at 70% of guidance, a $9B market cap does not reflect where this revenue mix is going.\n\nThe thesis has not changed.$AAOI$COHR$LITE",
+    "timestamp": "2026-04-08T00:00:00+00:00",
+    "raw_date": "Apr 8, 2026 \u00b7 2:34 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2041887287290536165",
+    "fetched_at": "2026-04-13T00:55:14.261017+00:00"
+  },
+  {
+    "id": "2041885544435609977",
+    "username": "KawzInvests",
+    "text": "$AEHRis up +66% since my last post in 5 days.\n\nThe three catalysts that matter most haven't happened yet.\n\nPosted the full thesis here before it moved. 4 separate orders across 4 distinct burn-in use cases in under two months. Engineering qualification and high-volume production purchased simultaneously in the most recent one. Customers don't buy production-scale capacity alongside engineering systems unless the internal ramp decision is already made.$COHRhas not placed an order.$LITEhas not placed an order. The second Sonoma hyperscaler PO has not arrived. InP laser burn-in is in no model I have seen.$AEHRis the only company with production-scale wafer-level burn-in for silicon photonic ICs.\nThe CPO wave has not started.$AEHR$VIAV$COHR$LITE$AVGO",
+    "timestamp": "2026-04-08T00:00:00+00:00",
+    "raw_date": "Apr 8, 2026 \u00b7 2:27 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2041885544435609977",
+    "fetched_at": "2026-04-13T00:55:14.261017+00:00"
+  },
+  {
+    "id": "2040961748195275015",
+    "username": "KawzInvests",
+    "text": "Full deep-dive on the tungsten supply squeeze and which western producer offers the better entry is in this week's Asymmetrical Bets.asymmetricalbets.substack.co\u2026",
+    "timestamp": "2026-04-06T00:00:00+00:00",
+    "raw_date": "Apr 6, 2026 \u00b7 1:16 AM UTC",
+    "url": "https://x.com/KawzInvests/status/2040961748195275015",
+    "fetched_at": "2026-04-13T00:55:14.261017+00:00"
+  },
+  {
+    "id": "2040961176897470682",
+    "username": "KawzInvests",
+    "text": "China spent 40 years deliberately running western tungsten mines into closure. \n\nBelow-cost production. Sustained market flooding. Hemerdon. Hollister. Strawberry. One by one they went uneconomic and shut. The strategy worked perfectly.\n\nThen China cut off its own exports.\n\n\"I have never seen a market as tight as tungsten is right now, aside from maybe lithium in 2021. This isn't like lithium, where there was a huge pipeline of projects that could come online.\" BMO Capital Markets VP, Bloomberg, March 15.\n\nAPT went from $320 to $3,000 in 14 months. China is now a net importer of the metal it monopolized. Tungsten was explicitly excluded from the US-China trade truce. New western mines need 2+ years minimum to permit, finance, and build.\n\nThe only meaningful western production at scale today comes from two companies. A DoD procurement ban locks out Chinese and Russian tungsten from all US defense contracts starting January 1, 2027.\n\nOne trades at $81,000 EV per annual mtu. The other produces nearly 3x the volume at $5,600 EV/mtu, with a $24.8 billion resource base against a $1.09 billion market cap.\n\nChina executed a perfect monopoly. Then handed the pricing power to the two survivors it spent 40 years trying to eliminate.$EQRLF$ALM",
+    "timestamp": "2026-04-06T00:00:00+00:00",
+    "raw_date": "Apr 6, 2026 \u00b7 1:13 AM UTC",
+    "url": "https://x.com/KawzInvests/status/2040961176897470682",
+    "fetched_at": "2026-04-13T00:55:14.261017+00:00"
+  },
+  {
+    "id": "2040429214927568955",
+    "username": "KawzInvests",
+    "text": "Every photonic IC has a failure curve that looks like a bathtub.\n\nFailure rate spikes in the first 1,000 hours of operation. Latent defects in the crystal structure, micro-voids in metal contacts, laser threshold shifts. Devices deployed without burn-in fail early and take entire rack segments offline.$AEHRforces every wafer through the infant mortality zone before it leaves the fab. A bad die caught at wafer level costs fractions of a cent. The same die failing inside a deployed$NVDAor$AVGOswitch after packaging costs tens of thousands in replacement hardware and network downtime.$VIAVsits at the other end of the curve. When devices enter the wear-out phase after years of operation, VIAV's Observer platform catches degradation before it becomes a failure. The same network. The same hardware. A different failure mode.\n\nOne company owns the left side of this chart. The other owns the right side. Neither competes with anything in the middle.",
+    "timestamp": "2026-04-04T00:00:00+00:00",
+    "raw_date": "Apr 4, 2026 \u00b7 2:00 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2040429214927568955",
+    "fetched_at": "2026-04-13T00:55:14.262537+00:00"
+  },
+  {
+    "id": "2040232894363512924",
+    "username": "KawzInvests",
+    "text": "This supply chain has 6 stages from raw substrate to live hyperscaler network.\n\nEvery company in stages 3, 4, and 5 competes for a socket.$COHRor$LITEwins the laser.$AVGOor$NVDAwins the switch.$TSEMor TSMC wins the foundry.\n\nStage 2 and Stage 6 are different. They are not competing for anything. Every photonic wafer produced by every company at every foundry passes through Stage 2 before it ships. Every network built on that hardware passes through Stage 6 before it goes live.$AEHRowns Stage 2.$VIAVowns Stage 6.",
+    "timestamp": "2026-04-04T00:00:00+00:00",
+    "raw_date": "Apr 4, 2026 \u00b7 1:00 AM UTC",
+    "url": "https://x.com/KawzInvests/status/2040232894363512924",
+    "fetched_at": "2026-04-13T00:55:14.263129+00:00"
+  },
+  {
+    "id": "2040170380287987996",
+    "username": "KawzInvests",
+    "text": "$AEHRhas received 4 separate orders in under two months across different platforms.\n\nEach one covers a different burn-in use case. AI processor production. Silicon photonics qualification. Silicon photonics volume ramp. The most recent added engineering qualification and high-volume production systems in a single order.\n\nThat last structure matters. Customers do not buy production-scale capacity alongside engineering systems unless the internal ramp decision has already been made.$AEHRis the only company with production-scale wafer-level burn-in for silicon photonic ICs. The CPO wave has not started yet.$AEHR$VIAV$COHR$LITE$AVGO$NVDA$TSEM",
+    "timestamp": "2026-04-03T00:00:00+00:00",
+    "raw_date": "Apr 3, 2026 \u00b7 8:51 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2040170380287987996",
+    "fetched_at": "2026-04-13T00:55:14.263129+00:00"
+  },
+  {
+    "id": "2040109649995653165",
+    "username": "KawzInvests",
+    "text": "A French and Japanese ship just crossed the Strait of Hormuz for the first time since the war started.\n\nif this holds into the weekend we might be walking into a strong Monday\n\nrisk coming off just a bit is all it takes...",
+    "timestamp": "2026-04-03T00:00:00+00:00",
+    "raw_date": "Apr 3, 2026 \u00b7 4:50 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2040109649995653165",
+    "fetched_at": "2026-04-13T00:55:14.264143+00:00"
+  },
+  {
+    "id": "2039818505390809127",
+    "username": "KawzInvests",
+    "text": "$AAOIreceived a $71M order for 800G transceivers from ANOTHER Major Hyperscale Customer\n\nIn the last 3 weeks alone:\n\n- March 9: First-ever volume order for 1.6T transceivers\n- March 23: New 800G volume order\n- April 2: Upsized $71M 800G order\n\nAll from the same undisclosed \"major hyperscale customer.\" That customer is almost certainly$ORCL. Oracle is mid-execution on the largest cloud buildout in its history. The order sizes, the timing, the acceleration. It all fits.\n\nThe CEO said it himself today. \"We also recently shipped the first 10,000 units of an 800G single-mode transceiver order to another hyperscale datacenter customer.\"\n\nTwo hyperscalers. Both ordering now. Both accelerating.\n\nThis is a multi-year cycle. 400G became 800G. 800G becomes 1.6T. 1.6T is the last stop before the industry moves to Co-Packaged Optics, CPO, where optics get embedded directly onto the switch chip. Less power. More bandwidth. The hyperscalers have been pushing toward this for years.$AAOIalready has their first 1.6T volume order. They broke ground on a 210,000 sq ft factory in February. Their anchor customer keeps coming back and ordering bigger every single time.",
+    "timestamp": "2026-04-02T00:00:00+00:00",
+    "raw_date": "Apr 2, 2026 \u00b7 9:33 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2039818505390809127",
+    "fetched_at": "2026-04-13T00:55:14.264143+00:00"
+  },
+  {
+    "id": "2039707331173249186",
+    "username": "KawzInvests",
+    "text": "Edgewater also saying optical demand growing exponentially. Transceiver lead times$COHRnearly doubled ($AAOI) and$LITElaser supply capacity soaked up.$AVGODSP lead times are the industry bottleneck.",
+    "timestamp": "2026-04-02T00:00:00+00:00",
+    "raw_date": "Apr 2, 2026 \u00b7 2:11 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2039707331173249186",
+    "fetched_at": "2026-04-13T00:55:14.265262+00:00"
+  },
+  {
+    "id": "2039461494438436922",
+    "username": "KawzInvests",
+    "text": "Anyone have any expectations for Trump's speech tonight?",
+    "timestamp": "2026-04-01T00:00:00+00:00",
+    "raw_date": "Apr 1, 2026 \u00b7 9:54 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2039461494438436922",
+    "fetched_at": "2026-04-13T01:02:33.660472+00:00"
+  },
+  {
+    "id": "2039435304134988148",
+    "username": "KawzInvests",
+    "text": "GLM-5.1 just scored 45.3 on the coding benchmark.\n\nClaude Opus 4.6 scored 47.9.\n\nThe gap is 2.6 points. The valuation gap is not 2.6 points.\ud83d\ude02\n\nZhipu AI (HKG: 2513) is up 31% and the market is just now noticing that Chinese labs are shipping models at performance parity with frontier Western labs at a fraction of the valuation.\n\nThis is the Chinese AI arbitrage thesis playing out in real time.\n\nDID YOU LISTEN NEPHEW? \ud83d\ude02\ud83d\ude02\ud83d\ude02",
+    "timestamp": "2026-04-01T00:00:00+00:00",
+    "raw_date": "Apr 1, 2026 \u00b7 8:10 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2039435304134988148",
+    "fetched_at": "2026-04-13T01:02:33.660472+00:00"
+  },
+  {
+    "id": "2039431585246699732",
+    "username": "KawzInvests",
+    "text": "365 days later and we are doing this again. Good luck out there.",
+    "timestamp": "2026-04-01T00:00:00+00:00",
+    "raw_date": "Apr 1, 2026 \u00b7 7:55 PM UTC",
+    "url": "https://x.com/KawzInvests/status/2039431585246699732",
+    "fetched_at": "2026-04-13T01:02:33.660472+00:00"
   }
 ]

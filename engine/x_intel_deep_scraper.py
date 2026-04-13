@@ -198,8 +198,8 @@ def save_master(posts: list):
     buzz = {}
     for p in combined:
         dt = datetime.fromisoformat(p['timestamp'])
-        # Find all $TICKERS
-        tickers = re.findall(r'\$([A-Z]{2,5})', p['text'].upper())
+        # Find all $TICKERS (only letters, 2-5 chars, followed by non-letter)
+        tickers = re.findall(r'\$([A-Z]{2,5})(?![A-Z])', p['text'].upper())
         for t in set(tickers): # unique tickers per post
             if t not in buzz: buzz[t] = {'24h':0, '7d':0, '30d':0, 'total':0}
             buzz[t]['total'] += 1
@@ -215,6 +215,18 @@ def save_master(posts: list):
     
     with open(DB_PATH, 'w', encoding='utf-8') as f:
         json.dump(final_payload, f, indent=2)
+
+    # Save individual files for user visibility
+    user_buckets = {}
+    for p in combined:
+        u = p['username']
+        if u not in user_buckets: user_buckets[u] = []
+        user_buckets[u].append(p)
+    
+    for u, u_posts in user_buckets.items():
+        u_path = ROOT / 'database' / f'x_intel_{u}.json'
+        with open(u_path, 'w', encoding='utf-8') as f:
+            json.dump(u_posts, f, indent=2)
     
     # Save as JS for dashboard
     js_path = DB_PATH.with_suffix('.js')
