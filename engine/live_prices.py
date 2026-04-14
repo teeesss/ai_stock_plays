@@ -180,9 +180,21 @@ async def async_run_fetch(tickers: list = None, dry_run: bool = False) -> dict:
 
     # Add metadata including top movers
     movers = analyze_movers(all_prices)
-    now = datetime.now(timezone.utc).isoformat()
+    
+    # Use EST (US/Eastern) for display
+    try:
+        from zoneinfo import ZoneInfo
+        now_est = datetime.now(ZoneInfo("US/Eastern"))
+    except Exception:
+        # Fallback if zoneinfo is weird on some Windows setups
+        from datetime import timedelta
+        now_est = datetime.now(timezone.utc) - timedelta(hours=4) # Rough EST
+        
+    refreshed_at_str = now_est.strftime("%Y-%m-%d %I:%M:%S %p EST")
+    
     all_prices['_meta'] = {
-        'refreshed_at': now,
+        'refreshed_at': refreshed_at_str,
+        'refreshed_at_iso': now_est.isoformat(),
         'total_tickers': len(all_prices),
         'with_price': sum(1 for t, d in all_prices.items() if d.get('price') and t != '_meta'),
         **movers,

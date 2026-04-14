@@ -43,13 +43,15 @@
         .pulse-vol { font-size:11px; color:var(--purple); font-weight:700; }
         .no-pulse { display:flex; align-items:center; gap:8px; font-size:11px; color:var(--text-dim); background:rgba(10,15,30,0.5); border:1px dashed #1e293b; border-radius:8px; padding:8px 16px; margin-bottom:12px; }
         .no-pulse code { background:#1e293b; padding:2px 8px; border-radius:4px; font-size:11px; color:var(--accent); }
-        .logo { font-weight: 900; font-size: 20px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
-        .logo-sub { font-size: 11px; color: var(--text-dim); font-weight: 700; }
-        .stat { display: flex; align-items: center; gap: 8px; }
-        .stat span { color: var(--text-dim); font-size: 10px; text-transform: uppercase; font-weight: 800; }
-        .stat .val { color: var(--accent); font-weight: 900; font-size: 18px; }
-        .search-container { flex-grow: 1; }
-        .search-bar { width: 100%; background: #1e293b; border: 1px solid var(--border); color: white; padding: 8px 16px; border-radius: 6px; outline: none; font-size: 13px; font-family: inherit; }
+        .command-bar { display: flex; align-items: center; gap: 12px; background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 8px 16px; margin-bottom: 2px; }
+        .logo { font-weight: 900; font-size: 16px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+        .logo-sub { font-size: 10px; color: var(--text-dim); font-weight: 700; white-space: nowrap; padding-left: 8px; border-left: 1px solid #1e293b; }
+        .stat { display: flex; align-items: center; gap: 6px; white-space: nowrap; padding: 0 8px; border-left: 1px solid #1e293b; }
+        .stat span { color: var(--text-dim); font-size: 9px; text-transform: uppercase; font-weight: 800; }
+        .stat .val { color: var(--accent); font-weight: 900; font-size: 13px; }
+        .search-container { flex-grow: 1; max-width: 600px; }
+        .search-row { display: flex; gap: 6px; width: 100%; }
+        .search-bar { width: 100%; background: #1e293b; border: 1px solid var(--border); color: white; padding: 6px 14px; border-radius: 6px; outline: none; font-size: 12px; font-family: inherit; }
         .search-bar:focus { border-color: var(--accent); }
 
         /* Chart */
@@ -96,12 +98,12 @@
         .search-row { display: flex; gap: 10px; width: 100%; }
         .search-box { flex: 1; position: relative; }
         .search-tag { position: absolute; right: 8px; top: 6px; font-size: 8px; font-weight: 900; color: #334155; pointer-events: none; }
-        .filter-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
-        .filter-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; margin-bottom: 10px; }
+        .filter-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 8px; }
+        .filter-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
         .filter-group { display: flex; flex-direction: column; gap: 4px; }
-        .filter-group label { font-size: 11px; color: var(--gold); text-transform: uppercase; font-weight: 900; letter-spacing: 0.5px; }
+        .filter-group label { font-size: 10px; color: var(--gold); text-transform: uppercase; font-weight: 900; letter-spacing: 0.5px; }
         .input-pair { display: flex; gap: 4px; }
-        .filter-group input[type="number"] { background: #1e293b; border: 1px solid var(--border); color: white; padding: 5px 8px; border-radius: 4px; width: 62px; font-size: 11px; font-family: inherit; outline: none; }
+        .filter-group input[type="number"] { background: #1e293b; border: 1px solid var(--border); color: white; padding: 4px 6px; border-radius: 4px; width: 55px; font-size: 10px; font-family: inherit; outline: none; }
         .filter-group input:focus { border-color: var(--accent); }
 
         /* Aggressiveness */
@@ -161,27 +163,27 @@
 <body style="display:flex;flex-direction:column;min-height:100vh;">
 
 <div class="command-bar">
-    <div>
-        <div class="logo">⚡ GIGACPO</div>
-        <div id="versionLabel" class="logo-sub">V6.1 · Pure Play SiPh/CPO Intelligence Terminal · Web Bridge Active</div>
-    </div>
+    <div class="logo">⚡ GIGACPO</div>
+    <div id="versionLabel" class="logo-sub">V6.1 · Remote Intelligence Mode · Sync Managed by Master Bridge</div>
+    
     <div class="stat"><span>UNIVERSE</span><div class="val" id="stat-total">—</div></div>
-    <div class="stat"><span>WATCHLIST</span><div class="val" id="stat-private" style="color:var(--purple)">—</div></div>
+    <div class="stat"><span>PRIVATE</span><div class="val" id="stat-private" style="color:var(--purple)">—</div></div>
     <div class="stat"><span>PINNED</span><div class="val" id="stat-pinned">0</div></div>
+
     <div class="search-container">
         <div class="search-row">
             <div class="search-box">
-                <input type="text" id="searchInput" class="search-bar" placeholder="SEARCH TICKERS / COMPANIES...">
-                <span class="search-tag">DASHBOARD</span>
+                <input type="text" id="searchInput" class="search-bar" placeholder="SEARCH TICKERS...">
+                <span class="search-tag">TICKERS</span>
             </div>
             <div class="search-box">
-                <input type="text" id="intelSearch" class="search-bar" placeholder="CLICK FOR XPEL INTEL / NEWS..." readonly onclick="openIntelModal()">
-                <span class="search-tag" style="color:var(--accent)">XPEL INTELLIGENCE</span>
+                <input type="text" id="intelSearch" class="search-bar" placeholder="𝕏 SOCIAL INTELLIGENCE SEARCH..." readonly onclick="openIntelModal()">
+                <span class="search-tag" style="color:var(--accent)">SOCIAL</span>
             </div>
         </div>
     </div>
-    <button class="sync-btn" id="syncBtn" onclick="triggerSync()" title="Trigger full data sync via web bridge (also auto-runs at 4:20 PM EST)">
-        <span class="sync-dot" id="syncDot"></span> SYNC
+    <button class="sync-btn" id="syncBtn" onclick="triggerSync()">
+        <span class="sync-dot" id="syncDot"></span> MASTER SYNC
     </button>
 </div>
 
@@ -228,19 +230,21 @@ document.addEventListener('DOMContentLoaded', () => {
 <div class="filter-panel">
     <div class="filter-row">
         <div class="filter-group"><label>MCap (B)</label><div class="input-pair"><input type="number" id="minMcap" placeholder="MIN"><input type="number" id="maxMcap" placeholder="MAX"></div></div>
-        <div class="filter-group"><label>Alpha (0-10)</label><div class="input-pair"><input type="number" id="minAlpha" placeholder="MIN"><input type="number" id="maxAlpha" placeholder="MAX"></div></div>
-        <div class="filter-group"><label>Risk (0-10)</label><div class="input-pair"><input type="number" id="minRisk" placeholder="MIN"><input type="number" id="maxRisk" placeholder="MAX"></div></div>
-        <div class="filter-group"><label>Hidden (0-10)</label><div class="input-pair"><input type="number" id="minHidden" placeholder="MIN"><input type="number" id="maxHidden" placeholder="MAX"></div></div>
-        <div class="filter-group"><label>Min Rev Growth %</label><input type="number" id="minRev" placeholder="e.g. 10" style="width:85px;background:#1e293b;border:1px solid var(--border);color:white;padding:5px 8px;border-radius:4px;font-size:11px;font-family:inherit;outline:none;"></div>
+        <div class="filter-group"><label>Alpha</label><div class="input-pair"><input type="number" id="minAlpha" placeholder="MIN"><input type="number" id="maxAlpha" placeholder="MAX"></div></div>
+        <div class="filter-group"><label>P/E 26</label><div class="input-pair"><input type="number" id="minPe26" placeholder="MIN"><input type="number" id="maxPe26" placeholder="MAX"></div></div>
+        <div class="filter-group"><label>P/E 27</label><div class="input-pair"><input type="number" id="minPe27" placeholder="MIN"><input type="number" id="maxPe27" placeholder="MAX"></div></div>
+        <div class="filter-group"><label>Inst%</label><div class="input-pair"><input type="number" id="minInst" placeholder="MIN"><input type="number" id="maxInst" placeholder="MAX"></div></div>
+        <div class="filter-group"><label>Short%</label><div class="input-pair"><input type="number" id="minShort" placeholder="MIN"><input type="number" id="maxShort" placeholder="MAX"></div></div>
+        <div class="filter-group"><label>Analysts</label><div class="input-pair"><input type="number" id="minAnalysts" placeholder="MIN"><input type="number" id="maxAnalysts" placeholder="MAX"></div></div>
+        <div class="filter-group"><label> Buzz (7d)</label><div class="input-pair"><input type="number" id="minBuzz" placeholder="MIN"><input type="number" id="maxBuzz" placeholder="MAX"></div></div>
+        <div class="filter-group"><label>Min Rev%</label><input type="number" id="minRev" placeholder="10" style="width:55px;"></div>
         <div class="agg-group">
-            <label>Aggressiveness (how we rank)</label>
+            <label>Mode</label>
             <div class="agg-inner">
-                <span style="font-size:9px;color:var(--text-dim);font-weight:700;">SAFE</span>
-                <input type="range" id="aggressiveness" min="1" max="10" value="5">
+                <input type="range" id="aggressiveness" min="1" max="10" value="5" style="width:120px;">
                 <span id="agg-val">5</span>
-                <span style="font-size:9px;color:var(--text-dim);font-weight:700;">ALPHA</span>
             </div>
-            <div id="agg-mode-label"></div>
+            <div id="agg-mode-label" style="font-size:8px;"></div>
         </div>
     </div>
     <div id="rankExplain" class="rank-explain"></div>
@@ -265,8 +269,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <th style="width:62px;" onclick="setSort('pe27')">P/E '27</th>
                     <th style="width:60px;" onclick="setSort('upside')">Upside</th>
                     <th style="width:65px;" onclick="setSort('perf1y')">1y Rtn</th>
-                    <th style="width:62px;" onclick="setSort('today')">🟢 Today</th>
-                    <th style="width:78px;" onclick="setSort('rev')">Rev Growth</th>
+                    <th style="width:95px;" onclick="setSort('today')">🟢 Today</th>
+                    <th style="width:78px;" onclick="setSort('rev')">Rev Gth</th>
                     <th onclick="setSort('info')">Research Info / Role</th>
                 </tr>
             </thead>
@@ -403,6 +407,9 @@ function parseUpside(str) {
 
 const state = {
     search: '', minMcap: -Infinity, maxMcap: Infinity, minAlpha: 0, maxAlpha: 10, minRisk: 0, maxRisk: 10, minHidden: 0, maxHidden: 10, minRev: -Infinity,
+    minPe26: -Infinity, maxPe26: Infinity, minPe27: -Infinity, maxPe27: Infinity,
+    minInst: -Infinity, maxInst: Infinity, minShort: -Infinity, maxShort: Infinity,
+    minAnalysts: -Infinity, maxAnalysts: Infinity, minBuzz: -Infinity, maxBuzz: Infinity,
     selectedBuckets: [], selectedExchanges: [], pinned: [], range: '1y', sortCol: '', sortDir: -1, aggressiveness: 5, showPrivate: true
 };
 
@@ -438,7 +445,8 @@ function buildEntries() {
             todayPct: live.change_pct ?? null, p: entry.performance || {},
             obb: h.openbb_supplement || {},
             buzz: (window.X_INTEL_MODULE?.buzz || {})[ticker] || null,
-            searchStr: `${ticker} ${h.Company||''} ${h.Role||''} ${h.Notes||''}`.toLowerCase()
+            searchStr: `${ticker} ${h.Company||''} ${h.Role||''} ${h.Notes||''}`.toLowerCase(),
+            price: price
         };
     });
 }
@@ -486,7 +494,10 @@ function render() {
             <td><span class="chip" style="color:var(--accent);">${pe27f}</span></td>
             <td style="color:var(--gold);font-weight:800;">${esc(e.h['Target Upside']||'--')}</td>
             <td class="${(e.perf1y||0)>=0?'up':'down'}">${e.perf1y!==undefined?e.perf1y+'%':'--'}</td>
-            <td class="${todayCls}" style="font-weight:bold;">${todayStr}</td>
+            <td style="font-weight:800;">
+                <div style="font-size:12px;color:var(--gold);">${e.price ? '$'+e.price.toFixed(2) : '--'}</div>
+                <div style="font-size:9px;" class="${todayCls}">${todayStr}</div>
+            </td>
             <td style="font-weight:700;color:var(--accent);">${e.rev_num?e.rev_num+'%':'--'}</td>
             <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${buzzHtml}${esc(e.h.Role)}</div><div style="font-size:10px;color:var(--text-dim);margin-top:1px;">${esc(e.h.Notes||'')}</div>${obbHtml}</td>
         `;
@@ -514,9 +525,52 @@ function render() {
 function passesFilters(e) {
     if (state.search && !e.searchStr.includes(state.search)) return false;
     if (e.mcapB < state.minMcap || e.mcapB > state.maxMcap) return false;
-    const alpha = sfloat(e.h['Alpha Score']); if (alpha < state.minAlpha || alpha > state.maxAlpha) return false;
-    const risk = sfloat(e.h['Risk Adj']); if (risk < state.minRisk || risk > state.maxRisk) return false;
-    const hide = sfloat(e.h['Hiddenness']); if (hide < state.minHidden || hide > state.maxHidden) return false;
+
+    // P/E filters: pe26/pe27 === 999 means no data (no EPS estimate).
+    // When a MAX filter is set, exclude stocks with no data (999).
+    // When only a MIN filter is set, stocks with no data (999) are allowed through.
+    const pe26Active = state.minPe26 > -Infinity || state.maxPe26 < Infinity;
+    const pe27Active = state.minPe27 > -Infinity || state.maxPe27 < Infinity;
+    if (pe26Active) {
+        const hasPe26 = e.pe26 < 999;
+        if (state.maxPe26 < Infinity && !hasPe26) return false; // max filter: exclude no-data
+        if (hasPe26 && (e.pe26 < state.minPe26 || e.pe26 > state.maxPe26)) return false;
+    }
+    if (pe27Active) {
+        const hasPe27 = e.pe27 < 999;
+        if (state.maxPe27 < Infinity && !hasPe27) return false; // max filter: exclude no-data
+        if (hasPe27 && (e.pe27 < state.minPe27 || e.pe27 > state.maxPe27)) return false;
+    }
+
+    // OBB filters: only apply if a field has real data
+    const instPct = sfloat(e.obb?.inst_ownership_pct);
+    const shortPct = sfloat(e.obb?.short_interest_pct);
+    const analysts = sfloat(e.obb?.analyst_count);
+    const hasInst = e.obb?.inst_ownership_pct != null && e.obb.inst_ownership_pct !== '';
+    const hasShort = e.obb?.short_interest_pct != null && e.obb.short_interest_pct !== '';
+    const hasAnalysts = e.obb?.analyst_count != null && e.obb.analyst_count !== '';
+    if (state.minInst > -Infinity || state.maxInst < Infinity) {
+        if (!hasInst) return false; // filter active but no data → exclude
+        if (instPct < state.minInst || instPct > state.maxInst) return false;
+    }
+    if (state.minShort > -Infinity || state.maxShort < Infinity) {
+        if (!hasShort) return false;
+        if (shortPct < state.minShort || shortPct > state.maxShort) return false;
+    }
+    if (state.minAnalysts > -Infinity || state.maxAnalysts < Infinity) {
+        if (!hasAnalysts) return false;
+        if (analysts < state.minAnalysts || analysts > state.maxAnalysts) return false;
+    }
+
+    // Buzz filter: parse 7d count as integer
+    const buzzCount = parseInt(e.buzz?.['7d'] || '0', 10) || 0;
+    if (state.minBuzz > -Infinity || state.maxBuzz < Infinity) {
+        if (buzzCount < state.minBuzz || buzzCount > state.maxBuzz) return false;
+    }
+
+    if (state.selectedBuckets.length > 0 && !state.selectedBuckets.includes(e.h.Bucket)) return false;
+    if (state.selectedExchanges.length > 0 && !state.selectedExchanges.includes(e.h.Country)) return false;
+    if (sfloat(e.h['Alpha Score']) < state.minAlpha || sfloat(e.h['Alpha Score']) > state.maxAlpha) return false;
     if (e.rev_num < state.minRev) return false;
     return true;
 }
@@ -525,40 +579,6 @@ function setSort(col) {
     if (state.sortCol === col) state.sortDir *= -1;
     else { state.sortCol = col; state.sortDir = 1; }
     render();
-}
-
-function sortFn(a, b) {
-    let vA, vB;
-    const c = state.sortCol;
-    if (c === 'pinned') { vA = state.pinned.includes(a.ticker)?1:0; vB = state.pinned.includes(b.ticker)?1:0; }
-    else if (c === 'ticker') { vA = a.ticker; vB = b.ticker; }
-    else if (c === 'company') { vA = a.h.Company; vB = b.h.Company; }
-    else if (c === 'alpha') { vA = sfloat(a.h['Alpha Score']); vB = sfloat(b.h['Alpha Score']); }
-    else if (c === 'risk') { vA = sfloat(a.h['Risk Adj']); vB = sfloat(b.h['Risk Adj']); }
-    else if (c === 'hidden') { vA = sfloat(a.h['Hiddenness']); vB = sfloat(b.h['Hiddenness']); }
-    else if (c === 'mcap') { vA = a.mcapB; vB = b.mcapB; }
-    else if (c === 'pe26') { vA = a.pe26; vB = b.pe26; }
-    else if (c === 'pe27') { vA = a.pe27; vB = b.pe27; }
-    else if (c === 'upside') { vA = parseUpside(a.h['Target Upside']); vB = parseUpside(b.h['Target Upside']); }
-    else if (c === 'perf1y') { vA = a.perf1y||-999; vB = b.perf1y||-999; }
-    else if (c === 'today') { vA = a.todayPct||-999; vB = b.todayPct||-999; }
-    else if (c === 'rev') { vA = a.rev_num; vB = b.rev_num; }
-    else { vA = a.score; vB = b.score; }
-    
-    if (typeof vA === 'string') return state.sortDir * vA.localeCompare(vB);
-    return state.sortDir * (b.score - a.score); // Default to score if equal
-}
-
-function passesFilters(e) {
-    if (state.search && !e.searchStr.includes(state.search)) return false;
-    if (e.mcapB < state.minMcap || e.mcapB > state.maxMcap) return false;
-    if (e.rev_num < state.minRev) return false;
-    if (state.selectedBuckets.length > 0 && !state.selectedBuckets.includes(e.h.Bucket)) return false;
-    if (state.selectedExchanges.length > 0 && !state.selectedExchanges.includes(e.h.Country)) return false;
-    if (sfloat(e.h['Alpha Score']) < state.minAlpha || sfloat(e.h['Alpha Score']) > state.maxAlpha) return false;
-    if (sfloat(e.h['Risk Adj']) < state.minRisk || sfloat(e.h['Risk Adj']) > state.maxRisk) return false;
-    if (sfloat(e.h['Hiddenness']) < state.minHidden || sfloat(e.h['Hiddenness']) > state.maxHidden) return false;
-    return true;
 }
 
 function sortFn(a, b) {
@@ -585,9 +605,7 @@ function initBuckets() {
     const buckets = new Set(), exchanges = new Set();
     Object.values(data).forEach(e => { if (e.human_research?.Bucket!=='Private') buckets.add(e.human_research.Bucket); if (e.human_research.Country) exchanges.add(e.human_research.Country); });
     const container = document.getElementById('bucketPills'); container.innerHTML = '';
-    const pp = document.createElement('div'); pp.className='pill priv-pill active'; pp.innerText='🔒 SHOW PRIVATE';
-    pp.onclick = () => { state.showPrivate = !state.showPrivate; pp.classList.toggle('active', state.showPrivate); render(); };
-    container.appendChild(pp);
+    
     const mk = (t, s, k) => {
         const h = document.createElement('div'); h.className='section-label'; h.innerText=t; container.appendChild(h);
         const row = document.createElement('div'); row.className='pill-row';
@@ -596,6 +614,11 @@ function initBuckets() {
             p.onclick = () => { p.classList.toggle('active'); state[k].includes(i) ? state[k]=state[k].filter(x=>x!==i) : state[k].push(i); render(); };
             row.appendChild(p);
         });
+        if (t === 'SECTORS') {
+            const pp = document.createElement('div'); pp.className='pill priv-pill' + (state.showPrivate ? ' active' : ''); pp.innerText='🔒 SHOW PRIVATE';
+            pp.onclick = () => { state.showPrivate = !state.showPrivate; pp.classList.toggle('active', state.showPrivate); render(); };
+            row.appendChild(pp);
+        }
         container.appendChild(row);
     };
     mk('SECTORS', buckets, 'selectedBuckets'); mk('EXCHANGES', exchanges, 'selectedExchanges');
@@ -629,60 +652,6 @@ function updateChart() {
 }
 
 // ========== INTELLIGENCE ENGINE V7.4 ==========
-function filterIntel() {
-    const module = window.X_INTEL_MODULE;
-    const body = document.getElementById('intelBody');
-    if (!module || !module.posts) {
-        body.innerHTML = `<div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">INITIALIZING INTEL ENGINE...</div>`;
-        return;
-    }
-    const posts = module.posts;
-    const query = document.getElementById('modalIntelSearch').value.toLowerCase();
-    const timeFilter = document.getElementById('intelTimeFilter').value;
-    
-    let filtered = posts;
-    if (query) {
-        filtered = posts.filter(p => (p.text||"").toLowerCase().includes(query) || (p.username||"").toLowerCase().includes(query));
-    }
-    
-    // Time filter logic
-    if (timeFilter !== 'all') {
-        const now = new Date();
-        const hours = timeFilter === '24h' ? 24 : 168;
-        const cutoff = new Date(now.getTime() - (hours * 60 * 60 * 1000));
-        filtered = filtered.filter(p => new Date(p.timestamp) >= cutoff);
-    }
-    
-    renderIntel(filtered, query);
-    renderBuzz(module.buzz);
-}
-
-function openIntelModal() {
-    document.getElementById('intelModal').classList.add('active');
-    filterIntel();
-}
-
-function closeIntelModal() {
-    document.getElementById('intelModal').classList.remove('active');
-}
-
-function renderBuzz(buzz = {}) {
-    const bar = document.getElementById('buzzBar');
-    const sorted = Object.entries(buzz)
-        .sort((a,b) => b[1]['7d'] - a[1]['7d'])
-        .slice(0, 12);
-    
-    if (sorted.length === 0) {
-        bar.innerHTML = '<div style="font-size:8px;color:var(--text-dim);padding:4px;">NO TRENDING TICKERS IN CACHE.</div>';
-        return;
-    }
-    
-    bar.innerHTML = sorted.map(([t, stats]) => {
-        const change = stats['24h'] > 0 ? `<span>+${stats['24h']}</span>` : '';
-        return `<div class="buzz-tag" onclick="syncIntelSearch('${t}')"><b>$${t}</b> ${stats['7d']}w ${change}</div>`;
-    }).join('');
-}
-
 window.setSort = function(col) {
     if (state.sortCol === col) state.sortDir *= -1;
     else { state.sortCol = col; state.sortDir = -1; }
@@ -822,8 +791,12 @@ document.getElementById('searchInput').oninput = e => { state.search = e.target.
 const bind = (id, k, f=v=>v) => { const el=document.getElementById(id); if (el) el.oninput=e=> { state[k]=e.target.value===''?(k.startsWith('min')?-Infinity:Infinity):f(e.target.value); render(); } };
 bind('minMcap','minMcap',parseFloat); bind('maxMcap','maxMcap',parseFloat);
 bind('minAlpha','minAlpha',parseFloat); bind('maxAlpha','maxAlpha',parseFloat);
-bind('minRisk','minRisk',parseFloat); bind('maxRisk','maxRisk',parseFloat);
-bind('minHidden','minHidden',parseFloat); bind('maxHidden','maxHidden',parseFloat);
+bind('minPe26','minPe26',parseFloat); bind('maxPe26','maxPe26',parseFloat);
+bind('minPe27','minPe27',parseFloat); bind('maxPe27','maxPe27',parseFloat);
+bind('minInst','minInst',parseFloat); bind('maxInst','maxInst',parseFloat);
+bind('minShort','minShort',parseFloat); bind('maxShort','maxShort',parseFloat);
+bind('minAnalysts','minAnalysts',parseFloat); bind('maxAnalysts','maxAnalysts',parseFloat);
+bind('minBuzz','minBuzz',parseFloat); bind('maxBuzz','maxBuzz',parseFloat);
 bind('minRev','minRev',parseFloat);
 const aggEl = document.getElementById('aggressiveness');
 aggEl.oninput = () => { state.aggressiveness = parseInt(aggEl.value); document.getElementById('agg-val').innerText = state.aggressiveness; document.getElementById('agg-mode-label').innerText = AGG_MODES[state.aggressiveness]; state.sortCol = ''; render(); };
@@ -872,8 +845,8 @@ function initPulse() {
         html += `<div class="pulse-item"><span class="pulse-vol">VOL!</span> ${v.ticker} <span style="color:var(--purple)">${v.vol_spike}x</span></div><div class="pulse-sep">|</div>`;
     });
     
-    const d = new Date(meta.refreshed_at);
-    const timeStr = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    // Use the authoritative EST string from Python instead of browser local time
+    const timeStr = meta.refreshed_at.includes('EST') ? meta.refreshed_at : new Date(meta.refreshed_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     html += `<div class="pulse-time"><span class="sync-dot pulse"></span> UPDATED ${timeStr}</div></div>`;
     pulse.innerHTML = html;
 }
