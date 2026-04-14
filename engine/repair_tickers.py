@@ -12,20 +12,28 @@ DB_DIR = ROOT / "database"
 
 def forensic_repair(text: str) -> str:
     if not text: return ""
-    def collapse_fragment(m):
-        return m.group(0).replace(" ", "")
     
-    # 1. Collapse fragmented chains: $ N V D A or S U P P L Y
-    text = re.sub(r'[A-Z](?:\s[A-Z]\b)+', collapse_fragment, text)
-    text = re.sub(r'\$[A-Z](?:\s[A-Z]\b)+', collapse_fragment, text)
+    # 1. Collapse single-letter chains starting with $ ($ N V D A -> $NVDA)
+    text = re.sub(r'\$[A-Z](?:\s[A-Z]\b)+', lambda m: m.group(0).replace(" ", ""), text)
     
-    # 2. Add spaces between smashed tickers ($PGY$NVDA -> $PGY $NVDA)
+    # 2. Collapse fragments after a multi-letter ticker ($AA O I -> $AAOI)
+    text = re.sub(r'\$([A-Z]{2,5})\s([A-Z]\b(?:\s[A-Z]\b)*)', 
+                  lambda m: "$" + m.group(1) + m.group(2).replace(" ", ""), text)
+    
+    # 3. Collapse bare capital chains (C P O -> CPO)
+    text = re.sub(r'(?<!\w)[A-Z](?:\s[A-Z]\b)+', lambda m: m.group(0).replace(" ", ""), text)
+    
+    # 4. Add spaces between smashed tickers ($PGY$NVDA -> $PGY $NVDA)
     text = re.sub(r'(\$[A-Z0-9]{2,10})(\$[A-Z0-9])', r'\1 \2', text)
     
-    # 3. Separate @Handles (@PhotonCapis -> @PhotonCap is)
+    # 5. Final Spacing Refinement
+    text = re.sub(r'([a-z0-9])([\$@])', r'\1 \2', text) # Space before $ or @
+    text = re.sub(r'(\$[A-Z0-9]{2,12})([a-z]{2,})', r'\1 \2', text) # $NVDAis -> $NVDA is
+    
+    # 6. Separate @Handles (@PhotonCapis -> @PhotonCap is)
     text = re.sub(r'(@[A-Za-z0-9_]{1,20})([A-Za-z])', r'\1 \2', text)
 
-    # 4. Remove obvious $ mistakes from common words
+    # 7. Remove obvious $ mistakes from common words
     for word in ["SUPPLY", "SUPPORT", "SUCCESS", "SOURCE", "SMALL", "SERVICE", "SYSTEM", "SWITCH"]:
         text = re.sub(rf'\${word}', word.lower(), text, flags=re.IGNORECASE)
 
@@ -37,10 +45,18 @@ def repair_user(username: str):
     
     try:
         posts = json.loads(user_file.read_text(encoding="utf-8"))
+        modified = False
         for p in posts:
-            p["text"] = forensic_repair(p.get("text", ""))
-        user_file.write_text(json.dumps(posts, indent=2, ensure_ascii=False), encoding="utf-8")
-    except: pass
+            old_text = p.get("text", "")
+            new_text = forensic_repair(old_text)
+            if old_text != new_text:
+                p["text"] = new_text
+                modified = True
+        
+        if modified:
+            user_file.write_text(json.dumps(posts, indent=2, ensure_ascii=False), encoding="utf-8")
+    except Exception as e:
+        print(f"Error repairing {username}: {e}")
 
 if __name__ == "__main__":
     for user in ["aleabitoreddit", "PhotonCap", "KawzInvests"]:

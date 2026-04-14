@@ -98,12 +98,10 @@ def test_database_integrity():
 
     if all_passed:
         print("\n[OK] All databases passed integrity checks.")
-        import sys
-        sys.exit(0)
+        return
     else:
         print("\n[FAIL] Integrity checks failed. Please review logs.")
-        import sys
-        sys.exit(1)
+        assert False
 
 if __name__ == "__main__":
     test_database_integrity()

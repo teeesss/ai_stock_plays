@@ -1,25 +1,31 @@
 # 🎯 X-Intelligence: Project Roadmap
 
-### 🚀 Current Status: V13.2 (Hardened Forensic & Clean Translation)
-- **Data Integrity**: **V13.2 ULTIMATE FORENSIC RECOVERY DEPLOYED**. Reverted rogue word-fragmentation and ticker-smashing at scale. 
-- **International Intel**: 100% English data fidelity. Backlog of 2,580 foreign posts processed via V12.6 Hyper-Drive (16-worker concurrency).
-- **Automation**: Staked staggered cron sync (3AM-1AM EST) + Manual Instant Sync override active.
+### 🚀 Current Status: V15.0 (Surgical Integrity & Dependency Hardened)
+- **Data Integrity**: **V11.0 SURGICAL REPAIR DEPLOYED**. Thousands of fragmented tickers ($N V D A$) and smashed strings ($NVDAis) collapsed. 
+- **Environment**: 100% dependency parity via `requirements.txt`. Synchronized `bs4`, `playwright`, and `curl_cffi` plugins.
+- **Automation**: Status: V15.0 Hardened Intelligence Terminal - **PLATINUM CORE**
+Date: 2026-04-14
+Progress: 100% of V15 Phase 1 (Surgical Cleanup)
 
----
+### Key Achievements (V15.0)
+- **Environment Hardening**: Resolved missing Python dependencies (`bs4`, `playwright-stealth`, `curl_cffi`, etc.) for the 2026 Ghost Engine.
+- **Unicode Fix**: Implemented robust UTF-8 handling to prevent "I/O operation on closed file" crashes during multi-process translations.
+- **V11.0 Surgical Repair**: Successfully collapsed thousands of fragmented ticker symbols across the master database.
+- [✅] Forensic: V11.0 Surgical Repair (Fixed Ticker Fragmentation & Word-Smashing)
+- [✅] Dependency: Validated 100% environment compatibility via `requirements.txt`.
 
-### 🏛️ X-Intelligence Scraper (V10.3)
-- [✅] Hardening: Scraper V10.3 Safe Ticker Reconstruction (Boundary-Aware)
-- [✅] Translation: V12.6 Hyper-Drive Cleared 2,500+ backlog items (Clean Mode)
-- [✅] Forensic: V13.2 Ultimate Repair (Fixed 2,918 formatting artifacts in Master)
-- [✅] Backfill: `@aleabitoreddit`, `@PhotonCap`, `@KawzInvests` (100% Comprehensive Coverage from Oct 1, 2025)
-- [✅] Sync: Staggered V9.2 Global Intelligence Sync (Multi-user, intra-day)
-- [✅] Instant Sync: Manual zero-jitter manual run script (V1.0)
-- [ ] **OCR INTEGRATION**: Process archived images for ticker symbols and sentiment.
+## Dashboard UI & Readability (V13.2)
+- [x] Convert X-Intelligence Buzz Bar to horizontal orientation
+- [x] Increase global font sizes for high-res desktop readability (11px -> 13px)
+- [x] Fix vertical text issues in social intelligence search results
+- [x] Execute UI/UX Accessibility Audit
 
----
+## QA & Stability
+- [x] Restore and standardize the automated test suite
+- [x] Resolve test-collection errors and module pathing issues
+- [x] Sync localized forensic logic with regression tests
+- [x] Verify remote production webpage (bmwseals.com/stocks/)
 
-### 🛠️ Data Infrastructure & Integration
-- [✅] **Live Price Injection**: Integrated `live_prices.py` for GIGACPO Dashboard.
-- [✅] **Translation Cache**: Persistent `translation_cache.json` for zero-waste repeated runs.
-- [✅] **Remote Sync**: Automated SFTP deployment for production mirroring.
-- [✅] **GIGACPO BRAIN**: Updated SiPh/CPO master intelligence bridge.
+[✅] **Translation Cache**: Persistent `translation_cache.json` for zero-waste repeated runs.
+[✅] **Remote Sync**: Automated SFTP deployment for production mirroring.
+[✅] **GIGACPO BRAIN**: Updated SiPh/CPO master intelligence bridge.

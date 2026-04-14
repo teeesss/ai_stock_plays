@@ -33,23 +33,23 @@
             --purple: #a855f7;
         }
         * { box-sizing: border-box; }
-        body { font-family: 'JetBrains Mono','Courier New',monospace; background: var(--bg-main); color: var(--text-main); margin: 0; padding: 10px; font-size: 11px; line-height: 1.2; overflow-x: hidden; }
+        body { font-family: 'JetBrains Mono','Courier New',monospace; background: var(--bg-main); color: var(--text-main); margin: 0; padding: 10px; font-size: 14px; line-height: 1.2; overflow-x: hidden; }
 
-        .pulse-bar { display:flex; align-items:center; gap:0; background:rgba(10,15,30,0.9); border:1px solid rgba(245,158,11,0.2); border-radius:8px; padding:6px 12px; margin-bottom:10px; overflow:hidden; }
-        .pulse-sep { color:#334155; margin:0 6px; font-size:12px; }
-        .pulse-item { display:flex; align-items:center; gap:5px; font-size:10px; font-weight:800; white-space:nowrap; }
-        .pulse-label { font-size:8px; text-transform:uppercase; font-weight:900; color:var(--gold); margin-right:8px; letter-spacing:1px; }
-        .pulse-time { font-size:8px; color:var(--text-dim); margin-left:auto; }
-        .pulse-vol { font-size:8px; color:var(--purple); font-weight:700; }
-        .no-pulse { display:flex; align-items:center; gap:8px; font-size:9px; color:var(--text-dim); background:rgba(10,15,30,0.5); border:1px dashed #1e293b; border-radius:8px; padding:6px 12px; margin-bottom:10px; }
-        .no-pulse code { background:#1e293b; padding:1px 6px; border-radius:3px; font-size:9px; color:var(--accent); }
-        .logo { font-weight: 900; font-size: 16px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
-        .logo-sub { font-size: 9px; color: var(--text-dim); font-weight: 700; }
-        .stat { display: flex; align-items: center; gap: 5px; }
-        .stat span { color: var(--text-dim); font-size: 8px; text-transform: uppercase; font-weight: 800; }
-        .stat .val { color: var(--accent); font-weight: 900; font-size: 14px; }
+        .pulse-bar { display:flex; align-items:center; gap:0; background:rgba(10,15,30,0.9); border:1px solid rgba(245,158,11,0.2); border-radius:8px; padding:8px 16px; margin-bottom:12px; overflow:hidden; }
+        .pulse-sep { color:#334155; margin:0 10px; font-size:14px; }
+        .pulse-item { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:800; white-space:nowrap; }
+        .pulse-label { font-size:11px; text-transform:uppercase; font-weight:900; color:var(--gold); margin-right:12px; letter-spacing:1px; }
+        .pulse-time { font-size:10px; color:var(--text-dim); margin-left:auto; }
+        .pulse-vol { font-size:11px; color:var(--purple); font-weight:700; }
+        .no-pulse { display:flex; align-items:center; gap:8px; font-size:11px; color:var(--text-dim); background:rgba(10,15,30,0.5); border:1px dashed #1e293b; border-radius:8px; padding:8px 16px; margin-bottom:12px; }
+        .no-pulse code { background:#1e293b; padding:2px 8px; border-radius:4px; font-size:11px; color:var(--accent); }
+        .logo { font-weight: 900; font-size: 20px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+        .logo-sub { font-size: 11px; color: var(--text-dim); font-weight: 700; }
+        .stat { display: flex; align-items: center; gap: 8px; }
+        .stat span { color: var(--text-dim); font-size: 10px; text-transform: uppercase; font-weight: 800; }
+        .stat .val { color: var(--accent); font-weight: 900; font-size: 18px; }
         .search-container { flex-grow: 1; }
-        .search-bar { width: 100%; background: #1e293b; border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 6px; outline: none; font-size: 11px; font-family: inherit; }
+        .search-bar { width: 100%; background: #1e293b; border: 1px solid var(--border); color: white; padding: 8px 16px; border-radius: 6px; outline: none; font-size: 13px; font-family: inherit; }
         .search-bar:focus { border-color: var(--accent); }
 
         /* Chart */
@@ -69,21 +69,25 @@
         .intel-modal-content { width: 95%; height: 90%; background: var(--bg-card); border: 2px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
         .intel-modal.active { display: flex; }
 
-        .intel-header { padding: 12px 20px; background: #1e293b; border-bottom: 2px solid var(--border); font-weight: 900; font-size: 14px; color: var(--accent); letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
-        .intel-scroll { overflow-y: auto; flex-grow: 1; padding: 20px; }
+        .intel-header { padding: 16px 24px; background: #1e293b; border-bottom: 2px solid var(--border); font-weight: 900; font-size: 17px; color: var(--accent); letter-spacing: 1.5px; display: flex; justify-content: space-between; align-items: center; }
+        .intel-scroll { overflow-y: auto; flex-grow: 1; padding: 24px; }
         
-        .close-modal { cursor: pointer; color: var(--text-dim); font-size: 24px; line-height: 1; margin-left: 20px; transition: color 0.2s; }
+        .close-modal { cursor: pointer; color: var(--text-dim); font-size: 28px; line-height: 1; margin-left: 20px; transition: color 0.2s; }
         .close-modal:hover { color: var(--danger); }
-        .buzz-tag { font-size: 8px; font-weight: 800; background: #1e293b; border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; color: var(--text-dim); cursor: pointer; }
-        .buzz-tag:hover { border-color: var(--accent); color: var(--accent); }
-        .buzz-tag b { color: var(--gold); margin-right: 4px; }
-        .buzz-tag span { color: var(--green); font-size: 7px; margin-left: 4px; }
+        .buzz-bar { display: flex; flex-wrap: wrap; gap: 10px; padding: 12px 24px; border-bottom: 1px solid var(--border); background:rgba(15,23,42,0.4); }
+        .buzz-tag { font-size: 13px; font-weight: 800; background: #1e293b; border: 2px solid var(--border); padding: 8px 18px; border-radius: 8px; color: var(--text-main); cursor: pointer; transition: all 0.2s; }
+        .buzz-tag:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+        .buzz-tag b { color: var(--gold); margin-right: 6px; }
+        .buzz-tag span { color: var(--green); font-size: 10px; margin-left: 6px; }
 
         .intel-item { background: rgba(15,23,42,0.6); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 8px; transition: border-color 0.2s; }
         .intel-item:hover { border-color: var(--accent); }
         .intel-item .meta { font-size: 8px; color: var(--text-dim); margin-bottom: 4px; display: flex; justify-content: space-between; }
         .intel-item .user { color: var(--gold); font-weight: 900; }
-        .intel-item .text { font-size: 11px; line-height: 1.5; color: var(--text-main); white-space: normal; word-break: break-word; }
+        .intel-item .text { font-size: 13px; line-height: 1.5; color: var(--text-main); white-space: normal; word-break: break-word; }
+        .visual-intel-box { margin-top:10px; padding:10px; background:rgba(16,185,129,0.05); border:1px dashed rgba(16,185,129,0.3); border-radius:6px; font-size:12px; color:var(--text-dim); }
+        .visual-intel-header { font-size:10px; font-weight:700; color:#10b981; margin-bottom:6px; text-transform:uppercase; display:flex; align-items:center; gap:6px; }
+        .visual-tag { display:inline-block; padding:3px 6px; background:#10b981; color:#0f172a; border-radius:4px; font-weight:900; margin-right:6px; font-size:10px; }
         .intel-item .highlight { background: rgba(245,158,11,0.2); color: var(--gold); border-radius: 2px; padding: 0 2px; }
         .post-images { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 10px 0; }
         .post-img { width: 100%; border-radius: 6px; border: 1px solid #333; cursor: zoom-in; transition: transform 0.2s; }
@@ -113,10 +117,10 @@
         .rank-explain span { color: var(--gold); font-weight: 900; }
 
         /* Pills */
-        .bucket-pills { display: flex; flex-direction: column; gap: 6px; }
-        .section-label { font-size: 11px; color: var(--gold); font-weight: 900; text-transform: uppercase; margin-bottom: 2px; display: block; }
-        .pill-row { display: flex; flex-wrap: wrap; gap: 4px; }
-        .pill { background: #1e293b; color: var(--text-dim); padding: 4px 10px; border-radius: 5px; cursor: pointer; font-size: 10px; font-weight: 700; border: 1px solid transparent; transition: all 0.15s; }
+        .bucket-pills { display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; margin-bottom: 5px; }
+        .section-label { font-size: 12px; color: var(--gold); font-weight: 900; text-transform: uppercase; margin-bottom: 2px; display: block; width: 100%; }
+        .pill-row { display: flex; flex-wrap: wrap; gap: 6px; }
+        .pill { background: #1e293b; color: var(--text-dim); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; border: 1px solid transparent; transition: all 0.15s; }
         .pill:hover { background: #26334d; color: var(--text-main); }
         .pill.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 0 8px rgba(14,165,233,0.2); }
         .pill.priv-pill { border-color: var(--purple); color: var(--purple); background: rgba(168,85,247,0.05); }
@@ -126,13 +130,13 @@
         .table-area { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; flex-grow: 1; min-height: 400px; display: flex; flex-direction: column; }
         .table-scroll { overflow-y: auto; flex-grow: 1; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #1e293b; padding: 10px 8px; text-align: left; font-size: 10px; text-transform: uppercase; color: var(--text-dim); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 20; cursor: pointer; user-select: none; white-space: nowrap; }
+        th { background: #1e293b; padding: 14px 10px; text-align: left; font-size: 12px; text-transform: uppercase; color: var(--text-dim); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 20; cursor: pointer; user-select: none; white-space: nowrap; font-weight: 900; }
         th:hover { color: var(--accent); background: #26334d; }
         th.sort-asc::after { content: ' ▲'; color: var(--gold); }
         th.sort-desc::after { content: ' ▼'; color: var(--gold); }
-        td { padding: 8px; border-bottom: 1px solid var(--border); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        td { padding: 12px 8px; border-bottom: 1px solid var(--border); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         tr:hover td { background: rgba(14,165,233,0.04); }
-        tr.pinned td { background: rgba(245,158,11,0.04); border-left: 3px solid var(--gold); }
+        tr.pinned td { background: rgba(245,158,11,0.04); border-left: 4px solid var(--gold); }
         tr.private-row td { opacity: 0.8; }
         tr.private-row:hover td { opacity: 1; }
 
@@ -768,6 +772,26 @@ function renderIntel(posts, query = "") {
                 `</div>`;
         }
 
+        // Render visual intel
+        let visualHtml = '';
+        if (p.visual_intel && p.visual_intel.length > 0) {
+            visualHtml = p.visual_intel.map(v => {
+                const tags = v.tickers && v.tickers.length > 0 
+                    ? v.tickers.map(t => `<span class="visual-tag">$${t}</span>`).join('') 
+                    : '';
+                return `
+                    <div class="visual-intel-box">
+                        <div class="visual-intel-header">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            VISUAL INTELLIGENCE EXTRACT
+                        </div>
+                        <div style="margin-bottom:5px;">${tags}</div>
+                        <div style="font-style:italic; opacity:0.8;">"${v.text.substring(0, 200)}${v.text.length > 200 ? '...' : ''}"</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         const item = document.createElement('div');
         item.className = 'intel-item';
         item.innerHTML = `
@@ -777,6 +801,7 @@ function renderIntel(posts, query = "") {
             </div>
             <div class="text">${text}</div>
             ${imagesHtml}
+            ${visualHtml}
             <div style="margin-top:6px; text-align:right;">
                 <a href="${p.url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;">VIEW SOURCE ↗</a>
             </div>

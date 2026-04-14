@@ -13,8 +13,12 @@ from deep_translator import GoogleTranslator, MyMemoryTranslator
 # ─────────────────────────────────────────────────────────
 
 # Fix Windows console encoding
-if sys.platform == "win32":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+# Robust UTF-8 handling for Windows
+try:
+    if sys.platform == "win32" and sys.stdout.encoding.lower() != 'utf-8':
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', line_buffering=True)
+except (AttributeError, ValueError, io.UnsupportedOperation):
+    pass
 
 FOREIGN_REGEX = re.compile(r'[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]')
 

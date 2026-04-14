@@ -3,8 +3,9 @@ import sys
 import os
 
 # Ensure the script can find dependencies
-sys.path.append(os.getcwd())
-sys.path.append(os.path.join(os.getcwd(), 'research'))
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(ROOT)
+sys.path.append(os.path.join(ROOT, 'engine'))
 
 from financial_auditor import audit_financials
 

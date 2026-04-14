@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# RetireFire CPO Intelligence: WSL Sync Script
+# CPO Intelligence: WSL Sync Script
 # To automate this via cron:
 # 1. crontab -e
 # 2. Add: 0 * * * * /bin/bash /mnt/z/COS_Stock_Plays/research/wsl_sync.sh >> /mnt/z/COS_Stock_Plays/wsl_sync.log 2>&1
@@ -9,7 +9,7 @@
 PROJECT_DIR="/mnt/z/COS_Stock_Plays"
 
 echo "--------------------------------------------------"
-echo "⚡ RETIREFIRE: WSL INTELLIGENCE REFRESH [$(date)]"
+echo "⚡ WSL INTELLIGENCE REFRESH [$(date)]"
 echo "--------------------------------------------------"
 
 if [ ! -d "$PROJECT_DIR" ]; then

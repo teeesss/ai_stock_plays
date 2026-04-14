@@ -1,7 +1,7 @@
 # ⚡ CPO INTELLIGENCE BRAIN
-**Last Sync**: 2026-04-12 14:46:11
+**Last Sync**: 2026-04-14 14:35:15
 
-## 1. STRUCTURED ECOSYSTEM (110 Plays)
+## 1. STRUCTURED ECOSYSTEM (113 Plays)
 
 | Ticker | Market Cap | P/E | Rev Growth | Target |
 |---|---|---|---|---|
@@ -115,3 +115,6 @@
 | IQE.L / IQEPF | N/A | N/A | -31.50% | 1x-2x |
 | 6146.T / DSCSY | 7.25T | 57.47 | 16.80% | 1x-2x |
 | 6890.T / FERRF | 326.93B | 29.24 | 5.10% | 3x |
+| 3110.T | 998.61B | 69.93 | N/A | N/A |
+| 3037.TW | 1.00T | 147.00 | 18.10% | N/A |
+| 011790.KS | 3.87T | N/A | 1.50% | N/A |

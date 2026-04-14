@@ -149,27 +149,30 @@ def parse_date(raw: str) -> datetime:
 
 
 def reconstruct_tickers(text: str) -> str:
-    """V10.3 Safe Ticker Reconstructor.
+    """V11.0 Surgical Ticker Reconstructor.
     Collapses Nitter fragments but prevents word-smashing.
     """
     if not text:
         return ""
 
-    # 1. Collapse the "Letter space Letter" fragmentation ($ N V D A -> $NVDA)
-    def collapse_fragment(m):
-        return m.group(0).replace(" ", "")
+    # 1. Collapse single-letter chains starting with $ ($ N V D A -> $NVDA)
+    text = re.sub(r'\$[A-Z](?:\s[A-Z]\b)+', lambda m: m.group(0).replace(" ", ""), text)
     
-    # Cascade collapse: $ N V D A -> $NVDA, S U P P L Y -> SUPPLY
-    text = re.sub(r'[A-Z](?:\s[A-Z]\b)+', collapse_fragment, text)
-    text = re.sub(r'\$[A-Z](?:\s[A-Z]\b)+', collapse_fragment, text)
+    # 2. Collapse fragments after a multi-letter ticker ($AA O I -> $AAOI)
+    # Matches $ + 2-5 letters + space + sequence of single letters
+    text = re.sub(r'\$([A-Z]{2,5})\s([A-Z]\b(?:\s[A-Z]\b)*)', 
+                  lambda m: "$" + m.group(1) + m.group(2).replace(" ", ""), text)
     
-    # 2. Add spaces between smashed tickers ($PGY$NVDA -> $PGY $NVDA)
-    # Using specific length boundaries to avoid mid-word smashing
+    # 3. Collapse bare capital chains (C P O -> CPO)
+    # Only if starting at a word boundary (prevents smashing into preceding words)
+    text = re.sub(r'(?<!\w)[A-Z](?:\s[A-Z]\b)+', lambda m: m.group(0).replace(" ", ""), text)
+    
+    # 4. Add spaces between smashed tickers ($PGY$NVDA -> $PGY $NVDA)
     text = re.sub(r'(\$[A-Z0-9]{2,10})(\$[A-Z0-9])', r'\1 \2', text)
     
-    # 3. Final Spacing Refinement
+    # 5. Final Spacing Refinement
     text = re.sub(r'([a-z0-9])([\$@])', r'\1 \2', text) # Space before $ or @
-    text = re.sub(r'(\$[A-Z0-9]{2,12})([a-z]{2,})', r'\1 \2', text) # Ticker followed by word
+    text = re.sub(r'(\$[A-Z0-9]{2,12})([a-z]{2,})', r'\1 \2', text) # $NVDAis -> $NVDA is
     
     return re.sub(r'\s+', ' ', text).strip()
 
@@ -684,7 +687,7 @@ def rebuild_master():
             dt = datetime.fromisoformat(p["timestamp"])
         except Exception:
             continue
-        tickers = re.findall(r"\$([A-Z]{2,5})(?![A-Z])", p.get("text", "").upper())
+        tickers = re.findall(r"\$([A-Z]{2,12})(?![A-Z])", p.get("text", "").upper())
         for t in set(tickers):
             if t not in buzz:
                 buzz[t] = {"24h": 0, "7d": 0, "30d": 0, "total": 0}

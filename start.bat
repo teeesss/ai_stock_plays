@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 echo ##################################################
-echo #   ^⚡ RETIREFIRE: CPO TERMINAL AUTOMATION ^⚡     #
+echo #   ^⚡ CPO TERMINAL AUTOMATION ^⚡     #
 echo ##################################################
 echo.
 
