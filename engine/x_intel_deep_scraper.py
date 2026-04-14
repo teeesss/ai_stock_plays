@@ -42,15 +42,62 @@ DB_DIR = ROOT / "database"
 IMG_DIR = ROOT / "images"
 IMG_DIR.mkdir(exist_ok=True)
 
-# Only instances proven to work with Playwright
-LIVE_INSTANCES = [
-    "https://nitter.tiekoetter.com",
-    "https://xcancel.com",
-    "https://nitter.privacydev.net",
-    "https://nitter.poast.org"
+# Verified healthy instances — sorted by points (source: nitter status tracker)
+# Session auto-eviction: 2 consecutive failures removes from pool until next run
+ALL_MIRRORS = [
+    "https://nitter.tiekoetter.com",        # 🇩🇪 42% uptime | 77pts 
+    "https://nitter.net",                   # 🇳🇱 94% uptime | 76pts
+    "https://nitter.catsarch.com",          # 🇺🇸/🇩🇪 66% uptime | 76pts
+    "https://lightbrd.com",                 # 🇹🇷 96% uptime | 75pts
+    "https://xcancel.com",                  # 🇺🇸 97% uptime | 72pts 
+    "https://nitter.space",                 # 🇺🇸 96% uptime | 71pts 
+    "https://nitter.poast.org",             # 🇺🇸 86% uptime | 67pts
+    "https://nuku.trabun.org",              # 🇨🇱 95% uptime | 36pts
+    "https://nitter.privacyredirect.com",   # 🇫🇮 Let's Encrypt | NSFW
+    "https://nitter.us.catsarch.com",       # Subdomain node
+    "http://5.78.115.92:8081",              # Direct IP node
+    "https://nitter.aishiteiru.moe",
+    "https://nitter.aosus.link",
+    "https://nitter6.kabii.moe",
+    "https://nitter.anoxinon.de",
+    "https://nitter.fullex.fr",
+    "https://nitter.teamqq.de",
+    "https://nitter.thekitten.space",
+    "https://nitter.wisq.net",
+    "https://nitter.zebes.info",
 ]
 
 STATE_FILE = DB_DIR / "scraper_state.json"
+SCANNED_DAYS_FILE = DB_DIR / "scanned_days.json"
+
+
+# ─────────────────────────────────────────────────────────────
+#  Scanned Days Registry (prevents re-scanning completed days)
+# ─────────────────────────────────────────────────────────────
+def load_scanned_days(username: str) -> set:
+    """Load set of already-scanned date strings (YYYY-MM-DD) for a user."""
+    if SCANNED_DAYS_FILE.exists():
+        try:
+            data = json.loads(SCANNED_DAYS_FILE.read_text(encoding="utf-8"))
+            return set(data.get(username, []))
+        except Exception:
+            pass
+    return set()
+
+
+def mark_day_scanned(username: str, day_str: str):
+    """Permanently mark a day as scanned for a user."""
+    data = {}
+    if SCANNED_DAYS_FILE.exists():
+        try:
+            data = json.loads(SCANNED_DAYS_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    if username not in data:
+        data[username] = []
+    if day_str not in data[username]:
+        data[username].append(day_str)
+        SCANNED_DAYS_FILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
 # ─────────────────────────────────────────────────────────────
@@ -101,24 +148,49 @@ def parse_date(raw: str) -> datetime:
         return now
 
 
+def reconstruct_tickers(text: str) -> str:
+    """V10.3 Safe Ticker Reconstructor.
+    Collapses Nitter fragments but prevents word-smashing.
+    """
+    if not text:
+        return ""
+
+    # 1. Collapse the "Letter space Letter" fragmentation ($ N V D A -> $NVDA)
+    def collapse_fragment(m):
+        return m.group(0).replace(" ", "")
+    
+    # Cascade collapse: $ N V D A -> $NVDA, S U P P L Y -> SUPPLY
+    text = re.sub(r'[A-Z](?:\s[A-Z]\b)+', collapse_fragment, text)
+    text = re.sub(r'\$[A-Z](?:\s[A-Z]\b)+', collapse_fragment, text)
+    
+    # 2. Add spaces between smashed tickers ($PGY$NVDA -> $PGY $NVDA)
+    # Using specific length boundaries to avoid mid-word smashing
+    text = re.sub(r'(\$[A-Z0-9]{2,10})(\$[A-Z0-9])', r'\1 \2', text)
+    
+    # 3. Final Spacing Refinement
+    text = re.sub(r'([a-z0-9])([\$@])', r'\1 \2', text) # Space before $ or @
+    text = re.sub(r'(\$[A-Z0-9]{2,12})([a-z]{2,})', r'\1 \2', text) # Ticker followed by word
+    
+    return re.sub(r'\s+', ' ', text).strip()
+
+
 def clean_text_spacing(text: str) -> str:
-    """Ensures $TICKERS and @USERNAMES have spaces around them for readability."""
+    """Master formatting pipeline."""
     if not text:
         return ""
     
-    # 1. Ensure space BEFORE $ or @ if preceded by alphanumeric
-    text = re.sub(r'([a-zA-Z0-9])([\$@])', r'\1 \2', text)
+    # Step 1: Handle handle fragmentation (@Ph o t o n C a p -> @PhotonCap)
+    def collapse_fragment(m):
+        return m.group(0).replace(" ", "")
+    text = re.sub(r'(@[A-Za-z0-9])(?:\s[A-Za-z0-9])+', collapse_fragment, text)
+
+    # Step 2: Safe Reconstruction
+    text = reconstruct_tickers(text)
     
-    # 2. Ensure space AFTER $TICKER (uppercase) if followed by alphanumeric
-    text = re.sub(r'(\$[A-Z]{2,10})([a-zA-Z0-9])', r'\1 \2', text)
-    
-    # 3. Ensure space AFTER $ticker (lowercase) if followed by alphanumeric
-    text = re.sub(r'(\$[a-z]{2,10})([a-zA-Z0-9])', r'\1 \2', text)
-    
-    # 4. Ensure space AFTER @USER if followed by alphanumeric
+    # Step 3: Ensure space AFTER @USER if followed by alphanumeric
     text = re.sub(r'(@[A-Za-z0-9_]{1,20})([a-zA-Z0-9])', r'\1 \2', text)
     
-    return text
+    return re.sub(r'  +', ' ', text).strip()
 
 
 def garbage_purge(text: str) -> bool:
@@ -146,8 +218,23 @@ def parse_tweet(item, username: str) -> dict:
     raw_date = dl.get("title", "")
     ts_dt = parse_date(raw_date)
     
-    # Clean text
-    text = clean_text_spacing(cd.get_text(separator=" ", strip=True))
+    # PHASE 1 FIX: Extract tweet text with cashtag-aware parsing
+    # Nitter renders $TICKERS as letter-by-letter spans. We must read each
+    # cashtag anchor tag as a single whole unit before stripping HTML.
+    
+    # Clone the content element to avoid mutating the soup
+    content_copy = BeautifulSoup(str(cd), "html.parser")
+    
+    # Find all cashtag links and replace them with their concatenated text (no separator)
+    for cashtag_el in content_copy.select("a.cashtag, a[href*='/search?q=%24']"):
+        ticker_text = cashtag_el.get_text(separator="", strip=True)
+        cashtag_el.replace_with(f" {ticker_text} ")
+    
+    # Now get the full text — cashtags are already whole, rest uses space separator
+    raw_text = content_copy.get_text(separator=" ", strip=True)
+    
+    # Clean and reconstruct any remaining broken tickers 
+    text = clean_text_spacing(raw_text)
     if garbage_purge(text):
         return None
 
@@ -197,304 +284,206 @@ def save_state(state: dict):
 #  Core Scraper
 # ─────────────────────────────────────────────────────────────
 async def scrape_user(username: str, max_days: int = 210, instance: str = None):
-    """Scrape a single user's timeline using Playwright. Returns new posts."""
-    cutoff = datetime.now(timezone.utc) - timedelta(days=max_days)
-    
-    inst_pool = list(LIVE_INSTANCES)
-    if instance and instance in inst_pool:
-        inst_pool.remove(instance)
-        inst_pool.insert(0, instance)
-    
-    inst_idx = 0
-    inst = inst_pool[inst_idx]
-
-    # Load existing posts to deduplicate
+    """Scrape a single user's timeline — V9.1 Parallel Smart Cache."""
     user_file = DB_DIR / f"x_intel_{username}.json"
-    existing = []
-    seen_ids = set()
+
+    # Log existing count
+    existing_count = 0
     if user_file.exists():
         try:
-            existing = json.loads(user_file.read_text(encoding="utf-8"))
-            seen_ids = {p["id"] for p in existing if "id" in p}
-            log.info(f"Loaded {len(seen_ids)} existing posts for @{username}")
+            raw = json.loads(user_file.read_text(encoding="utf-8"))
+            existing_count = len(raw if isinstance(raw, list) else raw.get("posts", []))
+        except Exception:
+            pass
+    log.info(f"Loaded {existing_count} existing posts for @{username}")
+
+    # ── V9.1 SMART GAP FINDER ──────────────────────────────────────────
+    # Source A: scanned_days.json sidecar (days searched even if 0 results)
+    # Source B: post timestamps in JSON (days that have actual data)
+    # Union = done days. Only remaining gaps get scraped.
+
+    scanned = load_scanned_days(username)  # set of 'YYYY-MM-DD' strings
+
+    post_dates = set()
+    user_file = DB_DIR / f"x_intel_{username}.json"
+    if user_file.exists():
+        try:
+            raw = json.loads(user_file.read_text(encoding="utf-8"))
+            posts_list = raw if isinstance(raw, list) else raw.get("posts", [])
+            for p in posts_list:
+                ts = p.get("timestamp", "")
+                if ts:
+                    post_dates.add(ts[:10])
         except Exception:
             pass
 
-    # Check for resume state
-    state = load_state()
-    user_state = state.get(username, {})
-    resume_cursor = user_state.get("cursor")
-    oldest_date_iso = user_state.get("oldest_date")
-    is_search = user_state.get("is_search_fallback", False)
+    done_days = scanned | post_dates
+
+    start_date = datetime(2025, 10, 1).date()
+    end_date   = datetime.now(timezone.utc).date()
     
-    if is_search and oldest_date_iso and resume_cursor:
-        old_dt = datetime.fromisoformat(oldest_date_iso).strftime('%Y-%m-%d')
-        since_dt = (datetime.fromisoformat(oldest_date_iso) - timedelta(days=30)).strftime('%Y-%m-%d')
-        url = f"{inst}/search?f=tweets&q=from%3A{username}+since%3A{since_dt}+until%3A{old_dt}&cursor={resume_cursor}"
-        log.info(f"RESUMING @{username} from SEARCH FALLBACK cursor")
-    elif resume_cursor:
-        url = f"{inst}/{username}?cursor={resume_cursor}"
-        log.info(f"RESUMING @{username} from saved cursor")
-    elif oldest_date_iso:
-        old_dt = datetime.fromisoformat(oldest_date_iso).strftime('%Y-%m-%d')
-        since_dt = (datetime.fromisoformat(oldest_date_iso) - timedelta(days=30)).strftime('%Y-%m-%d')
-        url = f"{inst}/search?f=tweets&q=from%3A{username}+since%3A{since_dt}+until%3A{old_dt}"
-        log.info(f"RESUMING @{username} from SEARCH FALLBACK (until {old_dt})")
-    else:
-        url = f"{inst}/{username}"
+    # ── V9.2 INTRA-DAY SYNC ───────────────────────────────────────────
+    # Force the last 48 hours to always be treated as a gap. This allows
+    # the script to be run every few hours — catching live updates while
+    # the deduplication safely ignores what was already downloaded today.
+    today_str = end_date.strftime("%Y-%m-%d")
+    yest_str = (end_date - timedelta(days=1)).strftime("%Y-%m-%d")
+    done_days.discard(today_str)
+    done_days.discard(yest_str)
 
-    # Launch browser
-    nav = StealthNavigator(headless=True)
-    await nav.initialize()
+    curr = start_date
+    gaps = []
+    while curr <= end_date:
+        if curr.strftime("%Y-%m-%d") not in done_days:
+            gaps.append(curr)
+        curr += timedelta(days=1)
 
-    new_posts = []
-    page_num = 0
-    failures = 0
-    absolute_failures = 0
-    stale_pages = 0
-    seen_cursors = set()
-    if resume_cursor:
-        seen_cursors.add(resume_cursor)
-        
-    page_oldest = datetime.now(timezone.utc)
-    if oldest_date_iso:
-        page_oldest = datetime.fromisoformat(oldest_date_iso)
+    if not gaps:
+        log.info(f"  ✅ @{username} fully covered — no gaps in forensic window.")
+        return []
 
-    # NEW: If we are deep backfilling, use FORWARD HARVEST starting from the cutoff
-    if page_oldest > cutoff + timedelta(days=1): # We haven't reached the cutoff yet
-        log.info(f"--- FORWARD HARVEST MODE ENGAGED for @{username} ---")
-        current_start = cutoff
-        while current_start < datetime.now(timezone.utc):
-            current_end = current_start + timedelta(days=33)
-            if current_end > datetime.now(timezone.utc):
-                current_end = datetime.now(timezone.utc)
-            
-            s_dt = current_start.strftime('%Y-%m-%d')
-            e_dt = current_end.strftime('%Y-%m-%d')
-            
-            # Skip if we already have data in this window? 
-            # Actually, forward harvest is for FILLING GAPS.
-            h_url = f"{inst}/search?f=tweets&q=from%3A{username}+since%3A{s_dt}+until%3A{e_dt}"
-            log.info(f"  Harvesting block: {s_dt} to {e_dt}")
-            
-            h_posts = await scrape_search_block(nav, h_url, inst, username)
-            if h_posts:
-                _incremental_save(username, h_posts, existing)
-                # Reload existing so we don't save duplicates in next block
-                existing = json.loads(user_file.read_text(encoding="utf-8"))
-            
-            current_start = current_end
-            await asyncio.sleep(random.uniform(5, 10))
-            
-        log.info(f"--- HARVEST COMPLETE for @{username} ---")
-        return [] # We've already saved everything
-    
-    try:
-        while url:
-            if absolute_failures >= 12:
-                log.error(f"  ABORTING: Hit 12 absolute failures across multiple instances. Complete IP/network block.")
-                break
+    log.info(f"--- PARALLEL FORENSIC DRILL V9.1 | @{username} | {len(gaps)} gaps ---")
 
-            if failures >= 3:
-                inst_idx = (inst_idx + 1) % len(inst_pool)
-                inst = inst_pool[inst_idx]
-                log.warning(f"  Too many failures. Rotating instance to: {inst} and switching to SEARCH FALLBACK.")
-                failures = 0
+    # ── MIRROR POOL WITH AUTO-EVICTION ────────────────────────────────
+    mirrors = ALL_MIRRORS.copy()
+    random.shuffle(mirrors)
+    mirror_failures: dict[str, int] = {m: 0 for m in mirrors}  # session-only
+
+    def get_live_mirrors() -> list:
+        """Return mirrors that haven't hit 2 consecutive failures this session."""
+        live = [m for m in mirrors if mirror_failures.get(m, 0) < 2]
+        if not live:
+            log.warning("  ⚠️ All mirrors evicted! Resetting pool.")
+            for m in mirrors:
+                mirror_failures[m] = 0
+            live = mirrors[:]
+        return live
+
+    # ── QUEUE + WORKERS ───────────────────────────────────────────────
+    queue: asyncio.Queue = asyncio.Queue()
+    for g in gaps:
+        queue.put_nowait(g)
+
+    # Pre-load existing posts for dedup
+    existing_list = []
+    if user_file.exists():
+        try:
+            raw = json.loads(user_file.read_text(encoding="utf-8"))
+            existing_list = raw if isinstance(raw, list) else raw.get("posts", [])
+        except Exception:
+            pass
+
+    total_new = [0]
+    retry_days: list = []  # days that exhaust all mirrors — rescued after main pass
+
+    async def worker(worker_id: int):
+        inst_idx = worker_id
+        nav = StealthNavigator(headless=True)
+        await nav.initialize()
+        try:
+            while not queue.empty():
+                day = await queue.get()
+                s_dt = day.strftime("%Y-%m-%d")
+                e_dt = (day + timedelta(days=1)).strftime("%Y-%m-%d")
+
+                success = False
+                attempts = 0
+                live = get_live_mirrors()
+
+                while not success and attempts < len(live):
+                    inst = live[inst_idx % len(live)]
+                    h_url = (f"{inst}/search?f=tweets"
+                             f"&q=from%3A{username}"
+                             f"+since%3A{s_dt}+until%3A{e_dt}")
+                    log.info(f"  [W{worker_id}] {s_dt} via {inst}")
+
+                    try:
+                        h_posts = await scrape_search_block(nav, h_url, inst, username)
+
+                        if h_posts is None:  # connection/DNS failure
+                            mirror_failures[inst] = mirror_failures.get(inst, 0) + 1
+                            if mirror_failures[inst] >= 2:
+                                log.warning(f"  ⚠️ Evicted {inst} ({mirror_failures[inst]} failures)")
+                            inst_idx += 1
+                            attempts += 1
+                        else:  # success (0 or more posts found)
+                            mirror_failures[inst] = 0  # reset on success
+                            if h_posts:
+                                _incremental_save(username, h_posts, existing_list)
+                                # Download images for NEW posts only — disk check
+                                await download_images(h_posts, username)
+                                # Sync shared list
+                                try:
+                                    raw2 = json.loads(user_file.read_text(encoding="utf-8"))
+                                    new_data = raw2 if isinstance(raw2, list) else raw2.get("posts", [])
+                                    existing_list.clear()
+                                    existing_list.extend(new_data)
+                                except Exception:
+                                    pass
+                                total_new[0] += len(h_posts)
+                            # Mark day done regardless of post count
+                            mark_day_scanned(username, s_dt)
+                            success = True
+                    except Exception as e:
+                        log.error(f"  [Worker {worker_id}] Loop Error: {e}")
+                        inst_idx += 1
+                        attempts += 1
                 
-                # We CANNOT carry cursors across instances. Must use Search Fallback securely.
-                old_dt = page_oldest.strftime('%Y-%m-%d')
-                since_dt = (page_oldest - timedelta(days=30)).strftime('%Y-%m-%d')
-                url = f"{inst}/search?f=tweets&q=from%3A{username}+since%3A{since_dt}+until%3A{old_dt}"
-                
-                # Clear cursor since we're pivoting
-                state[username] = state.get(username, {})
-                state[username].pop("cursor", None)
-                save_state(state)
-                continue
+                queue.task_done()
+                if not success:
+                    # Don't mark scanned — day goes to rescue queue
+                    log.warning(f"  [W{worker_id}] All mirrors failed for {s_dt} — queued for rescue")
+                    retry_days.append(day)
+                await asyncio.sleep(random.uniform(10, 18))
+        finally:
+            await nav.close()
 
-            page_num += 1
-            log.info(f"Page {page_num}: {url[:90]}...")
+    # ── LAUNCH 4 PARALLEL WORKERS ─────────────────────────────────────
+    await asyncio.gather(*[asyncio.create_task(worker(i)) for i in range(4)])
 
-            page = await nav.context.new_page()
-            try:
-                await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-                wait = random.uniform(7, 12)
-                await asyncio.sleep(wait)
+    # ── RESCUE PASS: retry failed days sequentially on proven mirrors ─
+    if retry_days:
+        log.info(f"  🔁 Rescue pass: {len(retry_days)} days failed all mirrors. Retrying...")
+        RESCUE_MIRRORS = [
+            "https://xcancel.com",
+            "https://nitter.poast.org",
+            "https://nitter.tiekoetter.com",
+            "https://nitter.net",
+            "https://lightbrd.com",
+        ]
+        nav_rescue = StealthNavigator(headless=True)
+        await nav_rescue.initialize()
+        try:
+            for day in retry_days:
+                s_dt = day.strftime("%Y-%m-%d")
+                e_dt = (day + timedelta(days=1)).strftime("%Y-%m-%d")
+                rescued = False
+                for inst in RESCUE_MIRRORS:
+                    h_url = (f"{inst}/search?f=tweets"
+                             f"&q=from%3A{username}"
+                             f"+since%3A{s_dt}+until%3A{e_dt}")
+                    log.info(f"  [RESCUE] {s_dt} via {inst}")
+                    try:
+                        h_posts = await scrape_search_block(nav_rescue, h_url, inst, username)
+                        if h_posts is not None:
+                            if h_posts:
+                                _incremental_save(username, h_posts, existing_list)
+                                await download_images(h_posts, username)
+                                total_new[0] += len(h_posts)
+                            mark_day_scanned(username, s_dt)
+                            log.info(f"  [RESCUE] ✅ {s_dt} recovered ({len(h_posts) if h_posts else 0} posts)")
+                            rescued = True
+                            break
+                    except Exception as e:
+                        log.warning(f"  [RESCUE] {inst} failed: {e}")
+                    await asyncio.sleep(random.uniform(8, 15))
+                if not rescued:
+                    log.warning(f"  [RESCUE] ❌ {s_dt} still unresolved — will retry next run")
+        finally:
+            await nav_rescue.close()
 
-                content = await page.content()
-                soup = BeautifulSoup(content, "html.parser")
-                items = soup.select(".timeline-item")
-                tweets = soup.select(".tweet-content")
-
-                if not tweets:
-                    log.warning(f"  Page {page_num}: 0 tweets — possible block or empty page")
-                    
-                    if "search" in url:
-                        # Gap sliding: ONLY slide if we hit 0 on the FIRST page of a search window.
-                        # If we already found tweets in this window, it's a pagination fail, not an empty window.
-                        if page_new_this_session == 0:
-                            page_oldest = page_oldest - timedelta(days=30)
-                            if page_oldest < cutoff:
-                                log.info(f"  Search window slid past cutoff. Done @{username}.")
-                                break
-                            
-                            old_dt = page_oldest.strftime('%Y-%m-%d')
-                            since_dt = (page_oldest - timedelta(days=30)).strftime('%Y-%m-%d')
-                            url = f"{inst}/search?f=tweets&q=from%3A{username}+since%3A{since_dt}+until%3A{old_dt}"
-                            log.info(f"  🔀 Window empty. Sliding search window back: {since_dt} to {old_dt}")
-                            await page.close()
-                            continue
-                        else:
-                            log.warning(f"  Search pagination failed mid-window. Triggering rotation.")
-                            failures += 1
-                            absolute_failures += 1
-                    else:
-                        failures += 1
-                        absolute_failures += 1
-                    await page.close()
-                    await asyncio.sleep(random.uniform(15, 30))
-                    continue
-
-                failures = 0  # reset on success
-                absolute_failures = 0
-                page_new_this_session = 0
-                page_truly_new = 0 # Not even in existing file
-
-                for item in items:
-                    post = parse_tweet(item, username)
-                    if not post:
-                        continue
-                    
-                    tweet_id = post["id"]
-                    ts_dt = post["_timestamp_dt"]
-                    
-                    if tweet_id in seen_ids:
-                        continue
-                        
-                    if ts_dt < page_oldest:
-                        page_oldest = ts_dt
-                    
-                    new_posts.append(post)
-                    seen_ids.add(tweet_id)
-                    page_new_this_session += 1
-                    
-                    # Check if truly new (not in existing list)
-                    existing_ids = {p["id"] for p in existing}
-                    if tweet_id not in existing_ids:
-                        page_truly_new += 1
-
-                log.info(
-                    f"  Page {page_num}: {len(tweets)} tweets, {page_new_this_session} session-new, {page_truly_new} total-new. "
-                    f"Oldest: {page_oldest.strftime('%b %d, %Y')}. "
-                    f"Running total: {len(new_posts)}"
-                )
-
-                # Loop detection: If we see NO new posts at all for 3 pages, Nitter might be looping
-                if page_new_this_session == 0:
-                    stale_pages += 1
-                    if stale_pages >= 3:
-                        log.warning(f"  Detected {stale_pages} stale pages (0 new tweets). Triggering SEARCH FALLBACK.")
-                        stale_pages = 0
-                        old_dt = page_oldest.strftime('%Y-%m-%d')
-                        since_dt = (page_oldest - timedelta(days=30)).strftime('%Y-%m-%d')
-                        url = f"{inst}/search?f=tweets&q=from%3A{username}+since%3A{since_dt}+until%3A{old_dt}"
-                        
-                        # Wipe cursor so we resume from oldest_date natively
-                        state[username] = state.get(username, {})
-                        state[username].pop("cursor", None)
-                        save_state(state)
-                        await page.close()
-                        continue
-                else:
-                    stale_pages = 0
-
-                # Check cutoff
-                if page_oldest < cutoff:
-                    log.info(f"  Reached {max_days}-day cutoff. Done with @{username}.")
-                    # Clear resume state
-                    state.pop(username, None)
-                    save_state(state)
-                    await page.close()
-                    break
-
-                # Get next cursor — MUST use the one with 'cursor='
-                # Page 1 has 1 button (bottom "Load more")
-                # Page 2+ has 2 buttons: top "Load newest" + bottom "Load more"
-                # "Load newest" usually points to /username without a cursor.
-                all_showmore = soup.select(".show-more a")
-                next_links = [a for a in all_showmore if "cursor=" in a.get("href", "").lower()]
-                
-                showmore = next_links[-1] if next_links else None
-                
-                if showmore:
-                    href = showmore.get("href", "")
-                    cursor_match = re.search(r"cursor=([^&]+)", href)
-                    new_cursor = cursor_match.group(1) if cursor_match else None
-                    
-                    # Prevent infinite loop or reset to top
-                    if not new_cursor or new_cursor in seen_cursors:
-                        log.warning(f"  Cursor loop detected or empty cursor. Triggering SEARCH FALLBACK.")
-                        old_dt = page_oldest.strftime('%Y-%m-%d')
-                        since_dt = (page_oldest - timedelta(days=30)).strftime('%Y-%m-%d')
-                        url = f"{inst}/search?f=tweets&q=from%3A{username}+since%3A{since_dt}+until%3A{old_dt}"
-                        
-                        state[username] = state.get(username, {})
-                        state[username].pop("cursor", None)
-                        save_state(state)
-                        await page.close()
-                        continue
-                    
-                    seen_cursors.add(new_cursor)
-
-                    if href.startswith("?"):
-                        if "search" in url:
-                            url = f"{inst}/search{href}"
-                        else:
-                            url = f"{inst}/{username}{href}"
-                    else:
-                        url = f"{inst}{href}"
-
-                    # Save cursor state for crash recovery
-                    state[username] = {
-                        "cursor": new_cursor,
-                        "page": page_num,
-                        "posts_so_far": len(new_posts),
-                        "oldest_date": page_oldest.isoformat(),
-                        "is_search_fallback": "search" in url,
-                        "instance": inst,
-                        "updated": datetime.now(timezone.utc).isoformat()
-                    }
-                    save_state(state)
-                    log.info(f"  Saved state for @{username} at page {page_num}")
-                else:
-                    log.info(f"  No 'Load more' button found. End of history for @{username}.")
-                    state.pop(username, None)
-                    save_state(state)
-                    break
-
-            except Exception as e:
-                log.error(f"  Page {page_num} error: {e}")
-                failures += 1
-            finally:
-                try:
-                    await page.close()
-                except Exception:
-                    pass
-
-            # ── SAVE AFTER EVERY PAGE (crash resilience) ──
-            if new_posts:
-                _incremental_save(username, new_posts, existing)
-
-            # Stealth delay
-            delay = random.uniform(12, 20)
-            log.info(f"  Sleeping {delay:.0f}s...")
-            await asyncio.sleep(delay)
-
-    finally:
-        await nav.close()
-
-    return new_posts
-
+    log.info(f"--- PARALLEL DRILL COMPLETE: {total_new[0]} total new for @{username} ---")
+    return []
 
 # ─────────────────────────────────────────────────────────────
 #  Incremental Save (after every page)
@@ -529,13 +518,13 @@ async def scrape_search_block(nav, url, inst, username):
     failures = 0
     
     while url:
-        if failures >= 3:
-            break
+        if failures >= 2:
+            return None # Signal failure
             
         page = await nav.context.new_page()
         try:
-            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            await asyncio.sleep(random.uniform(5, 8))
+            await page.goto(url, wait_until="domcontentloaded", timeout=10000)  # 10s — fast fail
+            await asyncio.sleep(random.uniform(2, 5))
             
             content = await page.content()
             soup = BeautifulSoup(content, "html.parser")
@@ -607,10 +596,13 @@ def _deduplicate_file(username: str):
 
 
 # ─────────────────────────────────────────────────────────────
-#  Image Downloader
+#  Image Downloader (V9.1 — disk-check only, new posts only)
 # ─────────────────────────────────────────────────────────────
 async def download_images(posts: list, username: str):
-    """Download images into user-specific folders using curl_cffi."""
+    """Download images for the given posts if not already on disk.
+    ONLY call with newly-fetched posts — never the full user file.
+    Disk presence is the authority: if file exists, skip silently.
+    """
     try:
         from curl_cffi import requests as curlr
     except ImportError:
@@ -625,34 +617,32 @@ async def download_images(posts: list, username: str):
         for i, url in enumerate(p.get("image_urls", [])):
             local_name = f"{p['id']}_{i}.jpg"
             local_path = user_img_dir / local_name
-            
-            # Map path for JSON
-            rel_path = f"images/{username}/{local_name}"
-            
-            if not local_path.exists():
+            rel_path   = f"images/{username}/{local_name}"
+
+            if not local_path.exists():  # ← disk is the truth
                 to_download.append((url, local_path, local_name))
-            
-            # Ensure path is in 'images' list
+
+            # Keep path recorded in post metadata
             if rel_path not in p.get("images", []):
                 p.setdefault("images", []).append(rel_path)
 
     if not to_download:
-        log.info(f"All images for @{username} already downloaded.")
-        return
+        return  # Already downloaded — silent
 
-    log.info(f"Downloading {len(to_download)} images for @{username}...")
-    downloaded = 0
+    log.info(f"  📸 {len(to_download)} new images for @{username}")
+    saved = 0
     for url, path, name in to_download:
         try:
-            resp = curlr.get(url, impersonate="chrome110", timeout=15)
+            resp = curlr.get(url, impersonate="chrome110", timeout=12)
             if resp.status_code == 200 and len(resp.content) > 500:
                 path.write_bytes(resp.content)
-                downloaded += 1
-            await asyncio.sleep(random.uniform(0.5, 2))
+                saved += 1
+            await asyncio.sleep(random.uniform(0.2, 0.8))
         except Exception as e:
-            log.warning(f"  Image failed ({name}): {e}")
+            log.warning(f"  Image fail ({name}): {e}")
 
-    log.info(f"Downloaded {downloaded}/{len(to_download)} images for @{username}.")
+    if saved:
+        log.info(f"  📸 Saved {saved}/{len(to_download)} images for @{username}")
 
 
 # ─────────────────────────────────────────────────────────────
@@ -723,55 +713,52 @@ def rebuild_master():
 
 
 # ─────────────────────────────────────────────────────────────
-#  Main
+#  Main — SINGLE USER ONLY
 # ─────────────────────────────────────────────────────────────
 async def main():
-    parser = argparse.ArgumentParser(description="X Intelligence Scraper V8")
-    parser.add_argument(
-        "--usernames", nargs="+",
-        default=["KawzInvests", "PhotonCap", "aleabitoreddit"],
+    parser = argparse.ArgumentParser(
+        description="X Intelligence Scraper V9.1 — Single User | Smart Cache | Parallel Mirrors"
     )
-    parser.add_argument("--days", type=int, default=180)
-    parser.add_argument("--instance", type=str, default=None)
-    parser.add_argument("--no-images", action="store_true")
+    parser.add_argument(
+        "--username", type=str, required=True,
+        help="Single X handle to scrape. ONE AT A TIME. Example: --username aleabitoreddit"
+    )
+    parser.add_argument("--days", type=int, default=210)
+    parser.add_argument("--instance", type=str, default=None,
+                        help="Force a specific mirror instance (optional)")
     args = parser.parse_args()
 
-    usernames = []
-    for u in args.usernames:
-        if "," in u:
-            usernames.extend([x.strip() for x in u.split(",") if x.strip()])
-        else:
-            usernames.append(u.strip())
+    user = args.username.strip().lstrip("@")
 
-    for i, user in enumerate(usernames):
-        log.info(f"{'='*60}")
-        log.info(f"SCRAPING @{user} ({i+1}/{len(usernames)}) — {args.days} days")
-        log.info(f"{'='*60}")
+    log.info(f"{'='*60}")
+    log.info(f"X INTEL V9.1 | @{user} | Smart Cache | 4-Worker Parallel")
+    log.info(f"{'='*60}")
 
-        inst = args.instance or LIVE_INSTANCES[i % len(LIVE_INSTANCES)]
-        posts = await scrape_user(user, max_days=args.days, instance=inst)
+    await scrape_user(user, max_days=args.days, instance=args.instance)
 
-        if not args.no_images:
-            # We call download_images on ALL posts in the user file to ensure backfill
-            user_file = DB_DIR / f"x_intel_{user}.json"
-            if user_file.exists():
-                all_current_posts = json.loads(user_file.read_text(encoding="utf-8"))
-                await download_images(all_current_posts, user)
-                
-                # Re-save with local image paths updated
-                user_file.write_text(json.dumps(all_current_posts, indent=2, ensure_ascii=False), encoding="utf-8")
-            
-            # Final deduplication pass
-            _deduplicate_file(user)
+    # Final dedup pass (already removes duplicates and fixes sort order)
+    _deduplicate_file(user)
 
-        if i < len(args.usernames) - 1:
-            pause = random.uniform(30, 60)
-            log.info(f"Pausing {pause:.0f}s before next user...")
-            await asyncio.sleep(pause)
+    # 1. Regex Cleanup (Repairs broken tickers like "$PG Y" -> "$PGY")
+    try:
+        from repair_tickers import repair_user
+        log.info("Running ticker regex cleanup...")
+        repair_user(user)
+    except ImportError as e:
+        log.warning(f"Could not import repair_tickers: {e}")
 
-    # Rebuild master database from all user files
+    # 2. Foreign-to-English Translation Pass
+    try:
+        from translate_intel import translate
+        log.info("Running foreign language translation pass...")
+        translate()
+    except ImportError as e:
+        log.warning(f"Could not import translate_intel: {e}")
+
+    # 3. Rebuild master intel.js bridge
     rebuild_master()
-    log.info("DONE.")
+
+    log.info(f"DONE — @{user} complete. All cleanup scripts executed.")
 
 
 if __name__ == "__main__":

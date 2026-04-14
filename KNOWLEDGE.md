@@ -723,3 +723,12 @@ Contract Mfg ($FN, $CLS)
    - Instance rotation: Cursors are **instance-specific**. The scraper stays on a single instance for a full user session to maintain cursor validity.
 
 **Maintenance Rule**: If the scraper begins looping or skipping dates, verify that `all_showmore = soup.select(".show-more a")` is still targeting the bottom element.
+
+### 2026-04-14 - V12.2 Data Integrity Update
+- **Atomic Ticker Standard**: Standardized all split/smashed tickers ($OSS, $VLN, $PGY) across local databases using whitelist-first surgical logic.
+- **International Support**: Implemented detection and translation workflow for Korean and Japanese intelligence.
+- **High-Fidelity Translations**:
+  - `PhotonCap` (JP): "Your community and subscription are so professional and educational that I would love to introduce them to Japanese investors."
+  - `PhotonCap` (KR): "I strongly recommended it because I thought it would do really well on Substack, and you have grown surprisingly fast... Kudos!!"
+- **Forensic Status**: All users (aleabitoreddit, PhotonCap, KawzInvests) reset to Oct 1, 2025 for a day-by-day forensic drill backfill.
+
