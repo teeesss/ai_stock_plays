@@ -786,7 +786,7 @@ function renderIntel(posts, query = "") {
     }
 
     posts.forEach(p => {
-        const date = new Date(p.timestamp).toLocaleDateString();
+        const date = p.timestamp ? p.timestamp.split('T')[0] : 'Unknown';
         let text = p.text;
         
         // Highlight search query
