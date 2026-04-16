@@ -268,6 +268,7 @@ def parse_tweet(item, username: str) -> dict:
         "id": tweet_id,
         "username": username,
         "text": text,
+        "raw_text": text,  # Preserved forever — source of truth for translation detection
         "timestamp": ts_dt.isoformat(),
         "_timestamp_dt": ts_dt, # helper for internal cutoff checks
         "raw_date": raw_date,
@@ -504,7 +505,8 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None):
 # ─────────────────────────────────────────────────────────────
 def _incremental_save(username: str, new_posts: list, existing: list):
     """Save user file after each page so nothing is lost on crash."""
-    existing_ids = {p["id"] for p in existing}
+    # Normalize IDs to strings for safe comparison (JSON may return int or str)
+    existing_ids = {str(p["id"]) for p in existing}
     
     # Strip internal helpers before saving
     clean_new = []
@@ -513,7 +515,7 @@ def _incremental_save(username: str, new_posts: list, existing: list):
         p_clean.pop("_timestamp_dt", None)
         clean_new.append(p_clean)
 
-    truly_new = [p for p in clean_new if p["id"] not in existing_ids]
+    truly_new = [p for p in clean_new if str(p["id"]) not in existing_ids]
     if not truly_new:
         return
      
@@ -598,12 +600,18 @@ def _deduplicate_file(username: str):
         seen = set()
         deduped = []
         for p in posts:
-            if p["id"] not in seen:
-                # Re-clean spacing (text only — preserve all other fields)
-                p["text"] = clean_text_spacing(p.get("text", ""))
+            pid = str(p["id"])  # Normalize to string for safe dedup
+            if pid not in seen:
+                # Only re-clean spacing if text has NOT been through translation
+                # (raw_text absent = legacy post, safe to clean; raw_text present = translation
+                #  may differ from raw_text, so preserve text as-is)
+                if "raw_text" not in p:
+                    p["text"] = clean_text_spacing(p.get("text", ""))
+                    p["raw_text"] = p["text"]  # Back-fill raw_text for legacy posts
                 
-                # GARBAGE PURGE
-                if garbage_purge(p["text"]):
+                # GARBAGE PURGE (check raw_text if available, else text)
+                check_text = p.get("raw_text") or p.get("text", "")
+                if garbage_purge(check_text):
                     continue
                 
                 # Explicitly carry visual_intel forward
@@ -612,7 +620,7 @@ def _deduplicate_file(username: str):
                     p["visual_intel"] = []
                     
                 deduped.append(p)
-                seen.add(p["id"])
+                seen.add(pid)
         
         deduped.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
         user_file.write_text(json.dumps(deduped, indent=2, ensure_ascii=True), encoding="utf-8")

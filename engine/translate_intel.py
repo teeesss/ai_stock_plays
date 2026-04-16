@@ -20,7 +20,20 @@ try:
 except (AttributeError, ValueError, io.UnsupportedOperation):
     pass
 
-FOREIGN_REGEX = re.compile(r'[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]')
+# Expanded CJK regex — covers Korean Hangul, Japanese Hiragana/Katakana, Chinese CJK Unified,
+# CJK Compatibility Ideographs, Fullwidth Latin (used in Korean posts), and Korean punctuation.
+FOREIGN_REGEX = re.compile(
+    r'[\u4e00-\u9fff'   # CJK Unified Ideographs (Chinese/Japanese Kanji)
+    r'\u3400-\u4dbf'   # CJK Extension A
+    r'\u3040-\u309f'   # Hiragana
+    r'\u30a0-\u30ff'   # Katakana
+    r'\uac00-\ud7af'   # Korean Hangul Syllables
+    r'\u1100-\u11ff'   # Hangul Jamo
+    r'\ua960-\ua97f'   # Hangul Jamo Extended-A
+    r'\ud7b0-\ud7ff'   # Hangul Jamo Extended-B
+    r'\uff01-\uff60'   # Fullwidth Latin & punctuation (common in Korean posts)
+    r']'
+)
 
 ROOT = Path(__file__).parent.parent
 DB_DIR = ROOT / "database"
@@ -55,10 +68,12 @@ def apply_cache_to_files(cache: dict):
             changed = False
             for item in data:
                 pid = str(item.get("id"))
-                text = item.get("text", "")
+                # Use raw_text as detection source — it is never overwritten by translation
+                source_text = item.get("raw_text") or item.get("text", "")
                 if pid in cache:
-                    # Only update if the text still contains foreign chars (i.e. not yet translated in this file)
-                    if FOREIGN_REGEX.search(text):
+                    # Only update text if the raw/original still contains foreign chars
+                    # (guards against applying stale cache entries to already-translated posts)
+                    if FOREIGN_REGEX.search(source_text):
                         item["text"] = cache[pid]
                         changed = True
             if changed:
@@ -105,19 +120,21 @@ def translate():
         try:
             data = json.loads(f.read_text(encoding="utf-8"))
             for item in data:
-                text = item.get("text", "")
+                # CRITICAL: use raw_text as detection source, NOT text.
+                # text may already be English (translated); raw_text is the original scraped content.
+                source_text = item.get("raw_text") or item.get("text", "")
                 post_id = str(item.get("id"))
                 
-                # If text contains foreign chars AND not in cache -> It's work
-                if FOREIGN_REGEX.search(text) and post_id not in cache:
-                    # Detect lang
+                # Work required: raw source has foreign chars AND not cached yet
+                if FOREIGN_REGEX.search(source_text) and post_id not in cache:
+                    # Detect lang from raw source
                     src_lang = "korean"; argos_code = "ko"
-                    if re.search(r'[\u3040-\u30ff]', text):
+                    if re.search(r'[\u3040-\u30ff]', source_text):
                         src_lang = "japanese"; argos_code = "ja"
-                    elif re.search(r'[\u4e00-\u9fff]', text):
+                    elif re.search(r'[\u4e00-\u9fff\u3400-\u4dbf]', source_text):
                         src_lang = "chinese simplified"; argos_code = "zh"
                     
-                    all_tasks.append((post_id, text, src_lang, argos_code))
+                    all_tasks.append((post_id, source_text, src_lang, argos_code))
         except: continue
 
     total = len(all_tasks)
