@@ -52,6 +52,30 @@ def clean_ticker(ticker: str) -> str:
     """Extract primary ticker from compound 'A.XX / B' format."""
     return ticker.split(' / ')[0].strip()
 
+def get_exchange_abbr(exchange: str) -> str:
+    """Standardizes exchange names into clean abbreviations."""
+    if not exchange: return "???"
+    
+    mapping = {
+        "NasdaqGS": "NASDAQ",
+        "NasdaqGM": "NASDAQ",
+        "NasdaqCM": "NASDAQ",
+        "Nasdaq":   "NASDAQ",
+        "NMS":      "NASDAQ",
+        "National Market System": "NASDAQ",
+        "New York Stock Exchange": "NYSE",
+        "NYSE":     "NYSE",
+        "NYSEArca": "NYSE",
+        "OTC Markets OTCPK": "OTC",
+        "Other OTC": "OTC",
+        "PNK":      "OTC",
+        "Pink Sheets": "OTC",
+        "YHD":      "HKG",
+        "SES":      "SGP",
+        "ASX":      "AUS"
+    }
+    return mapping.get(exchange, exchange) # Fallback to original if not in map
+
 def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
     """
     Fetch real-time quotes via Stealth API directly.
@@ -77,32 +101,51 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
             symbol = item.get('symbol')
             if not symbol or symbol not in primary_map:
                 continue
-            
+
             original_ticker = primary_map[symbol]
-            price = item.get('regularMarketPrice')
+            price      = item.get('regularMarketPrice')
             change_pct = item.get('regularMarketChangePercent')
-            volume = item.get('regularMarketVolume')
-            avg_vol = item.get('averageDailyVolume10Day')
-            
+            volume     = item.get('regularMarketVolume')
+            avg_vol    = item.get('averageDailyVolume10Day')
+            exch_res   = item.get('fullExchangeName') or item.get('exchangeName') or item.get('exchange')
+
             vol_spike = None
             if volume and avg_vol and avg_vol > 0:
                 vol_spike = round(volume / avg_vol, 2)
-            
+
+            # Extended-hours price (AH or PM) — free fields in same response
+            post_price = item.get('postMarketPrice')
+            post_pct   = item.get('postMarketChangePercent')
+            pre_price  = item.get('preMarketPrice')
+            pre_pct    = item.get('preMarketChangePercent')
+
+            ext_price, ext_pct, ext_type = None, None, None
+            if post_price is not None:
+                ext_price, ext_pct, ext_type = post_price, post_pct, 'AH'
+            elif pre_price is not None:
+                ext_price, ext_pct, ext_type = pre_price, pre_pct, 'PM'
+
             entry = {
-                'price': round(price, 2) if price is not None else None,
+                'price':      round(price,      2) if price      is not None else None,
                 'change_pct': round(change_pct, 2) if change_pct is not None else None,
-                'volume': int(volume) if volume else None,
-                'avg_volume': int(avg_vol) if avg_vol else None,
-                'vol_spike': vol_spike,
-                'updated': now
+                'volume':     int(volume)           if volume               else None,
+                'avg_volume': int(avg_vol)          if avg_vol              else None,
+                'vol_spike':  vol_spike,
+                'ext_price':  round(ext_price, 2)  if ext_price is not None else None,
+                'ext_pct':    round(ext_pct,   2)  if ext_pct   is not None else None,
+                'ext_type':   ext_type,
+                'exchange':   get_exchange_abbr(exch_res),
+                'updated':    now,
             }
             entry = {k: v for k, v in entry.items() if v is not None}
             results[original_ticker] = entry
-            
+
             if entry.get('price'):
+                ext_str = f' [{ext_type} ${ext_price:.2f} {ext_pct:+.1f}%]' if ext_price else ''
                 log.info(f'  {original_ticker:12s} ${entry["price"]:.2f} '
                          f'{entry.get("change_pct",0):+.1f}% '
-                         f'vol_spike={entry.get("vol_spike","N/A")}')
+                         f'[{entry.get("exchange")}] '
+                         f'vol_spike={entry.get("vol_spike","N/A")}{ext_str}')
             else:
                 log.warning(f'  {original_ticker:12s} no price data')
                 
@@ -194,6 +237,7 @@ async def async_run_fetch(tickers: list = None, dry_run: bool = False) -> dict:
     
     all_prices['_meta'] = {
         'refreshed_at': refreshed_at_str,
+        'refreshed_at_est': refreshed_at_str,
         'refreshed_at_iso': now_est.isoformat(),
         'total_tickers': len(all_prices),
         'with_price': sum(1 for t, d in all_prices.items() if d.get('price') and t != '_meta'),

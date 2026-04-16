@@ -24,10 +24,25 @@ except ImportError:
     sys.path.append(str(Path(__file__).parent))
     from stealth_navigator import StealthNavigator
 
-logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
-log = logging.getLogger(__name__)
+if sys.platform == "win32":
+    try: sys.stdout.reconfigure(encoding='utf-8')
+    except AttributeError: pass
 
 ROOT = Path(__file__).parent.parent
+LOG_DIR = ROOT / 'logs'
+LOG_DIR.mkdir(exist_ok=True)
+log_file = LOG_DIR / f"{Path(__file__).stem}.log"
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(levelname)s] %(message)s',
+    handlers=[
+        logging.FileHandler(log_file, encoding='utf-8'),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+log = logging.getLogger(__name__)
+
 DB_DIR = ROOT / 'database'
 DB_DIR.mkdir(exist_ok=True)
 

@@ -30,17 +30,28 @@ import sys
 sys.path.append(str(Path(__file__).parent))
 from stealth_navigator import StealthNavigator
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="[%(asctime)s] %(message)s",
-    datefmt="%H:%M:%S",
-)
-log = logging.getLogger("x_intel")
+if sys.platform == "win32":
+    try: sys.stdout.reconfigure(encoding='utf-8')
+    except AttributeError: pass
 
 ROOT = Path(__file__).parent.parent
 DB_DIR = ROOT / "database"
 IMG_DIR = ROOT / "images"
 IMG_DIR.mkdir(exist_ok=True)
+LOG_DIR = ROOT / "logs"
+LOG_DIR.mkdir(exist_ok=True)
+log_file = LOG_DIR / f"{Path(__file__).stem}.log"
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] %(message)s",
+    datefmt="%H:%M:%S",
+    handlers=[
+        logging.FileHandler(log_file, encoding="utf-8"),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+log = logging.getLogger("x_intel")
 
 # Verified healthy instances — sorted by points (source: nitter status tracker)
 # Session auto-eviction: 2 consecutive failures removes from pool until next run
@@ -397,7 +408,7 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None):
                     inst = live[inst_idx % len(live)]
                     h_url = (f"{inst}/search?f=tweets"
                              f"&q=from%3A{username}"
-                             f"+since%3A{s_dt}+until%3A{e_dt}")
+                             f"%20since%3A{s_dt}%20until%3A{e_dt}")
                     log.info(f"  [W{worker_id}] {s_dt} via {inst}")
 
                     try:
@@ -464,7 +475,7 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None):
                 for inst in RESCUE_MIRRORS:
                     h_url = (f"{inst}/search?f=tweets"
                              f"&q=from%3A{username}"
-                             f"+since%3A{s_dt}+until%3A{e_dt}")
+                             f"%20since%3A{s_dt}%20until%3A{e_dt}")
                     log.info(f"  [RESCUE] {s_dt} via {inst}")
                     try:
                         h_posts = await scrape_search_block(nav_rescue, h_url, inst, username)
@@ -509,9 +520,15 @@ def _incremental_save(username: str, new_posts: list, existing: list):
     combined = truly_new + existing
     combined.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
     
+    # Preserve visual_intel from existing posts — merge into combined by ID
+    existing_vi = {p["id"]: p.get("visual_intel") for p in existing if p.get("visual_intel")}
+    for p in combined:
+        if p["id"] in existing_vi and not p.get("visual_intel"):
+            p["visual_intel"] = existing_vi[p["id"]]
+    
     user_file = DB_DIR / f"x_intel_{username}.json"
-    user_file.write_text(json.dumps(combined, indent=2, ensure_ascii=False), encoding="utf-8")
-    log.info(f"  💾 Saved {len(combined)} posts for @{username} ({len(truly_new)} new)")
+    user_file.write_text(json.dumps(combined, indent=2, ensure_ascii=True), encoding="utf-8")
+    log.info(f"  [SAVE] {len(combined)} posts for @{username} ({len(truly_new)} new)")
 
 
 async def scrape_search_block(nav, url, inst, username):
@@ -570,7 +587,8 @@ async def scrape_search_block(nav, url, inst, username):
 
 
 def _deduplicate_file(username: str):
-    """Deep cleanup and deduplication of a user's JSON file."""
+    """Deep cleanup and deduplication of a user's JSON file.
+    Preserves visual_intel fields populated by image_analyzer."""
     user_file = DB_DIR / f"x_intel_{username}.json"
     if not user_file.exists():
         return
@@ -581,19 +599,24 @@ def _deduplicate_file(username: str):
         deduped = []
         for p in posts:
             if p["id"] not in seen:
-                # Re-clean spacing
+                # Re-clean spacing (text only — preserve all other fields)
                 p["text"] = clean_text_spacing(p.get("text", ""))
                 
                 # GARBAGE PURGE
                 if garbage_purge(p["text"]):
                     continue
+                
+                # Explicitly carry visual_intel forward
+                # (safety: ensure it's never silently dropped)
+                if "visual_intel" not in p:
+                    p["visual_intel"] = []
                     
                 deduped.append(p)
                 seen.add(p["id"])
         
         deduped.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
-        user_file.write_text(json.dumps(deduped, indent=2, ensure_ascii=False), encoding="utf-8")
-        log.info(f"  ✨ Deduplicated & Purged @{username}: {len(posts)} -> {len(deduped)} posts.")
+        user_file.write_text(json.dumps(deduped, indent=2, ensure_ascii=True), encoding="utf-8")
+        log.info(f"  Deduplicated @{username}: {len(posts)} -> {len(deduped)} posts.")
     except Exception as e:
         log.error(f"  Failed to deduplicate @{username}: {e}")
 
@@ -648,17 +671,29 @@ async def download_images(posts: list, username: str):
         log.info(f"  📸 Saved {saved}/{len(to_download)} images for @{username}")
 
 
-# ─────────────────────────────────────────────────────────────
-#  Master Database Builder
-# ─────────────────────────────────────────────────────────────
 def rebuild_master():
-    """Rebuild master database from all per-user files."""
+    """Rebuild master database from all per-user files.
+    DURABILITY: Preserves visual_mentions/visual_last_updated from existing master.
+    """
+    # Preserve OCR data before overwriting
+    master_path = DB_DIR / "x_intel_master.json"
+    existing_visual_mentions = {}
+    existing_visual_ts = None
+    if master_path.exists():
+        try:
+            old = json.loads(master_path.read_text(encoding="utf-8"))
+            existing_visual_mentions = old.get("visual_mentions", {})
+            existing_visual_ts = old.get("visual_last_updated")
+        except Exception:
+            pass
+
     all_posts = []
     for f in DB_DIR.glob("x_intel_*.json"):
         if f.name == "x_intel_master.json":
             continue
         try:
-            posts = json.loads(f.read_text(encoding="utf-8"))
+            raw = json.loads(f.read_text(encoding="utf-8"))
+            posts = raw if isinstance(raw, list) else raw.get("posts", [])
             all_posts.extend(posts)
         except Exception:
             pass
@@ -697,22 +732,27 @@ def rebuild_master():
                     buzz[t][k] += 1
 
     payload = {
-        "posts": all_posts,
-        "buzz": buzz,
-        "last_updated": now.isoformat(),
+        "posts":               all_posts,
+        "buzz":                buzz,
+        "last_updated":        now.isoformat(),
+        "visual_mentions":     existing_visual_mentions,
+        "visual_last_updated": existing_visual_ts,
     }
 
     # Save master JSON
-    master_path = DB_DIR / "x_intel_master.json"
-    master_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    master_path.write_text(json.dumps(payload, indent=2, ensure_ascii=True), encoding="utf-8")
 
     # Save intel.js for dashboard (both locations)
-    js_content = "window.X_INTEL_MODULE = " + json.dumps(payload) + ";"
+    js_content = ("// GIGACPO Intelligence Data - Auto-generated\n"
+                  "window.X_INTEL_MODULE = " + json.dumps(payload, ensure_ascii=True) + ";")
     (DB_DIR / "intel.js").write_text(js_content, encoding="utf-8")
     (ROOT / "intel.js").write_text(js_content, encoding="utf-8")
 
-    log.info(f"Master rebuilt: {len(all_posts)} posts, {len(buzz)} tickers")
+    log.info(f"Master rebuilt: {len(all_posts)} posts, {len(buzz)} tickers, "
+             f"{len(existing_visual_mentions)} visual tickers preserved")
     return payload
+
+
 
 
 # ─────────────────────────────────────────────────────────────

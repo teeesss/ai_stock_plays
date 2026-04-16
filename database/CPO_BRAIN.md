@@ -1,5 +1,5 @@
 # ⚡ CPO INTELLIGENCE BRAIN
-**Last Sync**: 2026-04-14 14:46:36
+**Last Sync**: 2026-04-16 12:33:54
 
 ## 1. STRUCTURED ECOSYSTEM (113 Plays)
 
@@ -39,7 +39,7 @@
 | TSEM | 24.22B | 105.49 | 13.70% | 3x |
 | LPKF | N/A | N/A | N/A | 5x |
 | SHWDY | 12.80B | 70.05 | -0.80% | 1x-2x |
-| INNO | N/A | 39.18 | N/A | 1x-2x |
+| INNO | N/A | N/A | N/A | 1x-2x |
 | EOPT | 519.37B | 68.93 | 152.50% | 1x-2x |
 | SMTOY | 53.98B | 39.14 | N/A | 3x |
 | ATS.VI | 2.59B | 20.18 | 17.90% | 1x-2x |

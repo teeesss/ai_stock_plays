@@ -21,11 +21,25 @@ import logging
 import subprocess
 from pathlib import Path
 from datetime import datetime
+import sys
+
+if sys.platform == "win32":
+    try: sys.stdout.reconfigure(encoding='utf-8')
+    except AttributeError: pass
+
+ROOT = Path(__file__).parent.parent
+LOG_DIR = ROOT / "logs"
+LOG_DIR.mkdir(exist_ok=True)
+log_file = LOG_DIR / f"{Path(__file__).stem}.log"
 
 logging.basicConfig(
     level=logging.INFO,
     format="[%(asctime)s] %(message)s",
     datefmt="%H:%M:%S",
+    handlers=[
+        logging.FileHandler(log_file, encoding="utf-8"),
+        logging.StreamHandler(sys.stdout)
+    ]
 )
 log = logging.getLogger("x_intel_sync")
 
@@ -57,9 +71,9 @@ def sync_all():
                 cwd=str(ROOT),
                 check=True
             )
-            log.info(f"✅ @{user} complete.")
+            log.info(f"[OK] @{user} complete.")
         except subprocess.CalledProcessError as e:
-            log.error(f"❌ Failed to sync @{user} (Exit Code: {e.returncode})")
+            log.error(f"[FAIL] Failed to sync @{user} (Exit Code: {e.returncode})")
 
         # Stagger jitter between users: 2 to 10 minutes
         if idx < len(USERS) - 1:
@@ -68,9 +82,38 @@ def sync_all():
             time.sleep(stagger)
 
     log.info("\n" + "=" * 60)
+    log.info("SCRAPE PHASE COMPLETE — Starting Image Analysis Pipeline")
+    log.info("=" * 60)
+
+    # ── STEP 2: IMAGE ANALYSIS ─────────────────────────────────
+    # Process any new images downloaded during scrape.
+    # image_analyzer skips already-processed images via processed_images.json.
+    log.info("Running Image Analyzer (OCR on new images)...")
+    try:
+        import sys as _sys
+        _sys.path.insert(0, str(ENGINE_DIR))
+        from image_analyzer import analyze_images
+        analyze_images()
+        log.info("[OK] Image analysis complete.")
+    except Exception as e:
+        log.error(f"[FAIL] Image analysis failed: {e}")
+
+    # ── STEP 3: VISUAL BUZZ AGGREGATION ───────────────────────
+    # Aggregate OCR ticker mentions into visual_mentions buzz scores.
+    # Merges into x_intel_master.json + rebuilds intel.js.
+    log.info("Running Visual Buzz Aggregator...")
+    try:
+        from visual_buzz_aggregator import run as run_visual_buzz
+        run_visual_buzz()
+        log.info("[OK] Visual buzz aggregation complete.")
+    except Exception as e:
+        log.error(f"[FAIL] Visual buzz aggregation failed: {e}")
+
+    log.info("\n" + "=" * 60)
     log.info("GLOBAL INTELLIGENCE SYNC FINISHED")
     log.info("=" * 60)
 
 
 if __name__ == "__main__":
     sync_all()
+

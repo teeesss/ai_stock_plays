@@ -12,7 +12,7 @@ if sys.stdout.encoding != 'utf-8':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 # PATHS
-ROOT = Path("z:/COS_Stock_Plays")
+ROOT = Path(__file__).parent.parent
 DB_DIR = ROOT / 'database'
 MASTER_INTEL = DB_DIR / 'x_intel_master.json'
 PROCESSED_LOG = DB_DIR / 'processed_images.json'

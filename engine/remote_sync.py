@@ -28,20 +28,34 @@ def get_creds():
         log.error(f"Error reading vault: {e}")
         return None
 
-def sync():
+def sync(from_dist=False):
     creds = get_creds()
     if not creds or "remote" not in creds:
         log.error("Missing remote credentials.")
         return False
 
     remote = creds["remote"]
-    # Mapping local paths to remote paths
-    files_to_sync = {
-        "cpo_plays.html": "index.html",
-        "database/dashboard_data.js": "database/dashboard_data.js",
-        "database/live_prices.js": "database/live_prices.js",
-        "database/intel.js": "intel.js"
-    }
+    
+    if from_dist:
+        base_dir = ROOT / "dist"
+        if not base_dir.exists():
+            log.error("dist directory not found. Run build first.")
+            return False
+        # In dist mode, we sync EVERYTHING in dist
+        files_to_sync = {}
+        for p in base_dir.rglob("*"):
+            if p.is_file():
+                rel = p.relative_to(base_dir)
+                files_to_sync[str(rel)] = str(rel).replace("\\", "/")
+    else:
+        base_dir = ROOT
+        # Mapping local paths to remote paths
+        files_to_sync = {
+            "cpo_plays.html": "index.html",
+            "database/dashboard_data.js": "database/dashboard_data.js",
+            "database/live_prices.js": "database/live_prices.js",
+            "database/intel.js": "intel.js"
+        }
 
     transport = None
     try:
@@ -71,7 +85,7 @@ def sync():
             sftp.chmod("database", 0o755)
 
         for local_rel, remote_rel in files_to_sync.items():
-            local_path = ROOT / local_rel
+            local_path = base_dir / local_rel
             if not local_path.exists():
                 log.warning(f"Skipping missing file: {local_path}")
                 continue
@@ -93,4 +107,8 @@ def sync():
         return False
 
 if __name__ == "__main__":
-    sync()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dist", action="store_true", help="Sync from dist folder")
+    args = parser.parse_args()
+    sync(from_dist=args.dist)

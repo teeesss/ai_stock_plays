@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "CPO Intelligence Brain",
-    "last_synced": "2026-04-14 14:46:35",
+    "last_synced": "2026-04-16 12:33:53",
     "owner": "Ray"
   },
   "ecosystem": {
@@ -51169,335 +51169,20 @@
       "human_research": {
         "Ticker": "INNO",
         "Company": "InnoLight",
-        "Country": "US",
-        "Status": "Public",
-        "Bucket": "Core",
+        "Country": "China",
+        "Status": "China-Only",
+        "Bucket": "Private",
         "Role": "Optical modules",
         "Alpha Score": "9",
         "Risk Adj": "7",
         "Hiddenness": "8",
-        "Notes": "Major Chinese transceiver beneficiary. 800G ramping, 1.6T next. Scale advantage.",
+        "Notes": "InnoLight Technology \u2014 Chinese company, NOT publicly traded outside China. yfinance ticker \"INNO\" resolves to unrelated NYSE company. Major 800G/1.6T transceiver beneficiary. Tracked for research intelligence only. [EXCLUDE FROM SCORING]",
         "Monopoly Score": "30% (China Transceivers)",
         "Rev Growth Est": "40% (800G/1.6T modules)",
         "Target Upside": "1x-2x"
       },
-      "financials": {
-        "summaryDetail": {
-          "maxAge": 1,
-          "priceHint": {
-            "raw": 2,
-            "fmt": "2",
-            "longFmt": "2"
-          },
-          "previousClose": {
-            "raw": 17.62,
-            "fmt": "17.62"
-          },
-          "open": {
-            "raw": 17.715,
-            "fmt": "17.72"
-          },
-          "dayLow": {
-            "raw": 17.7,
-            "fmt": "17.70"
-          },
-          "dayHigh": {
-            "raw": 17.735,
-            "fmt": "17.74"
-          },
-          "regularMarketPreviousClose": {
-            "raw": 17.62,
-            "fmt": "17.62"
-          },
-          "regularMarketOpen": {
-            "raw": 17.715,
-            "fmt": "17.72"
-          },
-          "regularMarketDayLow": {
-            "raw": 17.7,
-            "fmt": "17.70"
-          },
-          "regularMarketDayHigh": {
-            "raw": 17.735,
-            "fmt": "17.74"
-          },
-          "dividendRate": {},
-          "dividendYield": {},
-          "exDividendDate": {},
-          "payoutRatio": {},
-          "fiveYearAvgDividendYield": {},
-          "beta": {},
-          "trailingPE": {
-            "raw": 39.178375,
-            "fmt": "39.18"
-          },
-          "forwardPE": {},
-          "volume": {
-            "raw": 9688,
-            "fmt": "9.69k",
-            "longFmt": "9,688"
-          },
-          "regularMarketVolume": {
-            "raw": 9688,
-            "fmt": "9.69k",
-            "longFmt": "9,688"
-          },
-          "averageVolume": {
-            "raw": 3410,
-            "fmt": "3.41k",
-            "longFmt": "3,410"
-          },
-          "averageVolume10days": {
-            "raw": 7291,
-            "fmt": "7.29k",
-            "longFmt": "7,291"
-          },
-          "averageDailyVolume10Day": {
-            "raw": 7291,
-            "fmt": "7.29k",
-            "longFmt": "7,291"
-          },
-          "bid": {
-            "raw": 0.0,
-            "fmt": "0.00"
-          },
-          "ask": {
-            "raw": 0.0,
-            "fmt": "0.00"
-          },
-          "bidSize": {
-            "raw": 800,
-            "fmt": "800",
-            "longFmt": "800"
-          },
-          "askSize": {
-            "raw": 900,
-            "fmt": "900",
-            "longFmt": "900"
-          },
-          "marketCap": {},
-          "nonDilutedMarketCap": {},
-          "yield": {
-            "raw": 0.0,
-            "fmt": "0.00%"
-          },
-          "ytdReturn": {},
-          "qtdReturn": {},
-          "totalAssets": {
-            "raw": 3902044,
-            "fmt": "3.9M",
-            "longFmt": "3,902,044"
-          },
-          "expireDate": {},
-          "strikePrice": {},
-          "openInterest": {},
-          "fiftyTwoWeekLow": {
-            "raw": 13.8,
-            "fmt": "13.80"
-          },
-          "fiftyTwoWeekHigh": {
-            "raw": 17.735,
-            "fmt": "17.74"
-          },
-          "allTimeHigh": {
-            "raw": 20.91,
-            "fmt": "20.91"
-          },
-          "allTimeLow": {
-            "raw": 10.35,
-            "fmt": "10.35"
-          },
-          "priceToSalesTrailing12Months": {},
-          "fiftyDayAverage": {
-            "raw": 16.868578,
-            "fmt": "16.87"
-          },
-          "twoHundredDayAverage": {
-            "raw": 15.830388,
-            "fmt": "15.83"
-          },
-          "trailingAnnualDividendRate": {
-            "raw": 0.0,
-            "fmt": "0.00"
-          },
-          "trailingAnnualDividendYield": {
-            "raw": 0.0,
-            "fmt": "0.00%"
-          },
-          "navPrice": {
-            "raw": 17.69324,
-            "fmt": "17.69"
-          },
-          "currency": "USD",
-          "fromCurrency": null,
-          "toCurrency": null,
-          "lastMarket": null,
-          "coinMarketCapLink": null,
-          "volume24Hr": {},
-          "volumeAllCurrencies": {},
-          "circulatingSupply": {},
-          "algorithm": null,
-          "maxSupply": {},
-          "totalSupply": {},
-          "startDate": {},
-          "tradeable": false,
-          "fullyDilutedValue": {},
-          "volume24HrMarketCapPercent": {}
-        },
-        "defaultKeyStatistics": {
-          "maxAge": 1,
-          "priceHint": {
-            "raw": 2,
-            "fmt": "2",
-            "longFmt": "2"
-          },
-          "enterpriseValue": {},
-          "forwardPE": {},
-          "profitMargins": {},
-          "morningStarOverallRating": {},
-          "morningStarRiskRating": {},
-          "category": "Large Growth",
-          "bookValue": {},
-          "priceToBook": {},
-          "annualReportExpenseRatio": {},
-          "ytdReturn": {
-            "raw": 0.22401899,
-            "fmt": "22.40%"
-          },
-          "qtdReturn": {},
-          "beta3Year": {
-            "raw": 0.0,
-            "fmt": "0.00"
-          },
-          "totalAssets": {
-            "raw": 3902044,
-            "fmt": "3.9M",
-            "longFmt": "3,902,044"
-          },
-          "yield": {
-            "raw": 0.0,
-            "fmt": "0.00%"
-          },
-          "fundFamily": "Harbor",
-          "fundInceptionDate": {
-            "raw": 1638316800,
-            "fmt": "2021-12-01"
-          },
-          "legalType": "Exchange Traded Fund",
-          "threeYearAverageReturn": {
-            "raw": -0.0290941,
-            "fmt": "-2.91%"
-          },
-          "fiveYearAverageReturn": {},
-          "priceToSalesTrailing12Months": {},
-          "lastFiscalYearEnd": {},
-          "nextFiscalYearEnd": {},
-          "mostRecentQuarter": {},
-          "earningsQuarterlyGrowth": {},
-          "revenueQuarterlyGrowth": {},
-          "netIncomeToCommon": {},
-          "trailingEps": {},
-          "forwardEps": {},
-          "pegRatio": {},
-          "lastSplitFactor": null,
-          "lastSplitDate": {},
-          "enterpriseToRevenue": {},
-          "enterpriseToEbitda": {},
-          "52WeekChange": {},
-          "SandP52WeekChange": {},
-          "lastDividendValue": {},
-          "lastDividendDate": {},
-          "lastCapGain": {},
-          "annualHoldingsTurnover": {},
-          "latestFundingDate": {},
-          "latestAmountRaised": {},
-          "latestImpliedValuation": {},
-          "latestShareClass": null,
-          "leadInvestor": null,
-          "fundingToDate": {},
-          "totalFundingRounds": {}
-        },
-        "price": {
-          "maxAge": 1,
-          "preMarketChange": {},
-          "preMarketPrice": {},
-          "preMarketSource": "DELAYED",
-          "postMarketChange": {},
-          "postMarketPrice": {},
-          "regularMarketChangePercent": {
-            "raw": 0.0056752833,
-            "fmt": "0.57%"
-          },
-          "regularMarketChange": {
-            "raw": 0.0999985,
-            "fmt": "0.10"
-          },
-          "regularMarketTime": 1749649888,
-          "priceHint": {
-            "raw": 2,
-            "fmt": "2",
-            "longFmt": "2"
-          },
-          "regularMarketPrice": {
-            "raw": 17.72,
-            "fmt": "17.72"
-          },
-          "regularMarketDayHigh": {
-            "raw": 17.735,
-            "fmt": "17.74"
-          },
-          "regularMarketDayLow": {
-            "raw": 17.7,
-            "fmt": "17.70"
-          },
-          "regularMarketVolume": {
-            "raw": 9688,
-            "fmt": "9.69k",
-            "longFmt": "9,688.00"
-          },
-          "averageDailyVolume10Day": {
-            "raw": 7291,
-            "fmt": "7.29k",
-            "longFmt": "7,291"
-          },
-          "averageDailyVolume3Month": {
-            "raw": 3410,
-            "fmt": "3.41k",
-            "longFmt": "3,410"
-          },
-          "regularMarketPreviousClose": {
-            "raw": 17.62,
-            "fmt": "17.62"
-          },
-          "regularMarketSource": "FREE_REALTIME",
-          "regularMarketOpen": {
-            "raw": 17.715,
-            "fmt": "17.72"
-          },
-          "strikePrice": {},
-          "openInterest": {},
-          "exchange": "PCX",
-          "exchangeName": "NYSEArca",
-          "exchangeDataDelayedBy": 0,
-          "marketState": "CLOSED",
-          "quoteType": "ETF",
-          "symbol": "INNO",
-          "underlyingSymbol": null,
-          "shortName": "Harbor ETF Trust Harbor Disrupt",
-          "longName": "Harbor Disruptive Innovation ETF",
-          "currency": "USD",
-          "quoteSourceName": "Delayed Quote",
-          "currencySymbol": "$",
-          "fromCurrency": null,
-          "toCurrency": null,
-          "lastMarket": null,
-          "volume24Hr": {},
-          "volumeAllCurrencies": {},
-          "circulatingSupply": {},
-          "marketCap": {}
-        }
-      },
-      "last_updated": "2026-04-12T01:15:15.748091",
+      "financials": {},
+      "last_updated": "2026-04-15T02:44:01Z",
       "history": [
         {
           "x": 1638162000000,
@@ -52147,20 +51832,23 @@
         "1y": 23.4,
         "3y": -11.67,
         "5y": 0.0
-      }
+      },
+      "no_yfinance": true,
+      "yfinance_note": "\"INNO\" on yfinance resolves to a different US-listed company (NYSE Arca). InnoLight Technology is NOT publicly traded on US exchanges. China market tracked via private research only.",
+      "no_dashboard": true
     },
     "EOPT": {
       "human_research": {
         "Ticker": "EOPT",
         "Company": "Eoptolink",
-        "Country": "US",
-        "Status": "Public",
-        "Bucket": "Core",
+        "Country": "China",
+        "Status": "China-Only",
+        "Bucket": "Private",
         "Role": "Optical modules",
         "Alpha Score": "9",
         "Risk Adj": "7",
         "Hiddenness": "8",
-        "Notes": "TFLN modulator pioneer for 1.6T. Data center optical module leader in China.",
+        "Notes": "Eoptolink Technology \u2014 China A-share ONLY (300502.SZ, Shenzhen). No US/international listing. Tracked for research intelligence only. TFLN modulator pioneer for 1.6T. Revenue +152.5%. Price/Val in CNY. [EXCLUDE FROM SCORING]",
         "Monopoly Score": "20% (DC Modules)",
         "Rev Growth Est": "35% (Data center modules)",
         "Target Upside": "1x-2x",
@@ -52707,7 +52395,11 @@
           "financialCurrency": "CNY"
         }
       },
-      "last_updated": "2026-04-12T01:15:17.734499"
+      "last_updated": "2026-04-15T02:44:01Z",
+      "currency": "CNY",
+      "exchange": "SHZ",
+      "real_ticker": "300502.SZ",
+      "no_dashboard": true
     },
     "SMTOY": {
       "human_research": {

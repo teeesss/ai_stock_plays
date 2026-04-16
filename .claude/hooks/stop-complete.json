@@ -1,0 +1,10 @@
+{
+    "hooks": {
+        "Stop": [
+            {
+                "type": "prompt",
+                "prompt": "Evaluate whether the current user task is 100% complete according to the CLAUDE.md rules (especially Completion & Autonomy Rules). The project is the NCAA Division I + II Baseball Camps 2026 directory.\n\nIf the task is fully finished (scripts run, tests passed, HTML generated correctly, deployed if requested, sorting verified, no errors), respond with exactly this JSON: {\"ok\": true}\n\nIf anything remains (more schools to process, tests failing, HTML not regenerated, deploy not done, etc.), respond with exactly: {\"ok\": false, \"reason\": \"brief description of what still needs to be done\"}\n\nDo not be lenient. Never allow 'almost done'. Base your decision strictly on project rules and verification steps."
+            }
+        ]
+    }
+}

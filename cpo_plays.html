@@ -24,8 +24,7 @@
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
         .ticker-link { color:var(--gold); font-weight:800; font-size:12px; text-decoration:none; transition:color 0.15s; font-family:inherit; }
         .ticker-link:hover { color:#fcd34d; text-decoration:underline; }
-        .ticker-sep { color:var(--text-dim); font-size:10px; margin:0 2px; }
-        .ticker-otc { color:var(--accent); font-size:11px; }
+        .ticker-otc { display: block; color: var(--accent); font-size: 10px; line-height: 1.2; margin-top: 2px; opacity: 0.8; }
         :root {
             --bg-main: #020617; --bg-card: #0f172a; --text-main: #f8fafc;
             --text-dim: #64748b; --accent: #0ea5e9; --gold: #f59e0b;
@@ -131,12 +130,12 @@
         /* Table */
         .table-area { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; flex-grow: 1; min-height: 400px; display: flex; flex-direction: column; }
         .table-scroll { overflow-y: auto; flex-grow: 1; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #1e293b; padding: 14px 10px; text-align: left; font-size: 12px; text-transform: uppercase; color: var(--text-dim); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 20; cursor: pointer; user-select: none; white-space: nowrap; font-weight: 900; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { background: #1e293b; padding: 10px 6px; text-align: left; font-size: 12px; text-transform: uppercase; color: var(--text-dim); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 20; cursor: pointer; user-select: none; white-space: nowrap; font-weight: 900; }
         th:hover { color: var(--accent); background: #26334d; }
         th.sort-asc::after { content: ' ▲'; color: var(--gold); }
         th.sort-desc::after { content: ' ▼'; color: var(--gold); }
-        td { padding: 12px 8px; border-bottom: 1px solid var(--border); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        td { padding: 8px 5px; border-bottom: 1px solid var(--border); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         tr:hover td { background: rgba(14,165,233,0.04); }
         tr.pinned td { background: rgba(245,158,11,0.04); border-left: 4px solid var(--gold); }
         tr.private-row td { opacity: 0.8; }
@@ -258,19 +257,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 <tr>
                     <th style="width:30px;" onclick="setSort('pinned')">★</th>
                     <th style="width:30px;">#</th>
-                    <th style="width:85px;" onclick="setSort('ticker')">Ticker</th>
-                    <th style="width:155px;" onclick="setSort('company')">Company</th>
-                    <th style="width:50px;" onclick="setSort('alpha')">Alpha</th>
-                    <th style="width:50px;" onclick="setSort('risk')">Risk</th>
-                    <th style="width:50px;" onclick="setSort('hidden')">Hidden</th>
+                    <th style="width:70px;" onclick="setSort('ticker')">Ticker</th>
+                    <th style="width:130px;" onclick="setSort('company')">Company</th>
+                    <th style="width:36px;" onclick="setSort('alpha')">Alpha</th>
+                    <th style="width:36px;" onclick="setSort('risk')">Risk</th>
+                    <th style="width:36px;" onclick="setSort('hidden')">Hidden</th>
                     <th style="width:65px;" onclick="setSort('country')">Exchange</th>
-                    <th style="width:80px;" onclick="setSort('mcap')">MCap</th>
+                    <th style="width:62px;" onclick="setSort('mcap')">MCap</th>
                     <th style="width:62px;" onclick="setSort('pe26')">P/E '26</th>
                     <th style="width:62px;" onclick="setSort('pe27')">P/E '27</th>
-                    <th style="width:60px;" onclick="setSort('upside')">Upside</th>
-                    <th style="width:65px;" onclick="setSort('perf1y')">1y Rtn</th>
-                    <th style="width:95px;" onclick="setSort('today')">🟢 Today</th>
-                    <th style="width:78px;" onclick="setSort('rev')">Rev Gth</th>
+                    <th style="width:55px;" onclick="setSort('upside')">Upside</th>
+                    <th style="width:60px;" onclick="setSort('perf1y')">1y Rtn</th>
+                    <th style="width:90px;" onclick="setSort('today')">🟢 Today</th>
+                    <th style="width:72px;" onclick="setSort('ext')">PM/AH</th>
+                    <th style="width:58px;" onclick="setSort('rev')">Rev Gth</th>
                     <th onclick="setSort('info')">Research Info / Role</th>
                 </tr>
             </thead>
@@ -355,10 +355,10 @@ function momentumScore(perf1y) {
 function buildTickerHTML(ticker) {
     const primary = ticker.includes('/') ? ticker.split('/')[0].trim() : ticker;
     const xIcon = `<span class="x-intel-icon" onclick="syncIntelSearch('${primary}'); event.stopPropagation();" title="Search 𝕏 Intelligence for $${primary}">𝕏</span>`;
-    
+
     if (!ticker.includes('/')) return `<a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" class="ticker-link">${ticker}</a>${xIcon}`;
     const parts = ticker.split('/').map(t => t.trim());
-    return `<a href="https://finance.yahoo.com/quote/${parts[0]}" target="_blank" class="ticker-link">${parts[0]}</a><span class="ticker-sep">/</span><a href="https://finance.yahoo.com/quote/${parts[1]}" target="_blank" class="ticker-link ticker-otc">${parts[1]}</a>${xIcon}`;
+    return `<a href="https://finance.yahoo.com/quote/${parts[0]}" target="_blank" class="ticker-link">${parts[0]}</a><a href="https://finance.yahoo.com/quote/${parts[1]}" target="_blank" class="ticker-otc" title="US OTC: ${parts[1]}">OTC:${parts[1]}</a>${xIcon}`;
 }
 
 function calcScore(h, mcapB, perf1y, rev_num, pe26, agg) {
@@ -422,11 +422,14 @@ function get1yPerf(entry) {
 }
 
 function buildEntries() {
-    return Object.entries(data).map(([ticker, entry]) => {
+    return Object.entries(data)
+        .filter(([ticker, entry]) => !entry.no_dashboard)  // exclude China-only / unlistable
+        .map(([ticker, entry]) => {
         const h = entry.human_research || {}, f = entry.financials || {};
         const trend = f.earningsTrend?.trend || [];
         const live = (window.LIVE_PRICES || {})[ticker] || {};
         const price = live.price || f.price?.regularMarketPrice?.raw || f.summaryDetail?.regularMarketPrice?.raw || 0;
+        const updTime = live.updated ? live.updated.slice(11,16) + 'Z' : null;
         const eps26 = trend.find(t => t.period==='0y')?.earningsEstimate?.avg?.raw;
         const eps27 = trend.find(t => t.period==='+1y')?.earningsEstimate?.avg?.raw;
         const pe26 = eps26 > 0 ? price/eps26 : 999;
@@ -439,17 +442,25 @@ function buildEntries() {
             const fg = trend.find(t => t.period==='0y')?.revenueEstimate?.growth?.raw;
             if (fg !== undefined) rev_num = Math.round(fg*100);
         }
-        return { 
-            ticker, h, mcapB, pe26, pe27, rev_num, perf1y, isPrivate: h.Bucket === 'Private', 
+        const visualBuzz = (window.X_INTEL_MODULE?.visual_mentions || {})[ticker] || null;
+        return {
+            ticker, h, mcapB, pe26, pe27, rev_num, perf1y, isPrivate: h.Bucket === 'Private',
             score: calcScore(h, mcapB, perf1y, rev_num, pe26, state.aggressiveness),
             todayPct: live.change_pct ?? null, p: entry.performance || {},
             obb: h.openbb_supplement || {},
             buzz: (window.X_INTEL_MODULE?.buzz || {})[ticker] || null,
+            visualBuzz,
             searchStr: `${ticker} ${h.Company||''} ${h.Role||''} ${h.Notes||''}`.toLowerCase(),
-            price: price
+            price, updTime,
+            refreshedEst: (window.LIVE_PRICES || {})._meta?.refreshed_at_est || null,
+            exchange: live.exchange || h.Country,
+            extPrice: live.ext_price ?? null,
+            extPct:   live.ext_pct   ?? null,
+            extType:  live.ext_type  ?? null,
         };
     });
 }
+
 
 function render() {
     const entries = buildEntries();
@@ -467,6 +478,8 @@ function render() {
         const pe27f = e.pe27 < 999 ? e.pe27.toFixed(1) : '--';
         const todayStr = e.todayPct !== null ? (e.todayPct > 0 ? '+'+e.todayPct.toFixed(2)+'%' : e.todayPct.toFixed(2)+'%') : '--';
         const todayCls = (e.todayPct||0) >= 0 ? 'up' : 'down';
+        const extStr   = e.extPrice !== null ? (e.extPct > 0 ? '+'+e.extPct.toFixed(2)+'%' : e.extPct.toFixed(2)+'%') : null;
+        const extCls   = (e.extPct||0) >= 0 ? 'up' : 'down';
         let obbHtml = '';
         if (e.obb.analyst_count || e.obb.inst_ownership_pct) {
             obbHtml = `<div style="margin-top:4px;display:flex;gap:4px;">`;
@@ -477,36 +490,49 @@ function render() {
         }
         let buzzHtml = '';
         if (e.buzz && e.buzz.total > 0) {
-            buzzHtml = `<span onclick="syncIntelSearch('${e.ticker}'); event.stopPropagation();" style="display:inline-flex;align-items:center;gap:3px;background:rgba(212,163,115,0.1);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;border:1px solid rgba(212,163,115,0.3);cursor:pointer;margin-right:5px;" title="Social Buzz: ${e.buzz['7d']} mentions last 7d">𝕏 ${e.buzz['7d']}</span>`;
+            buzzHtml = `<span onclick="syncIntelSearch('${e.ticker}'); event.stopPropagation();" style="display:inline-flex;align-items:center;gap:3px;background:rgba(212,163,115,0.1);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;border:1px solid rgba(212,163,115,0.3);cursor:pointer;margin-right:3px;" title="Social Buzz: ${e.buzz['7d']} tweet mentions last 7d">𝕏 ${e.buzz['7d']}</span>`;
+        }
+        if (e.visualBuzz && e.visualBuzz.count > 0) {
+            const sampleTip = (e.visualBuzz.sample_texts || []).slice(0,1).join(' | ').substring(0, 120);
+            buzzHtml += `<span onclick="syncIntelSearch('${e.ticker}'); event.stopPropagation();" style="display:inline-flex;align-items:center;gap:3px;background:rgba(16,185,129,0.1);color:var(--green);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;border:1px solid rgba(16,185,129,0.3);cursor:pointer;margin-right:3px;" title="Visual Intel: ${e.visualBuzz.count} chart/image mentions | ${sampleTip}">📷 ${e.visualBuzz.count}</span>`;
         }
 
         tr.innerHTML = `
             <td><span class="pin-btn ${isPinned?'active':''}" onclick="togglePin('${esc(e.ticker)}')">★</span></td>
             <td><span class="rank-num">${rank}</span></td>
             <td class="ticker">${buildTickerHTML(e.ticker)}<div class="momentum-strip"><div class="mb ${getMom(e.p,'1m')}"></div><div class="mb ${getMom(e.p,'3m')}"></div><div class="mb ${getMom(e.p,'6m')}"></div><div class="mb ${getMom(e.p,'1y')}"></div></div></td>
-            <td title="${esc(e.h.Company)}"><b>${esc(e.h.Company)}</b></td>
+            <td title="${esc(e.h.Company)}" style="font-size:11px;white-space:normal;line-height:1.3;"><b>${esc(e.h.Company)}</b></td>
             <td><div class="chip" style="border:1px solid var(--gold);">${esc(e.h['Alpha Score']||'?')}</div></td>
             <td><div class="chip" style="border:1px solid var(--danger);">${esc(e.h['Risk Adj']||'?')}</div></td>
             <td><div class="chip" style="border:1px solid var(--accent);">${esc(e.h['Hiddenness']||'?')}</div></td>
-            <td><span class="region-tag">${esc(e.h.Country||'??')}</span></td>
-            <td style="font-weight:700;">${e.mcapB > 0.01 ? e.mcapB.toFixed(2)+'B' : '--'}</td>
+            <td><span class="region-tag">${esc(e.exchange||'??')}</span></td>
+            <td style="font-weight:700;font-size:12px;">${e.mcapB > 0.01 ? e.mcapB.toFixed(2)+'B' : '--'}</td>
             <td><span class="chip">${pe26f}</span></td>
             <td><span class="chip" style="color:var(--accent);">${pe27f}</span></td>
             <td style="color:var(--gold);font-weight:800;">${esc(e.h['Target Upside']||'--')}</td>
-            <td class="${(e.perf1y||0)>=0?'up':'down'}">${e.perf1y!==undefined?e.perf1y+'%':'--'}</td>
+            <td class="${(e.perf1y||0)>=0?'up':'down'}">${e.perf1y!==undefined?Math.round(e.perf1y)+'%':'--'}</td>
             <td style="font-weight:800;">
+                ${e.refreshedEst ? `<div style="font-size:8px;color:var(--text-dim);margin-bottom:1px;">${e.refreshedEst}</div>` : (e.updTime ? `<div style="font-size:8px;color:var(--text-dim);margin-bottom:1px;">${e.updTime}</div>` : '')}
                 <div style="font-size:12px;color:var(--gold);">${e.price ? '$'+e.price.toFixed(2) : '--'}</div>
                 <div style="font-size:9px;" class="${todayCls}">${todayStr}</div>
             </td>
+
+            <td style="font-weight:700;">
+                ${extStr !== null ? `
+                <div style="font-size:8px;color:var(--text-dim);font-weight:700;">${e.extType||''}</div>
+                <div style="font-size:11px;color:var(--gold);font-weight:800;">$${e.extPrice.toFixed(2)}</div>
+                <div style="font-size:9px;" class="${extCls}">${extStr}</div>
+                ` : '<span style="color:var(--text-dim);font-size:10px;">--</span>'}
+            </td>
             <td style="font-weight:700;color:var(--accent);">${e.rev_num?e.rev_num+'%':'--'}</td>
-            <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${buzzHtml}${esc(e.h.Role)}</div><div style="font-size:10px;color:var(--text-dim);margin-top:1px;">${esc(e.h.Notes||'')}</div>${obbHtml}</td>
+            <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${buzzHtml}${esc(e.h.Role)}</div><div style="font-size:10px;color:#cbd5e1;margin-top:1px;">${esc((e.h.Notes||'').replace(/\s*[|,]?\s*(Valuation|US ADR|US OTC|OTC)[^|]*/gi,'').trim())}</div>${obbHtml}</td>
         `;
         frag.appendChild(tr); rank++;
     });
 
     if (state.showPrivate && priv.length > 0) {
         const divRow = document.createElement('tr'); divRow.className = 'watchlist-divider';
-        divRow.innerHTML = `<td colspan="16">🔒 PRIVATE / PRE-IPO WATCHLIST</td>`;
+        divRow.innerHTML = `<td colspan="17">🔒 PRIVATE / PRE-IPO WATCHLIST</td>`;
         frag.appendChild(divRow);
         priv.forEach(e => {
             const tr = document.createElement('tr'); tr.className='private-row';
@@ -589,13 +615,16 @@ function sortFn(a, b) {
     else if (col === 'company') { av = (a.h.Company||'').toLowerCase(); bv = (b.h.Company||'').toLowerCase(); }
     else if (col === 'alpha') { av = sfloat(a.h['Alpha Score']); bv = sfloat(b.h['Alpha Score']); }
     else if (col === 'risk') { av = sfloat(a.h['Risk Adj']); bv = sfloat(b.h['Risk Adj']); }
+    else if (col === 'country') { av = (a.exchange||'').toLowerCase(); bv = (b.exchange||'').toLowerCase(); }
     else if (col === 'upside') { av = parseUpside(a.h['Target Upside']); bv = parseUpside(b.h['Target Upside']); }
+
     else if (col === 'mcap') { av = a.mcapB; bv = b.mcapB; }
     else if (col === 'pe26') { av = a.pe26; bv = b.pe26; }
     else if (col === 'pe27') { av = a.pe27; bv = b.pe27; }
     else if (col === 'perf1y') { av = a.perf1y??-9999; bv = b.perf1y??-9999; }
     else if (col === 'rev') { av = a.rev_num; bv = b.rev_num; }
     else if (col === 'today') { av = a.todayPct??-9999; bv = b.todayPct??-9999; }
+    else if (col === 'ext')   { av = a.extPct??-9999;   bv = b.extPct??-9999; }
     else { av = (a.h.Role||'')+(a.h.Notes||''); bv = (b.h.Role||'')+(b.h.Notes||''); }
     if (typeof av === 'string' && typeof bv === 'string') return av.localeCompare(bv) * state.sortDir;
     return (av < bv ? -1 : (av > bv ? 1 : 0)) * state.sortDir;
@@ -693,9 +722,19 @@ function closeIntelModal() {
 
 function renderBuzz(buzz = {}) {
     const bar = document.getElementById('buzzBar');
-    const sorted = Object.entries(buzz)
-        .sort((a,b) => b[1]['7d'] - a[1]['7d'])
-        .slice(0, 12);
+    const visualMentions = window.X_INTEL_MODULE?.visual_mentions || {};
+
+    // Merge tweet buzz + visual buzz into unified ranking
+    const allTickers = new Set([...Object.keys(buzz), ...Object.keys(visualMentions)]);
+    const merged = Array.from(allTickers).map(t => {
+        const tw = buzz[t] || {};
+        const vi = visualMentions[t] || {};
+        return [t, { '7d': tw['7d'] || 0, '24h': tw['24h'] || 0, img: vi.count || 0 }];
+    });
+    const sorted = merged
+        .filter(([,s]) => s['7d'] > 0 || s.img > 0)
+        .sort((a,b) => (b[1]['7d'] + b[1].img) - (a[1]['7d'] + a[1].img))
+        .slice(0, 14);
     
     if (sorted.length === 0) {
         bar.innerHTML = '<div style="font-size:8px;color:var(--text-dim);padding:4px;">NO TRENDING TICKERS IN CACHE.</div>';
@@ -703,8 +742,10 @@ function renderBuzz(buzz = {}) {
     }
     
     bar.innerHTML = sorted.map(([t, stats]) => {
-        const change = stats['24h'] > 0 ? `<span>+${stats['24h']}</span>` : '';
-        return `<div class="buzz-tag" onclick="syncIntelSearch('${t}')"><b>$${t}</b> ${stats['7d']}w ${change}</div>`;
+        const twBadge = stats['7d'] > 0 ? `<span style="color:var(--gold);">𝕏${stats['7d']}</span>` : '';
+        const imgBadge = stats.img > 0 ? `<span style="color:var(--green);font-size:9px;">📷${stats.img}</span>` : '';
+        const change24 = stats['24h'] > 0 ? `<span style="color:var(--green);font-size:9px;">+${stats['24h']}</span>` : '';
+        return `<div class="buzz-tag" onclick="syncIntelSearch('${t}')" title="$${t}: ${stats['7d']} tweets (7d) | ${stats.img} image hits"><b>$${t}</b> ${twBadge}${imgBadge}${change24}</div>`;
     }).join('');
 }
 
@@ -846,8 +887,9 @@ function initPulse() {
     });
     
     // Use the authoritative EST string from Python instead of browser local time
-    const timeStr = meta.refreshed_at.includes('EST') ? meta.refreshed_at : new Date(meta.refreshed_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    const timeStr = meta.refreshed_at_est || (meta.refreshed_at.includes('EST') ? meta.refreshed_at : new Date(meta.refreshed_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}));
     html += `<div class="pulse-time"><span class="sync-dot pulse"></span> UPDATED ${timeStr}</div></div>`;
+
     pulse.innerHTML = html;
 }
 

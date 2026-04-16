@@ -18,7 +18,7 @@ if sys.platform == "win32":
 ROOT = Path(__file__).parent.parent
 LOG_DIR = ROOT / "logs"
 LOG_DIR.mkdir(exist_ok=True)
-log_file = LOG_DIR / f"{Path(__file__).stem}.log"
+log_file = LOG_DIR / "instant_sync.log"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -32,8 +32,43 @@ logging.basicConfig(
 log = logging.getLogger("x_intel_instant")
 
 USERS = ["aleabitoreddit", "PhotonCap", "KawzInvests"]
-SCRAPER_SCRIPT = ROOT / "engine" / "x_intel_deep_scraper.py"
-REMOTE_SYNC_SCRIPT = ROOT / "engine" / "remote_sync.py"
+
+def run_step(name, command, specific_log=None):
+    """Runs a command as a subprocess and logs its output in real-time."""
+    log.info(f"--- STARTING: {name} ---")
+    if specific_log:
+        log.info(f"    (Detailed output in logs/{specific_log.name})")
+    
+    try:
+        process = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding='utf-8',
+            errors='replace',
+            bufsize=1,
+            cwd=str(ROOT)
+        )
+        
+        # We'll write to the main log AND the specific log if provided
+        with open(log_file, 'a', encoding='utf-8') as main_f:
+            spec_f = open(specific_log, 'w', encoding='utf-8') if specific_log else None
+            try:
+                for line in process.stdout:
+                    print(line, end='', flush=True)
+                    main_f.write(line)
+                    if spec_f:
+                        spec_f.write(line)
+            finally:
+                if spec_f:
+                    spec_f.close()
+        
+        process.wait()
+        return process.returncode == 0
+    except Exception as e:
+        log.error(f"Error running {name}: {e}")
+        return False
 
 def instant_sync():
     log.info("=" * 60)
@@ -42,41 +77,63 @@ def instant_sync():
     log.info("=" * 60)
 
     overall_success = True
+    # 1. SCRAPE USERS
     for idx, user in enumerate(USERS):
         log.info(f"\n[{idx+1}/{len(USERS)}] Synchronizing @{user}...")
-        try:
-            # Force sequential execution without jitter
-            subprocess.run(
-                [sys.executable, str(SCRAPER_SCRIPT), "--username", user],
-                cwd=str(ROOT),
-                check=True
-            )
-            log.info(f"✅ @{user} synced.")
-        except subprocess.CalledProcessError as e:
-            log.error(f"❌ Failed @{user} (Code: {e.returncode})")
+        user_log = LOG_DIR / f"{user}_sync.log"
+        cmd = [sys.executable, "engine/x_intel_deep_scraper.py", "--username", user]
+        if not run_step(f"Scrape @{user}", cmd, specific_log=user_log):
+            log.error(f"❌ Failed @{user}")
             overall_success = False
+        else:
+            log.info(f"✅ @{user} synced.")
 
-    if overall_success:
-        log.info("\n" + "=" * 60)
-        log.info("🚀 SYNC SUCCESSFUL — INITIATING REMOTE UPLOAD")
-        log.info("=" * 60)
-        try:
-            subprocess.run(
-                [sys.executable, str(REMOTE_SYNC_SCRIPT)],
-                cwd=str(ROOT),
-                check=True
-            )
-            log.info("✅ REMOTE UPLOAD COMPLETE")
-        except subprocess.CalledProcessError as e:
-            log.error(f"❌ REMOTE UPLOAD FAILED (Code: {e.returncode})")
-    else:
+    if not overall_success:
         log.warning("\n" + "!" * 60)
-        log.warning("⚠️ SYNC HAD ERRORS — SKIPPING REMOTE UPLOAD")
+        log.warning("⚠️ SYNC HAD ERRORS — SKIPPING FURTHER STEPS")
         log.warning("!" * 60)
+        return
+
+    # 2. IMAGE ANALYSIS
+    log.info("\n📸 STEP 2: ANALYZING NEW IMAGES...")
+    if not run_step("Image Analysis", [sys.executable, "engine/image_analyzer.py"]):
+        log.warning("⚠️ Image analysis encountered issues, but continuing...")
+
+    # 3. VISUAL BUZZ AGGREGATION
+    log.info("\n🐝 STEP 3: AGGREGATING VISUAL BUZZ...")
+    if not run_step("Visual Buzz", [sys.executable, "engine/visual_buzz_aggregator.py"]):
+        log.warning("⚠️ Visual buzz aggregation encountered issues, but continuing...")
+
+    # 4. DOCUMENTATION & BRAIN UPDATE
+    log.info("\n🧠 STEP 4: UPDATING DOCUMENTATION & BRAIN...")
+    if not run_step("Brain Update", [sys.executable, "engine/generate_CPO_BRAIN.py"]):
+        log.warning("⚠️ Brain update encountered issues, but continuing...")
+
+    # 5. BUILD & REMOTE UPLOAD
+    log.info("\n" + "=" * 60)
+    log.info("🚀 SYNC SUCCESSFUL — INITIATING BUILD & REMOTE UPLOAD")
+    log.info("=" * 60)
+    
+    # On Windows, npm is a .cmd file. subprocess.Popen(shell=True) or npm.cmd is needed.
+    npm_cmd = "npm.cmd" if sys.platform == "win32" else "npm"
+
+    if run_step("Build Bundle", [npm_cmd, "run", "build"]):
+        if run_step("Remote Deploy", [npm_cmd, "run", "deploy"]):
+            log.info("✅ REMOTE UPLOAD COMPLETE")
+        else:
+            log.error("❌ REMOTE UPLOAD FAILED")
+    else:
+        log.error("❌ BUILD FAILED")
+
+    # 6. LIVE PRICE SYNC (Final Step)
+    log.info("\n💹 STEP 6: REFRESHING LIVE PRICES...")
+    if not run_step("Live Prices", [sys.executable, "engine/live_prices.py"]):
+        log.warning("⚠️ Live price sync encountered issues.")
 
     log.info("\n" + "=" * 60)
     log.info("⚡ INSTANT SYNC COMPLETE")
     log.info("=" * 60)
+
 
 if __name__ == "__main__":
     instant_sync()

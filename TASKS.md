@@ -1,12 +1,71 @@
 # 🎯 X-Intelligence: Project Roadmap
 
-### 🚀 Current Status: V15.1 (Filter Integrity & QA Hardening)
-- **Data Integrity**: V11.0 Surgical Repair DEPLOYED. Ticker fragmentation collapsed.
-- **Dashboard Filters**: V15.1 — `passesFilters()` logic fully corrected and QA-verified.
-- **QA Coverage**: 50 automated tests across 4 suites. All passing.
-- **Environment**: 100% dependency parity via `requirements.txt`.
-- **Automation**: Platinum Core — SFTP deploy, translation hyper-drive, live prices active.
+### 🚀 Current Status: V15.4 (Pipeline Durability + Unicode Hardening)
+- **Data Integrity**: China-only stocks (INNO, EOPT) reclassified → Private/no_dashboard.
+- **Image Pipeline**: OCR → `processed_images.json` → `visual_intel[]` per post → `visual_mentions` in master.
+- **Dashboard**: Visual buzz (📷) badges alongside tweet buzz (𝕏) in buzz bar + row chips.
+- **Scraper Safety**: `visual_intel` now survives `_deduplicate_file` and `_incremental_save` rewrites.
+- **Orchestration**: `x_intel_daily_sync.py` auto-runs image_analyzer + visual_buzz_aggregator post-scrape.
+- **Durability**: `rebuild_master()` now carries forward `visual_mentions` — OCR work never lost on rebuild.
+- **Unicode**: All JSON writes use `ensure_ascii=True` — no more VS Code ambiguous-unicode warnings.
+- **Logging**: Python scripts now autonomously output to `logs/*.log` to prevent debugging noise.
+- **Scraper Search**: Fixed Nitter date constraint parsing to prevent recursive vintage deep fetches.
 - Date: 2026-04-14
+
+---
+
+## ✅ Completed — V15.4 Pipeline Durability + Unicode (2026-04-14)
+
+- [x] **Unicode fix (all writers)**: `ensure_ascii=False` → `True` in `rebuild_master.py`,
+  `visual_buzz_aggregator.py`, and both write paths in `x_intel_deep_scraper.py`.
+  All JSON files are now pure 7-bit ASCII; emojis/smart-quotes encoded as `\uXXXX`.
+  Eliminates VS Code "ambiguous unicode characters" warning permanently.
+- [x] **Durability fix — `rebuild_master.py`**: Now reads existing master's `visual_mentions`
+  + `visual_last_updated` before overwriting. OCR aggregation data survives every rebuild.
+- [x] **Durability fix — `x_intel_deep_scraper.rebuild_master()`**: Same carry-forward logic
+  applied to the inline version called after each scrape run.
+- [x] **`scratch/verify_pipeline.py`**: Quick sanity script — checks unicode, visual_mentions,
+  intel.js, processed_images.json, and per-user visual_intel. Run any time to confirm health.
+- [x] **Verified clean**: 6507 posts | 37 visual tickers | 560 OCR log entries | ALL CLEAR.
+- [x] **Nitter Search Bug**: Switched literal `+` parameters to `%20` encoded spaces in deep scraper. Search queries `since` and `until` commands are now successfully enforced by nitter instead of ignored, stopping infinite loops fetching old tweets.
+- [x] **Autonomous Audit Logging**: Scripts `x_intel_instant_sync.py`, `x_intel_daily_sync.py`, `x_intel_deep_scraper.py`, `x_intel_fetcher.py`, and `x_intel_auto_sync.py` now all execute FileHandlers sending debugging telemetry directly to `logs/` directory autonomously.
+
+---
+
+## ✅ Completed — V15.3 Visual Intelligence Pipeline (2026-04-14)
+
+
+- [x] **China-only reclassification**: INNO (InnoLight) + EOPT (Eoptolink) → `Bucket: Private`,
+  `Status: China-Only`, `no_dashboard: true`. Excluded from scoring, rankings, and price fetches.
+  Remain in Private watchlist section for research tracking.
+- [x] **Image processing forensic**: Confirmed 560/2517 total images processed overnight. 
+  1,957 remaining images are new from tonight's scrape (not data loss — genuinely new downloads).
+  `processed_images.json` is the durable skip-log; `visual_intel[]` per-post arrays are intact.
+- [x] **`_deduplicate_file()` fix**: Now explicitly sets `visual_intel: []` on all posts,
+  ensuring OCR data never silently evaporates through dedup or incremental save passes.
+- [x] **`_incremental_save()` fix**: Merges `visual_intel` from existing posts by ID when
+  combining new + existing post lists.
+- [x] **`engine/visual_buzz_aggregator.py`**: New engine module — reads all `x_intel_<user>.json`
+  `visual_intel[]` arrays, aggregates ticker OCR hits, merges `visual_mentions` dict into
+  `x_intel_master.json` + rebuilds `intel.js`. First run: 684 hits across 555 images, 37 tickers.
+- [x] **`x_intel_daily_sync.py` pipeline**: Post-scrape auto-runs Step 2 (image_analyzer OCR)
+  + Step 3 (visual_buzz_aggregator) so every nightly run is fully self-contained.
+- [x] **Dashboard — `no_dashboard` filter**: `buildEntries()` now skips entries with
+  `no_dashboard: true` — INNO/EOPT never appear in ranked table or scoring.
+- [x] **Dashboard — Visual buzz badges**: 📷 green badge added to row Role/Notes cell showing
+  image hit count (alongside existing 𝕏 tweet buzz gold badge). Tooltip shows OCR sample text.
+- [x] **Dashboard — Buzz bar upgraded**: `renderBuzz()` now merges tweet buzz (𝕏N) + visual
+  mentions (📷N) into unified top-14 ranking. Both signal types visible per tag.
+
+---
+
+## ✅ Completed — V15.2 AH/PM Extended-Hours Column (2026-04-14)
+
+- [x] **`live_prices.py`**: Capture `postMarketPrice`/`postMarketChangePercent` + `preMarketPrice`/`preMarketChangePercent` from Yahoo quote response (zero extra requests — same batch call). Stored as `ext_price`, `ext_pct`, `ext_type` (AH/PM).
+- [x] **`cpo_plays.html`**: Added **AH / PM** column (sortable) showing label, ext price, and % move in green/red.
+- [x] **Micro-timestamp**: `HH:MMZ` update time displayed above regular price cell so staleness is visible at a glance.
+- [x] **Colspan**: Private watchlist divider bumped 16→17.
+- [x] **Sort**: `ext` key wired into `sortFn` for AH/PM column sort.
 
 ---
 
@@ -57,8 +116,10 @@
 
 ## 🔜 Open / Backlog
 
-- [ ] **INNO Country tag**: InnoLight Technology is China A-share listed, not US.
-  `"Country": "US"` in master data is incorrect. Fix to `"China"` + note no yfinance data.
+- [x] **INNO/EOPT Country tag fix** (2026-04-14): INNO corrected to `Country: China` — yfinance
+  ticker "INNO" resolves to wrong NYSE entity; financials cleared, `no_yfinance: true` flagged.
+  EOPT corrected to `Country: China`, `currency: CNY`, `real_ticker: 300502.SZ`. Both master
+  JSON and `dashboard_data.js` updated.
 - [ ] **13F Institutional Layer**: Automated tracking of top-tier hedge fund positioning in CPO names.
 - [ ] **Glass Substrate Supercycle**: Intensify LIDE/TGV analysis as HVM approaches.
 - [ ] **Automated Monitoring**: Weekly audit of translation cache and scrapers.

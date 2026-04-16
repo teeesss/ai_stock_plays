@@ -1,0 +1,26 @@
+{
+    "enableAllProjectMcpServers": true,
+    "env": {
+        "ANTHROPIC_BASE_URL": "https://openrouter.ai/api",
+        "ANTHROPIC_AUTH_TOKEN": "",
+        "ANTHROPIC_API_KEY": "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",
+        "ANTHROPIC_MODEL": "test/model",
+        "ANTHROPIC_BASE_URL": "https://openrouter.ai/api/",
+        "ANTHROPIC_AUTH_TOKEN": "",
+        "ANTHROPIC_API_KEY": "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",
+        "ANTHROPIC_MODEL": "nvidia/nemotron-3-super-120b-a12b:free"
+    },
+    "hooks": {
+        "PostToolUse": [
+            {
+                "matcher": "Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "npx prettier --write \"$CLAUDE_FILE_PATH\""
+                    }
+                ]
+            }
+        ]
+    }
+}
