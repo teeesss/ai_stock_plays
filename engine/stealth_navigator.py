@@ -156,14 +156,12 @@ class StealthNavigator:
             print(f"  [!] Ghost Browsing Warning: {e}")
             return
         
-        # 1. Random Scroll + Thinking Pauses
-        for _ in range(random.randint(3, 6)):
-            scroll_y = random.randint(200, 1000)
+        # 1. Random Scroll + Thinking Pauses (Optimized for speed)
+        for _ in range(random.randint(1, 2)):
+            scroll_y = random.randint(200, 800)
             await page.mouse.wheel(0, scroll_y)
-            # Thinking pause with micro-mouse wiggles
-            for _ in range(5):
-                await page.mouse.move(random.randint(0, 100), random.randint(0, 100), steps=5)
-                await asyncio.sleep(random.uniform(0.5, 1.2))
+            # Short thinking pause
+            await asyncio.sleep(random.uniform(1.0, 2.0))
             
         # 2. Hover some navigation elements
         links = await page.query_selector_all("a, button")

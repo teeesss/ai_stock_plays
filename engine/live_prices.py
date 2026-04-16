@@ -81,39 +81,57 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
     Fetch real-time quotes via Stealth API directly.
     """
     results = {}
-    now = datetime.now(timezone.utc).isoformat()
+    # Use EST (US/Eastern) for all internal timestamps to match user requirement
+    try:
+        from zoneinfo import ZoneInfo
+        now = datetime.now(ZoneInfo("US/Eastern"))
+    except Exception:
+        from datetime import timedelta
+        now = datetime.now(timezone.utc) - timedelta(hours=4)
     
     # Extract primary tickers
     primary_map = {clean_ticker(t): t for t in tickers}
     symbols = ','.join(primary_map.keys())
     
-    url = f'https://query1.finance.yahoo.com/v7/finance/quote?symbols={symbols}&crumb={crumb}'
+    all_symbols = list(primary_map.keys())
+    symbols_str = ','.join(all_symbols)
+    url = f'https://query1.finance.yahoo.com/v7/finance/quote?symbols={symbols_str}&crumb={crumb}'
+    
+    log.debug(f"Fetching {len(all_symbols)} tickers from Yahoo...")
     try:
-        res = client.get(url, timeout=10)
+        res = client.get(url, timeout=15)
         if res.status_code != 200:
-            log.error(f"Failed to fetch batch. Status {res.status_code}")
+            log.error(f"Failed to fetch batch. Status {res.status_code}: {res.text[:100]}")
             return results
             
         data = res.json()
         items = data.get('quoteResponse', {}).get('result', [])
+        log.info(f"  Got {len(items)} responses from Yahoo for {len(all_symbols)} requested.")
         
+        # Track missing tickers for logging
+        found_symbols = {item.get('symbol') for item in items}
+        missing = [s for s in all_symbols if s not in found_symbols]
+        if missing:
+            log.warning(f"  Missing from Yahoo: {', '.join(missing[:5])}{'...' if len(missing)>5 else ''}")
+
         for item in items:
             symbol = item.get('symbol')
-            if not symbol or symbol not in primary_map:
+            if not symbol or (symbol not in primary_map and symbol.upper() not in primary_map):
                 continue
 
-            original_ticker = primary_map[symbol]
+            original_ticker = primary_map.get(symbol) or primary_map.get(symbol.upper())
             price      = item.get('regularMarketPrice')
+            price_chg  = item.get('regularMarketChange')
             change_pct = item.get('regularMarketChangePercent')
             volume     = item.get('regularMarketVolume')
             avg_vol    = item.get('averageDailyVolume10Day')
-            exch_res   = item.get('fullExchangeName') or item.get('exchangeName') or item.get('exchange')
+            exch_res   = item.get('fullExchangeName') or item.get('exchangeName') or item.get('exchange') or item.get('exchangeDataDelayedBy','??')
 
             vol_spike = None
             if volume and avg_vol and avg_vol > 0:
                 vol_spike = round(volume / avg_vol, 2)
 
-            # Extended-hours price (AH or PM) — free fields in same response
+            # Extended-hours price (AH or PM)
             post_price = item.get('postMarketPrice')
             post_pct   = item.get('postMarketChangePercent')
             pre_price  = item.get('preMarketPrice')
@@ -127,6 +145,7 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
 
             entry = {
                 'price':      round(price,      2) if price      is not None else None,
+                'price_chg':  round(price_chg,  2) if price_chg  is not None else None,
                 'change_pct': round(change_pct, 2) if change_pct is not None else None,
                 'volume':     int(volume)           if volume               else None,
                 'avg_volume': int(avg_vol)          if avg_vol              else None,
@@ -134,8 +153,8 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
                 'ext_price':  round(ext_price, 2)  if ext_price is not None else None,
                 'ext_pct':    round(ext_pct,   2)  if ext_pct   is not None else None,
                 'ext_type':   ext_type,
-                'exchange':   get_exchange_abbr(exch_res),
-                'updated':    now,
+                'exchange':   exch_res,
+                'updated':    now.strftime('%Y-%m-%d %H:%M EST'),
             }
             entry = {k: v for k, v in entry.items() if v is not None}
             results[original_ticker] = entry
@@ -233,11 +252,13 @@ async def async_run_fetch(tickers: list = None, dry_run: bool = False) -> dict:
         from datetime import timedelta
         now_est = datetime.now(timezone.utc) - timedelta(hours=4) # Rough EST
         
-    refreshed_at_str = now_est.strftime("%Y-%m-%d %I:%M:%S %p EST")
+    refreshed_at_str = now_est.strftime("%Y-%m-%d %I:%M %p EST")
+    # Compact format for UI: 2026-04-16 01:49 EST
+    compact_ts = now_est.strftime("%Y-%m-%d %I:%M EST")
     
     all_prices['_meta'] = {
         'refreshed_at': refreshed_at_str,
-        'refreshed_at_est': refreshed_at_str,
+        'refreshed_at_est': compact_ts,
         'refreshed_at_iso': now_est.isoformat(),
         'total_tickers': len(all_prices),
         'with_price': sum(1 for t, d in all_prices.items() if d.get('price') and t != '_meta'),

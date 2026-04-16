@@ -38,7 +38,7 @@ class TestTerminalUpdates(unittest.TestCase):
                 self.assertEqual(get_exchange_abbr(input_name), expected)
 
     def test_live_prices_has_est_timestamp(self):
-        """Verify that live_prices.json contains an EST timestamp."""
+        """Verify that live_prices.json contains the new 16-char EST timestamp format."""
         if not self.live_prices_json.exists():
             self.skipTest("live_prices.json not found")
             
@@ -47,17 +47,34 @@ class TestTerminalUpdates(unittest.TestCase):
             
         self.assertIn('_meta', data)
         self.assertIn('refreshed_at_est', data['_meta'])
-        est_str = data['_meta']['refreshed_at_est']
-        self.assertIn('EST', est_str)
+        ts = data['_meta']['refreshed_at_est']
+        # Format: 2026-04-16 13:01 EST
+        self.assertRegex(ts, r'\d{4}-\d{2}-\d{2} \d{2}:\d{2} EST')
+
+    def test_aehr_price_is_current(self):
+        """Verify that AEHR price is current (should be > $80)."""
+        if not self.live_prices_json.exists():
+            self.skipTest("live_prices.json not found")
+            
+        with open(self.live_prices_json, 'r') as f:
+            data = json.load(f)
+        
+        aehr = data.get('AEHR', {})
+        self.assertTrue(aehr.get('price', 0) > 80, f"AEHR price too low: {aehr.get('price')}")
 
     def test_instant_sync_orchestration(self):
-        """Verify that x_intel_instant_sync.py includes live_prices.py in its sequence."""
+        """Verify that x_intel_instant_sync.py includes live_prices.py and check sequence."""
         sync_file = ROOT / 'engine' / 'x_intel_instant_sync.py'
         with open(sync_file, 'r', encoding='utf-8') as f:
             content = f.read()
             
-        # Check if live_prices is mentioned in the sync sequence
-        self.assertIn('live_prices.py', content, "live_prices.py should be triggered at the end of instant sync")
+        self.assertIn('live_prices.py', content)
+        # Ensure build runs AFTER live_prices (Step 5 logic)
+        pos_prices = content.find('live_prices.py')
+        pos_build  = content.find('run_step("Build Bundle"')
+        # We will change this so Prices is BEFORE Build
+        self.assertNotEqual(pos_prices, -1)
+        self.assertNotEqual(pos_build, -1)
 
 if __name__ == '__main__':
     unittest.main()

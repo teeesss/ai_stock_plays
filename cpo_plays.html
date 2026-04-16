@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <th style="width:36px;" onclick="setSort('risk')">Risk</th>
                     <th style="width:36px;" onclick="setSort('hidden')">Hidden</th>
                     <th style="width:65px;" onclick="setSort('country')">Exchange</th>
-                    <th style="width:62px;" onclick="setSort('mcap')">MCap</th>
+                    <th style="width:70px;" onclick="setSort('mcap')">MCap</th>
                     <th style="width:62px;" onclick="setSort('pe26')">P/E '26</th>
                     <th style="width:62px;" onclick="setSort('pe27')">P/E '27</th>
                     <th style="width:55px;" onclick="setSort('upside')">Upside</th>
@@ -335,6 +335,21 @@ const RANK_EXPLAIN = {
 
 const sfloat = v => { try { return parseFloat(String(v).replace('%','').trim())||0; } catch { return 0; } };
 const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+function formatMCap(b) {
+    if (!b || b <= 0) return '--';
+    let res = '';
+    if (b >= 1000) {
+        const t = b / 1000;
+        res = (t < 10 ? t.toFixed(2) : t.toFixed(1)).replace('.00','').replace('.0','') + 'T';
+    } else if (b >= 1) {
+        res = b.toFixed(1).replace('.0','') + 'B';
+    } else {
+        const m = b * 1000;
+        res = m.toFixed(1).replace('.0','') + 'M';
+    }
+    return res.length > 7 ? res.substring(0, 7) : res;
+}
 
 function getWeights(agg) {
     const w1 = { s: 0.70, a: 0.20, d: 0.00, m: 0.00 }; // As requested
@@ -524,7 +539,7 @@ function render() {
             <td><div class="chip" style="border:1px solid var(--danger);">${esc(e.h['Risk Adj']||'?')}</div></td>
             <td><div class="chip" style="border:1px solid var(--accent);">${esc(e.h['Hiddenness']||'?')}</div></td>
             <td><span class="region-tag">${getExchAbbrev(e.exchange)}</span></td>
-            <td style="font-weight:700;font-size:12px;">${e.mcapB > 0.01 ? e.mcapB.toFixed(2)+'B' : '--'}</td>
+            <td style="font-weight:700;font-size:12px;">${formatMCap(e.mcapB)}</td>
             <td><span class="chip">${pe26f}</span></td>
             <td><span class="chip" style="color:var(--accent);">${pe27f}</span></td>
             <td style="color:var(--gold);font-weight:800;">${esc(e.h['Target Upside']||'--')}</td>

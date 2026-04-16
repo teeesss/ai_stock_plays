@@ -1,98 +1,976 @@
 {
   "CRDO": {
-    "price": 159.01,
-    "change_pct": -5.55,
-    "volume": 7224757,
+    "price": 158.23,
+    "price_chg": -10.12,
+    "change_pct": -6.01,
+    "volume": 7873808,
     "avg_volume": 7704440,
-    "vol_spike": 0.94,
-    "exchange": "NASDAQ",
-    "updated": "2026-04-16T17:49:46.983132+00:00"
+    "vol_spike": 1.02,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
   },
   "BESIY": {
-    "price": 259.0,
-    "change_pct": 0.39,
-    "volume": 251,
+    "price": 257.85,
+    "price_chg": -0.15,
+    "change_pct": -0.06,
+    "volume": 266,
     "avg_volume": 6880,
     "vol_spike": 0.04,
-    "exchange": "OTC",
-    "updated": "2026-04-16T17:49:46.983132+00:00"
-  },
-  "ONTO": {
-    "price": 269.23,
-    "change_pct": 3.99,
-    "volume": 794495,
-    "avg_volume": 698280,
-    "vol_spike": 1.14,
-    "exchange": "NYSE",
-    "updated": "2026-04-16T17:49:46.983132+00:00"
+    "exchange": "OTC Markets OTCPK",
+    "updated": "2026-04-16 14:54 EST"
   },
   "KLIC": {
-    "price": 79.14,
-    "change_pct": -0.88,
-    "volume": 240871,
+    "price": 79.27,
+    "price_chg": -0.57,
+    "change_pct": -0.71,
+    "volume": 292556,
     "avg_volume": 652680,
-    "vol_spike": 0.37,
-    "exchange": "NASDAQ",
-    "updated": "2026-04-16T17:49:46.983132+00:00"
+    "vol_spike": 0.45,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
   },
   "ENTG": {
-    "price": 136.58,
-    "change_pct": -0.3,
-    "volume": 706520,
+    "price": 136.16,
+    "price_chg": -0.83,
+    "change_pct": -0.61,
+    "volume": 926356,
     "avg_volume": 2120020,
-    "vol_spike": 0.33,
-    "exchange": "NASDAQ",
-    "updated": "2026-04-16T17:49:46.983132+00:00"
+    "vol_spike": 0.44,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "ONTO": {
+    "price": 266.0,
+    "price_chg": 7.1,
+    "change_pct": 2.74,
+    "volume": 852621,
+    "avg_volume": 698280,
+    "vol_spike": 1.22,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "DNPCY": {
+    "exchange": "YHD",
+    "updated": "2026-04-16 14:54 EST"
   },
   "COHR": {
-    "price": 321.9,
-    "change_pct": 4.44,
-    "volume": 4678842,
+    "price": 320.75,
+    "price_chg": 12.54,
+    "change_pct": 4.07,
+    "volume": 5308715,
     "avg_volume": 5545480,
-    "vol_spike": 0.84,
+    "vol_spike": 0.96,
     "exchange": "NYSE",
-    "updated": "2026-04-16T17:49:46.983132+00:00"
+    "updated": "2026-04-16 14:54 EST"
   },
+  "ALRIB.PA": {
+    "price": 15.66,
+    "price_chg": 2.82,
+    "change_pct": 21.96,
+    "volume": 1156104,
+    "avg_volume": 775671,
+    "vol_spike": 1.49,
+    "exchange": "Paris",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "SMHN.DE": {
+    "price": 63.95,
+    "price_chg": 1.35,
+    "change_pct": 2.16,
+    "volume": 89956,
+    "avg_volume": 126143,
+    "vol_spike": 0.71,
+    "exchange": "XETRA",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "AMAT": {
+    "price": 388.32,
+    "price_chg": -5.94,
+    "change_pct": -1.51,
+    "volume": 3061085,
+    "avg_volume": 5268940,
+    "vol_spike": 0.58,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "ALAB": {
+    "price": 169.09,
+    "price_chg": -3.0,
+    "change_pct": -1.74,
+    "volume": 3357300,
+    "avg_volume": 5798970,
+    "vol_spike": 0.58,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "SNPS": {
+    "price": 440.47,
+    "price_chg": 2.02,
+    "change_pct": 0.46,
+    "volume": 642966,
+    "avg_volume": 1507010,
+    "vol_spike": 0.43,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "LITE": {
+    "price": 889.74,
+    "price_chg": 65.73,
+    "change_pct": 7.98,
+    "volume": 5107106,
+    "avg_volume": 6528760,
+    "vol_spike": 0.78,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "LWLG": {
+    "price": 11.98,
+    "price_chg": -0.11,
+    "change_pct": -0.87,
+    "volume": 9828636,
+    "avg_volume": 7928310,
+    "vol_spike": 1.24,
+    "exchange": "NasdaqCM",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "2455.TW": {
+    "price": 290.0,
+    "price_chg": 15.0,
+    "change_pct": 5.45,
+    "volume": 2413451,
+    "avg_volume": 19092155,
+    "vol_spike": 0.13,
+    "exchange": "Taiwan",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "POET": {
+    "price": 7.24,
+    "price_chg": 0.27,
+    "change_pct": 3.92,
+    "volume": 8324715,
+    "avg_volume": 12220020,
+    "vol_spike": 0.68,
+    "exchange": "NasdaqCM",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "AXTI": {
+    "price": 78.91,
+    "price_chg": 15.98,
+    "change_pct": 25.39,
+    "volume": 13974854,
+    "avg_volume": 14829600,
+    "vol_spike": 0.94,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "NDSN": {
+    "price": 276.75,
+    "price_chg": 1.76,
+    "change_pct": 0.64,
+    "volume": 151786,
+    "avg_volume": 352650,
+    "vol_spike": 0.43,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "MKSI": {
+    "price": 268.58,
+    "price_chg": -0.42,
+    "change_pct": -0.16,
+    "volume": 605591,
+    "avg_volume": 899820,
+    "vol_spike": 0.67,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "VECO": {
+    "price": 42.91,
+    "price_chg": 0.24,
+    "change_pct": 0.57,
+    "volume": 402879,
+    "avg_volume": 980540,
+    "vol_spike": 0.41,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "ASMIY": {
+    "price": 900.81,
+    "price_chg": 8.72,
+    "change_pct": 0.98,
+    "volume": 210,
+    "avg_volume": 5770,
+    "vol_spike": 0.04,
+    "exchange": "OTC Markets OTCQX",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "CAMT": {
+    "price": 181.04,
+    "price_chg": 1.49,
+    "change_pct": 0.83,
+    "volume": 228122,
+    "avg_volume": 277280,
+    "vol_spike": 0.82,
+    "exchange": "NasdaqGM",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "NVMI": {
+    "price": 512.3,
+    "price_chg": -5.13,
+    "change_pct": -0.99,
+    "volume": 132243,
+    "avg_volume": 304920,
+    "vol_spike": 0.43,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "TSEM": {
+    "price": 214.22,
+    "price_chg": -1.41,
+    "change_pct": -0.65,
+    "volume": 1680038,
+    "avg_volume": 2571320,
+    "vol_spike": 0.65,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "ANSS": {},
+  "ASMPT": {},
+  "TWCPY": {},
+  "AIXNY": {},
+  "IBIEY": {},
+  "LPKF": {},
+  "SHWDY": {
+    "price": 70.75,
+    "price_chg": 0.0,
+    "change_pct": 0.0,
+    "volume": 200,
+    "avg_volume": 64,
+    "vol_spike": 3.12,
+    "exchange": "OTC Markets OTCPK",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "SMTOY": {
+    "price": 63.59,
+    "price_chg": 3.49,
+    "change_pct": 5.81,
+    "volume": 10279,
+    "avg_volume": 139560,
+    "vol_spike": 0.07,
+    "exchange": "OTC Markets OTCPK",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "ATS.VI": {
+    "price": 74.8,
+    "price_chg": 4.1,
+    "change_pct": 5.8,
+    "volume": 277242,
+    "avg_volume": 162499,
+    "vol_spike": 1.71,
+    "exchange": "Vienna",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "7741.T": {
+    "price": 30000.0,
+    "price_chg": -30.0,
+    "change_pct": -0.1,
+    "volume": 1130400,
+    "avg_volume": 942780,
+    "vol_spike": 1.2,
+    "exchange": "Tokyo",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "SMTC": {
+    "price": 100.0,
+    "price_chg": 6.73,
+    "change_pct": 7.22,
+    "volume": 2121664,
+    "avg_volume": 2147860,
+    "vol_spike": 0.99,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "KEYS": {
+    "price": 329.95,
+    "price_chg": 4.7,
+    "change_pct": 1.45,
+    "volume": 625646,
+    "avg_volume": 990250,
+    "vol_spike": 0.63,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "TER": {
+    "price": 363.21,
+    "price_chg": -1.75,
+    "change_pct": -0.48,
+    "volume": 1032986,
+    "avg_volume": 3021520,
+    "vol_spike": 0.34,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "CSCO": {
+    "price": 83.82,
+    "price_chg": 1.46,
+    "change_pct": 1.77,
+    "volume": 6563307,
+    "avg_volume": 17148090,
+    "vol_spike": 0.38,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "AAOI": {
+    "price": 152.26,
+    "price_chg": 9.71,
+    "change_pct": 6.81,
+    "volume": 7885093,
+    "avg_volume": 14735240,
+    "vol_spike": 0.54,
+    "exchange": "NasdaqGM",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "NOVT": {
+    "price": 124.33,
+    "price_chg": -2.12,
+    "change_pct": -1.68,
+    "volume": 138708,
+    "avg_volume": 294260,
+    "vol_spike": 0.47,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "MTRN": {
+    "price": 167.21,
+    "price_chg": 4.29,
+    "change_pct": 2.63,
+    "volume": 68461,
+    "avg_volume": 168710,
+    "vol_spike": 0.41,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "COHU": {
+    "price": 38.93,
+    "price_chg": -0.02,
+    "change_pct": -0.05,
+    "volume": 385770,
+    "avg_volume": 717770,
+    "vol_spike": 0.54,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "ASE": {
+    "exchange": "YHD",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "APH": {
+    "price": 147.84,
+    "price_chg": 0.86,
+    "change_pct": 0.58,
+    "volume": 2880514,
+    "avg_volume": 6892800,
+    "vol_spike": 0.42,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "6941.T": {
+    "price": 10730.0,
+    "price_chg": 760.0,
+    "change_pct": 7.62,
+    "volume": 528300,
+    "avg_volume": 313150,
+    "vol_spike": 1.69,
+    "exchange": "Tokyo",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "SOI": {
+    "exchange": "??",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "CLS": {
+    "price": 383.29,
+    "price_chg": 1.35,
+    "change_pct": 0.35,
+    "volume": 1648832,
+    "avg_volume": 2268440,
+    "vol_spike": 0.73,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "GLW": {
+    "price": 164.22,
+    "price_chg": -4.06,
+    "change_pct": -2.41,
+    "volume": 9797592,
+    "avg_volume": 10603590,
+    "vol_spike": 0.92,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "MRVL": {
+    "price": 133.72,
+    "price_chg": -0.88,
+    "change_pct": -0.65,
+    "volume": 16127412,
+    "avg_volume": 30104130,
+    "vol_spike": 0.54,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "AVGO": {
+    "price": 397.93,
+    "price_chg": 1.21,
+    "change_pct": 0.3,
+    "volume": 11712233,
+    "avg_volume": 23872570,
+    "vol_spike": 0.49,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "PTF": {
+    "price": 104.0,
+    "price_chg": 2.01,
+    "change_pct": 1.97,
+    "volume": 71880,
+    "avg_volume": 121820,
+    "vol_spike": 0.59,
+    "exchange": "NasdaqGM",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "GFS": {
+    "price": 49.69,
+    "price_chg": 1.38,
+    "change_pct": 2.86,
+    "volume": 2916120,
+    "avg_volume": 2536390,
+    "vol_spike": 1.15,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "5201.T": {
+    "price": 5750.0,
+    "price_chg": 132.0,
+    "change_pct": 2.35,
+    "volume": 1344200,
+    "avg_volume": 1112350,
+    "vol_spike": 1.21,
+    "exchange": "Tokyo",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "SCHN.PA": {
+    "exchange": "YHD",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "PSTG": {
+    "price": 66.8,
+    "price_chg": 1.91,
+    "change_pct": 2.94,
+    "volume": 1235916,
+    "avg_volume": 2551400,
+    "vol_spike": 0.48,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "STM": {
+    "price": 41.35,
+    "price_chg": 0.67,
+    "change_pct": 1.65,
+    "volume": 8544908,
+    "avg_volume": 8294780,
+    "vol_spike": 1.03,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "PLET.DE": {},
+  "FRA:MRK": {},
+  "MYCRF": {},
+  "PROB.MI": {},
+  "6361.T": {
+    "price": 5161.0,
+    "price_chg": 157.0,
+    "change_pct": 3.14,
+    "volume": 2920800,
+    "avg_volume": 2816370,
+    "vol_spike": 1.04,
+    "exchange": "Tokyo",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "TEL": {
+    "price": 235.67,
+    "price_chg": 1.52,
+    "change_pct": 0.65,
+    "volume": 1075209,
+    "avg_volume": 1443310,
+    "vol_spike": 0.74,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "KLAC": {
+    "price": 1723.68,
+    "price_chg": -24.43,
+    "change_pct": -1.4,
+    "volume": 403115,
+    "avg_volume": 799180,
+    "vol_spike": 0.5,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "MTSI": {
+    "price": 263.0,
+    "price_chg": 1.85,
+    "change_pct": 0.71,
+    "volume": 484326,
+    "avg_volume": 940410,
+    "vol_spike": 0.52,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "FN": {
+    "price": 671.33,
+    "price_chg": -14.48,
+    "change_pct": -2.11,
+    "volume": 522290,
+    "avg_volume": 680710,
+    "vol_spike": 0.77,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "AMKR": {
+    "price": 62.73,
+    "price_chg": 3.01,
+    "change_pct": 5.04,
+    "volume": 3998024,
+    "avg_volume": 2948540,
+    "vol_spike": 1.36,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "AEHR": {
+    "price": 82.5,
+    "price_chg": 9.28,
+    "change_pct": 12.67,
+    "volume": 7223655,
+    "avg_volume": 5254800,
+    "vol_spike": 1.37,
+    "exchange": "NasdaqCM",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "VIAV": {
+    "price": 41.49,
+    "price_chg": 2.23,
+    "change_pct": 5.68,
+    "volume": 3615967,
+    "avg_volume": 5908630,
+    "vol_spike": 0.61,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "5801.T": {
+    "price": 45720.0,
+    "price_chg": 1480.0,
+    "change_pct": 3.35,
+    "volume": 6181000,
+    "avg_volume": 10139690,
+    "vol_spike": 0.61,
+    "exchange": "Tokyo",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "ASX": {
+    "price": 27.57,
+    "price_chg": 0.34,
+    "change_pct": 1.23,
+    "volume": 4704177,
+    "avg_volume": 6061310,
+    "vol_spike": 0.78,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "FORM": {
+    "price": 127.9,
+    "price_chg": -1.72,
+    "change_pct": -1.33,
+    "volume": 1083066,
+    "avg_volume": 1698450,
+    "vol_spike": 0.64,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "6451.TW": {
+    "price": 494.0,
+    "price_chg": 38.0,
+    "change_pct": 8.33,
+    "volume": 1098243,
+    "avg_volume": 5143565,
+    "vol_spike": 0.21,
+    "exchange": "Taiwan",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "HPS-A.TO": {
+    "price": 218.19,
+    "price_chg": -1.62,
+    "change_pct": -0.74,
+    "volume": 74491,
+    "avg_volume": 152790,
+    "vol_spike": 0.49,
+    "exchange": "Toronto",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "CRCL": {
+    "price": 106.16,
+    "price_chg": 0.64,
+    "change_pct": 0.61,
+    "volume": 6532776,
+    "avg_volume": 11929390,
+    "vol_spike": 0.55,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "ENVX": {
+    "price": 6.37,
+    "price_chg": 0.05,
+    "change_pct": 0.87,
+    "volume": 3687891,
+    "avg_volume": 5921200,
+    "vol_spike": 0.62,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "CIEN": {
+    "price": 490.32,
+    "price_chg": 14.57,
+    "change_pct": 3.06,
+    "volume": 1671895,
+    "avg_volume": 2961000,
+    "vol_spike": 0.56,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "NOK": {
+    "price": 10.27,
+    "price_chg": 0.28,
+    "change_pct": 2.75,
+    "volume": 38767818,
+    "avg_volume": 92248160,
+    "vol_spike": 0.42,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "ALMU": {
+    "price": 17.2,
+    "price_chg": 0.57,
+    "change_pct": 3.43,
+    "volume": 1342440,
+    "avg_volume": 2429980,
+    "vol_spike": 0.55,
+    "exchange": "NasdaqCM",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "ASML": {
+    "price": 1415.67,
+    "price_chg": -66.1,
+    "change_pct": -4.46,
+    "volume": 2020186,
+    "avg_volume": 1954850,
+    "vol_spike": 1.03,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "ICHR": {
+    "price": 63.9,
+    "price_chg": -0.43,
+    "change_pct": -0.67,
+    "volume": 404478,
+    "avg_volume": 674820,
+    "vol_spike": 0.6,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "ETN": {
+    "price": 392.09,
+    "price_chg": -2.97,
+    "change_pct": -0.75,
+    "volume": 983206,
+    "avg_volume": 1946960,
+    "vol_spike": 0.5,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "ANET": {
+    "price": 158.95,
+    "price_chg": 4.62,
+    "change_pct": 2.99,
+    "volume": 4484641,
+    "avg_volume": 6557230,
+    "vol_spike": 0.68,
+    "exchange": "NYSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "5713.T": {
+    "price": 11020.0,
+    "price_chg": 375.0,
+    "change_pct": 3.52,
+    "volume": 2892200,
+    "avg_volume": 3512820,
+    "vol_spike": 0.82,
+    "exchange": "Tokyo",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "UMI.BR": {
+    "price": 17.44,
+    "price_chg": 0.17,
+    "change_pct": 0.98,
+    "volume": 322271,
+    "avg_volume": 402184,
+    "vol_spike": 0.8,
+    "exchange": "Brussels",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "NEO.TO": {
+    "price": 23.07,
+    "price_chg": 0.03,
+    "change_pct": 0.15,
+    "volume": 125463,
+    "avg_volume": 268920,
+    "vol_spike": 0.47,
+    "exchange": "Toronto",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "TYO:6028": {},
+  "3105.TW": {},
+  "3363.TW": {},
+  "4979.TW": {},
+  "INRI": {},
+  "0097.KL": {
+    "price": 4.91,
+    "price_chg": 0.11,
+    "change_pct": 2.29,
+    "volume": 2912000,
+    "avg_volume": 1362360,
+    "vol_spike": 2.14,
+    "exchange": "Kuala Lumpur",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "ASMVY": {
+    "price": 50.36,
+    "price_chg": 1.82,
+    "change_pct": 3.75,
+    "volume": 197,
+    "avg_volume": 134810,
+    "vol_spike": 0.0,
+    "exchange": "OTC Markets OTCPK",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "SMSMY": {
+    "price": 14.28,
+    "price_chg": 0.53,
+    "change_pct": 3.85,
+    "volume": 1500,
+    "avg_volume": 3360,
+    "vol_spike": 0.45,
+    "exchange": "OTC Markets OTCPK",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "YAMHF": {
+    "price": 7.35,
+    "price_chg": 0.0,
+    "change_pct": 0.0,
+    "volume": 1121,
+    "avg_volume": 220,
+    "vol_spike": 5.1,
+    "exchange": "OTC Markets OTCPK",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "LPK.DE": {
+    "price": 11.3,
+    "price_chg": 1.05,
+    "change_pct": 10.24,
+    "volume": 450224,
+    "avg_volume": 283668,
+    "vol_spike": 1.59,
+    "exchange": "XETRA",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "IPGP": {
+    "price": 118.53,
+    "price_chg": -2.79,
+    "change_pct": -2.3,
+    "volume": 292981,
+    "avg_volume": 341290,
+    "vol_spike": 0.86,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "CLFD": {
+    "price": 28.53,
+    "price_chg": 0.71,
+    "change_pct": 2.55,
+    "volume": 33091,
+    "avg_volume": 182030,
+    "vol_spike": 0.18,
+    "exchange": "NasdaqGM",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "LASR": {
+    "price": 68.04,
+    "price_chg": 1.62,
+    "change_pct": 2.44,
+    "volume": 511528,
+    "avg_volume": 1332910,
+    "vol_spike": 0.38,
+    "exchange": "NasdaqGS",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "SIVE.ST / SIVEF": {
+    "price": 22.8,
+    "price_chg": 2.02,
+    "change_pct": 9.72,
+    "volume": 46008381,
+    "avg_volume": 21991404,
+    "vol_spike": 2.09,
+    "exchange": "Stockholm",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "IQE.L / IQEPF": {
+    "price": 58.6,
+    "price_chg": 4.6,
+    "change_pct": 8.52,
+    "volume": 51983448,
+    "avg_volume": 46865906,
+    "vol_spike": 1.11,
+    "exchange": "LSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "6146.T / DSCSY": {
+    "price": 73030.0,
+    "price_chg": 2450.0,
+    "change_pct": 3.47,
+    "volume": 2319700,
+    "avg_volume": 2451680,
+    "vol_spike": 0.95,
+    "exchange": "Tokyo",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "6890.T / FERRF": {
+    "price": 6760.0,
+    "price_chg": 0.0,
+    "change_pct": 0.0,
+    "volume": 525100,
+    "avg_volume": 508370,
+    "vol_spike": 1.03,
+    "exchange": "Tokyo",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "3110.T": {
+    "price": 27040.0,
+    "price_chg": 540.0,
+    "change_pct": 2.04,
+    "volume": 2718100,
+    "avg_volume": 2441100,
+    "vol_spike": 1.11,
+    "exchange": "Tokyo",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "3037.TW": {
+    "price": 645.0,
+    "price_chg": 27.0,
+    "change_pct": 4.37,
+    "volume": 6955527,
+    "avg_volume": 28636660,
+    "vol_spike": 0.24,
+    "exchange": "Taiwan",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "011790.KS": {
+    "price": 122000.0,
+    "price_chg": 22200.0,
+    "change_pct": 22.24,
+    "avg_volume": 187971,
+    "exchange": "KSE",
+    "updated": "2026-04-16 14:54 EST"
+  },
+  "6408.TW": {},
+  "AJINY": {},
   "_meta": {
-    "refreshed_at": "2026-04-16 01:49:47 PM EST",
-    "refreshed_at_est": "2026-04-16 01:49:47 PM EST",
-    "refreshed_at_iso": "2026-04-16T13:49:47.155682-04:00",
-    "total_tickers": 6,
-    "with_price": 6,
+    "refreshed_at": "2026-04-16 02:54 PM EST",
+    "refreshed_at_est": "2026-04-16 02:54 EST",
+    "refreshed_at_iso": "2026-04-16T14:54:38.549006-04:00",
+    "total_tickers": 107,
+    "with_price": 86,
     "top_gainers": [
       {
-        "ticker": "COHR",
-        "change_pct": 4.44,
-        "price": 321.9
+        "ticker": "AXTI",
+        "change_pct": 25.39,
+        "price": 78.91
       },
       {
-        "ticker": "ONTO",
-        "change_pct": 3.99,
-        "price": 269.23
+        "ticker": "011790.KS",
+        "change_pct": 22.24,
+        "price": 122000.0
       },
       {
-        "ticker": "BESIY",
-        "change_pct": 0.39,
-        "price": 259.0
+        "ticker": "ALRIB.PA",
+        "change_pct": 21.96,
+        "price": 15.66
+      },
+      {
+        "ticker": "AEHR",
+        "change_pct": 12.67,
+        "price": 82.5
+      },
+      {
+        "ticker": "LPK.DE",
+        "change_pct": 10.24,
+        "price": 11.3
       }
     ],
     "top_losers": [
       {
         "ticker": "CRDO",
-        "change_pct": -5.55,
-        "price": 159.01
+        "change_pct": -6.01,
+        "price": 158.23
       },
       {
-        "ticker": "KLIC",
-        "change_pct": -0.88,
-        "price": 79.14
+        "ticker": "ASML",
+        "change_pct": -4.46,
+        "price": 1415.67
       },
       {
-        "ticker": "ENTG",
-        "change_pct": -0.3,
-        "price": 136.58
+        "ticker": "GLW",
+        "change_pct": -2.41,
+        "price": 164.22
+      },
+      {
+        "ticker": "IPGP",
+        "change_pct": -2.3,
+        "price": 118.53
+      },
+      {
+        "ticker": "FN",
+        "change_pct": -2.11,
+        "price": 671.33
       }
     ],
-    "volume_spikes": []
+    "volume_spikes": [
+      {
+        "ticker": "YAMHF",
+        "vol_spike": 5.1,
+        "change_pct": 0.0
+      },
+      {
+        "ticker": "SHWDY",
+        "vol_spike": 3.12,
+        "change_pct": 0.0
+      },
+      {
+        "ticker": "0097.KL",
+        "vol_spike": 2.14,
+        "change_pct": 2.29
+      },
+      {
+        "ticker": "SIVE.ST / SIVEF",
+        "vol_spike": 2.09,
+        "change_pct": 9.72
+      }
+    ]
   }
 }

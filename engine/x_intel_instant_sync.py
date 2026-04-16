@@ -94,6 +94,11 @@ def instant_sync():
         log.warning("!" * 60)
         return
 
+    # 1.5 REBUILD MASTER (MERGE TEXT POSTS)
+    log.info("\n🔄 STEP 1.5: REBUILDING MASTER INTEL...")
+    if not run_step("Rebuild Master", [sys.executable, "engine/rebuild_master.py"]):
+        log.warning("⚠️ Master rebuild encountered issues, but continuing...")
+
     # 2. IMAGE ANALYSIS
     log.info("\n📸 STEP 2: ANALYZING NEW IMAGES...")
     if not run_step("Image Analysis", [sys.executable, "engine/image_analyzer.py"]):
@@ -112,7 +117,13 @@ def instant_sync():
     # 5. BUILD & REMOTE UPLOAD
     log.info("\n" + "=" * 60)
     log.info("🚀 SYNC SUCCESSFUL — INITIATING BUILD & REMOTE UPLOAD")
-    log.info("=" * 60)
+    # 5. LIVE PRICE SYNC
+    log.info("\n💹 STEP 5: REFRESHING LIVE PRICES...")
+    if not run_step("Live Prices", [sys.executable, "engine/live_prices.py"]):
+        log.warning("⚠️ Live price sync encountered issues.")
+
+    # 6. Build and Deploy
+    log.info("\n" + "=" * 60)
     
     # On Windows, npm is a .cmd file. subprocess.Popen(shell=True) or npm.cmd is needed.
     npm_cmd = "npm.cmd" if sys.platform == "win32" else "npm"
@@ -124,11 +135,6 @@ def instant_sync():
             log.error("❌ REMOTE UPLOAD FAILED")
     else:
         log.error("❌ BUILD FAILED")
-
-    # 6. LIVE PRICE SYNC (Final Step)
-    log.info("\n💹 STEP 6: REFRESHING LIVE PRICES...")
-    if not run_step("Live Prices", [sys.executable, "engine/live_prices.py"]):
-        log.warning("⚠️ Live price sync encountered issues.")
 
     log.info("\n" + "=" * 60)
     log.info("⚡ INSTANT SYNC COMPLETE")
