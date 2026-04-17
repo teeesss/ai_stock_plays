@@ -16,8 +16,10 @@
 - **Unicode**: All JSON writes use `ensure_ascii=True` — no more VS Code ambiguous-unicode warnings.
 - **Logging**: Python scripts now autonomously output to `logs/*.log` to prevent debugging noise.
 - **Scraper Search**: Fixed Nitter date constraint parsing to prevent recursive vintage deep fetches.
+- **Spam Filter**: Yahoo News Anti-Spam (strict ticker matching) logic deployed and DB scrubbed (751 items removed).
 - **Quality**: 7-day lookback filtering active for news sanity.
 - **Deduplication**: SHA-256 Title-based news deduplication verified.
+- **Testing**: `test_news_fetcher` updated for async+playwright stealth logic execution.
 - **Architecture**: Move to root-flattened deployment on bmwseals.com.
 - Date: 2026-04-17
 

@@ -11,6 +11,7 @@ Tests: **52 passing / 0 failing**
 - **Hardened Deployment**: Transitioned to root-flattened SFTP architecture on `bmwseals.com` to prevent relative-path 404 errors.
 - **Performance Virtualization**: Implemented 50-itemNews pagination and deferred hydration to maintain 60FPS dashboard scrolling with 6,900 articles.
 - **Data Universe**: Hydrated News DB covering 113+ monitoried tickers with 7-day lookback logic.
+- **Anti-Spam Filter**: Implemented strict ticker text-matching to reject default Yahoo noise; purged 751 spam articles.
 - **UI visibility**: Corrected CSS icon clipping for 📰 newspaper triggers.
 
 ---
