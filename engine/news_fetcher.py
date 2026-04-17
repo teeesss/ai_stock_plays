@@ -76,6 +76,17 @@ class YahooNewsFetcher:
                             continue # Filter 7-day lookback
 
                         title = item.get("title", "No Title")
+                        
+                        # Anti-Spam Filter: Ensure the article is actually about the ticker
+                        related = item.get("relatedTickers")
+                        if related is not None:
+                            if clean_symbol.upper() not in [r.upper() for r in related]:
+                                continue
+                        else:
+                            # If no related tickers, enforce strict text matching to prevent Yahoo default spam
+                            if clean_symbol.upper() not in title.upper():
+                                continue
+
                         processed.append({
                             "title": title,
                             "link": item.get("link", ""),
