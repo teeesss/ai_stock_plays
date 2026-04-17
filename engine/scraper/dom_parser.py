@@ -54,11 +54,27 @@ def parse_tweet(item, username: str) -> dict:
     # Scraper will handle precise DT conversion
     
     content_copy = BeautifulSoup(str(cd), "html.parser")
+    
+    # Surgical Reconstruction: Fix $ N V D A or $ N V D A fragments
+    # 1. Standardize cashtag elements
     for cashtag_el in content_copy.select("a.cashtag, a[href*='/search?q=%24']"):
         ticker_text = cashtag_el.get_text(separator="", strip=True)
+        # Remove internal spaces in ticker (N V D A -> NVDA)
+        ticker_text = re.sub(r'\s+', '', ticker_text)
         cashtag_el.replace_with(f" {ticker_text} ")
     
     raw_text = content_copy.get_text(separator=" ", strip=True)
+    
+    # 2. Forensic Regex: Catch loose fragments like "$ N V D A" in raw text
+    # Pattern: Look for $ followed by 1-5 letters separated by spaces
+    loose_pattern = r'\$\s?([A-Z])(?:\s?([A-Z]))?(?:\s?([A-Z]))?(?:\s?([A-Z]))?(?:\s?([A-Z]))?'
+    def reconstruct(m):
+        # Join all captured groups (groups 1-5), ignore None
+        parts = [g for g in m.groups() if g]
+        return "$" + "".join(parts)
+    
+    raw_text = re.sub(loose_pattern, reconstruct, raw_text)
+    
     text = re.sub(r'\s+', ' ', raw_text).strip()
     
     if garbage_purge(text):
