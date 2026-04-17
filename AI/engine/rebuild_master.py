@@ -10,9 +10,8 @@ def rebuild():
     with open(MASTER_FILE, "r") as f:
         master = json.load(f)
 
-    # Output pure JSON string for client
-    base_obj = {"last_updated": datetime.datetime.now().isoformat()}
-    payload = []
+    # Output pure JSON object for client, mimicking CPO_MASTER_DATA
+    payload = {}
     
     for symbol, dt in master.items():
         if dt.get("no_dashboard"):
@@ -20,21 +19,20 @@ def rebuild():
             
         obb = dt.get("openbb_supplement", {})
         
-        entry = {
-            "ticker": symbol,
-            "category": dt.get("Bucket", "Unknown"),
-            "role": dt.get("Role / Notes", ""),
-            "country": dt.get("Country", "US"),
-            "pe26": dt.get("PE_2026", 0),
-            "pe27": dt.get("PE_2027", 0),
-            "rev_cagr": dt.get("Rev_CAGR", 0),
-            "score": dt.get("Alpha_Score", 0),
-            "buzz": {"1d":0, "3d":0, "7d":0}, # Empty buzz for now
-            "obb": obb
+        # Build the wrapper object expected by index.html exactly
+        payload[symbol] = {
+            "human_research": {
+                "Role": dt.get("Role / Notes", ""),
+                "Notes": dt.get("Role / Notes", ""),
+                "Country": dt.get("Country", "US"),
+                "Bucket": dt.get("Bucket", "AI Watchlist"),
+                "Alpha Score": dt.get("Alpha_Score", 0)
+            },
+            "openbb_supplement": obb,
+            "financials": dt.get("financials", {})
         }
-        payload.append(entry)
         
-    js = f"window.DASHBOARD_DATA = {json.dumps(payload)};"
+    js = f"window.CPO_MASTER_DATA = {json.dumps(payload)};"
     with open(JS_OUT, "w", encoding="utf-8") as f:
         f.write(js)
     print(f"Rebuilt dashboard_data.js ({len(payload)} entries)")
