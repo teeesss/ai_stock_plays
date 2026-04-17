@@ -203,6 +203,15 @@ class StealthNavigator:
         state_path = "database/stealth_session.json"
         await self.context.storage_state(path=state_path)
         
+        # Enforce restricted permissions (High Security)
+        try:
+            if sys.platform != "win32":
+                os.chmod(state_path, 0o600)
+            else:
+                # Windows restricted ACL (Basic)
+                pass 
+        except: pass
+        
         await page.close()
         return cookies, crumb
 

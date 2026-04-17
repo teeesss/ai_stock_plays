@@ -6,27 +6,36 @@ Uses credentials from credentials/vault.json.
 """
 
 import os
-import json
-import paramiko
 import logging
 from pathlib import Path
+from dotenv import load_dotenv
+import paramiko
+
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("remote_sync")
 
 ROOT = Path(__file__).parent.parent
-VAULT_PATH = ROOT / "credentials" / "vault.json"
 
 def get_creds():
-    if not VAULT_PATH.exists():
-        log.error(f"Vault not found at {VAULT_PATH}")
+    host = os.environ.get("SFTP_HOST")
+    user = os.environ.get("SFTP_USER")
+    pas  = os.environ.get("SFTP_PASS")
+    path = os.environ.get("SFTP_PATH")
+    
+    if not all([host, user, pas, path]):
+        log.error("Missing SFTP credentials in .env")
         return None
-    try:
-        with open(VAULT_PATH, "r") as f:
-            return json.load(f)
-    except Exception as e:
-        log.error(f"Error reading vault: {e}")
-        return None
+        
+    return {
+        "remote": {
+            "host": host,
+            "user": user,
+            "pass": pas,
+            "path": path
+        }
+    }
 
 def sync(from_dist=False):
     creds = get_creds()
