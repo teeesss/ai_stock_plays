@@ -78,24 +78,37 @@ def rebuild_master():
     all_posts = deduped
 
     # ── STEP 2: Build payload — inject preserved OCR data ───────
+    # We strip image arrays from the JS bridge version to prevent production 404 lag
+    def strip_assets(p):
+        p_clean = p.copy()
+        if "images" in p_clean: del p_clean["images"]
+        if "visual_intel" in p_clean: del p_clean["visual_intel"]
+        return p_clean
+
+    stripped_posts = [strip_assets(p) for p in all_posts]
+
     payload = {
         "updated_at":          now.isoformat(),
-        "posts":               all_posts,
+        "posts":               all_posts, # Keep original in master.json
         "buzz":                buzz,
-        "visual_mentions":     existing_visual_mentions,   # ← preserved
-        "visual_last_updated": existing_visual_ts,          # ← preserved
+        "visual_mentions":     existing_visual_mentions,
+        "visual_last_updated": existing_visual_ts,
     }
 
     # ── STEP 3: Write files ─────────────────────────────────────
+    # Master JSON keeps full data (local research)
     master_path.write_text(json.dumps(payload, indent=2, ensure_ascii=True), encoding="utf-8")
 
-    js_content = "// GIGACPO Intelligence Data - Auto-generated\nwindow.X_INTEL_MODULE = " \
-                 + json.dumps(payload, ensure_ascii=True) + ";"
+    # JS Bridge gets stripped data (dashboard performance)
+    bridge_payload = payload.copy()
+    bridge_payload["posts"] = stripped_posts
+    
+    js_content = "// GIGACPO Intelligence Data - Auto-generated (images stripped for performance)\nwindow.X_INTEL_MODULE = " \
+                 + json.dumps(bridge_payload, ensure_ascii=True) + ";"
     (DB_DIR / "intel.js").write_text(js_content, encoding="utf-8")
     (ROOT / "intel.js").write_text(js_content, encoding="utf-8")
 
-    print(f"COMPLETE: {len(all_posts)} posts | {len(buzz)} tickers | "
-          f"{len(existing_visual_mentions)} visual tickers preserved")
+    print(f"COMPLETE: {len(all_posts)} posts | {len(buzz)} tickers | {len(existing_visual_mentions)} visual tickers preserved. JS Bridge cleaned.")
 
 
 if __name__ == "__main__":
