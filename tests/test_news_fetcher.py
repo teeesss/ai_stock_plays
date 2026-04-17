@@ -1,6 +1,7 @@
 import unittest
 import os
 import sys
+import asyncio
 
 # Ensure engine path is visible
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -18,7 +19,7 @@ class TestYahooNewsFetcher(unittest.TestCase):
             
         fetcher = YahooNewsFetcher()
         tickers = ["NVDA"] # High liquidity guaranteed news
-        results = fetcher.fetch_batch(tickers)
+        results = asyncio.run(fetcher.fetch_batch(tickers))
         
         self.assertIn("NVDA", results)
         if len(results["NVDA"]) > 0:
@@ -27,7 +28,7 @@ class TestYahooNewsFetcher(unittest.TestCase):
             self.assertIn("link", results["NVDA"][0])
             
         # Stealth check
-        self.assertTrue(len(fetcher.headers["User-Agent"]) > 10)
+        self.assertTrue(len(fetcher.current_ua) > 10)
 
 if __name__ == "__main__":
     unittest.main()
