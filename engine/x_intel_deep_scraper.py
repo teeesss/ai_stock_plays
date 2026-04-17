@@ -34,6 +34,10 @@ import sys
 sys.path.append(str(Path(__file__).parent))
 from stealth_navigator import StealthNavigator
 
+# V16.2 Refactor: Modular Domain Logic
+from scraper.dom_parser import parse_tweet, garbage_purge
+from scraper.pagi_engine import scrape_pagination_loop
+
 if sys.platform == "win32":
     try: sys.stdout.reconfigure(encoding='utf-8')
     except AttributeError: pass
@@ -118,169 +122,8 @@ def mark_day_scanned(username: str, day_str: str):
 # ─────────────────────────────────────────────────────────────
 #  Date Parsing
 # ─────────────────────────────────────────────────────────────
-def parse_date(raw: str) -> datetime:
-    """
-    Parses nitter date strings like:
-    - 'Apr 13, 2026 · 12:36 AM UTC'
-    - '5h'
-    - '20m'
-    - 'Jan 1'
-    """
-    now = datetime.now(timezone.utc)
-    try:
-        if not raw:
-            return now
-            
-        if "·" in raw:
-            clean = raw.split("·")[0].strip()
-            # Handles "Apr 13, 2026"
-            return datetime.strptime(clean, "%b %d, %Y").replace(tzinfo=timezone.utc)
-        
-        raw = raw.strip().lower()
-        
-        # Relative: "5h", "20m", "1s"
-        if raw.endswith("h"):
-            try:
-                v = int(raw[:-1])
-                return now - timedelta(hours=v)
-            except: return now
-        if raw.endswith("m"):
-            try:
-                v = int(raw[:-1])
-                return now - timedelta(minutes=v)
-            except: return now
-        if raw.endswith("s"):
-            return now
-            
-        # Shorthand: "Jan 1"
-        parts = raw.split()
-        if len(parts) == 2:
-            dt = datetime.strptime(f"{raw}, {now.year}", "%b %d, %Y")
-            return dt.replace(tzinfo=timezone.utc)
-             
-        return now
-    except Exception:
-        return now
-
-
-def reconstruct_tickers(text: str) -> str:
-    """V11.0 Surgical Ticker Reconstructor.
-    Collapses Nitter fragments but prevents word-smashing.
-    """
-    if not text:
-        return ""
-
-    # 1. Collapse single-letter chains starting with $ ($ N V D A -> $NVDA)
-    text = re.sub(r'\$[A-Z](?:\s[A-Z]\b)+', lambda m: m.group(0).replace(" ", ""), text)
-    
-    # 2. Collapse fragments after a multi-letter ticker ($AA O I -> $AAOI)
-    # Matches $ + 2-5 letters + space + sequence of single letters
-    text = re.sub(r'\$([A-Z]{2,5})\s([A-Z]\b(?:\s[A-Z]\b)*)', 
-                  lambda m: "$" + m.group(1) + m.group(2).replace(" ", ""), text)
-    
-    # 3. Collapse bare capital chains (C P O -> CPO)
-    # Only if starting at a word boundary (prevents smashing into preceding words)
-    text = re.sub(r'(?<!\w)[A-Z](?:\s[A-Z]\b)+', lambda m: m.group(0).replace(" ", ""), text)
-    
-    # 4. Add spaces between smashed tickers ($PGY$NVDA -> $PGY $NVDA)
-    text = re.sub(r'(\$[A-Z0-9]{2,10})(\$[A-Z0-9])', r'\1 \2', text)
-    
-    # 5. Final Spacing Refinement
-    text = re.sub(r'([a-z0-9])([\$@])', r'\1 \2', text) # Space before $ or @
-    text = re.sub(r'(\$[A-Z0-9]{2,12})([a-z]{2,})', r'\1 \2', text) # $NVDAis -> $NVDA is
-    
-    return re.sub(r'\s+', ' ', text).strip()
-
-
-def clean_text_spacing(text: str) -> str:
-    """Master formatting pipeline."""
-    if not text:
-        return ""
-    
-    # Step 1: Handle handle fragmentation (@Ph o t o n C a p -> @PhotonCap)
-    def collapse_fragment(m):
-        return m.group(0).replace(" ", "")
-    text = re.sub(r'(@[A-Za-z0-9])(?:\s[A-Za-z0-9])+', collapse_fragment, text)
-
-    # Step 2: Safe Reconstruction
-    text = reconstruct_tickers(text)
-    
-    # Step 3: Ensure space AFTER @USER if followed by alphanumeric
-    text = re.sub(r'(@[A-Za-z0-9_]{1,20})([a-zA-Z0-9])', r'\1 \2', text)
-    
-    return re.sub(r'  +', ' ', text).strip()
-
-
-def garbage_purge(text: str) -> bool:
-    """Returns True if text is garbage or system error."""
-    if not text or len(text.strip()) < 2:
-        return True
-    lower = text.lower().strip()
-    if lower in ["whoops", "whoops...", "fetching..."] or "nitter has been blocked" in lower:
-        return True
-    return False
-
-
-def parse_tweet(item, username: str) -> dict:
-    """Parses a single nitter timeline item into a standard dict."""
-    cd = item.select_one(".tweet-content")
-    dl = item.select_one(".tweet-date a")
-    if not cd or not dl:
-        return None
-    
-    # Skip pinned
-    if item.select_one(".pinned"):
-        return None
-        
-    tweet_id = dl.get("href", "").split("/")[-1].split("#")[0]
-    raw_date = dl.get("title", "")
-    ts_dt = parse_date(raw_date)
-    
-    # PHASE 1 FIX: Extract tweet text with cashtag-aware parsing
-    # Nitter renders $TICKERS as letter-by-letter spans. We must read each
-    # cashtag anchor tag as a single whole unit before stripping HTML.
-    
-    # Clone the content element to avoid mutating the soup
-    content_copy = BeautifulSoup(str(cd), "html.parser")
-    
-    # Find all cashtag links and replace them with their concatenated text (no separator)
-    for cashtag_el in content_copy.select("a.cashtag, a[href*='/search?q=%24']"):
-        ticker_text = cashtag_el.get_text(separator="", strip=True)
-        cashtag_el.replace_with(f" {ticker_text} ")
-    
-    # Now get the full text — cashtags are already whole, rest uses space separator
-    raw_text = content_copy.get_text(separator=" ", strip=True)
-    
-    # Clean and reconstruct any remaining broken tickers 
-    text = clean_text_spacing(raw_text)
-    if garbage_purge(text):
-        return None
-
-    # Images
-    imgs = item.select(".attachments img")
-    img_urls = []
-    local_paths = []
-    for i, img in enumerate(imgs):
-        src = img.get("src", "")
-        if src:
-            if src.startswith("/"):
-                 src = f"https://xcancel.com{src}" 
-            img_urls.append(src)
-            local_paths.append(f"images/{username}/{tweet_id}_{i}.jpg")
-            
-    return {
-        "id": tweet_id,
-        "username": username,
-        "text": text,
-        "raw_text": text,  # Preserved forever — source of truth for translation detection
-        "timestamp": ts_dt.isoformat(),
-        "_timestamp_dt": ts_dt, # helper for internal cutoff checks
-        "raw_date": raw_date,
-        "images": local_paths,
-        "image_urls": img_urls,
-        "url": f"https://x.com/{username}/status/{tweet_id}",
-        "fetched_at": datetime.now(timezone.utc).isoformat(),
-    }
+# DOM Parsing and Date Logic moved to engine/scraper/dom_parser.py 
+# (V16.2 Refactor for technical hygiene)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -563,58 +406,11 @@ def _incremental_save(username: str, new_posts: list, existing: list):
 
 
 async def scrape_search_block(nav, url, inst, username):
-    """Scrapes a single search block with simple pagination."""
-    block_posts = []
-    seen_cursors = set()
-    failures = 0
-    
-    while url:
-        if failures >= 2:
-            return None # Signal failure
-            
-        page = await nav.context.new_page()
-        try:
-            await page.goto(url, wait_until="domcontentloaded", timeout=10000)  # 10s — fast fail
-            await asyncio.sleep(random.uniform(2, 5))
-            
-            content = await page.content()
-            soup = BeautifulSoup(content, "html.parser")
-            items = soup.select(".timeline-item")
-            
-            p_count = 0
-            for item in items:
-                p = parse_tweet(item, username)
-                if p and not garbage_purge(p["text"]):
-                    block_posts.append(p)
-                    p_count += 1
-            
-            log.info(f"    Block Page: Found {p_count} tweets.")
-            
-            # Next cursor
-            all_showmore = soup.select(".show-more a")
-            next_links = [a for a in all_showmore if "cursor=" in a.get("href", "").lower()]
-            showmore = next_links[-1] if next_links else None
-            
-            if showmore:
-                href = showmore.get("href", "")
-                cursor_match = re.search(r"cursor=([^&]+)", href)
-                new_cursor = cursor_match.group(1) if cursor_match else None
-                
-                if not new_cursor or new_cursor in seen_cursors:
-                    break
-                seen_cursors.add(new_cursor)
-                url = f"{inst}/search{href}" if href.startswith("?") else f"{inst}{href}"
-                failures = 0
-            else:
-                break
-                
-        except Exception as e:
-            log.warning(f"    Block error: {e}")
-            failures += 1
-        finally:
-            await page.close()
-            
-    return block_posts
+    """Scrapes a single search block with the standardized pagination engine."""
+    return await scrape_pagination_loop(
+        nav, url, inst, username, 
+        parse_fn=parse_tweet
+    )
 
 
 def _deduplicate_file(username: str):

@@ -16,3 +16,4 @@ database/dashboard_data.js
 .pytest_cache/
 .cursorrules
 credentials/
+.env
