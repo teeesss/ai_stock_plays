@@ -1,0 +1,1383 @@
+{
+    "last_updated": "2026-04-17T02:29:23.783945",
+    "ticker_meta": {
+        "IMSR": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "HUT": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "BTDR": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "MARA": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "CLSK": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "EOSE": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "BE": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "IREN": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "OKLO": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "CAN": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "KEEL": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "CIFR": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "AVGO": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "NBIS": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "WULF": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "BTBT": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "HIVE": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "CRCL": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "ENS": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "PLPC": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "GLXY": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "CORZ": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "CRWV": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "AMD": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "NVDA": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "ALAB": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "AMZN": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "META": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        },
+        "GOOGL": {
+            "last_fetch": 1776410855.1431744,
+            "fetch_date": "2026-04-17T02:29:23.768026"
+        }
+    },
+    "news": {
+        "IMSR": [
+            {
+                "title": "Capstone Rises 28% Year to Date: Should You Buy the Stock?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/capstone-rises-28-date-buy-173700575.html",
+                "provider": "Zacks",
+                "date": 1776361020,
+                "vibe_score": 0.0
+            }
+        ],
+        "HUT": [
+            {
+                "title": "Hut 8 (HUT) Soars 37.3% on AI Boost",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/hut-8-hut-soars-37-220224917.html",
+                "provider": "Insider Monkey",
+                "date": 1775944944,
+                "vibe_score": 0.4019
+            },
+            {
+                "title": "Hut 8 (HUT) Shares Up Since Jim Cramer Advised Selling Some",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/hut-8-hut-shares-since-150224893.html",
+                "provider": "Insider Monkey",
+                "date": 1775919744,
+                "vibe_score": 0.296
+            },
+            {
+                "title": "Why Hut 8 (HUT) Is Up 31.8% After Google AI Deal And $10 Billion Data Center Plan",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/why-hut-8-hut-31-091938675.html",
+                "provider": "Simply Wall St.",
+                "date": 1775812778,
+                "vibe_score": 0.0
+            }
+        ],
+        "BTDR": [
+            {
+                "title": "Public Bitcoin Miners Sold Record BTC in Q1",
+                "link": "https://finance.yahoo.com/m/5bc77112-f9a6-3717-9cec-e785d27b9501/public-bitcoin-miners-sold.html",
+                "provider": "CryptoProwl",
+                "date": 1776384120,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Bitdeer Technologies\u2019 Self-Mined Bitcoin Increased 480% In March",
+                "link": "https://finance.yahoo.com/m/602c6b96-39d7-3770-a33e-79170d6c324a/bitdeer-technologies%E2%80%99.html",
+                "provider": "CryptoProwl",
+                "date": 1776276900,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Bitdeer Technologies Group (BTDR) Rating Lowered by Cantor Fitzgerald Amid Execution Concerns",
+                "link": "https://finance.yahoo.com/markets/crypto/articles/bitdeer-technologies-group-btdr-rating-093048899.html",
+                "provider": "Insider Monkey",
+                "date": 1776072648,
+                "vibe_score": -0.128
+            }
+        ],
+        "MARA": [
+            {
+                "title": "Public Bitcoin Miners Sell Record 32,000 BTC in Q1 2026 as Margins Collapse",
+                "link": "https://finance.yahoo.com/m/f03ec533-8105-3a6c-8d97-899a28f5b2d0/public-bitcoin-miners-sell.html",
+                "provider": "BeInCrypto",
+                "date": 1776407911,
+                "vibe_score": -0.4939
+            },
+            {
+                "title": "Public Bitcoin Miners Sold Record BTC in Q1",
+                "link": "https://finance.yahoo.com/m/5bc77112-f9a6-3717-9cec-e785d27b9501/public-bitcoin-miners-sold.html",
+                "provider": "CryptoProwl",
+                "date": 1776384120,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Why MARA Holdings (MARA) Is Up 19.4% After Selling Bitcoin To Cut Debt And Pivot To AI",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/why-mara-holdings-mara-19-230428211.html",
+                "provider": "Simply Wall St.",
+                "date": 1776380668,
+                "vibe_score": -0.5574
+            },
+            {
+                "title": "MARA Rises 6%: Bitcoin Miner Turned AI Infrastructure Play Has the Market Divided and Buzzing",
+                "link": "https://finance.yahoo.com/m/b6897612-80f8-3b62-9f30-d7db0907a20d/mara-rises-6%25%3A-bitcoin-miner.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776365083,
+                "vibe_score": 0.34
+            },
+            {
+                "title": "Stock Market Today, April 15: TeraWulf Shares Fall After $900 Million Stock Sale Heightens Concerns",
+                "link": "https://finance.yahoo.com/m/d65e6728-ca89-32ff-a100-928e701a9c3a/stock-market-today%2C-april-15%3A.html",
+                "provider": "Motley Fool",
+                "date": 1776288415,
+                "vibe_score": 0.296
+            },
+            {
+                "title": "Bitdeer Technologies\u2019 Self-Mined Bitcoin Increased 480% In March",
+                "link": "https://finance.yahoo.com/m/602c6b96-39d7-3770-a33e-79170d6c324a/bitdeer-technologies%E2%80%99.html",
+                "provider": "CryptoProwl",
+                "date": 1776276900,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Marathon Digital Holdings, Inc. (MARA) Outpaces Stock Market Gains: What You Should Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/marathon-digital-holdings-inc-mara-215001243.html",
+                "provider": "Zacks",
+                "date": 1776203401,
+                "vibe_score": 0.34
+            },
+            {
+                "title": "Strategy Stock is Trading at a Discount: Should You Buy, Sell or Hold?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/strategy-stock-trading-discount-buy-151300318.html",
+                "provider": "Zacks",
+                "date": 1776093180,
+                "vibe_score": 0.0
+            }
+        ],
+        "CLSK": [
+            {
+                "title": "Public Bitcoin Miners Sell Record 32,000 BTC in Q1 2026 as Margins Collapse",
+                "link": "https://finance.yahoo.com/m/f03ec533-8105-3a6c-8d97-899a28f5b2d0/public-bitcoin-miners-sell.html",
+                "provider": "BeInCrypto",
+                "date": 1776407911,
+                "vibe_score": -0.4939
+            },
+            {
+                "title": "Public Bitcoin Miners Sold Record BTC in Q1",
+                "link": "https://finance.yahoo.com/m/5bc77112-f9a6-3717-9cec-e785d27b9501/public-bitcoin-miners-sold.html",
+                "provider": "CryptoProwl",
+                "date": 1776384120,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "CleanSpark (CLSK) Outpaces Stock Market Gains: What You Should Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/cleanspark-clsk-outpaces-stock-market-215003246.html",
+                "provider": "Zacks",
+                "date": 1776376203,
+                "vibe_score": 0.34
+            },
+            {
+                "title": "5 crypto experts explain why Bitcoin is stuck at $70K",
+                "link": "https://finance.yahoo.com/m/d8d6b082-135d-323b-abde-7bb13ac19c34/5-crypto-experts-explain-why.html",
+                "provider": "TheStreet",
+                "date": 1776287756,
+                "vibe_score": -0.25
+            },
+            {
+                "title": "How The CleanSpark (CLSK) Story Is Shifting As Analysts Rework Growth And Valuation Assumptions",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/cleanspark-clsk-story-shifting-analysts-150651918.html",
+                "provider": "Simply Wall St.",
+                "date": 1776265611,
+                "vibe_score": 0.3818
+            },
+            {
+                "title": "Strategy Stock is Trading at a Discount: Should You Buy, Sell or Hold?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/strategy-stock-trading-discount-buy-151300318.html",
+                "provider": "Zacks",
+                "date": 1776093180,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "CleanSpark, Inc. (CLSK) Price Target Trimmed as Cantor Stays Bullish on AI Infrastructure",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/cleanspark-inc-clsk-price-target-092826750.html",
+                "provider": "Insider Monkey",
+                "date": 1776072506,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "CleanSpark (CLSK) Declines More Than Market: Some Information for Investors",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/cleanspark-clsk-declines-more-market-215002343.html",
+                "provider": "Zacks",
+                "date": 1775857802,
+                "vibe_score": 0.0
+            }
+        ],
+        "EOSE": [
+            {
+                "title": "Eos Energy Just Announced a New Data Center Power Deal. Does That Make EOSE Stock a Buy?",
+                "link": "https://finance.yahoo.com/m/571ea175-44b9-3ece-8aa0-fa25fbbeb2ec/eos-energy-just-announced-a.html",
+                "provider": "Barchart",
+                "date": 1776368488,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Eos Energy just made a move investors can't ignore",
+                "link": "https://finance.yahoo.com/m/3d1c0a3b-c987-34f5-b7b7-7841ffc48421/eos-energy-just-made-a-move.html",
+                "provider": "TheStreet",
+                "date": 1776309420,
+                "vibe_score": 0.4956
+            },
+            {
+                "title": "Stock Market Today, April 15: Eos Energy Enterprises Jumps on AI Data Center Power Partnership",
+                "link": "https://finance.yahoo.com/m/0dc5de79-48d1-31f0-adee-2c21f423d664/stock-market-today%2C-april-15%3A.html",
+                "provider": "Motley Fool",
+                "date": 1776290817,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Update: Eos Energy Enterprises Shares Rise After Entering Into Collaboration to Build AI Data Center Power Infrastructure",
+                "link": "https://finance.yahoo.com/sectors/energy/articles/eos-energy-enterprises-shares-rise-184844584.html",
+                "provider": "MT Newswires",
+                "date": 1776278924,
+                "vibe_score": 0.5106
+            },
+            {
+                "title": "Eos Energy Enterprises, Turbine-X Collaborate on AI Data Center Power Infrastructure",
+                "link": "https://finance.yahoo.com/sectors/energy/articles/eos-energy-enterprises-turbine-x-133020469.html",
+                "provider": "MT Newswires",
+                "date": 1776259820,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Eos Energy Enterprises & TURBINE-X Launch Private Power Infrastructure Solution for AI, Delivering Hyperscale Capacity in Months, Not Years",
+                "link": "https://finance.yahoo.com/sectors/energy/articles/eos-energy-enterprises-turbine-x-123000046.html",
+                "provider": "GlobeNewswire",
+                "date": 1776256200,
+                "vibe_score": 0.5267
+            },
+            {
+                "title": "Eos Energy (EOSE) Announced Preliminary Q1 2026 Results",
+                "link": "https://finance.yahoo.com/sectors/energy/articles/eos-energy-eose-announced-preliminary-090928699.html",
+                "provider": "Insider Monkey",
+                "date": 1776244168,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Eos Energy (EOSE) Is Scaling Manufacturing as Its Storage Business Gains Momentum",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/eos-energy-eose-scaling-manufacturing-185254827.html",
+                "provider": "Insider Monkey",
+                "date": 1776192774,
+                "vibe_score": 0.5423
+            }
+        ],
+        "BE": [
+            {
+                "title": "The Lockout Rally: Wall Street Just Made History",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/lockout-rally-wall-street-just-031700982.html",
+                "provider": "Zacks",
+                "date": 1776395820,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Bloom Energy Is Soaring. Here's Why.",
+                "link": "https://finance.yahoo.com/m/e20d47ea-b981-3473-a69f-681dfc0a1eda/bloom-energy-is-soaring..html",
+                "provider": "Motley Fool",
+                "date": 1776368100,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Is Bloom Energy Stock a Buy, Sell, or Hold at New All-Time Highs?",
+                "link": "https://finance.yahoo.com/m/e015fa44-14b0-3d30-99b1-7432defbfd94/is-bloom-energy-stock-a-buy%2C.html",
+                "provider": "Barchart",
+                "date": 1776366746,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "24-Year-Old Turns $875 Million Into $2.2 Billion Via Bloom Energy Stock",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/24-old-turns-875-million-173108931.html",
+                "provider": "Benzinga",
+                "date": 1776360668,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Renewable Energy & Battery Stocks to Buy As Global Clean Energy Spending Rises",
+                "link": "https://finance.yahoo.com/sectors/energy/articles/renewable-energy-battery-stocks-buy-165000404.html",
+                "provider": "Zacks",
+                "date": 1776358200,
+                "vibe_score": 0.7096
+            },
+            {
+                "title": "Bloom Energy Just Partnered With Oracle. Does That Make the Fuel Cell Energy Stock a Buy Here?",
+                "link": "https://finance.yahoo.com/m/c234fe2c-f392-315f-ba89-4cfb6c5d13cc/bloom-energy-just-partnered.html",
+                "provider": "Barchart",
+                "date": 1776358023,
+                "vibe_score": 0.4939
+            },
+            {
+                "title": "Bloom Energy Surges Past 50 & 200-Day SMAs: How to Trade the Stock?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/bloom-energy-surges-past-50-132600100.html",
+                "provider": "Zacks",
+                "date": 1776345960,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Oracle Corporation (ORCL) Eyes Fuel Cell Systems for AI and Cloud Build out",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/oracle-corporation-orcl-eyes-fuel-092617660.html",
+                "provider": "Insider Monkey",
+                "date": 1776331577,
+                "vibe_score": 0.0
+            }
+        ],
+        "IREN": [
+            {
+                "title": "The Lockout Rally: Wall Street Just Made History",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/lockout-rally-wall-street-just-031700982.html",
+                "provider": "Zacks",
+                "date": 1776395820,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "IREN Recasts Bitcoin Miner Roots Into AI Cloud Partner For Microsoft",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/iren-recasts-bitcoin-miner-roots-130752742.html",
+                "provider": "Simply Wall St.",
+                "date": 1776344872,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "IREN vs. Applied Digital: Which AI Data Center Stock Has an Edge?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/iren-vs-applied-digital-ai-134700298.html",
+                "provider": "Zacks",
+                "date": 1776260820,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Up 716% Over the Past Year, How Much Higher Can IREN Stock Go?",
+                "link": "https://finance.yahoo.com/m/de1e7646-4b6b-3fe6-9141-bb5debad1dcc/up-716%25-over-the-past-year%2C.html",
+                "provider": "Barchart",
+                "date": 1776192521,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Data Center Stock Flashing Intriguing \"Buy\" Signal",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/data-center-stock-flashing-intriguing-174848827.html",
+                "provider": "Schaeffer's Investment Research",
+                "date": 1776188928,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "GPU Prices Are Surging\u20143 Ways to Play the AI Chip Shortage",
+                "link": "https://finance.yahoo.com/m/143351e2-fba6-3382-9f84-3a6cb349d21c/gpu-prices-are-surging%E2%80%943-ways.html",
+                "provider": "MarketBeat",
+                "date": 1776169200,
+                "vibe_score": 0.1027
+            },
+            {
+                "title": "Crypto Miners Could Be Rerated Amid AI Evolution",
+                "link": "https://finance.yahoo.com/markets/crypto/articles/crypto-miners-could-rerated-amid-135124285.html",
+                "provider": "ETF Trends",
+                "date": 1775829084,
+                "vibe_score": 0.0
+            }
+        ],
+        "OKLO": [
+            {
+                "title": "Why Investors Were so Energized About Oklo Stock This Week",
+                "link": "https://finance.yahoo.com/m/136c6055-651c-3e40-bf21-f86a39f91b3e/why-investors-were-so.html",
+                "provider": "Motley Fool",
+                "date": 1776392546,
+                "vibe_score": 0.6418
+            },
+            {
+                "title": "Oklo (OKLO) Is Up 34.5% After Board Overhaul And Space Nuclear Policy Spotlight - Has The Bull Case Changed?",
+                "link": "https://finance.yahoo.com/sectors/energy/articles/oklo-oklo-34-5-board-010936014.html",
+                "provider": "Simply Wall St.",
+                "date": 1776388176,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Washington Gets Ready to Send Nuclear Reactors on the Moon",
+                "link": "https://finance.yahoo.com/m/252c3275-0b6a-38cf-804b-1afc2cd75dc9/washington-gets-ready-to-send.html",
+                "provider": "Moby",
+                "date": 1776365512,
+                "vibe_score": 0.3612
+            },
+            {
+                "title": "Oklo, Nano Nuclear, Centrus, NuScale Surge as White House Space Nuclear Mandate Electrifies the Sector",
+                "link": "https://finance.yahoo.com/m/456dfa37-2bca-3e8a-ad27-d233883371af/oklo%2C-nano-nuclear%2C-centrus%2C.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776354053,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Oklo Inc. (OKLO) Up 11.7% Since Last Earnings Report: Can It Continue?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/oklo-inc-oklo-11-7-153002632.html",
+                "provider": "Zacks",
+                "date": 1776353402,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Oklo Rockets In Big News Week For Nuclear Energy Stocks",
+                "link": "https://finance.yahoo.com/m/e3a5493d-a65c-332c-a00a-3f5e2b04a07b/oklo-rockets-in-big-news-week.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776341503,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Nuclear stocks gain on White House space nuclear power initiative",
+                "link": "https://finance.yahoo.com/sectors/energy/articles/nuclear-stocks-gain-white-house-101548952.html",
+                "provider": "Investing.com",
+                "date": 1776334548,
+                "vibe_score": 0.5267
+            },
+            {
+                "title": "Oklo (OKLO) and Blykalla Expand Partnership to Advance Fast Reactor Commercialization",
+                "link": "https://finance.yahoo.com/news/oklo-oklo-blykalla-expand-partnership-134808069.html",
+                "provider": "Insider Monkey",
+                "date": 1776260888,
+                "vibe_score": 0.3182
+            }
+        ],
+        "CAN": [
+            {
+                "title": "French regulator fines organic food retail groups for price collusion",
+                "link": "https://finance.yahoo.com/m/035f6749-14b2-398e-904a-d970bf7aacdf/french-regulator-fines.html",
+                "provider": "Just Food",
+                "date": 1776347852,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Insider-Favored Growth Stocks Including Pagaya Technologies",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/insider-favored-growth-stocks-including-113549499.html",
+                "provider": "Simply Wall St.",
+                "date": 1776339349,
+                "vibe_score": 0.3818
+            },
+            {
+                "title": "Asian Equities Traded in the US as American Depositary Receipts Rise Sharply in Tuesday Trading",
+                "link": "https://finance.yahoo.com/markets/world-indices/articles/asian-equities-traded-us-american-144014859.html",
+                "provider": "MT Newswires",
+                "date": 1776177614,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Asian Equities Traded in the US as American Depositary Receipts Begin Week Lower",
+                "link": "https://finance.yahoo.com/markets/world-indices/articles/asian-equities-traded-us-american-143613289.html",
+                "provider": "MT Newswires",
+                "date": 1776090973,
+                "vibe_score": -0.296
+            },
+            {
+                "title": "Are Retail-Wholesale Stocks Lagging  Carrefour (CRRFY) This Year?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/retail-wholesale-stocks-lagging-carrefour-134004375.html",
+                "provider": "Zacks",
+                "date": 1776087604,
+                "vibe_score": -0.2732
+            },
+            {
+                "title": "Global retail ranking 2026: Walmart tops NRF top 50",
+                "link": "https://finance.yahoo.com/m/59c6f133-e910-3f96-b0af-f7804e7e5947/global-retail-ranking-2026%3A.html",
+                "provider": "Retail Insight Network",
+                "date": 1776067497,
+                "vibe_score": 0.6249
+            },
+            {
+                "title": "Costco Co-Founder Once Said Japanese Love This Product Because It 'Smells Like America'",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/costco-co-founder-once-said-203121486.html",
+                "provider": "Benzinga",
+                "date": 1776025881,
+                "vibe_score": 0.7717
+            }
+        ],
+        "KEEL": [
+            {
+                "title": "Keel Infrastructure price target lowered to $3 from $5 at Cantor Fitzgerald",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/keel-infrastructure-price-target-lowered-130710083.html",
+                "provider": "TipRanks",
+                "date": 1775826430,
+                "vibe_score": -0.128
+            }
+        ],
+        "CIFR": [
+            {
+                "title": "Cipher Digital Inc. (CIFR) Stock Drops Despite Market Gains: Important Facts to Note",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/cipher-digital-inc-cifr-stock-220004094.html",
+                "provider": "Zacks",
+                "date": 1776376804,
+                "vibe_score": -0.3875
+            },
+            {
+                "title": "Cipher Digital Is A Small-Cap Stock With Big Ambitions",
+                "link": "https://finance.yahoo.com/m/f6da5adf-b6a1-302e-920f-fbcea48aca9f/cipher-digital-is-a-small-cap.html",
+                "provider": "CryptoProwl",
+                "date": 1776354720,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Cipher Digital (CIFR) Is Up 28.9% After Landing 15-Year Hyperscaler Lease And $200M Credit Line \u2013 Has The Bull Case Changed?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/cipher-digital-cifr-28-9-062934402.html",
+                "provider": "Simply Wall St.",
+                "date": 1776061774,
+                "vibe_score": 0.3818
+            },
+            {
+                "title": "Cipher Digital (CIFR) Soars 28.9% on AI Tech Surge",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/cipher-digital-cifr-soars-28-215622399.html",
+                "provider": "Insider Monkey",
+                "date": 1775944582,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Cipher Digital Inc. (CIFR) Increases Despite Market Slip: Here's What You Need to Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/cipher-digital-inc-cifr-increases-220004657.html",
+                "provider": "Zacks",
+                "date": 1775858404,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Crypto Miners Could Be Rerated Amid AI Evolution",
+                "link": "https://finance.yahoo.com/markets/crypto/articles/crypto-miners-could-rerated-amid-135124285.html",
+                "provider": "ETF Trends",
+                "date": 1775829084,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Brokers Suggest Investing in Cipher Digital Inc. (CIFR): Read This Before Placing a Bet",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/brokers-suggest-investing-cipher-digital-133005503.html",
+                "provider": "Zacks",
+                "date": 1775827805,
+                "vibe_score": 0.0
+            }
+        ],
+        "AVGO": [
+            {
+                "title": "Nvidia Stock\u2019s Longest Winning Streak on Record Just Ended. What Comes Next.",
+                "link": "https://finance.yahoo.com/m/0c095b64-c3e0-3b0e-8711-45c0b931dbca/nvidia-stock%E2%80%99s-longest.html",
+                "provider": "Barrons.com",
+                "date": 1776374940,
+                "vibe_score": 0.5267
+            },
+            {
+                "title": "Stocks Climb to New Records With Investors Piling Back Into Tech",
+                "link": "https://finance.yahoo.com/m/584cb527-30d9-3648-b2ff-8764c27b1741/stocks-climb-to-new-records.html",
+                "provider": "The Wall Street Journal",
+                "date": 1776372240,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Nvidia Stock Is Having a Great April (Just Not for a Chip Maker)",
+                "link": "https://finance.yahoo.com/m/359bcbe2-ad24-3c51-9476-e1c5db5fb577/nvidia-stock-is-having-a.html",
+                "provider": "The Wall Street Journal",
+                "date": 1776367245,
+                "vibe_score": 0.6249
+            },
+            {
+                "title": "Broadcom Stock Is on an 8-Day Winning Streak. What\u2019s Driving It Higher.",
+                "link": "https://finance.yahoo.com/m/e111c891-116e-3a5b-85a5-eb4cbd4c7fed/broadcom-stock-is-on-an-8-day.html",
+                "provider": "Barrons.com",
+                "date": 1776367200,
+                "vibe_score": 0.5267
+            },
+            {
+                "title": "Broadcom (AVGO) Is Up 13.1% After Expanded Meta AI Chip Partnership - What's Changed",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/broadcom-avgo-13-1-expanded-190347442.html",
+                "provider": "Simply Wall St.",
+                "date": 1776366227,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Beyond NVIDIA: 2 AI Chip Stocks Positioned for Big Upside in 2026",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/beyond-nvidia-2-ai-chip-190000507.html",
+                "provider": "Zacks",
+                "date": 1776366000,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "How to Gain AI Exposure Without Picking Stocks: 3 ETF Strategies Compared",
+                "link": "https://finance.yahoo.com/m/d040f322-df9d-3525-bb33-6463e588f35d/how-to-gain-ai-exposure.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776362748,
+                "vibe_score": 0.5267
+            },
+            {
+                "title": "Invesco Next Gen ETF (KNCT) Touches Fresh 52-Week High",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/invesco-next-gen-etf-knct-165100436.html",
+                "provider": "Zacks",
+                "date": 1776358260,
+                "vibe_score": 0.3182
+            }
+        ],
+        "NBIS": [
+            {
+                "title": "The Lockout Rally: Wall Street Just Made History",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/lockout-rally-wall-street-just-031700982.html",
+                "provider": "Zacks",
+                "date": 1776395820,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Nebius Group (NBIS) Is Up 21.3% After AI21 Labs Deal Talks Surface - What's Changed",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/nebius-group-nbis-21-3-011057227.html",
+                "provider": "Simply Wall St.",
+                "date": 1776388257,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "2 AI Stocks Wall Street Says Could Soar 70% or More From Here, and 1 It Says to Sell Immediately",
+                "link": "https://finance.yahoo.com/m/3f392c00-6560-3882-81d0-bf1f91b20b6e/2-ai-stocks-wall-street-says.html",
+                "provider": "Motley Fool",
+                "date": 1776365400,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Nebius Group Insider Sold Shares Worth $720,450, According to a Recent SEC Filing",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/nebius-group-insider-sold-shares-174835566.html",
+                "provider": "MT Newswires",
+                "date": 1776361715,
+                "vibe_score": 0.4767
+            },
+            {
+                "title": "CRWV Stock Rallies 45% in a Month: Should You Buy, Hold, or Fold?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/crwv-stock-rallies-45-month-144300195.html",
+                "provider": "Zacks",
+                "date": 1776350580,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "TD SYNNEX Expands AI Infrastructure-as-a-Service Portfolio with Dedicated NVIDIA HGX\u2122 B300 Clusters on Nebius AI Cloud",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/td-synnex-expands-ai-infrastructure-140000196.html",
+                "provider": "Business Wire",
+                "date": 1776348000,
+                "vibe_score": 0.5267
+            },
+            {
+                "title": "Zacks Investment Ideas feature highlights: Coherent, Bloom Energy, Nebius Group, Amazon, Alphabet and Meta Platforms",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/zacks-investment-ideas-feature-highlights-070400672.html",
+                "provider": "Zacks",
+                "date": 1776323040,
+                "vibe_score": 0.4215
+            },
+            {
+                "title": "The Bull Case is Strengthening and Most Investors are Underexposed",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/bull-case-strengthening-most-investors-172900783.html",
+                "provider": "Zacks",
+                "date": 1776274140,
+                "vibe_score": 0.4939
+            }
+        ],
+        "WULF": [
+            {
+                "title": "TeraWulf\u2019s $900 Million Equity Raise for Kentucky AI Campus Could Be A Game Changer For TeraWulf (WULF)",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/terawulf-900-million-equity-raise-042803605.html",
+                "provider": "Simply Wall St.",
+                "date": 1776400083,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "TeraWulf Closes Offering of 54.5 Million Shares at $19 Each",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/terawulf-closes-offering-54-5-203920360.html",
+                "provider": "MT Newswires",
+                "date": 1776371960,
+                "vibe_score": 0.296
+            },
+            {
+                "title": "Stock Market Today, April 15: TeraWulf Shares Fall After $900 Million Stock Sale Heightens Concerns",
+                "link": "https://finance.yahoo.com/m/d65e6728-ca89-32ff-a100-928e701a9c3a/stock-market-today%2C-april-15%3A.html",
+                "provider": "Motley Fool",
+                "date": 1776288415,
+                "vibe_score": 0.296
+            },
+            {
+                "title": "TeraWulf To Raise $900 Million For A.I. Data Centre Expansion",
+                "link": "https://finance.yahoo.com/m/04ac3b08-fc59-3049-b82e-3465d7b443a1/terawulf-to-raise-%24900.html",
+                "provider": "CryptoProwl",
+                "date": 1776275460,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "US Equity Futures Flat Pre-Bell as Traders Remain Optimistic About Potential US-Iran Deal",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/us-equity-futures-flat-pre-130339152.html",
+                "provider": "MT Newswires",
+                "date": 1776258219,
+                "vibe_score": 0.3182
+            },
+            {
+                "title": "Top Premarket Decliners",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/top-premarket-decliners-115903739.html",
+                "provider": "MT Newswires",
+                "date": 1776254343,
+                "vibe_score": 0.2023
+            },
+            {
+                "title": "TeraWulf prices $900 million stock offering for data center expansion",
+                "link": "https://finance.yahoo.com/m/fa4c1e73-9fe1-3d10-8fba-a368c6d6b0e9/terawulf-prices-%24900-million.html",
+                "provider": "Blockspace",
+                "date": 1776253132,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "\u2018Power Shortage Is Real\u2019: Cantor Names 2 AI Infrastructure Stocks as Top Picks",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/power-shortage-real-cantor-names-100542755.html",
+                "provider": "TipRanks",
+                "date": 1776247542,
+                "vibe_score": -0.0516
+            }
+        ],
+        "BTBT": [
+            {
+                "title": "Bit Digital, Inc. (BTBT) Outpaces Stock Market Gains: What You Should Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/bit-digital-inc-btbt-outpaces-215004515.html",
+                "provider": "Zacks",
+                "date": 1776289804,
+                "vibe_score": 0.34
+            },
+            {
+                "title": "Bit Digital CEO discusses Ethereum strategy, AI expansion - ICYMI",
+                "link": "https://finance.yahoo.com/m/69ebdbe4-cf98-3c2e-abf6-4a8c0bb103eb/bit-digital-ceo-discusses.html",
+                "provider": "Proactive",
+                "date": 1775894160,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Bit Digital, Inc. (BTBT) Is a Trending Stock: Facts to Know Before Betting on It",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/bit-digital-inc-btbt-trending-130006560.html",
+                "provider": "Zacks",
+                "date": 1775826006,
+                "vibe_score": 0.0
+            }
+        ],
+        "HIVE": [
+            {
+                "title": "How HIVE Digital\u2019s US$75 Million Zero Coupon Notes At HIVE Digital Technologies (TSXV:HIVE) Has Changed Its Investment Story",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/hive-digital-us-75-million-011211719.html",
+                "provider": "Simply Wall St.",
+                "date": 1776388331,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Why Hive Digital Technologies Stock Slumped Today",
+                "link": "https://finance.yahoo.com/m/c311a764-d19b-3d2a-87fc-655e13e4bcf3/why-hive-digital-technologies.html",
+                "provider": "Motley Fool",
+                "date": 1776385069,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "HIVE\u2019s Paraguay gambit and new AI geography",
+                "link": "https://finance.yahoo.com/m/de7b916d-13d3-3c70-b883-c6fe9ebc3255/hive%E2%80%99s-paraguay-gambit-and.html",
+                "provider": "TheStreet",
+                "date": 1776377272,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "HIVE Digital Technologies announces planned $75M exchangeable notes offering",
+                "link": "https://finance.yahoo.com/m/77275b36-82dd-3a7c-9d21-d7603789b385/hive-digital-technologies.html",
+                "provider": "Proactive",
+                "date": 1776342840,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "HIVE Falls After Hours As Unit Plans US$75 Million 0% Exchangeable Notes Offering",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/hive-falls-hours-unit-plans-211237377.html",
+                "provider": "MT Newswires",
+                "date": 1776287557,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "HIVE Digital (HIVE) Betting Big on AI Data Centers",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/hive-digital-hive-betting-big-140606035.html",
+                "provider": "Insider Monkey",
+                "date": 1775916366,
+                "vibe_score": 0.0
+            }
+        ],
+        "CRCL": [
+            {
+                "title": "The $700 Trillion Reason Why I'm Buying Circle Stock Hand Over Fist",
+                "link": "https://finance.yahoo.com/m/bebf3e76-6bc2-36b3-bd22-b2e9dcdfccf6/the-%24700-trillion-reason-why.html",
+                "provider": "Motley Fool",
+                "date": 1776406800,
+                "vibe_score": 0.4939
+            },
+            {
+                "title": "A $285 Million Crypto Hack and Falling Rates Rock DeFi World",
+                "link": "https://finance.yahoo.com/markets/crypto/articles/285-million-crypto-hack-falling-121543806.html",
+                "provider": "Bloomberg",
+                "date": 1776358448,
+                "vibe_score": -0.1531
+            },
+            {
+                "title": "Tether throws $128m lifeline to hacked Drift. But the USDT issuer wants something in return",
+                "link": "https://finance.yahoo.com/m/fea8c526-70f8-3e2a-966b-371d2564c251/tether-throws-%24128m-lifeline.html",
+                "provider": "DLNews",
+                "date": 1776355508,
+                "vibe_score": -0.2144
+            },
+            {
+                "title": "Drift Taps Tether for $148 Million Recovery Plan, Ditches Circle's USDC Following DeFi Exploit",
+                "link": "https://finance.yahoo.com/m/db424ae6-47b8-3140-a0e8-a8ae35268e45/drift-taps-tether-for-%24148.html",
+                "provider": "decrypt",
+                "date": 1776354841,
+                "vibe_score": -0.1027
+            },
+            {
+                "title": "Hacked Crypto Platform to Relaunch After Securing New Funding",
+                "link": "https://finance.yahoo.com/markets/crypto/articles/hacked-crypto-platform-relaunch-securing-143218701.html",
+                "provider": "Bloomberg",
+                "date": 1776349938,
+                "vibe_score": -0.1027
+            },
+            {
+                "title": "China Expected To Launch Yuan Stablecoin Within Five Years",
+                "link": "https://finance.yahoo.com/m/91ee6818-ce2d-3f85-84cf-5a7388512f48/china-expected-to-launch-yuan.html",
+                "provider": "CryptoProwl",
+                "date": 1776348780,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Institutional Stablecoin Use Tripled In March",
+                "link": "https://finance.yahoo.com/m/849844b5-3120-37a3-b0dd-1f2c4dd76849/institutional-stablecoin-use.html",
+                "provider": "CryptoProwl",
+                "date": 1776348120,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Crypto Weekly: Circle eyes yuan-backed stablecoin, WLF's proposal",
+                "link": "https://finance.yahoo.com/video/crypto-weekly-circle-eyes-yuan-131943924.html",
+                "provider": "Reuters Videos",
+                "date": 1776345583,
+                "vibe_score": 0.0
+            }
+        ],
+        "ENS": [
+            {
+                "title": "ENS vs. ETN: Which Stock Is the Better Value Option?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/ens-vs-etn-stock-better-154002932.html",
+                "provider": "Zacks",
+                "date": 1776354002,
+                "vibe_score": 0.6486
+            },
+            {
+                "title": "Stock Market Today, April 15: Eos Energy Enterprises Jumps on AI Data Center Power Partnership",
+                "link": "https://finance.yahoo.com/m/0dc5de79-48d1-31f0-adee-2c21f423d664/stock-market-today%2C-april-15%3A.html",
+                "provider": "Motley Fool",
+                "date": 1776290817,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Is EnerSys (ENS) and Its \u2018EnerGize\u2019 Reset Worth a Spot Among the Best Energy Storage Stocks?",
+                "link": "https://finance.yahoo.com/sectors/energy/articles/enersys-ens-energize-reset-worth-181943638.html",
+                "provider": "Insider Monkey",
+                "date": 1776277183,
+                "vibe_score": 0.802
+            },
+            {
+                "title": "EnerSys (ENS) Valuation Check As Fast Charging And AI Energy Expansion Draw Investor Optimism",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/enersys-ens-valuation-check-fast-230444490.html",
+                "provider": "Simply Wall St.",
+                "date": 1776207884,
+                "vibe_score": 0.6808
+            },
+            {
+                "title": "Oppenheimer Adjusts Price Target on EnerSys to $210 From $186, Maintains Outperform Rating",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/oppenheimer-adjusts-price-target-enersys-141955612.html",
+                "provider": "MT Newswires",
+                "date": 1776176395,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Zacks Industry Outlook Highlights Eaton, Emerson Electric, Powell Industries and EnerSys",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/zacks-industry-outlook-highlights-eaton-093300409.html",
+                "provider": "Zacks",
+                "date": 1776159180,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "4 Manufacturing Electronics Stocks to Watch Despite Industry Headwinds",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/4-manufacturing-electronics-stocks-watch-142600925.html",
+                "provider": "Zacks",
+                "date": 1776090360,
+                "vibe_score": 0.0
+            }
+        ],
+        "PLPC": [],
+        "GLXY": [
+            {
+                "title": "Galaxy Digital Urges SEC to Let Tokenized Securities Trade on AMMs",
+                "link": "https://finance.yahoo.com/m/af3871f9-fe5b-329a-896a-8c3ff00e5f29/galaxy-digital-urges-sec-to.html",
+                "provider": "BeInCrypto",
+                "date": 1776344125,
+                "vibe_score": 0.296
+            },
+            {
+                "title": "The One Simple Reason AI Agents Aren\u2019t Ready to Trade Crypto",
+                "link": "https://finance.yahoo.com/m/6a3578f7-9b5d-35b5-973f-6ee4d6e5c2a2/the-one-simple-reason-ai.html",
+                "provider": "Blockspace",
+                "date": 1776105770,
+                "vibe_score": 0.3612
+            },
+            {
+                "title": "Why Your AI Agent Can\u2019t Trade Crypto Yet",
+                "link": "https://finance.yahoo.com/m/eb054df8-2ac0-37d3-a104-8b49fef309fa/why-your-ai-agent-can%E2%80%99t-trade.html",
+                "provider": "Blockspace",
+                "date": 1776105680,
+                "vibe_score": 0.0
+            }
+        ],
+        "CORZ": [
+            {
+                "title": "Public Bitcoin Miners Sell Record 32,000 BTC in Q1 2026 as Margins Collapse",
+                "link": "https://finance.yahoo.com/m/f03ec533-8105-3a6c-8d97-899a28f5b2d0/public-bitcoin-miners-sell.html",
+                "provider": "BeInCrypto",
+                "date": 1776407911,
+                "vibe_score": -0.4939
+            },
+            {
+                "title": "Public Bitcoin Miners Sold Record BTC in Q1",
+                "link": "https://finance.yahoo.com/m/5bc77112-f9a6-3717-9cec-e785d27b9501/public-bitcoin-miners-sold.html",
+                "provider": "CryptoProwl",
+                "date": 1776384120,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "\u2018Power Shortage Is Real\u2019: Cantor Names 2 AI Infrastructure Stocks as Top Picks",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/power-shortage-real-cantor-names-100542755.html",
+                "provider": "TipRanks",
+                "date": 1776247542,
+                "vibe_score": -0.0516
+            },
+            {
+                "title": "Core Scientific (CORZ) Shares Up Since Jim Cramer Advised Selling The Stock",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/core-scientific-corz-shares-since-150308681.html",
+                "provider": "Insider Monkey",
+                "date": 1775919788,
+                "vibe_score": 0.296
+            }
+        ],
+        "CRWV": [
+            {
+                "title": "Assessing Applied Digital (APLD) Valuation As AI Data Center Leases And Hyperscale Partnerships Gain Traction",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/assessing-applied-digital-apld-valuation-030749662.html",
+                "provider": "Simply Wall St.",
+                "date": 1776395269,
+                "vibe_score": 0.5267
+            },
+            {
+                "title": "Google, CoreWeave Fuel AI Funding Frenzy With $6.7 Billion Bonds",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/google-coreweave-fuel-ai-funding-213854813.html",
+                "provider": "Bloomberg",
+                "date": 1776375534,
+                "vibe_score": -0.3182
+            },
+            {
+                "title": "Coreweave Insider Sold Shares Worth $35,981,911, According to a Recent SEC Filing",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/coreweave-insider-sold-shares-worth-204137340.html",
+                "provider": "MT Newswires",
+                "date": 1776372097,
+                "vibe_score": 0.4767
+            },
+            {
+                "title": "Allbirds Is Going From Shoes to AI. Its Plan Is Only 99.6% Crazy.",
+                "link": "https://finance.yahoo.com/m/a0cd9467-8ff2-3e44-b1ec-ad3e7a70d9c6/allbirds-is-going-from-shoes.html",
+                "provider": "Barrons.com",
+                "date": 1776369240,
+                "vibe_score": -0.34
+            },
+            {
+                "title": "Top Bank Revamps CoreWeave Stock Price Target",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/top-bank-revamps-coreweave-stock-174211974.html",
+                "provider": "GuruFocus.com",
+                "date": 1776361331,
+                "vibe_score": 0.2023
+            },
+            {
+                "title": "CoreWeave Prices $1 Billion Offering of 9.75% Senior Notes Due 2031",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/coreweave-prices-1-billion-offering-174147118.html",
+                "provider": "MT Newswires",
+                "date": 1776361307,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "CoreWeave Announces Pricing of $1,000 million of 9.750% Senior Notes due 2031",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/coreweave-announces-pricing-1-000-171600107.html",
+                "provider": "Business Wire",
+                "date": 1776359760,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "CoreWeave Taps US Junk-Debt Market Again With Bond Reopening",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/coreweave-taps-us-junk-debt-124425239.html",
+                "provider": "Bloomberg",
+                "date": 1776354162,
+                "vibe_score": 0.0
+            }
+        ],
+        "AMD": [
+            {
+                "title": "Why AMD (AMD) Stock Is Trading Up Today",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/why-amd-amd-stock-trading-054627998.html",
+                "provider": "StockStory",
+                "date": 1776404787,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "The Lockout Rally: Wall Street Just Made History",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/lockout-rally-wall-street-just-031700982.html",
+                "provider": "Zacks",
+                "date": 1776395820,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Dow Jones Futures: Stock Market Rally Won't Back Down, AMD Breaks Out; Netflix Dives Late",
+                "link": "https://finance.yahoo.com/m/de0d09c2-e120-3a06-b712-ed53b63caeb8/dow-jones-futures%3A-stock.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776395481,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Does AMD's UALink Bet Reveal a Deeper Shift in Its AI Data Center Strategy (AMD)?",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/does-amds-ualink-bet-reveal-030852600.html",
+                "provider": "Simply Wall St.",
+                "date": 1776395332,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Stock Market Today, April 16: Advanced Micro Devices Surges on AI Demand Momentum",
+                "link": "https://finance.yahoo.com/m/0badf61a-8b55-3cdc-ac4b-a5f2d0cda310/stock-market-today%2C-april-16%3A.html",
+                "provider": "Motley Fool",
+                "date": 1776376376,
+                "vibe_score": 0.128
+            },
+            {
+                "title": "Nvidia Stock\u2019s Longest Winning Streak on Record Just Ended. What Comes Next.",
+                "link": "https://finance.yahoo.com/m/0c095b64-c3e0-3b0e-8711-45c0b931dbca/nvidia-stock%E2%80%99s-longest.html",
+                "provider": "Barrons.com",
+                "date": 1776374940,
+                "vibe_score": 0.5267
+            },
+            {
+                "title": "AMD, Onsemi, Semtech Latest Chip Stocks To Break Out",
+                "link": "https://finance.yahoo.com/m/768646e3-5861-3ef9-a59a-0c7f0095eb98/amd%2C-onsemi%2C-semtech-latest.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776373736,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Stock Market Today: Nasdaq, S&P 500 Mark New Highs; These Truck Stocks Clear Entries (Live Coverage)",
+                "link": "https://finance.yahoo.com/m/c55e30bd-f999-3fc3-90be-215a49ce656d/stock-market-today%3A-nasdaq%2C.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776372334,
+                "vibe_score": 0.3818
+            }
+        ],
+        "NVDA": [
+            {
+                "title": "Himax and onsemi Stocks Trade Up, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/himax-onsemi-stocks-trade-know-062627852.html",
+                "provider": "StockStory",
+                "date": 1776407187,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Monolithic Power Systems, Impinj, Microchip Technology, and Texas Instruments Shares Skyrocket, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/monolithic-power-systems-impinj-microchip-061827654.html",
+                "provider": "StockStory",
+                "date": 1776406707,
+                "vibe_score": 0.296
+            },
+            {
+                "title": "Semtech and Amkor Stocks Trade Up, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/semtech-amkor-stocks-trade-know-061027616.html",
+                "provider": "StockStory",
+                "date": 1776406227,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Why Intel (INTC) Stock Is Trading Up Today",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/why-intel-intc-stock-trading-060227778.html",
+                "provider": "StockStory",
+                "date": 1776405747,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Same AI Trade, Same Problems",
+                "link": "https://finance.yahoo.com/m/a63ede38-7a12-3cf2-8dbc-790c0ed217ec/same-ai-trade%2C-same-problems.html",
+                "provider": "Barrons.com",
+                "date": 1776405600,
+                "vibe_score": -0.4019
+            },
+            {
+                "title": "Forget USA Rare Earth: Why Trump's Bet on This Critical Minerals Play Could Backfire for Investors",
+                "link": "https://finance.yahoo.com/m/2014fdbf-5642-3ea1-9806-6308af92c82d/forget-usa-rare-earth%3A-why.html",
+                "provider": "Motley Fool",
+                "date": 1776400500,
+                "vibe_score": -0.2789
+            },
+            {
+                "title": "Dow Jones Futures: Stock Market Rally Won't Back Down, AMD Breaks Out; Netflix Dives Late",
+                "link": "https://finance.yahoo.com/m/de0d09c2-e120-3a06-b712-ed53b63caeb8/dow-jones-futures%3A-stock.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776395481,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Why Quantum Computing Stock Was Blasting Higher This Week",
+                "link": "https://finance.yahoo.com/m/0cd7410b-eedd-3b40-bfc2-6d0d0bde310b/why-quantum-computing-stock.html",
+                "provider": "Motley Fool",
+                "date": 1776394456,
+                "vibe_score": 0.0
+            }
+        ],
+        "ALAB": [
+            {
+                "title": "April 2026's Leading Growth Stocks With Insider Confidence",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/april-2026s-leading-growth-stocks-173605364.html",
+                "provider": "Simply Wall St.",
+                "date": 1776360965,
+                "vibe_score": 0.7096
+            },
+            {
+                "title": "Amphenol vs. ALAB: Which Data Infrastructure Stock Should You Buy?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/amphenol-vs-alab-data-infrastructure-155300625.html",
+                "provider": "Zacks",
+                "date": 1776354780,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Insider-Favored Growth Stocks Including Pagaya Technologies",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/insider-favored-growth-stocks-including-113549499.html",
+                "provider": "Simply Wall St.",
+                "date": 1776339349,
+                "vibe_score": 0.3818
+            },
+            {
+                "title": "Top Growth Companies With Strong Insider Ownership In April 2026",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/top-growth-companies-strong-insider-173624260.html",
+                "provider": "Simply Wall St.",
+                "date": 1776274584,
+                "vibe_score": 0.7717
+            },
+            {
+                "title": "3 Growth Stocks With High Insider Ownership And 43% Earnings Growth",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/3-growth-stocks-high-insider-113553162.html",
+                "provider": "Simply Wall St.",
+                "date": 1776252953,
+                "vibe_score": 0.6369
+            },
+            {
+                "title": "Astera Labs Insider Sold Shares Worth $18,522,445, According to a Recent SEC Filing",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/astera-labs-insider-sold-shares-072239251.html",
+                "provider": "MT Newswires",
+                "date": 1776237759,
+                "vibe_score": 0.4767
+            },
+            {
+                "title": "Top Growth Companies With Strong Insider Ownership April 2026",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/top-growth-companies-strong-insider-173641408.html",
+                "provider": "Simply Wall St.",
+                "date": 1776188201,
+                "vibe_score": 0.7717
+            },
+            {
+                "title": "April 2026's Top Growth Stocks With Strong Insider Ownership",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/april-2026s-top-growth-stocks-113544428.html",
+                "provider": "Simply Wall St.",
+                "date": 1776166544,
+                "vibe_score": 0.7717
+            }
+        ],
+        "AMZN": [
+            {
+                "title": "ICE Director Lyons to Depart in May After Tumultuous Tenure",
+                "link": "https://finance.yahoo.com/economy/policy/articles/ice-director-lyons-depart-may-002106565.html",
+                "provider": "Bloomberg",
+                "date": 1776385266,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "As Amazon Pours Another $25B into Data Centers, Buy This 1 High-Yield Data Center Dividend Stock",
+                "link": "https://finance.yahoo.com/m/dce6c208-888a-3e2d-b3e7-df75db174135/as-amazon-pours-another-%2425b.html",
+                "provider": "Barchart",
+                "date": 1776382202,
+                "vibe_score": 0.1779
+            },
+            {
+                "title": "Why Apple's Refusal to Aggressively Build Out AI Compute Is Actually a Brilliant Move for Investors",
+                "link": "https://finance.yahoo.com/m/16d9b3e5-0687-37aa-85bd-a228dd051bf8/why-apple%27s-refusal-to.html",
+                "provider": "Motley Fool",
+                "date": 1776381780,
+                "vibe_score": 0.3612
+            },
+            {
+                "title": "The Dealmaking 3: NBA on Prime, Fab Five Return, Sportradar\u2019s Brazil Expansion",
+                "link": "https://finance.yahoo.com/m/50f41802-bf65-3d11-a3b8-29d2ac2926e8/the-dealmaking-3%3A-nba-on.html",
+                "provider": "CorpGov.com",
+                "date": 1776381165,
+                "vibe_score": 0.4588
+            },
+            {
+                "title": "Bull vs. Bear: Is Amazon Stock a Buy or Sell?",
+                "link": "https://finance.yahoo.com/m/463ef1bd-6da8-375c-8945-07f804d8703b/bull-vs.-bear%3A-is-amazon.html",
+                "provider": "Motley Fool",
+                "date": 1776376200,
+                "vibe_score": 0.1779
+            },
+            {
+                "title": "NiSource signs long-term power deal with Alphabet, expands Amazon agreement",
+                "link": "https://finance.yahoo.com/sectors/energy/articles/nisource-signs-long-term-power-214613779.html",
+                "provider": "Reuters",
+                "date": 1776375973,
+                "vibe_score": 0.6486
+            },
+            {
+                "title": "NiSource Signs Alphabet Energy Deal in Indiana, Expands Amazon Agreement",
+                "link": "https://finance.yahoo.com/sectors/energy/articles/nisource-signs-alphabet-energy-deal-212418528.html",
+                "provider": "MT Newswires",
+                "date": 1776374658,
+                "vibe_score": 0.7506
+            },
+            {
+                "title": "Generate Investment Management Trims Alaska Air Group Position",
+                "link": "https://finance.yahoo.com/m/a5e110c9-1bc4-36ad-85cb-5938ca189788/generate-investment.html",
+                "provider": "Motley Fool",
+                "date": 1776371306,
+                "vibe_score": 0.0
+            }
+        ],
+        "META": [
+            {
+                "title": "Same AI Trade, Same Problems",
+                "link": "https://finance.yahoo.com/m/a63ede38-7a12-3cf2-8dbc-790c0ed217ec/same-ai-trade%2C-same-problems.html",
+                "provider": "Barrons.com",
+                "date": 1776405600,
+                "vibe_score": -0.4019
+            },
+            {
+                "title": "European Action On WhatsApp AI Access Tests Meta\u2019s Monetization Plans",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/european-action-whatsapp-ai-access-042948089.html",
+                "provider": "Simply Wall St.",
+                "date": 1776400188,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Stocks making big moves yesterday: Blackstone, Microsoft, Roku, Zscaler, and Axon",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/stocks-making-big-moves-yesterday-020227450.html",
+                "provider": "StockStory",
+                "date": 1776391347,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Reflecting On Productivity Software Stocks\u2019 Q4 Earnings: Asana (NYSE:ASAN)",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/reflecting-productivity-software-stocks-q4-010627965.html",
+                "provider": "StockStory",
+                "date": 1776387987,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Why Apple's Refusal to Aggressively Build Out AI Compute Is Actually a Brilliant Move for Investors",
+                "link": "https://finance.yahoo.com/m/16d9b3e5-0687-37aa-85bd-a228dd051bf8/why-apple%27s-refusal-to.html",
+                "provider": "Motley Fool",
+                "date": 1776381780,
+                "vibe_score": 0.3612
+            },
+            {
+                "title": "Zuckerberg Is Dangerously Close To Cracking Google's Money Machine",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/zuckerberg-dangerously-close-cracking-googles-220106954.html",
+                "provider": "Benzinga",
+                "date": 1776376866,
+                "vibe_score": -0.4588
+            },
+            {
+                "title": "Financial Services Roundup: Market Talk",
+                "link": "https://finance.yahoo.com/m/c874899d-a5e8-33ca-b12c-3ea315cd829c/financial-services-roundup%3A.html",
+                "provider": "The Wall Street Journal",
+                "date": 1776373080,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "AMD Stock Closes at All-Time High in Longest Winning Streak Since 2005",
+                "link": "https://finance.yahoo.com/m/f033ff75-39da-3ddc-9bf3-5b7931c00e2c/amd-stock-closes-at-all-time.html",
+                "provider": "Barrons.com",
+                "date": 1776371940,
+                "vibe_score": 0.5267
+            }
+        ],
+        "GOOGL": []
+    }
+}
