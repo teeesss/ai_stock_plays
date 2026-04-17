@@ -918,33 +918,9 @@ function renderIntel(posts, query = "") {
         // Highlight ticker-like words ($ABCD)
         text = text.replace(/(\$[A-Z]+)/g, '<span style="color:var(--gold);font-weight:700;">$1</span>');
 
-        // Render images
+        // Image rendering removed V17.4 for performance.
         let imagesHtml = '';
-        if (p.images && p.images.length > 0) {
-            imagesHtml = `<div class="post-images">` + 
-                p.images.map(img => `<img src="${img}" class="post-img" onclick="window.open('${img}', '_blank')" onerror="this.style.display='none'">`).join('') + 
-                `</div>`;
-        }
-
-        // Render visual intel
         let visualHtml = '';
-        if (p.visual_intel && p.visual_intel.length > 0) {
-            visualHtml = p.visual_intel.map(v => {
-                const tags = v.tickers && v.tickers.length > 0 
-                    ? v.tickers.map(t => `<span class="visual-tag">$${t}</span>`).join('') 
-                    : '';
-                return `
-                    <div class="visual-intel-box">
-                        <div class="visual-intel-header">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            VISUAL INTELLIGENCE EXTRACT
-                        </div>
-                        <div style="margin-bottom:5px;">${tags}</div>
-                        <div style="font-style:italic; opacity:0.8;">"${v.text.substring(0, 200)}${v.text.length > 200 ? '...' : ''}"</div>
-                    </div>
-                `;
-            }).join('');
-        }
 
         const item = document.createElement('div');
         item.className = 'intel-item';
