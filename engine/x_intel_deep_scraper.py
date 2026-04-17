@@ -23,6 +23,10 @@ import logging
 import argparse
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
+try:
+    from vx_rescue_fetcher import rescue_tweet
+except ImportError:
+    from engine.vx_rescue_fetcher import rescue_tweet
 
 from bs4 import BeautifulSoup
 
@@ -298,8 +302,8 @@ def save_state(state: dict):
 # ─────────────────────────────────────────────────────────────
 #  Core Scraper
 # ─────────────────────────────────────────────────────────────
-async def scrape_user(username: str, max_days: int = 210, instance: str = None):
-    """Scrape a single user's timeline — V9.1 Parallel Smart Cache."""
+async def scrape_user(username: str, max_days: int = 210, instance: str = None, since: str = None, until: str = None, search_query: str = ""):
+    """Scrape a single user's timeline — V9.2 Advanced Filtering."""
     user_file = DB_DIR / f"x_intel_{username}.json"
 
     # Log existing count
@@ -346,12 +350,21 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None):
     done_days.discard(today_str)
     done_days.discard(yest_str)
 
-    curr = start_date
-    gaps = []
-    while curr <= end_date:
-        if curr.strftime("%Y-%m-%d") not in done_days:
+    if since and until:
+        gaps = []
+        curr = datetime.strptime(since, "%Y-%m-%d").date()
+        target_end = datetime.strptime(until, "%Y-%m-%d").date()
+        while curr <= target_end:
             gaps.append(curr)
-        curr += timedelta(days=1)
+            curr += timedelta(days=1)
+        log.info(f"  🎯 Manual Range: {since} to {until} ({len(gaps)} days)")
+    else:
+        curr = start_date
+        gaps = []
+        while curr <= end_date:
+            if curr.strftime("%Y-%m-%d") not in done_days:
+                gaps.append(curr)
+            curr += timedelta(days=1)
 
     if not gaps:
         log.info(f"  ✅ @{username} fully covered — no gaps in forensic window.")
@@ -407,8 +420,12 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None):
 
                 while not success and attempts < len(live):
                     inst = live[inst_idx % len(live)]
+                    query_part = f"from%3A{username}"
+                    if search_query:
+                        query_part += f"%20{search_query.replace(' ', '%20')}"
+                    
                     h_url = (f"{inst}/search?f=tweets"
-                             f"&q=from%3A{username}"
+                             f"&q={query_part}"
                              f"%20since%3A{s_dt}%20until%3A{e_dt}")
                     log.info(f"  [W{worker_id}] {s_dt} via {inst}")
 
@@ -424,9 +441,17 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None):
                         else:  # success (0 or more posts found)
                             mirror_failures[inst] = 0  # reset on success
                             if h_posts:
-                                _incremental_save(username, h_posts, existing_list)
+                                # VX RESCUE: If nitter returns empty or short posts, attempt repair
+                                rescued_posts = []
+                                for p in h_posts:
+                                    # If text is truncated (ends in ...) or is very short, try VX
+                                    if p.get("text", "").endswith("...") or len(p.get("text", "")) < 20:
+                                        p = rescue_tweet(p)
+                                    rescued_posts.append(p)
+                                
+                                _incremental_save(username, rescued_posts, existing_list)
                                 # Download images for NEW posts only — disk check
-                                await download_images(h_posts, username)
+                                await download_images(rescued_posts, username)
                                 # Sync shared list
                                 try:
                                     raw2 = json.loads(user_file.read_text(encoding="utf-8"))
@@ -474,8 +499,12 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None):
                 e_dt = (day + timedelta(days=1)).strftime("%Y-%m-%d")
                 rescued = False
                 for inst in RESCUE_MIRRORS:
+                    query_part = f"from%3A{username}"
+                    if search_query:
+                        query_part += f"%20{search_query.replace(' ', '%20')}"
+                    
                     h_url = (f"{inst}/search?f=tweets"
-                             f"&q=from%3A{username}"
+                             f"&q={query_part}"
                              f"%20since%3A{s_dt}%20until%3A{e_dt}")
                     log.info(f"  [RESCUE] {s_dt} via {inst}")
                     try:
@@ -654,7 +683,7 @@ async def download_images(posts: list, username: str):
             rel_path   = f"images/{username}/{local_name}"
 
             if not local_path.exists():  # ← disk is the truth
-                to_download.append((url, local_path, local_name))
+                to_download.append((url, local_path, local_name, p))
 
             # Keep path recorded in post metadata
             if rel_path not in p.get("images", []):
@@ -665,15 +694,27 @@ async def download_images(posts: list, username: str):
 
     log.info(f"  📸 {len(to_download)} new images for @{username}")
     saved = 0
-    for url, path, name in to_download:
+    failed_posts = set()
+    for url, path, name, post_obj in to_download:
         try:
             resp = curlr.get(url, impersonate="chrome110", timeout=12)
             if resp.status_code == 200 and len(resp.content) > 500:
                 path.write_bytes(resp.content)
                 saved += 1
+            else:
+                log.warning(f"  📸 Image {name} broken/empty ({resp.status_code}). Queuing VX rescue.")
+                failed_posts.add(post_obj["id"])
             await asyncio.sleep(random.uniform(0.2, 0.8))
         except Exception as e:
             log.warning(f"  Image fail ({name}): {e}")
+            failed_posts.add(post_obj["id"])
+
+    # If any images failed, secondary VX rescue pass to get fresh URLs
+    if failed_posts:
+        log.info(f"  🚁 Attempting VX rescue for {len(failed_posts)} posts with broken media...")
+        for p in posts:
+            if p["id"] in failed_posts:
+                rescue_tweet(p) # This will update image_urls with high-fi api.vxtwitter ones.
 
     if saved:
         log.info(f"  📸 Saved {saved}/{len(to_download)} images for @{username}")
@@ -771,24 +812,47 @@ async def main():
         description="X Intelligence Scraper V9.1 — Single User | Smart Cache | Parallel Mirrors"
     )
     parser.add_argument(
-        "--username", type=str, required=True,
-        help="Single X handle to scrape. ONE AT A TIME. Example: --username aleabitoreddit"
+        "--username", type=str,
+        help="Single X handle to scrape. Example: --username aleabitoreddit"
     )
+    parser.add_argument("--all", action="store_true", help="Scrape ALL monitored users")
     parser.add_argument("--days", type=int, default=210)
+    parser.add_argument("--since", type=str, help="Start date (YYYY-MM-DD)")
+    parser.add_argument("--until", type=str, help="End date (YYYY-MM-DD)")
+    parser.add_argument("--query", type=str, default="", help="Additional search keyword")
     parser.add_argument("--instance", type=str, default=None,
                         help="Force a specific mirror instance (optional)")
     args = parser.parse_args()
 
-    user = args.username.strip().lstrip("@")
+    # Load shared user list
+    USER_FILE = DB_DIR / "monitored_users.json"
+    if args.all:
+        if not USER_FILE.exists():
+            log.error("monitored_users.json not found. Use --username instead.")
+            return
+        target_users = json.loads(USER_FILE.read_text(encoding="utf-8"))
+    elif args.username:
+        target_users = [args.username.strip().lstrip("@")]
+    else:
+        log.error("Must provide --username or --all")
+        return
 
-    log.info(f"{'='*60}")
-    log.info(f"X INTEL V9.1 | @{user} | Smart Cache | 4-Worker Parallel")
-    log.info(f"{'='*60}")
+    for user in target_users:
+        log.info(f"{'='*60}")
+        log.info(f"X INTEL V9.2 | @{user} | Deep Scraper | Custom Filters")
+        log.info(f"{'='*60}")
 
-    await scrape_user(user, max_days=args.days, instance=args.instance)
+        await scrape_user(
+            user, 
+            max_days=args.days, 
+            instance=args.instance,
+            since=args.since,
+            until=args.until,
+            search_query=args.query
+        )
 
-    # Final dedup pass (already removes duplicates and fixes sort order)
-    _deduplicate_file(user)
+        # Final dedup pass
+        _deduplicate_file(user)
 
     # 1. Regex Cleanup (Repairs broken tickers like "$PG Y" -> "$PGY")
     try:

@@ -26,11 +26,15 @@ log = logging.getLogger('visual_buzz')
 ROOT = Path(__file__).parent.parent
 DB_DIR = ROOT / 'database'
 
-USER_FILES = [
-    'x_intel_aleabitoreddit.json',
-    'x_intel_PhotonCap.json',
-    'x_intel_KawzInvests.json',
-]
+USER_FILES = []
+USER_LIST_FILE = DB_DIR / 'monitored_users.json'
+if USER_LIST_FILE.exists():
+    with open(USER_LIST_FILE, 'r', encoding='utf-8') as f:
+        usernames = json.load(f)
+        USER_FILES = [f'x_intel_{u}.json' for u in usernames]
+else:
+    # Fallback to filesystem glob
+    USER_FILES = [f.name for f in DB_DIR.glob('x_intel_*.json') if f.name != 'x_intel_master.json']
 
 MASTER_TICKERS_PATH = DB_DIR / 'CPO_MASTER_DATA.json'
 MASTER_INTEL_PATH = DB_DIR / 'x_intel_master.json'

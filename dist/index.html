@@ -288,13 +288,25 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="intel-header">
             <div>𝕏 SOCIAL INTELLIGENCE TERMINAL <span id="intel-sync-time" style="font-size:9px; color:var(--text-dim); margin-left:15px; font-weight:700;"></span></div>
             <div style="display:flex;gap:15px;align-items:center;">
-                <input type="text" id="modalIntelSearch" class="search-bar" style="width:400px;background:#0f172a;" placeholder="SEARCH POSTS / KEYWORDS...">
+                <input type="text" id="modalIntelSearch" class="search-bar" style="width:250px;background:#0f172a;" placeholder="SEARCH POSTS / KEYWORDS...">
+                
+                <select id="intelUserFilter" style="font-size:10px;padding:4px;background:#0f172a;color:var(--text-dim);border:1px solid var(--border);" onchange="filterIntel()">
+                    <option value="all">ALL USERS</option>
+                </select>
+
+                <div style="display:flex;gap:5px;align-items:center;">
+                    <span style="font-size:9px;color:var(--text-dim);">FROM</span>
+                    <input type="date" id="intelDateFrom" style="font-size:10px;padding:4px;background:#0f172a;color:white;border:1px solid var(--border);" onchange="filterIntel()">
+                    <span style="font-size:9px;color:var(--text-dim);">TO</span>
+                    <input type="date" id="intelDateTo" style="font-size:10px;padding:4px;background:#0f172a;color:white;border:1px solid var(--border);" onchange="filterIntel()">
+                </div>
+
                 <select id="intelTimeFilter" style="font-size:10px;padding:4px;background:#0f172a;color:var(--text-dim);border:1px solid var(--border);" onchange="filterIntel()">
-                    <option value="all">ALL TIME ARCHIVE</option>
+                    <option value="all">ANY TIME (ARCHIVE)</option>
                     <option value="24h">LAST 24 HOURS</option>
                     <option value="7d">LAST 7 DAYS</option>
                 </select>
-                <div style="font-size:10px;color:var(--text-dim);" id="intel-count">0 POSTS</div>
+                <div style="font-size:10px;color:var(--text-dim);white-space:nowrap;" id="intel-count">0 POSTS</div>
                 <div class="close-modal" onclick="closeIntelModal()">&times;</div>
             </div>
         </div>
@@ -730,22 +742,44 @@ window.setSort = function(col) {
 function filterIntel() {
     const query = document.getElementById('modalIntelSearch').value.toLowerCase();
     const timeFilter = document.getElementById('intelTimeFilter').value;
+    const userFilter = document.getElementById('intelUserFilter').value;
+    const dateFrom = document.getElementById('intelDateFrom').value;
+    const dateTo = document.getElementById('intelDateTo').value;
+
     const module = window.X_INTEL_MODULE || { posts: [] };
     const posts = module.posts || [];
     
     // Update sync timestamp in UI
     const syncTimeEl = document.getElementById('intel-sync-time');
-    if (syncTimeEl && module.visual_last_updated) {
-        const d = new Date(module.visual_last_updated);
+    if (syncTimeEl && (module.visual_last_updated || module.last_updated)) {
+        const d = new Date(module.visual_last_updated || module.last_updated);
         syncTimeEl.innerText = `LATEST SYNC: ${d.toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})} EST`;
     }
     
     let filtered = posts;
+    
+    // Keyword Filter
     if (query) {
-        filtered = posts.filter(p => (p.text||"").toLowerCase().includes(query) || (p.username||"").toLowerCase().includes(query));
+        filtered = filtered.filter(p => (p.text||"").toLowerCase().includes(query) || (p.username||"").toLowerCase().includes(query));
     }
     
-    // Time filter logic
+    // User Filter
+    if (userFilter !== 'all') {
+        filtered = filtered.filter(p => p.username === userFilter);
+    }
+    
+    // Date Range Filter
+    if (dateFrom) {
+        filtered = filtered.filter(p => p.timestamp >= dateFrom);
+    }
+    if (dateTo) {
+        const toLimit = new Date(dateTo);
+        toLimit.setDate(toLimit.getDate() + 1);
+        const toStr = toLimit.toISOString().split('T')[0];
+        filtered = filtered.filter(p => p.timestamp < toStr);
+    }
+
+    // Relative Time Filter
     if (timeFilter !== 'all') {
         const now = new Date();
         const hours = timeFilter === '24h' ? 24 : 168;
@@ -759,6 +793,20 @@ function filterIntel() {
 
 function openIntelModal() {
     document.getElementById('intelModal').classList.add('active');
+    
+    // Lazy-populate user list
+    const userSel = document.getElementById('intelUserFilter');
+    if (userSel.options.length <= 1) {
+        const module = window.X_INTEL_MODULE || { posts: [] };
+        const usernames = [...new Set(module.posts.map(p => p.username))].sort();
+        usernames.forEach(u => {
+            const opt = document.createElement('option');
+            opt.value = u;
+            opt.innerText = '@' + u.toUpperCase();
+            userSel.appendChild(opt);
+        });
+    }
+
     filterIntel();
 }
 

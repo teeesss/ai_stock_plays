@@ -85,7 +85,6 @@ def analyze_images():
     # Process newest first
     posts.sort(key=lambda x: x.get('timestamp', ''), reverse=True)
     
-    process_limit = 500
     processed_count = 0
 
     for post in posts:
@@ -105,8 +104,8 @@ def analyze_images():
                 update_user_file(username, post_id, finding)
                 continue
             
-            if processed_count >= process_limit:
-                break
+            # No limit — process everything in the queue to ensure 100% coverage
+            # as requested in V15.5 Hardening.
 
             log.info(f"[{processed_count+1}/Batch] OCR: {img_path_rel}")
             try:

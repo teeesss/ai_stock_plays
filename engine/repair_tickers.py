@@ -59,5 +59,8 @@ def repair_user(username: str):
         print(f"Error repairing {username}: {e}")
 
 if __name__ == "__main__":
-    for user in ["aleabitoreddit", "PhotonCap", "KawzInvests"]:
+    for f in DB_DIR.glob("x_intel_*.json"):
+        if f.name == "x_intel_master.json": continue
+        user = f.name.replace("x_intel_", "").replace(".json", "")
+        print(f"Repairing @{user}...")
         repair_user(user)

@@ -1,6 +1,6 @@
 # 🎯 X-Intelligence: Project Roadmap
 
-### 🚀 Current Status: V15.4 (Pipeline Durability + Unicode Hardening)
+### 🚀 Current Status: V16.0 (Institutional Alpha + Glass Supercycle)
 - **Data Integrity**: China-only stocks (INNO, EOPT) reclassified → Private/no_dashboard.
 - **Image Pipeline**: OCR → `processed_images.json` → `visual_intel[]` per post → `visual_mentions` in master.
 - **Dashboard**: Visual buzz (📷) badges alongside tweet buzz (𝕏) in buzz bar + row chips.
@@ -10,12 +10,25 @@
 - **Unicode**: All JSON writes use `ensure_ascii=True` — no more VS Code ambiguous-unicode warnings.
 - **Logging**: Python scripts now autonomously output to `logs/*.log` to prevent debugging noise.
 - **Scraper Search**: Fixed Nitter date constraint parsing to prevent recursive vintage deep fetches.
-- Date: 2026-04-14
+- Date: 2026-04-16
+
+---
+
+## 🛠 Active Tasks
+
+- [x] **Task 2: Expanded X Search Filtering** — Added Username select and Date From/To inputs to dashboard; updated `x_intel_deep_scraper.py` with CLI flags (`--since`, `--until`, `--query`).
+- [x] **Task 3: Username Management Script** — Created `engine/manage_users.py` and `database/monitored_users.json` for dynamic user tracking.
+- [x] **Task 4: BetterTwitFix Integration** — Implemented `engine/vx_rescue_fetcher.py` and integrated into scraper as a fallback repair layer for truncated/broken tweets.
+- [x] **Task 5: Image Intelligence Hardening** — Removed OCR batch limits in `image_analyzer.py`; modernized `visual_buzz_aggregator.py` to handle all monitored users dynamically.
+- [x] **Task 6: Unified Terminal** — Created `terminal.py` menu system for orchestrating all 11 engine scripts.
+- [x] **Task 13F: Institutional Alpha** — Created `engine/inst_13f_fetcher.py` to pull 13F hedge fund positioning (WhaleRock, Altimeter, Coatue) into master data.
+- [x] **Task LIDE: Glass Supercycle Mapping** — Created `engine/glass_intel_mapper.py` to map the LIDE/TGV supply chain (LPKF, Absolics, Corning) into the terminal.
 
 ---
 
 ## ✅ Completed — V15.4 Pipeline Durability + Unicode (2026-04-14)
 
+- [x] **Merge ISSUES.md into TASKS.md**: Integrated historical issues and cleared ISSUES.md.
 - [x] **Unicode fix (all writers)**: `ensure_ascii=False` → `True` in `rebuild_master.py`,
   `visual_buzz_aggregator.py`, and both write paths in `x_intel_deep_scraper.py`.
   All JSON files are now pure 7-bit ASCII; emojis/smart-quotes encoded as `\uXXXX`.
@@ -32,8 +45,22 @@
 
 ---
 
-## ✅ Completed — V15.3 Visual Intelligence Pipeline (2026-04-14)
+## 🐞 Historical Issues & Resolutions (from ISSUES.md)
 
+- **[FIXED] BeautifulSoup/Playwright Missing Dependencies**: Scrapers failed on fresh Windows nodes.
+  - **Resolution**: Created global `requirements.txt` and integrated `python -m playwright install chromium`.
+- **[FIXED] Windows I/O Unicode Crash**: `ValueError: I/O operation on closed file` during translation.
+  - **Resolution**: Implemented `io.TextIOWrapper` with error handling in `translate_intel.py`.
+- **[FIXED] Ticker Fragmentation**: Mirror HTML caused $N V D A$ instead of $NVDA.
+  - **Resolution**: Deployed V11.0 Surgical Regex with boundary detection.
+- **[FIXED] Browser CORS Security Block**: Browser prohibits `fetch()` from local filesystem.
+  - **Resolution**: Implemented JS Data Bridge (`research/sync_data.py`).
+- **[OPEN] Data Gaps**: Revenue estimates for Tier-2 suppliers (AXTI, Sumitomo) are estimates.
+  - **Status**: Research ongoing.
+
+---
+
+## ✅ Completed — V15.3 Visual Intelligence Pipeline (2026-04-14)
 
 - [x] **China-only reclassification**: INNO (InnoLight) + EOPT (Eoptolink) → `Bucket: Private`,
   `Status: China-Only`, `no_dashboard: true`. Excluded from scoring, rankings, and price fetches.
@@ -120,9 +147,9 @@
   ticker "INNO" resolves to wrong NYSE entity; financials cleared, `no_yfinance: true` flagged.
   EOPT corrected to `Country: China`, `currency: CNY`, `real_ticker: 300502.SZ`. Both master
   JSON and `dashboard_data.js` updated.
-- [ ] **13F Institutional Layer**: Automated tracking of top-tier hedge fund positioning in CPO names.
-- [ ] **Glass Substrate Supercycle**: Intensify LIDE/TGV analysis as HVM approaches.
-- [ ] **Automated Monitoring**: Weekly audit of translation cache and scrapers.
+- [x] **HBM4 Supply Chain Audit**: Expanded glass substrate mapping to include HBM4-specific interposers and back-end packaging (Besi, ASM Pacific).
+- [x] **Automated Institutional Scoring**: Factored 13F conviction counts straight into the Alpha ranking algorithm in JS (`cpo_plays.html`).
+- [x] **Real-time Price Engine 2.0**: Validated `live_prices.py` correctly fetches non-USD ADR equivalents (BESIY, ASMVY).
 
 ---
 

@@ -43,9 +43,17 @@ logging.basicConfig(
 )
 log = logging.getLogger("x_intel_sync")
 
-USERS = ["aleabitoreddit", "PhotonCap", "KawzInvests"]
+import json
 
 ROOT = Path(__file__).parent.parent
+DB_DIR = ROOT / "database"
+USER_FILE = DB_DIR / "monitored_users.json"
+
+if USER_FILE.exists():
+    USERS = json.loads(USER_FILE.read_text(encoding="utf-8"))
+else:
+    USERS = ["aleabitoreddit", "PhotonCap", "KawzInvests"]
+
 ENGINE_DIR = ROOT / "engine"
 SCRAPER_SCRIPT = ENGINE_DIR / "x_intel_deep_scraper.py"
 
