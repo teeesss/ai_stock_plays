@@ -181,6 +181,9 @@
             </div>
         </div>
     </div>
+    <button class="sync-btn" onclick="openNewsModal()" style="background:rgba(212,163,115,0.15);border-color:rgba(212,163,115,0.4);color:var(--gold);margin-right:6px;">
+        &#128240; NEWS
+    </button>
     <button class="sync-btn" id="syncBtn" onclick="triggerSync()">
         <span class="sync-dot" id="syncDot"></span> MASTER SYNC
     </button>
@@ -284,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <th style="width:55px;" onclick="setSort('upside')">Upside</th>
                     <th style="width:60px;" onclick="setSort('perf1y')">1y Rtn</th>
                     <th style="width:75px;" onclick="setSort('today')">
-                        <div id="price-updated-at" style="font-size:7px; color:var(--text-dim); margin-bottom:-2px;">--</div>
+                        <div id="price-updated-at" style="font-size:7px; color:#ffffff; margin-bottom:-2px; font-weight:700;">--</div>
                         Day $
                     </th>
                     <th style="width:65px;" onclick="setSort('todayPct')">% Chg</th>
@@ -401,11 +404,10 @@ function momentumScore(perf1y) {
 function buildTickerHTML(ticker) {
     const primary = ticker.includes('/') ? ticker.split('/')[0].trim() : ticker;
     const xIcon = `<span class="x-intel-icon" onclick="syncIntelSearch('${primary}'); event.stopPropagation();" title="Search \u{1D54F} Intelligence for $${primary}">\u{1D54F}</span>`;
-    const newsIcon = `<span class="x-intel-icon" style="color:var(--gold);margin-left:4px;" onclick="syncNewsSearch('${primary}'); event.stopPropagation();" title="Search Yahoo News for $${primary}">\u{1F4F0}</span>`;
 
-    if (!ticker.includes('/')) return `<a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" class="ticker-link">${ticker}</a>${xIcon}${newsIcon}`;
+    if (!ticker.includes('/')) return `<a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" class="ticker-link">${ticker}</a>${xIcon}`;
     const parts = ticker.split('/').map(t => t.trim());
-    return `<a href="https://finance.yahoo.com/quote/${parts[0]}" target="_blank" class="ticker-link">${parts[0]}</a><a href="https://finance.yahoo.com/quote/${parts[1]}" target="_blank" class="ticker-otc" title="US OTC: ${parts[1]}">OTC:${parts[1]}</a>${xIcon}${newsIcon}`;
+    return `<a href="https://finance.yahoo.com/quote/${parts[0]}" target="_blank" class="ticker-link">${parts[0]}</a><a href="https://finance.yahoo.com/quote/${parts[1]}" target="_blank" class="ticker-otc" title="US OTC: ${parts[1]}">OTC:${parts[1]}</a>${xIcon}`;
 }
 
 function calcScore(h, mcapB, perf1y, rev_num, pe26, agg) {
