@@ -1,0 +1,19 @@
+# AI Watchlist Isolation Rules (FIERCE)
+
+## 🏗️ Structural Integrity
+1. **Absolute Decoupling**: The AI Watchlist MUST remain 100% independent of the root CPO Stocks configuration.
+2. **Relative Pathing**: All scripts in `AI/engine/` must use `Path(__file__).parent.parent` to resolve `AI_ROOT` and must NEVER rely on absolute drive letters (e.g., `X:`, `Z:`) except for bridging known root-level datasets.
+3. **No Cross-Contamination**: Scripts in `AI/` are FORBIDDEN from modifying any files in the root directory (excluding `dist/` during deployment).
+4. **Independent Sync**: Use `AI/engine/sync_ai_watchlist.py` for all AI-related data refreshes. Never integrate AI sync tasks into root-level orchestration.
+
+## 🧪 Testing & Verification
+1. **TDD Mandatory**: Any new feature or bug fix in the AI Watchlist must include a test in `AI/tests/`.
+2. **Local First**: Verify all changes locally using `python AI/engine/sync_ai_watchlist.py` before claiming success.
+
+## 🚀 Deployment
+1. **Target View**: The AI watchlist is deployed to `bmwseals.com/stocks/ai/`. 
+2. **Build Safety**: Ensure `npm run build` from the root correctly assembles the `dist/ai/` folder without breaking the root `dist/index.html`.
+
+## 📜 Metadata
+- **Owner**: AI Watchlist Infrastructure
+- **Hardened Version**: V2.0

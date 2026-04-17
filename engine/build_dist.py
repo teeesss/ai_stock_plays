@@ -17,11 +17,17 @@ def build():
     # 2. Files to copy
     # Mapping: local_path -> dist_path
     files = {
+        # Root Dashboard
         "cpo_plays.html": "index.html",
         "database/dashboard_data.js": "database/dashboard_data.js",
         "database/live_prices.js": "database/live_prices.js",
-        "database/intel.js": "intel.js", # Note: remote expects intel.js in root or database? 
-                                          # remote_sync.py says: "database/intel.js": "intel.js"
+        "database/intel.js": "intel.js",
+        
+        # AI Dashboard (Subdirectory)
+        "AI/index.html": "ai/index.html",
+        "AI/database/dashboard_data.js": "ai/database/dashboard_data.js",
+        "AI/database/live_prices.js": "ai/database/live_prices.js",
+        "AI/database/YAHOO_NEWS_MODULE.js": "ai/database/YAHOO_NEWS_MODULE.js", # Match script tag in AI/index.html
     }
 
     # Verify what remote_sync.py does:

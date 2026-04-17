@@ -1,121 +1,121 @@
 {
-    "last_updated": "2026-04-17T02:29:23.783945",
+    "last_updated": "2026-04-17T12:03:04.792751",
     "ticker_meta": {
         "IMSR": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.788825"
         },
         "HUT": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.788866"
         },
         "BTDR": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.788884"
         },
         "MARA": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.788915"
         },
         "CLSK": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.788934"
         },
         "EOSE": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.788948"
         },
         "BE": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.788974"
         },
         "IREN": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.788987"
         },
         "OKLO": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789001"
         },
         "CAN": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789014"
         },
         "KEEL": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789018"
         },
         "CIFR": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789036"
         },
         "AVGO": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789056"
         },
         "NBIS": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789071"
         },
         "WULF": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789083"
         },
         "BTBT": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789089"
         },
         "HIVE": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789102"
         },
         "CRCL": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789118"
         },
         "ENS": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789131"
         },
         "PLPC": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789134"
         },
         "GLXY": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789141"
         },
         "CORZ": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789149"
         },
         "CRWV": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789158"
         },
         "AMD": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789174"
         },
         "NVDA": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789188"
         },
         "ALAB": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789196"
         },
         "AMZN": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789208"
         },
         "META": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789221"
         },
         "GOOGL": {
-            "last_fetch": 1776410855.1431744,
-            "fetch_date": "2026-04-17T02:29:23.768026"
+            "last_fetch": 1776445270.6792867,
+            "fetch_date": "2026-04-17T12:03:04.789224"
         }
     },
     "news": {
@@ -129,6 +129,13 @@
             }
         ],
         "HUT": [
+            {
+                "title": "Hut 8 Schedules First Quarter 2026 Earnings Release and Conference Call",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/hut-8-schedules-first-quarter-103000185.html",
+                "provider": "PR Newswire",
+                "date": 1776421800,
+                "vibe_score": 0.0
+            },
             {
                 "title": "Hut 8 (HUT) Soars 37.3% on AI Boost",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/hut-8-hut-soars-37-220224917.html",
@@ -292,6 +299,13 @@
         ],
         "EOSE": [
             {
+                "title": "Why EOS Energy Stock Surged Over 25% This Week",
+                "link": "https://finance.yahoo.com/m/bd09ac97-f213-39bc-91e0-372b2a8a65f2/why-eos-energy-stock-surged.html",
+                "provider": "Motley Fool",
+                "date": 1776433240,
+                "vibe_score": 0.2732
+            },
+            {
                 "title": "Eos Energy Just Announced a New Data Center Power Deal. Does That Make EOSE Stock a Buy?",
                 "link": "https://finance.yahoo.com/m/571ea175-44b9-3ece-8aa0-fa25fbbeb2ec/eos-energy-just-announced-a.html",
                 "provider": "Barchart",
@@ -350,6 +364,27 @@
         ],
         "BE": [
             {
+                "title": "Why EOS Energy Stock Surged Over 25% This Week",
+                "link": "https://finance.yahoo.com/m/bd09ac97-f213-39bc-91e0-372b2a8a65f2/why-eos-energy-stock-surged.html",
+                "provider": "Motley Fool",
+                "date": 1776433240,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Bloom Energy and Dave & Buster's have been highlighted as Zacks Bull and Bear of the Day",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/bloom-energy-dave-busters-highlighted-121400076.html",
+                "provider": "Zacks",
+                "date": 1776428040,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Bull of the Day: Bloom Energy (BE)",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/bull-day-bloom-energy-092000692.html",
+                "provider": "Zacks",
+                "date": 1776417600,
+                "vibe_score": 0.2732
+            },
+            {
                 "title": "The Lockout Rally: Wall Street Just Made History",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/lockout-rally-wall-street-just-031700982.html",
                 "provider": "Zacks",
@@ -407,6 +442,13 @@
             }
         ],
         "IREN": [
+            {
+                "title": "Can 4.5GW Power Pipeline Drive IREN's $3.7B AI Cloud ARR Target?",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/4-5gw-power-pipeline-drive-145000665.html",
+                "provider": "Zacks",
+                "date": 1776437400,
+                "vibe_score": 0.0
+            },
             {
                 "title": "The Lockout Rally: Wall Street Just Made History",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/lockout-rally-wall-street-just-031700982.html",
@@ -516,6 +558,13 @@
             }
         ],
         "CAN": [
+            {
+                "title": "Asian Equities Traded in the US as American Depositary Receipts Surge in Friday Trading; Up 5% for Week",
+                "link": "https://finance.yahoo.com/markets/world-indices/articles/asian-equities-traded-us-american-143652786.html",
+                "provider": "MT Newswires",
+                "date": 1776436612,
+                "vibe_score": 0.0
+            },
             {
                 "title": "French regulator fines organic food retail groups for price collusion",
                 "link": "https://finance.yahoo.com/m/035f6749-14b2-398e-904a-d970bf7aacdf/french-regulator-fines.html",
@@ -628,6 +677,90 @@
         ],
         "AVGO": [
             {
+                "title": "Jim Cramer Says \u201cBroadcom Is the One That I Think You Need to Focus On\u201d",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-says-broadcom-one-161359021.html",
+                "provider": "Insider Monkey",
+                "date": 1776442439,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Broadcom\u2019s New AI Partnership With Google and Anthropic Could Supercharge the Next Leg of the Rally",
+                "link": "https://finance.yahoo.com/m/4623015b-f7c8-391e-8288-37ce3942719a/broadcom%E2%80%99s-new-ai-partnership.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776440774,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Buy 5 Stocks With High ROE as Markets Hit Record High on Likely Truce",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/buy-5-stocks-high-roe-144600666.html",
+                "provider": "Zacks",
+                "date": 1776437160,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Is It Worth Investing in Broadcom Inc. (AVGO) Based on Wall Street's Bullish Views?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/worth-investing-broadcom-inc-avgo-133003327.html",
+                "provider": "Zacks",
+                "date": 1776432603,
+                "vibe_score": 0.2263
+            },
+            {
+                "title": "Goldman Sends Stark Message on Broadcom Stock After Meta Deal",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/goldman-sends-stark-message-broadcom-153204291.html",
+                "provider": "GuruFocus.com",
+                "date": 1776439924,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "AI Chips Used to Be Nvidia\u2019s Game. Now More Winners Are Emerging.",
+                "link": "https://finance.yahoo.com/m/d6accfba-5876-31ae-857c-fa352e716ff5/ai-chips-used-to-be-nvidia%E2%80%99s.html",
+                "provider": "Barrons.com",
+                "date": 1776439140,
+                "vibe_score": 0.5256
+            },
+            {
+                "title": "Marvell and Broadcom Stocks Are on Fire. They\u2019re Not Done Yet.",
+                "link": "https://finance.yahoo.com/m/f7533120-dad9-32c0-bacc-c3d95b2adccc/marvell-and-broadcom-stocks.html",
+                "provider": "Barrons.com",
+                "date": 1776436920,
+                "vibe_score": -0.34
+            },
+            {
+                "title": "Mizuho is bullish on this major AI chip stock",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/mizuho-bullish-major-ai-chip-124725681.html",
+                "provider": "Investing.com",
+                "date": 1776430045,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "AI Chips Update - AI Transforms Manufacturing Efficiency Through Strategic Partnerships",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/ai-chips-ai-transforms-manufacturing-113807371.html",
+                "provider": "Simply Wall St.",
+                "date": 1776425887,
+                "vibe_score": 0.3612
+            },
+            {
+                "title": "Goldman Sachs resets Broadcom stock forecast",
+                "link": "https://finance.yahoo.com/m/c160a0b0-b426-3f6b-82b7-f0311d1fb7c6/goldman-sachs-resets-broadcom.html",
+                "provider": "TheStreet",
+                "date": 1776423780,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "The rally in tech stocks is widening beyond semiconductors and into software",
+                "link": "https://finance.yahoo.com/news/the-rally-in-tech-stocks-is-widening-beyond-semiconductors-and-into-software-100008649.html",
+                "provider": "Yahoo Finance",
+                "date": 1776420008,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "The Zacks Analyst Blog Highlights NVIDIA, Broadcom and Micron Technology",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/zacks-analyst-blog-highlights-nvidia-091800728.html",
+                "provider": "Zacks",
+                "date": 1776417480,
+                "vibe_score": 0.0
+            },
+            {
                 "title": "Nvidia Stock\u2019s Longest Winning Streak on Record Just Ended. What Comes Next.",
                 "link": "https://finance.yahoo.com/m/0c095b64-c3e0-3b0e-8711-45c0b931dbca/nvidia-stock%E2%80%99s-longest.html",
                 "provider": "Barrons.com",
@@ -647,44 +780,16 @@
                 "provider": "The Wall Street Journal",
                 "date": 1776367245,
                 "vibe_score": 0.6249
-            },
-            {
-                "title": "Broadcom Stock Is on an 8-Day Winning Streak. What\u2019s Driving It Higher.",
-                "link": "https://finance.yahoo.com/m/e111c891-116e-3a5b-85a5-eb4cbd4c7fed/broadcom-stock-is-on-an-8-day.html",
-                "provider": "Barrons.com",
-                "date": 1776367200,
-                "vibe_score": 0.5267
-            },
-            {
-                "title": "Broadcom (AVGO) Is Up 13.1% After Expanded Meta AI Chip Partnership - What's Changed",
-                "link": "https://finance.yahoo.com/markets/stocks/articles/broadcom-avgo-13-1-expanded-190347442.html",
-                "provider": "Simply Wall St.",
-                "date": 1776366227,
-                "vibe_score": 0.0
-            },
-            {
-                "title": "Beyond NVIDIA: 2 AI Chip Stocks Positioned for Big Upside in 2026",
-                "link": "https://finance.yahoo.com/markets/stocks/articles/beyond-nvidia-2-ai-chip-190000507.html",
-                "provider": "Zacks",
-                "date": 1776366000,
-                "vibe_score": 0.0
-            },
-            {
-                "title": "How to Gain AI Exposure Without Picking Stocks: 3 ETF Strategies Compared",
-                "link": "https://finance.yahoo.com/m/d040f322-df9d-3525-bb33-6463e588f35d/how-to-gain-ai-exposure.html",
-                "provider": "24/7 Wall St.",
-                "date": 1776362748,
-                "vibe_score": 0.5267
-            },
-            {
-                "title": "Invesco Next Gen ETF (KNCT) Touches Fresh 52-Week High",
-                "link": "https://finance.yahoo.com/markets/stocks/articles/invesco-next-gen-etf-knct-165100436.html",
-                "provider": "Zacks",
-                "date": 1776358260,
-                "vibe_score": 0.3182
             }
         ],
         "NBIS": [
+            {
+                "title": "CoreWeave Lands $6B Jane Street Deal, Strengthening Revenue Visibility",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/coreweave-lands-6b-jane-street-125400345.html",
+                "provider": "Zacks",
+                "date": 1776430440,
+                "vibe_score": 0.4939
+            },
             {
                 "title": "The Lockout Rally: Wall Street Just Made History",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/lockout-rally-wall-street-just-031700982.html",
@@ -743,6 +848,13 @@
             }
         ],
         "WULF": [
+            {
+                "title": "Can 4.5GW Power Pipeline Drive IREN's $3.7B AI Cloud ARR Target?",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/4-5gw-power-pipeline-drive-145000665.html",
+                "provider": "Zacks",
+                "date": 1776437400,
+                "vibe_score": 0.0
+            },
             {
                 "title": "TeraWulf\u2019s $900 Million Equity Raise for Kentucky AI Campus Could Be A Game Changer For TeraWulf (WULF)",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/terawulf-900-million-equity-raise-042803605.html",
@@ -825,6 +937,20 @@
         ],
         "HIVE": [
             {
+                "title": "BC-Most Active Stocks",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/bc-most-active-stocks-143018281.html",
+                "provider": "Associated Press",
+                "date": 1776436218,
+                "vibe_score": 0.4019
+            },
+            {
+                "title": "HIVE Digital prices $100M zero-coupon exchangeable notes",
+                "link": "https://finance.yahoo.com/m/79f3e675-9ccc-3012-93ac-9d439a16d9eb/hive-digital-prices-%24100m.html",
+                "provider": "Proactive",
+                "date": 1776429540,
+                "vibe_score": 0.0
+            },
+            {
                 "title": "How HIVE Digital\u2019s US$75 Million Zero Coupon Notes At HIVE Digital Technologies (TSXV:HIVE) Has Changed Its Investment Story",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/hive-digital-us-75-million-011211719.html",
                 "provider": "Simply Wall St.",
@@ -868,6 +994,27 @@
             }
         ],
         "CRCL": [
+            {
+                "title": "Strategy vs. Circle: Which Crypto-Linked Stock Has More Upside Now?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/strategy-vs-circle-crypto-linked-123400918.html",
+                "provider": "Zacks",
+                "date": 1776429240,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Morning Minute: $11T+ Schwab Goes All In on Crypto",
+                "link": "https://finance.yahoo.com/m/8ae2b093-b9b1-3821-a5be-61477053a5f3/morning-minute%3A-%2411t%2B-schwab.html",
+                "provider": "decrypt",
+                "date": 1776428502,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Circle Hit With Class Action Lawsuit Over $285M Drift Protocol Hack",
+                "link": "https://finance.yahoo.com/m/d5430f4a-7c76-33c1-b123-bb121fc3c486/circle-hit-with-class-action.html",
+                "provider": "decrypt",
+                "date": 1776424235,
+                "vibe_score": -0.2263
+            },
             {
                 "title": "The $700 Trillion Reason Why I'm Buying Circle Stock Hand Over Fist",
                 "link": "https://finance.yahoo.com/m/bebf3e76-6bc2-36b3-bd22-b2e9dcdfccf6/the-%24700-trillion-reason-why.html",
@@ -926,6 +1073,13 @@
             }
         ],
         "ENS": [
+            {
+                "title": "3 Hyped Up  Stocks We Find Risky",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/3-hyped-stocks-risky-152007923.html",
+                "provider": "StockStory",
+                "date": 1776439207,
+                "vibe_score": -0.2023
+            },
             {
                 "title": "ENS vs. ETN: Which Stock Is the Better Value Option?",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/ens-vs-etn-stock-better-154002932.html",
@@ -1032,6 +1186,13 @@
         ],
         "CRWV": [
             {
+                "title": "CoreWeave Lands $6B Jane Street Deal, Strengthening Revenue Visibility",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/coreweave-lands-6b-jane-street-125400345.html",
+                "provider": "Zacks",
+                "date": 1776430440,
+                "vibe_score": 0.4939
+            },
+            {
                 "title": "Assessing Applied Digital (APLD) Valuation As AI Data Center Leases And Hyperscale Partnerships Gain Traction",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/assessing-applied-digital-apld-valuation-030749662.html",
                 "provider": "Simply Wall St.",
@@ -1090,6 +1251,69 @@
         ],
         "AMD": [
             {
+                "title": "SMCI vs. AMD: Which AI Infrastructure Stock Has an Edge Right Now?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/smci-vs-amd-ai-infrastructure-153500164.html",
+                "provider": "Zacks",
+                "date": 1776440100,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Stock Market Leaders Emerge In IBD 50, Rise In Volume After Follow-Through Day",
+                "link": "https://finance.yahoo.com/m/45b74324-9f23-3b0b-80d2-acd2f3cb9c5c/stock-market-leaders-emerge.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776439237,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "AI Chips Used to Be Nvidia\u2019s Game. Now More Winners Are Emerging.",
+                "link": "https://finance.yahoo.com/m/d6accfba-5876-31ae-857c-fa352e716ff5/ai-chips-used-to-be-nvidia%E2%80%99s.html",
+                "provider": "Barrons.com",
+                "date": 1776439140,
+                "vibe_score": 0.5256
+            },
+            {
+                "title": "Intel stock soars to 26-year high, NiSource inks energy deal with Alphabet",
+                "link": "https://finance.yahoo.com/video/intel-stock-soars-to-26-year-high-nisource-inks-energy-deal-with-alphabet-145035107.html",
+                "provider": "Yahoo Finance Video",
+                "date": 1776437435,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Nvidia Stock Is an Analyst\u2019s \u2018Top Pick.\u2019 Can It Catch Up With Intel and AMD?",
+                "link": "https://finance.yahoo.com/m/d5c8f04f-0752-3bec-b807-4ad05ee31be9/nvidia-stock-is-an-analyst%E2%80%99s.html",
+                "provider": "Barrons.com",
+                "date": 1776437220,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "These Stocks Are Today\u2019s Movers: Netflix, United, Royal Caribbean, Dow Inc., Albemarle, Autoliv, Madison Air, and More",
+                "link": "https://finance.yahoo.com/m/c6822e6f-baf6-3774-bfbb-3555a6aa7b88/these-stocks-are-today%E2%80%99s.html",
+                "provider": "Barrons.com",
+                "date": 1776435660,
+                "vibe_score": 0.4215
+            },
+            {
+                "title": "BofA Adjusts Price Target on Advanced Micro Devices to $310 From $280, Maintains Buy Rating",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/bofa-adjusts-price-target-advanced-141554269.html",
+                "provider": "MT Newswires",
+                "date": 1776435354,
+                "vibe_score": 0.25
+            },
+            {
+                "title": "Intel Stock Gains Again. Why Analysts Are Getting Nervous.",
+                "link": "https://finance.yahoo.com/m/212ca27e-7286-3343-9abf-5b52a20fa50f/intel-stock-gains-again.-why.html",
+                "provider": "Barrons.com",
+                "date": 1776432480,
+                "vibe_score": 0.0772
+            },
+            {
+                "title": "Myseum.AI to Join Advanced Micro Devices AI Developer Program",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/myseum-ai-join-advanced-micro-120512733.html",
+                "provider": "MT Newswires",
+                "date": 1776427512,
+                "vibe_score": 0.4939
+            },
+            {
                 "title": "Why AMD (AMD) Stock Is Trading Up Today",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/why-amd-amd-stock-trading-054627998.html",
                 "provider": "StockStory",
@@ -1130,81 +1354,123 @@
                 "provider": "Barrons.com",
                 "date": 1776374940,
                 "vibe_score": 0.5267
-            },
-            {
-                "title": "AMD, Onsemi, Semtech Latest Chip Stocks To Break Out",
-                "link": "https://finance.yahoo.com/m/768646e3-5861-3ef9-a59a-0c7f0095eb98/amd%2C-onsemi%2C-semtech-latest.html",
-                "provider": "Investor's Business Daily",
-                "date": 1776373736,
-                "vibe_score": 0.0
-            },
-            {
-                "title": "Stock Market Today: Nasdaq, S&P 500 Mark New Highs; These Truck Stocks Clear Entries (Live Coverage)",
-                "link": "https://finance.yahoo.com/m/c55e30bd-f999-3fc3-90be-215a49ce656d/stock-market-today%3A-nasdaq%2C.html",
-                "provider": "Investor's Business Daily",
-                "date": 1776372334,
-                "vibe_score": 0.3818
             }
         ],
         "NVDA": [
             {
-                "title": "Himax and onsemi Stocks Trade Up, What You Need To Know",
-                "link": "https://finance.yahoo.com/markets/stocks/articles/himax-onsemi-stocks-trade-know-062627852.html",
-                "provider": "StockStory",
-                "date": 1776407187,
+                "title": "Why Norwegian Cruise Line Stock Popped on Friday",
+                "link": "https://finance.yahoo.com/m/fc5f2b96-357f-3cc4-9c94-529ae578d2e0/why-norwegian-cruise-line.html",
+                "provider": "Motley Fool",
+                "date": 1776444726,
                 "vibe_score": 0.0
             },
             {
-                "title": "Monolithic Power Systems, Impinj, Microchip Technology, and Texas Instruments Shares Skyrocket, What You Need To Know",
-                "link": "https://finance.yahoo.com/markets/stocks/articles/monolithic-power-systems-impinj-microchip-061827654.html",
-                "provider": "StockStory",
-                "date": 1776406707,
-                "vibe_score": 0.296
-            },
-            {
-                "title": "Semtech and Amkor Stocks Trade Up, What You Need To Know",
-                "link": "https://finance.yahoo.com/markets/stocks/articles/semtech-amkor-stocks-trade-know-061027616.html",
-                "provider": "StockStory",
-                "date": 1776406227,
+                "title": "Why This $4.4 Million Exit Looks Bearish for a Chemicals Stock Down 50%",
+                "link": "https://finance.yahoo.com/m/0fe86ffa-355e-312d-a723-cdbbfd63ef0d/why-this-%244.4-million-exit.html",
+                "provider": "Motley Fool",
+                "date": 1776444455,
                 "vibe_score": 0.0
             },
             {
-                "title": "Why Intel (INTC) Stock Is Trading Up Today",
-                "link": "https://finance.yahoo.com/markets/stocks/articles/why-intel-intc-stock-trading-060227778.html",
-                "provider": "StockStory",
-                "date": 1776405747,
+                "title": "Here's What History Says Happens Next With Bitcoin",
+                "link": "https://finance.yahoo.com/m/bdfbf605-a50f-3966-a092-01bb8bbe4e40/here%27s-what-history-says.html",
+                "provider": "Motley Fool",
+                "date": 1776443820,
                 "vibe_score": 0.0
             },
             {
-                "title": "Same AI Trade, Same Problems",
-                "link": "https://finance.yahoo.com/m/a63ede38-7a12-3cf2-8dbc-790c0ed217ec/same-ai-trade%2C-same-problems.html",
+                "title": "Why Royal Caribbean Stock Popped on Friday",
+                "link": "https://finance.yahoo.com/m/58bd8718-22e3-3cac-bf16-475238041f0e/why-royal-caribbean-stock.html",
+                "provider": "Motley Fool",
+                "date": 1776443166,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Why ExxonMobil Stock Dropped on Friday",
+                "link": "https://finance.yahoo.com/m/5abd7a01-4dde-35b7-8fd9-a260023916da/why-exxonmobil-stock-dropped.html",
+                "provider": "Motley Fool",
+                "date": 1776442046,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "The Iran War Shock Emphasizes Exactly Why a Low\u2011Cost S&P 500 ETF Belongs at the Core of Every Long\u2011Term Portfolio",
+                "link": "https://finance.yahoo.com/m/46c631db-509d-3191-af37-eb2605cebf26/the-iran-war-shock-emphasizes.html",
+                "provider": "Motley Fool",
+                "date": 1776441900,
+                "vibe_score": -0.7579
+            },
+            {
+                "title": "The Top 5 AI Stocks Set for Hypergrowth in 2026",
+                "link": "https://finance.yahoo.com/m/a88f1c3e-3c72-32a3-9785-257e3c5df337/the-top-5-ai-stocks-set-for.html",
+                "provider": "Motley Fool",
+                "date": 1776441480,
+                "vibe_score": 0.2023
+            },
+            {
+                "title": "Nvidia CEO makes surprising admission on OpenAI and Anthropic",
+                "link": "https://finance.yahoo.com/m/07289665-2ec1-3f65-ba0b-5284e45585ed/nvidia-ceo-makes-surprising.html",
+                "provider": "TheStreet",
+                "date": 1776441330,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "DEM\u2019s 500 holdings mask the real problem lurking in emerging market income",
+                "link": "https://finance.yahoo.com/m/17f0442a-5940-3630-bc46-1469443674b2/dem%E2%80%99s-500-holdings-mask-the.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776439834,
+                "vibe_score": -0.4939
+            },
+            {
+                "title": "The Best Artificial Intelligence (AI) Chip Equipment Stock Just Raised Guidance. Here's What ASML's Earnings Mean for the Nasdaq.",
+                "link": "https://finance.yahoo.com/m/bbbc74c4-e5cc-344f-86bc-e2431bd30aea/the-best-artificial.html",
+                "provider": "Motley Fool",
+                "date": 1776439680,
+                "vibe_score": 0.8074
+            },
+            {
+                "title": "Bull vs Bear: Is IonQ Stock a Buy or Sell?",
+                "link": "https://finance.yahoo.com/m/d4cbd3fd-fdb8-3161-b4ef-9cb9180d46b4/bull-vs-bear%3A-is-ionq-stock-a.html",
+                "provider": "Motley Fool",
+                "date": 1776439560,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Here's Why D-Wave Quantum Stock Soared This Week",
+                "link": "https://finance.yahoo.com/m/bb3826b2-bbaa-3706-a8b0-37b293269a74/here%27s-why-d-wave-quantum.html",
+                "provider": "Motley Fool",
+                "date": 1776439246,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "AI Chips Used to Be Nvidia\u2019s Game. Now More Winners Are Emerging.",
+                "link": "https://finance.yahoo.com/m/d6accfba-5876-31ae-857c-fa352e716ff5/ai-chips-used-to-be-nvidia%E2%80%99s.html",
                 "provider": "Barrons.com",
-                "date": 1776405600,
-                "vibe_score": -0.4019
+                "date": 1776439140,
+                "vibe_score": 0.5256
             },
             {
-                "title": "Forget USA Rare Earth: Why Trump's Bet on This Critical Minerals Play Could Backfire for Investors",
-                "link": "https://finance.yahoo.com/m/2014fdbf-5642-3ea1-9806-6308af92c82d/forget-usa-rare-earth%3A-why.html",
+                "title": "Trump's Record Defense Budget Is Reshaping the Pentagon: 3 Stocks That Will Benefit",
+                "link": "https://finance.yahoo.com/m/7fc43e83-2bcc-3626-9e25-65921cf33cca/trump%27s-record-defense-budget.html",
                 "provider": "Motley Fool",
-                "date": 1776400500,
-                "vibe_score": -0.2789
+                "date": 1776438628,
+                "vibe_score": 0.5423
             },
             {
-                "title": "Dow Jones Futures: Stock Market Rally Won't Back Down, AMD Breaks Out; Netflix Dives Late",
-                "link": "https://finance.yahoo.com/m/de0d09c2-e120-3a06-b712-ed53b63caeb8/dow-jones-futures%3A-stock.html",
-                "provider": "Investor's Business Daily",
-                "date": 1776395481,
-                "vibe_score": 0.0
-            },
-            {
-                "title": "Why Quantum Computing Stock Was Blasting Higher This Week",
-                "link": "https://finance.yahoo.com/m/0cd7410b-eedd-3b40-bfc2-6d0d0bde310b/why-quantum-computing-stock.html",
+                "title": "SPYM vs. NOBL: Which Stock ETF Is a Better Buy?",
+                "link": "https://finance.yahoo.com/m/ec5b2798-0c39-384b-a4b4-361a36d0c6b0/spym-vs.-nobl%3A-which-stock.html",
                 "provider": "Motley Fool",
-                "date": 1776394456,
-                "vibe_score": 0.0
+                "date": 1776438540,
+                "vibe_score": 0.4404
             }
         ],
         "ALAB": [
+            {
+                "title": "April 2026's Top Growth Companies With Strong Insider Ownership",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/april-2026s-top-growth-companies-113550199.html",
+                "provider": "Simply Wall St.",
+                "date": 1776425750,
+                "vibe_score": 0.7717
+            },
             {
                 "title": "April 2026's Leading Growth Stocks With Insider Confidence",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/april-2026s-leading-growth-stocks-173605364.html",
@@ -1264,63 +1530,189 @@
         ],
         "AMZN": [
             {
+                "title": "Why This $4.4 Million Exit Looks Bearish for a Chemicals Stock Down 50%",
+                "link": "https://finance.yahoo.com/m/0fe86ffa-355e-312d-a723-cdbbfd63ef0d/why-this-%244.4-million-exit.html",
+                "provider": "Motley Fool",
+                "date": 1776444455,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "B. Riley Upgrades 2026 Box Office Outlook Following First-Quarter Beat",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/b-riley-upgrades-2026-box-164105529.html",
+                "provider": "MT Newswires",
+                "date": 1776444065,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "'She Fought For It,' Jay-Z Says As Daughter Blue Ivy, 14, Goes From 'Going Through The Motions' To Standing Out On Mom Beyonc\u00e9's Renaissance Tour",
+                "link": "https://finance.yahoo.com/m/693f9012-71b4-3f16-916f-4d30a6384d8c/%27she-fought-for-it%2C%27-jay-z.html",
+                "provider": "Benzinga",
+                "date": 1776443464,
+                "vibe_score": -0.3182
+            },
+            {
+                "title": "Jim Cramer on AST SpaceMobile: \u201cLet\u2019s Own This One\u201d",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-ast-spacemobile-let-161411494.html",
+                "provider": "Insider Monkey",
+                "date": 1776442451,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "United States Payment Gateways Market Forecast and Company Analysis Report 2026-2034 Featuring PayPal, Amazon, Adyen, JPMorgan Chase & Co, Stripe, BitPay, Braintree, Wepay",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/united-states-payment-gateways-market-161100191.html",
+                "provider": "GlobeNewswire",
+                "date": 1776442260,
+                "vibe_score": 0.5423
+            },
+            {
+                "title": "MercadoLibre vs. Amazon: Which E-Commerce Stock Has More Upside?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/mercadolibre-vs-amazon-e-commerce-150800766.html",
+                "provider": "Zacks",
+                "date": 1776438480,
+                "vibe_score": 0.1779
+            },
+            {
+                "title": "Amazon Scores Major AI Win as Fox Picks AWS as Preferred Cloud Partner",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/amazon-scores-major-ai-win-153534850.html",
+                "provider": "GuruFocus.com",
+                "date": 1776440134,
+                "vibe_score": 0.6983
+            },
+            {
+                "title": "Amazon beats SpaceX to Globalstar as attention turns to spectrum acquisition",
+                "link": "https://finance.yahoo.com/m/2b3c399b-d107-34cb-8dc6-4beeefa3c107/amazon-beats-spacex-to.html",
+                "provider": "Verdict",
+                "date": 1776439163,
+                "vibe_score": 0.1779
+            },
+            {
+                "title": "Oracle, AWS collaborate to expand multicloud networking",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/oracle-aws-collaborate-expand-multicloud-141808834.html",
+                "provider": "TipRanks",
+                "date": 1776435488,
+                "vibe_score": 0.3182
+            },
+            {
+                "title": "David Tepper Is Bullish on These 2 Contrarian Picks and 2 Mega-Cap Winners",
+                "link": "https://finance.yahoo.com/m/6b8b68b9-640d-3386-9577-b520b31064b4/david-tepper-is-bullish-on.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776434893,
+                "vibe_score": 0.4767
+            },
+            {
+                "title": "Amazon shares can continue to outperform mega cap tech: Barclays",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/amazon-shares-continue-outperform-mega-140017345.html",
+                "provider": "Investing.com",
+                "date": 1776434417,
+                "vibe_score": 0.4404
+            },
+            {
+                "title": "NiSource Signs Alphabet Power Deal, Expands Amazon Agreement",
+                "link": "https://finance.yahoo.com/sectors/energy/articles/nisource-signs-alphabet-power-deal-130725995.html",
+                "provider": "GuruFocus.com",
+                "date": 1776431245,
+                "vibe_score": 0.6486
+            },
+            {
+                "title": "Citadel\u2019s Ken Griffin Is Piling Into These 2 AI Stocks While Betting Big on Another",
+                "link": "https://finance.yahoo.com/m/876f3ae3-2fea-3592-bea2-5946917390aa/citadel%E2%80%99s-ken-griffin-is.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776430532,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Israel-Lebanon Ceasefire, S&P 500's Record Close Drive US Equity Futures Higher Pre-Bell",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/israel-lebanon-ceasefire-p-500-125105222.html",
+                "provider": "MT Newswires",
+                "date": 1776430265,
+                "vibe_score": 0.0
+            },
+            {
                 "title": "ICE Director Lyons to Depart in May After Tumultuous Tenure",
                 "link": "https://finance.yahoo.com/economy/policy/articles/ice-director-lyons-depart-may-002106565.html",
                 "provider": "Bloomberg",
                 "date": 1776385266,
                 "vibe_score": 0.0
-            },
-            {
-                "title": "As Amazon Pours Another $25B into Data Centers, Buy This 1 High-Yield Data Center Dividend Stock",
-                "link": "https://finance.yahoo.com/m/dce6c208-888a-3e2d-b3e7-df75db174135/as-amazon-pours-another-%2425b.html",
-                "provider": "Barchart",
-                "date": 1776382202,
-                "vibe_score": 0.1779
-            },
-            {
-                "title": "Why Apple's Refusal to Aggressively Build Out AI Compute Is Actually a Brilliant Move for Investors",
-                "link": "https://finance.yahoo.com/m/16d9b3e5-0687-37aa-85bd-a228dd051bf8/why-apple%27s-refusal-to.html",
-                "provider": "Motley Fool",
-                "date": 1776381780,
-                "vibe_score": 0.3612
-            },
-            {
-                "title": "The Dealmaking 3: NBA on Prime, Fab Five Return, Sportradar\u2019s Brazil Expansion",
-                "link": "https://finance.yahoo.com/m/50f41802-bf65-3d11-a3b8-29d2ac2926e8/the-dealmaking-3%3A-nba-on.html",
-                "provider": "CorpGov.com",
-                "date": 1776381165,
-                "vibe_score": 0.4588
-            },
-            {
-                "title": "Bull vs. Bear: Is Amazon Stock a Buy or Sell?",
-                "link": "https://finance.yahoo.com/m/463ef1bd-6da8-375c-8945-07f804d8703b/bull-vs.-bear%3A-is-amazon.html",
-                "provider": "Motley Fool",
-                "date": 1776376200,
-                "vibe_score": 0.1779
-            },
-            {
-                "title": "NiSource signs long-term power deal with Alphabet, expands Amazon agreement",
-                "link": "https://finance.yahoo.com/sectors/energy/articles/nisource-signs-long-term-power-214613779.html",
-                "provider": "Reuters",
-                "date": 1776375973,
-                "vibe_score": 0.6486
-            },
-            {
-                "title": "NiSource Signs Alphabet Energy Deal in Indiana, Expands Amazon Agreement",
-                "link": "https://finance.yahoo.com/sectors/energy/articles/nisource-signs-alphabet-energy-deal-212418528.html",
-                "provider": "MT Newswires",
-                "date": 1776374658,
-                "vibe_score": 0.7506
-            },
-            {
-                "title": "Generate Investment Management Trims Alaska Air Group Position",
-                "link": "https://finance.yahoo.com/m/a5e110c9-1bc4-36ad-85cb-5938ca189788/generate-investment.html",
-                "provider": "Motley Fool",
-                "date": 1776371306,
-                "vibe_score": 0.0
             }
         ],
         "META": [
+            {
+                "title": "'She Fought For It,' Jay-Z Says As Daughter Blue Ivy, 14, Goes From 'Going Through The Motions' To Standing Out On Mom Beyonc\u00e9's Renaissance Tour",
+                "link": "https://finance.yahoo.com/m/693f9012-71b4-3f16-916f-4d30a6384d8c/%27she-fought-for-it%2C%27-jay-z.html",
+                "provider": "Benzinga",
+                "date": 1776443464,
+                "vibe_score": -0.3182
+            },
+            {
+                "title": "Jim Cramer Says \u201cBroadcom Is the One That I Think You Need to Focus On\u201d",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-says-broadcom-one-161359021.html",
+                "provider": "Insider Monkey",
+                "date": 1776442439,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Here's Why Meta Platforms (META) is a Strong Growth Stock",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/heres-why-meta-platforms-meta-134503726.html",
+                "provider": "Zacks",
+                "date": 1776433503,
+                "vibe_score": 0.7096
+            },
+            {
+                "title": "Goldman Sends Stark Message on Broadcom Stock After Meta Deal",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/goldman-sends-stark-message-broadcom-153204291.html",
+                "provider": "GuruFocus.com",
+                "date": 1776439924,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Truemed Partners with Meta to Enable HSA/ FSA Purchases of Rx AI Glasses",
+                "link": "https://finance.yahoo.com/sectors/healthcare/articles/truemed-partners-meta-enable-hsa-153000017.html",
+                "provider": "PR Newswire",
+                "date": 1776439800,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Qualcomm (QCOM) Makes A Strategic Bet That Could Matter More Than It Seems",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/qualcomm-qcom-makes-strategic-bet-150723480.html",
+                "provider": "Insider Monkey",
+                "date": 1776438443,
+                "vibe_score": 0.0258
+            },
+            {
+                "title": "Allbirds stock on track for 400% gain this week as shoemaker pivots to AI",
+                "link": "https://finance.yahoo.com/news/allbirds-stock-on-track-for-400-gain-this-week-as-shoemaker-pivots-to-ai-133721433.html",
+                "provider": "Yahoo Finance",
+                "date": 1776433041,
+                "vibe_score": 0.5267
+            },
+            {
+                "title": "How to Find Strong Computer and Technology Stocks Slated for Positive Earnings Surprises",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/strong-computer-technology-stocks-slated-130004154.html",
+                "provider": "Zacks",
+                "date": 1776430804,
+                "vibe_score": 0.8316
+            },
+            {
+                "title": "Meta\u2019s New AI Model Can Drive the Stock to Fresh Highs",
+                "link": "https://finance.yahoo.com/m/4284b976-6dd1-3aa3-ae95-918908a567af/meta%E2%80%99s-new-ai-model-can-drive.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776430733,
+                "vibe_score": 0.3182
+            },
+            {
+                "title": "CoreWeave Lands $6B Jane Street Deal, Strengthening Revenue Visibility",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/coreweave-lands-6b-jane-street-125400345.html",
+                "provider": "Zacks",
+                "date": 1776430440,
+                "vibe_score": 0.4939
+            },
+            {
+                "title": "Mizuho is bullish on this major AI chip stock",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/mizuho-bullish-major-ai-chip-124725681.html",
+                "provider": "Investing.com",
+                "date": 1776430045,
+                "vibe_score": 0.0
+            },
             {
                 "title": "Same AI Trade, Same Problems",
                 "link": "https://finance.yahoo.com/m/a63ede38-7a12-3cf2-8dbc-790c0ed217ec/same-ai-trade%2C-same-problems.html",
@@ -1348,34 +1740,6 @@
                 "provider": "StockStory",
                 "date": 1776387987,
                 "vibe_score": 0.0
-            },
-            {
-                "title": "Why Apple's Refusal to Aggressively Build Out AI Compute Is Actually a Brilliant Move for Investors",
-                "link": "https://finance.yahoo.com/m/16d9b3e5-0687-37aa-85bd-a228dd051bf8/why-apple%27s-refusal-to.html",
-                "provider": "Motley Fool",
-                "date": 1776381780,
-                "vibe_score": 0.3612
-            },
-            {
-                "title": "Zuckerberg Is Dangerously Close To Cracking Google's Money Machine",
-                "link": "https://finance.yahoo.com/markets/stocks/articles/zuckerberg-dangerously-close-cracking-googles-220106954.html",
-                "provider": "Benzinga",
-                "date": 1776376866,
-                "vibe_score": -0.4588
-            },
-            {
-                "title": "Financial Services Roundup: Market Talk",
-                "link": "https://finance.yahoo.com/m/c874899d-a5e8-33ca-b12c-3ea315cd829c/financial-services-roundup%3A.html",
-                "provider": "The Wall Street Journal",
-                "date": 1776373080,
-                "vibe_score": 0.0
-            },
-            {
-                "title": "AMD Stock Closes at All-Time High in Longest Winning Streak Since 2005",
-                "link": "https://finance.yahoo.com/m/f033ff75-39da-3ddc-9bf3-5b7931c00e2c/amd-stock-closes-at-all-time.html",
-                "provider": "Barrons.com",
-                "date": 1776371940,
-                "vibe_score": 0.5267
             }
         ],
         "GOOGL": []

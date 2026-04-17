@@ -178,7 +178,7 @@ class StealthNavigator:
         
         print("Ghost Browsing Complete.")
 
-    async def get_session_state(self, url):
+    async def get_session_state(self, url, state_path=None):
         """Heats up a session and returns cookies/crumb."""
         page = await self.context.new_page()
         await self.ghost_browse(page, url)
@@ -200,16 +200,21 @@ class StealthNavigator:
             except:
                 crumb = ""
         
-        state_path = "database/stealth_session.json"
+        # SPEC 2026: Robust path resolution
+        if state_path is None:
+            state_path = "database/stealth_session.json"
+        
+        # Ensure parent directory exists to prevent Playwright FileNotFoundError
+        db_dir = os.path.dirname(state_path)
+        if db_dir and not os.path.exists(db_dir):
+            os.makedirs(db_dir, exist_ok=True)
+            
         await self.context.storage_state(path=state_path)
         
         # Enforce restricted permissions (High Security)
         try:
             if sys.platform != "win32":
                 os.chmod(state_path, 0o600)
-            else:
-                # Windows restricted ACL (Basic)
-                pass 
         except: pass
         
         await page.close()

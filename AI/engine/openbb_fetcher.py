@@ -128,6 +128,31 @@ def _get_yf_supplement(ticker_symbol: str, entry: dict) -> dict:
         if inst_pct    is not None: result['inst_ownership_pct']  = round(inst_pct * 100, 1)
         if short_pct   is not None: result['short_interest_pct']  = round(short_pct * 100, 1)
 
+        # 1Y Performance & Recent Action Fetching
+        try:
+            hist = yf.Ticker(ticker_symbol).history(period="1y")
+            if len(hist) > 2:
+                # 1y Return
+                start_p = hist['Close'].iloc[0]
+                end_p = hist['Close'].iloc[-1]
+                perf_1y = round(((end_p / start_p) - 1) * 100, 1)
+                result['perf_1y'] = perf_1y
+                
+                # Recent Action (Last 7 bars)
+                # Calculate daily change for the last 8 trading days (to get 7 returns)
+                recent = hist['Close'].iloc[-8:]
+                if len(recent) >= 2:
+                    status = []
+                    for i in range(1, len(recent)):
+                        status.append(1 if recent.iloc[i] >= recent.iloc[i-1] else 0)
+                    # We want exactly 7, pad if necessary
+                    while len(status) < 7: status.insert(0, 0)
+                    result['recent_7d_status'] = status[-7:]
+                    
+                log.info(f'  {ticker_symbol}: 1y performance={perf_1y}%, recent_7d={result.get("recent_7d_status")}')
+        except Exception as e:
+            log.warning(f'  {ticker_symbol}: Failed to fetch history: {e}')
+
         log.info(f'  {ticker_symbol}: analysts={n_analysts}, target=${target_mean}, inst={inst_pct}')
 
     except Exception as ex:
@@ -233,6 +258,8 @@ def run_fetch(tickers: list = None, force: bool = False, dry_run: bool = False):
 
         if supplement:
             if not dry_run:
+                if 'human_research' not in data[ticker]:
+                    data[ticker]['human_research'] = {}
                 data[ticker]['human_research']['openbb_supplement'] = supplement
             updated += 1
             log.info(f'  -> Got {len(supplement)} fields: {list(supplement.keys())}')

@@ -1,0 +1,185 @@
+{
+  "IMSR": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Terrestrial Energy",
+    "Role": "Gen IV Nuclear Power",
+    "Notes": "Developing Small Modular Reactors (SMRs) to power industrial heat and high-compute AI data centers.",
+    "Country": "US"
+  },
+  "HUT": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Hut 8 Corp",
+    "Role": "HPC / Digital Infrastructure",
+    "Notes": "Pivoting from Bitcoin mining to High-Performance Computing (HPC) and AI data center services."
+  },
+  "BTDR": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Bitdeer Technologies",
+    "Role": "AI Cloud / ASIC Designer",
+    "Notes": "Vertically integrated crypto-miner expanding into AI cloud services and custom silicon (ASIC) design."
+  },
+  "MARA": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "MARA Holdings",
+    "Role": "Digital Energy Infrastructure",
+    "Notes": "Aggressively transitioning to energy ownership and AI data center infrastructure leasing."
+  },
+  "CLSK": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "CleanSpark",
+    "Role": "Sustainable Compute",
+    "Notes": "Focuses on sustainable Bitcoin mining and efficient energy-grid integration for digital infrastructure."
+  },
+  "EOSE": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Eos Energy Enterprises",
+    "Role": "Zinc-Based Energy Storage",
+    "Notes": "Providing long-duration battery storage solutions for renewable-heavy data center grids."
+  },
+  "BE": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Bloom Energy",
+    "Role": "Fuel Cell Power",
+    "Notes": "Supplies on-site hydrogen fuel cells to data centers facing grid-power shortages."
+  },
+  "IREN": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Iren (Iris Energy)",
+    "Role": "AI Cloud / Green Data Centers",
+    "Notes": "Pure-play green energy data center provider for high-compute AI and crypto operations."
+  },
+  "OKLO": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Oklo Inc.",
+    "Role": "Advanced Fission Power",
+    "Notes": "Deploying micro-reactors to provide direct, clean power to burgeoning AI clusters."
+  },
+  "CAN": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Canaan Inc.",
+    "Role": "ASIC Silicon Design",
+    "Notes": "Hardware play manufacturing specialized chips for blockchain security and compute."
+  },
+  "KEEL": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Keel Infrastructure",
+    "Role": "Digital Asset Landlord",
+    "Notes": "Repurposing legacy crypto sites into Tier-3 AI data centers for hyperscale clients."
+  },
+  "CIFR": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Cipher Mining",
+    "Role": "Infrastructure Lease Play",
+    "Notes": "Transitioning power assets into long-term hyperscale data center lease contracts."
+  },
+  "NBIS": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Nebius Group",
+    "Role": "GPU Cloud Infrastructure",
+    "Notes": "Emerging provider of high-memory GPU clusters for LLM training and inferencing."
+  },
+  "WULF": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "TeraWulf",
+    "Role": "Zero-Carbon Infrastructure",
+    "Notes": "Building low-cost, zero-carbon data center infrastructure for AI and Bitcoin mining."
+  },
+  "BTBT": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Bit Digital",
+    "Role": "AI / ETH Staking",
+    "Notes": "Diversified asset play focusing on GPU rental (Bit Digital AI) and Ethereum security nodes."
+  },
+  "HIVE": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "HIVE Digital",
+    "Role": "Green Desktop GPUs",
+    "Notes": "Repurposing data centers for AI cloud services using green-energy-powered GPU farms."
+  },
+  "CRCL": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Circle Internet Group",
+    "Role": "Stablecoin Infrastructure",
+    "Notes": "Critical financial layer (USDC) for programmable internet finance and digital asset settlement."
+  },
+  "ENS": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "EnerSys",
+    "Role": "Power Storage Systems",
+    "Notes": "Strategic provider of industrial batteries and power management for telecomm/data centers."
+  },
+  "PLPC": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Preformed Line Products",
+    "Role": "Grid Hardware Support",
+    "Notes": "Manufacturer of hardware needed for power transmission infrastructure buildouts."
+  },
+  "GLXY": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Galaxy Digital",
+    "Role": "Institutional Crypto Rails",
+    "Notes": "Providing financial services, asset management, and banking for the digital asset economy."
+  },
+  "CORZ": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Core Scientific",
+    "Role": "Hyperscale AI Hosting",
+    "Notes": "Strategic host for CoreWeave; large-scale operator of data centers for AI compute."
+  },
+  "CRWV": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "CoreWeave",
+    "Role": "The AI Hyperscaler",
+    "Notes": "Private-turned-public GPU cloud giant; key partner for NVIDIA and major AI researchers."
+  },
+  "AMD": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "AMD",
+    "Role": "AI Accelerator Challenger",
+    "Notes": "Challenging NVIDIA dominance with Instinct MI300 series GPUs for enterprise AI."
+  },
+  "NVDA": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "NVIDIA",
+    "Role": "AI Compute Standard",
+    "Notes": "Global leader in AI chips; building the foundational hardware 'factory' for the intelligence era."
+  },
+  "ALAB": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Astera Labs",
+    "Role": "AI Connectivity Silicon",
+    "Notes": "Connectivity solutions for data centers to solve bottlenecks in AI compute scaling."
+  },
+  "AMZN": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Amazon (AWS)",
+    "Role": "Global Cloud Infrastructure",
+    "Notes": "AWS is the backbone of internet compute; massive owner of specialized AI data centers."
+  },
+  "META": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Meta Platforms",
+    "Role": "Open-Source AI Leader",
+    "Notes": "Largest buyer of GPUs globally for Llama development and AI-driven ad-platform."
+  },
+  "GOOGL": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Alphabet (Google)",
+    "Role": "Full-Stack AI Play",
+    "Notes": "TPU hardware and Gemini models; vertically integrated AI research and compute giant.",
+    "Country": "US",
+    "Alpha Score": 8.8,
+    "Risk Adj": 2,
+    "Hiddenness": 4
+  },
+  "AVGO": {
+    "Bucket": "AI Watchlist",
+    "Company Name": "Broadcom Inc.",
+    "Role": "Custom AI Silicons",
+    "Notes": "Dominant infra player; making custom TPUs for Google and XPU chips for high-speed AI data centers.",
+    "Country": "US",
+    "Alpha Score": 9.5,
+    "Risk Adj": 1,
+    "Hiddenness": 3
+  }
+}

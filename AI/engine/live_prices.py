@@ -224,7 +224,10 @@ async def async_run_fetch(tickers: list = None, dry_run: bool = False) -> dict:
     # Setup Stealth Session
     nav = StealthNavigator(headless=True)
     await nav.initialize()
-    cookies_list, crumb = await nav.get_session_state('https://finance.yahoo.com/quote/AAPL')
+    
+    # Use absolute path for session to avoid CWD issues
+    session_path = ROOT / 'database' / 'stealth_session.json'
+    cookies_list, crumb = await nav.get_session_state('https://finance.yahoo.com/quote/AAPL', state_path=str(session_path))
     await nav.close()
     
     cookie_dict = {c['name']: c['value'] for c in cookies_list}

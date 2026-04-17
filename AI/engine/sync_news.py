@@ -11,9 +11,11 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 from engine.news_fetcher import YahooNewsFetcher
+from pathlib import Path
 
-MASTER_DATA = r"z:\COS_Stock_Plays\AI\database\AI_MASTER_DATA.json"
-NEWS_DB = r"z:\COS_Stock_Plays\AI\database\YAHOO_NEWS_DB.json"
+ROOT = Path(__file__).parent.parent
+MASTER_DATA = ROOT / "database" / "AI_MASTER_DATA.json"
+NEWS_DB = ROOT / "database" / "YAHOO_NEWS_DB.json"
 
 FETCH_TTL_SECONDS = 3600  # 1 Hour Cooldown per ticker
 
@@ -107,8 +109,8 @@ async def run_sync():
 def _rebuild_news_module(news: dict):
     """Flatten ticker-keyed news into articles array for dashboard consumption."""
     from datetime import timezone
-    ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    OUT_JS = r'z:\COS_Stock_Plays\AI\database\YAHOO_NEWS_MODULE.js'
+    # Rebuild flat YAHOO_NEWS_MODULE.js for dashboard
+    OUT_JS = ROOT / 'database' / 'YAHOO_NEWS_MODULE.js'
     seen_ids = set()
     flat = []
     for ticker, articles in news.items():

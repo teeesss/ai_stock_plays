@@ -85,22 +85,27 @@ def sync(from_dist=False):
                 sftp.chmod(part, 0o755)
                 sftp.chdir(part)
 
-        # Ensure database subdir exists
-        try:
-            sftp.stat("database")
-        except FileNotFoundError:
-            log.info("Creating database directory")
-            sftp.mkdir("database")
-            sftp.chmod("database", 0o755)
-
         for local_rel, remote_rel in files_to_sync.items():
             local_path = base_dir / local_rel
             if not local_path.exists():
                 log.warning(f"Skipping missing file: {local_path}")
                 continue
 
-            # For database/ files, we need to ensure the remote rel is correct
-            # Since we are already in the 'stocks' dir, database/dashboard_data.js is correct
+            # Ensure remote parent directory exists (Recursive)
+            remote_parent = os.path.dirname(remote_rel)
+            if remote_parent:
+                parts = remote_parent.split('/')
+                curr_rem = ""
+                for part in parts:
+                    if not part: continue
+                    curr_rem = f"{curr_rem}/{part}" if curr_rem else part
+                    try:
+                        sftp.stat(curr_rem)
+                    except FileNotFoundError:
+                        log.info(f"Creating remote directory: {curr_rem}")
+                        sftp.mkdir(curr_rem)
+                        sftp.chmod(curr_rem, 0o755)
+
             log.info(f"Uploading {local_rel} -> {remote_rel}...")
             sftp.put(str(local_path), remote_rel)
             sftp.chmod(remote_rel, 0o644)

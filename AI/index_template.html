@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GIGACPO Intelligence Terminal (V6.1) — Pure Play SiPh/CPO Ecosystem</title>
-    <script src="database/dashboard_data.js"></script>
-    <script src="database/live_prices.js"></script>
-    <script src="intel.js"></script>
+    <title>AI Watchlist Terminal — Crypto/AI Infrastructure</title>
+    <!-- AI Watchlist V1.7.5 Hardened -->
+    <script src="database/dashboard_data.js?v=2026-04-17T08:05"></script>
+    <script src="database/live_prices.js?v=2026-04-17T08:05"></script>
     <!-- Live prices: run 'python engine/live_prices.py' to refresh -->
     <script>
     // Graceful load: LIVE_PRICES is optional, terminal works without it
     window.LIVE_PRICES = window.LIVE_PRICES || {};
     </script>
-    <script src="database/live_prices.js" onerror="console.warn('live_prices.js not found. Run: python engine/live_prices.py')"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         .sync-btn { display:flex; align-items:center; gap:5px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.35); color:var(--green); padding:4px 12px; border-radius:6px; font-size:10px; font-weight:900; cursor:pointer; transition:all 0.2s; text-transform:uppercase; letter-spacing:0.5px; font-family:inherit; white-space:nowrap; }
@@ -146,24 +145,27 @@
         .ticker { color: var(--gold); font-weight: 800; font-size: 13px; font-family: inherit; }
         .private-badge { font-size: 8px; color: var(--purple); font-weight: 700; display: block; margin-top: 1px; }
         .chip { background: #1e293b; padding: 2px 5px; border-radius: 4px; font-weight: 700; font-size: 10px; display: inline-block; min-width: 28px; text-align: center; }
+        .rank-num { font-size: 10px; color: #64748b; font-weight: 800; display: block; text-align: center; }
         .up { color: var(--green); } .down { color: var(--danger); }
         .momentum-strip { display: flex; gap: 2px; margin-top: 3px; }
-        .mb { width: 10px; height: 3px; border-radius: 1px; background: #334155; }
-        .mb-up { background: var(--green); box-shadow: 0 0 4px rgba(16,185,129,0.4); }
-        .mb-dn { background: var(--danger); }
+        .mb { width: 6px; height: 3px; border-radius: 1px; background: #334155; }
+        .mb.up { background: var(--green); box-shadow: 0 0 4px rgba(16,185,129,0.3); }
+        .mb.down { background: var(--danger); }
         .region-tag { font-size: 10px; font-weight: 900; padding: 1px 5px; border-radius: 3px; background: rgba(14,165,233,0.1); color: var(--accent); border: 1px solid rgba(14,165,233,0.25); text-transform: uppercase; }
         .watchlist-divider td { background: rgba(168,85,247,0.08) !important; color: var(--purple); font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; border-top: 2px solid rgba(168,85,247,0.4); }
-        .rank-num { color: var(--text-dim); font-size: 10px; font-weight: 700; min-width: 28px; display: inline-block; text-align: right; margin-right: 4px; }
         
         .x-intel-icon { font-size: 10px; margin-left: 5px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s, color 0.2s; color: var(--text-dim); }
         .x-intel-icon:hover { opacity: 1; color: var(--accent); }
+        
+        /* Column Specifics */
+        th.col-rank { text-align: center; width: 45px; padding-left: 0; padding-right: 0; }
     </style>
 </head>
 <body style="display:flex;flex-direction:column;min-height:100vh;">
 
 <div class="command-bar">
-    <div class="logo">⚡ GIGACPO</div>
-    <div id="versionLabel" class="logo-sub">V6.1 · Remote Intelligence Mode · Sync Managed by Master Bridge</div>
+    <div class="logo">⚡ AI WATCHLIST</div>
+    <div id="versionLabel" class="logo-sub">V1.0 · Independent Autonomous Mode</div>
     
     <div class="stat"><span>UNIVERSE</span><div class="val" id="stat-total">—</div></div>
     <div class="stat"><span>PRIVATE</span><div class="val" id="stat-private" style="color:var(--purple)">—</div></div>
@@ -174,10 +176,6 @@
             <div class="search-box">
                 <input type="text" id="searchInput" class="search-bar" placeholder="SEARCH TICKERS...">
                 <span class="search-tag">TICKERS</span>
-            </div>
-            <div class="search-box">
-                <input type="text" id="intelSearch" class="search-bar" placeholder="𝕏 SOCIAL INTELLIGENCE SEARCH..." readonly onclick="openIntelModal()">
-                <span class="search-tag" style="color:var(--accent)">SOCIAL</span>
             </div>
         </div>
     </div>
@@ -202,7 +200,7 @@
     </div>
 </div>
 
-<script src="YAHOO_NEWS_MODULE.js" defer></script>
+<script src="database/YAHOO_NEWS_MODULE.js" defer></script>
 
 <script>
 // Handle Remote vs Local UI
@@ -218,12 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.onclick = () => alert("This terminal is in Remote Mode. The data is automatically synchronized daily at 4:20 PM EST by the Master Bridge. Manual sync must be triggered from the local machine hosting the bridge.");
     }
     
-    // Intel listeners
-    document.getElementById('modalIntelSearch').addEventListener('input', filterIntel);
-
     initPulse();
     render();
-    filterIntel();
 });
 </script>
 
@@ -274,25 +268,25 @@ document.addEventListener('DOMContentLoaded', () => {
             <thead>
                 <tr>
                     <th style="width:30px;" onclick="setSort('pinned')">★</th>
-                    <th style="width:30px;">#</th>
-                    <th style="width:70px;" onclick="setSort('ticker')">Ticker</th>
-                    <th style="width:130px;" onclick="setSort('company')">Company</th>
-                    <th style="width:36px;" onclick="setSort('alpha')">Alpha</th>
-                    <th style="width:36px;" onclick="setSort('risk')">Risk</th>
-                    <th style="width:36px;" onclick="setSort('hidden')">Hidden</th>
-                    <th style="width:65px;" onclick="setSort('country')">Exchange</th>
+                    <th class="col-rank">#</th>
+                    <th style="width:75px;" onclick="setSort('ticker')">Ticker</th>
+                    <th style="width:140px;" onclick="setSort('company')">Company</th>
+                    <th style="width:60px;" onclick="setSort('alpha')">Alpha</th>
+                    <th style="width:60px;" onclick="setSort('risk')">Risk</th>
+                    <th style="width:60px;" onclick="setSort('hidden')">Hidden</th>
+                    <th style="width:70px;" onclick="setSort('country')">Exchange</th>
                     <th style="width:70px;" onclick="setSort('mcap')">MCap</th>
-                    <th style="width:62px;" onclick="setSort('pe26')">P/E '26</th>
-                    <th style="width:62px;" onclick="setSort('pe27')">P/E '27</th>
-                    <th style="width:55px;" onclick="setSort('upside')">Upside</th>
+                    <th style="width:65px;" onclick="setSort('pe26')">P/E '26</th>
+                    <th style="width:65px;" onclick="setSort('pe27')">P/E '27</th>
+                    <th style="width:75px;" onclick="setSort('upside')">Upside</th>
                     <th style="width:60px;" onclick="setSort('perf1y')">1y Rtn</th>
                     <th style="width:75px;" onclick="setSort('today')">
                         <div id="price-updated-at" style="font-size:7px; color:#ffffff; margin-bottom:-2px; font-weight:700;">--</div>
                         Day $
                     </th>
                     <th style="width:65px;" onclick="setSort('todayPct')">% Chg</th>
-                    <th style="width:72px;" onclick="setSort('ext')">PM/AH</th>
-                    <th style="width:58px;" onclick="setSort('rev')">Rev Gth</th>
+                    <th style="width:75px;" onclick="setSort('ext')">PM/AH</th>
+                    <th style="width:55px;" onclick="setSort('rev')">Rev%</th>
                     <th onclick="setSort('info')">Research Info / Role</th>
                 </tr>
             </thead>
@@ -301,37 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 </div>
 
-<div class="intel-modal" id="intelModal">
-    <div class="intel-modal-content">
-        <div class="intel-header">
-            <div>𝕏 SOCIAL INTELLIGENCE TERMINAL <span id="intel-sync-time" style="font-size:9px; color:var(--text-dim); margin-left:15px; font-weight:700;"></span></div>
-            <div style="display:flex;gap:15px;align-items:center;">
-                <input type="text" id="modalIntelSearch" class="search-bar" style="width:250px;background:#0f172a;" placeholder="SEARCH POSTS / KEYWORDS...">
-                
-                <select id="intelUserFilter" style="font-size:10px;padding:4px;background:#0f172a;color:var(--text-dim);border:1px solid var(--border);" onchange="filterIntel()">
-                    <option value="all">ALL USERS</option>
-                </select>
 
-                <div style="display:flex;gap:5px;align-items:center;">
-                    <span style="font-size:9px;color:var(--text-dim);">FROM</span>
-                    <input type="date" id="intelDateFrom" style="font-size:10px;padding:4px;background:#0f172a;color:white;border:1px solid var(--border);" onchange="filterIntel()">
-                    <span style="font-size:9px;color:var(--text-dim);">TO</span>
-                    <input type="date" id="intelDateTo" style="font-size:10px;padding:4px;background:#0f172a;color:white;border:1px solid var(--border);" onchange="filterIntel()">
-                </div>
-
-                <select id="intelTimeFilter" style="font-size:10px;padding:4px;background:#0f172a;color:var(--text-dim);border:1px solid var(--border);" onchange="filterIntel()">
-                    <option value="all">ANY TIME (ARCHIVE)</option>
-                    <option value="24h">LAST 24 HOURS</option>
-                    <option value="7d">LAST 7 DAYS</option>
-                </select>
-                <div style="font-size:10px;color:var(--text-dim);white-space:nowrap;" id="intel-count">0 POSTS</div>
-                <div class="close-modal" onclick="closeIntelModal()">&times;</div>
-            </div>
-        </div>
-        <div class="buzz-bar" id="buzzBar"></div>
-        <div class="intel-scroll" id="intelBody"></div>
-    </div>
-</div>
 
 <script>
 'use strict';
@@ -371,14 +335,14 @@ function formatMCap(b) {
     let res = '';
     if (b >= 1000) {
         const t = b / 1000;
-        res = (t < 10 ? t.toFixed(2) : t.toFixed(1)).replace('.00','').replace('.0','') + 'T';
+        res = (t < 10 ? t.toFixed(2) : t.toFixed(1)) + 'T';
     } else if (b >= 1) {
-        res = b.toFixed(1).replace('.0','') + 'B';
+        res = b.toFixed(1) + 'B';
     } else {
         const m = b * 1000;
-        res = m.toFixed(1).replace('.0','') + 'M';
+        res = m.toFixed(1) + 'M';
     }
-    return res.length > 7 ? res.substring(0, 7) : res;
+    return res;
 }
 
 function getWeights(agg) {
@@ -403,11 +367,10 @@ function momentumScore(perf1y) {
 
 function buildTickerHTML(ticker) {
     const primary = ticker.includes('/') ? ticker.split('/')[0].trim() : ticker;
-    const xIcon = `<span class="x-intel-icon" onclick="syncIntelSearch('${primary}'); event.stopPropagation();" title="Search \u{1D54F} Intelligence for $${primary}">\u{1D54F}</span>`;
 
-    if (!ticker.includes('/')) return `<a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" class="ticker-link">${ticker}</a>${xIcon}`;
+    if (!ticker.includes('/')) return `<a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" class="ticker-link">${ticker}</a>`;
     const parts = ticker.split('/').map(t => t.trim());
-    return `<a href="https://finance.yahoo.com/quote/${parts[0]}" target="_blank" class="ticker-link">${parts[0]}</a><a href="https://finance.yahoo.com/quote/${parts[1]}" target="_blank" class="ticker-otc" title="US OTC: ${parts[1]}">OTC:${parts[1]}</a>${xIcon}`;
+    return `<a href="https://finance.yahoo.com/quote/${parts[0]}" target="_blank" class="ticker-link">${parts[0]}</a><a href="https://finance.yahoo.com/quote/${parts[1]}" target="_blank" class="ticker-otc" title="US OTC: ${parts[1]}">OTC:${parts[1]}</a>`;
 }
 
 function calcScore(h, mcapB, perf1y, rev_num, pe26, agg) {
@@ -488,8 +451,14 @@ function buildEntries() {
         const updTime = live.updated ? live.updated.slice(11,16) + 'Z' : null;
         const eps26 = trend.find(t => t.period==='0y')?.earningsEstimate?.avg?.raw;
         const eps27 = trend.find(t => t.period==='+1y')?.earningsEstimate?.avg?.raw;
-        const pe26 = eps26 > 0 ? price/eps26 : 999;
-        const pe27 = eps27 > 0 ? price/eps27 : 999;
+        
+        // Priority: Calculated from EPS Trend -> forwardPE key -> trailingPE -> 999
+        let pe26 = eps26 > 0 ? price/eps26 : 999;
+        if (pe26 === 999 && f.summaryDetail?.forwardPE?.raw) pe26 = f.summaryDetail.forwardPE.raw;
+        if (pe26 === 999 && f.summaryDetail?.trailingPE?.raw) pe26 = f.summaryDetail.trailingPE.raw;
+
+        let pe27 = eps27 > 0 ? price/eps27 : 999;
+        if (pe27 === 999 && f.defaultKeyStatistics?.forwardPE?.raw) pe27 = f.defaultKeyStatistics.forwardPE.raw;
         const mcapB = (f.summaryDetail?.marketCap?.raw || 0) / 1e9;
         const perf1y = get1yPerf(entry);
         const growth_str = h['Rev Growth Est'] || '';
@@ -505,7 +474,7 @@ function buildEntries() {
             todayPct: live.change_pct ?? null, 
             todayChg: live.price_chg ?? null,
             p: entry.performance || {},
-            obb: h.openbb_supplement || {},
+            obb: entry.openbb_supplement || {},
             buzz: (window.X_INTEL_MODULE?.buzz || {})[ticker] || null,
             visualBuzz,
             searchStr: `${ticker} ${h.Company||''} ${h.Role||''} ${h.Notes||''}`.toLowerCase(),
@@ -525,10 +494,22 @@ function getExchAbbrev(full) {
         'CANADA': 'CA', 'CHINA': 'CN', 'EUROPE': 'EU', 'HONG KONG': 'HK',
         'JAPAN': 'JP', 'MALAYSIA': 'MY', 'S.KOREA': 'KR', 'SWEDEN': 'SE',
         'TAIWAN': 'TW', 'UK': 'UK', 'US': 'US',
-        'NasdaqGS': 'US', 'NasdaqGM': 'US', 'Nasdaq': 'US', 'NYSE': 'US', 'Pink Sheets': 'OTC'
+        'NasdaqGS': 'NSQ', 'NasdaqGM': 'NSQ', 'Nasdaq': 'NSQ', 'NYSE': 'NYSE', 'Pink Sheets': 'OTC', 'NMS': 'NSQ', 'NYQ': 'NYSE', 'PNK': 'PINK'
     };
     const key = String(full).toUpperCase();
-    return map[key] || full.substring(0,2).toUpperCase();
+    return map[key] || full.substring(0,3).toUpperCase();
+}
+
+function getScoreColor(val, type) {
+    const n = parseFloat(val); if (isNaN(n)) return 'var(--text-dim)';
+    if (type === 'risk') {
+        if (n >= 8) return '#ef4444'; // Red for high risk
+        if (n >= 5) return '#f59e0b'; // Amber
+        return '#10b981'; // Green for low risk
+    }
+    if (n >= 9) return 'var(--gold)'; // Gold for 9-10
+    if (n >= 7) return 'var(--accent)'; // Blue for 7-8
+    return 'var(--text-main)';
 }
 
 
@@ -546,10 +527,27 @@ function render() {
         const tr = document.createElement('tr'); if (isPinned) tr.classList.add('pinned');
         const pe26f = e.pe26 < 999 ? e.pe26.toFixed(1) : '--';
         const pe27f = e.pe27 < 999 ? e.pe27.toFixed(1) : '--';
-        const todayStr = e.todayPct !== null ? (e.todayPct > 0 ? '+'+e.todayPct.toFixed(2)+'%' : e.todayPct.toFixed(2)+'%') : '--';
-        const todayCls = (e.todayPct||0) >= 0 ? 'up' : 'down';
-        const extStr   = e.extPrice !== null ? (e.extPct > 0 ? '+'+e.extPct.toFixed(2)+'%' : e.extPct.toFixed(2)+'%') : null;
-        const extCls   = (e.extPct||0) >= 0 ? 'up' : 'down';
+        
+        let upsideVal = esc(e.h['Target Upside'] || '--');
+        if (e.obb && e.obb.analyst_implied_upside_pct) {
+            const consensus = e.obb.analyst_implied_upside_pct;
+            upsideVal = `<div style="font-size:9px; opacity:0.7;">CONSENSUS</div><div style="font-weight:bold; color:var(--gold);">${consensus > 0 ? '+' : ''}${consensus.toFixed(1)}%</div>`;
+        }
+
+        const todayStr = e.todayPct !== null ? (e.todayPct > 0 ? '+' + e.todayPct.toFixed(2) + '%' : e.todayPct.toFixed(2) + '%') : '--';
+        const todayCls = (e.todayPct || 0) >= 0 ? 'up' : 'down';
+        const extStr = e.extPrice !== null ? (e.extPct > 0 ? '+' + e.extPct.toFixed(2) + '%' : e.extPct.toFixed(2) + '%') : null;
+        const extCls = (e.extPct || 0) >= 0 ? 'up' : 'down';
+
+        let newsHtml = '';
+        if (e.buzz && e.buzz.total > 0) {
+            newsHtml = `<span onclick="syncIntelSearch('${e.ticker}'); event.stopPropagation();" style="display:inline-flex;align-items:center;gap:3px;background:rgba(212,163,115,0.1);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;border:1px solid rgba(212,163,115,0.3);cursor:pointer;margin-right:3px;" title="Social Buzz: ${e.buzz['7d']} tweet mentions last 7d">𝕏 ${e.buzz['7d']}</span>`;
+        }
+        if (e.visualBuzz && e.visualBuzz.count > 0) {
+            const sampleTip = (e.visualBuzz.sample_texts || []).slice(0, 1).join(' | ').substring(0, 120);
+            newsHtml += `<span onclick="syncIntelSearch('${e.ticker}'); event.stopPropagation();" style="display:inline-flex;align-items:center;gap:3px;background:rgba(16,185,129,0.1);color:var(--green);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;border:1px solid rgba(16,185,129,0.3);cursor:pointer;margin-right:3px;" title="Visual Intel: ${e.visualBuzz.count} chart/image mentions | ${sampleTip}">📷 ${e.visualBuzz.count}</span>`;
+        }
+
         let obbHtml = '';
         if (e.obb.analyst_count || e.obb.inst_ownership_pct) {
             obbHtml = `<div style="margin-top:4px;display:flex;gap:4px;">`;
@@ -558,32 +556,27 @@ function render() {
             if (e.obb.short_interest_pct) obbHtml += `<span style="background:rgba(244,63,94,0.1);color:var(--danger);padding:1px 4px;border-radius:3px;font-size:9px;font-weight:800;border:1px solid rgba(244,63,94,0.2);">SHORT: ${e.obb.short_interest_pct}%</span>`;
             obbHtml += `</div>`;
         }
-        let buzzHtml = '';
-        if (e.buzz && e.buzz.total > 0) {
-            buzzHtml = `<span onclick="syncIntelSearch('${e.ticker}'); event.stopPropagation();" style="display:inline-flex;align-items:center;gap:3px;background:rgba(212,163,115,0.1);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;border:1px solid rgba(212,163,115,0.3);cursor:pointer;margin-right:3px;" title="Social Buzz: ${e.buzz['7d']} tweet mentions last 7d">𝕏 ${e.buzz['7d']}</span>`;
-        }
-        if (e.visualBuzz && e.visualBuzz.count > 0) {
-            const sampleTip = (e.visualBuzz.sample_texts || []).slice(0,1).join(' | ').substring(0, 120);
-            buzzHtml += `<span onclick="syncIntelSearch('${e.ticker}'); event.stopPropagation();" style="display:inline-flex;align-items:center;gap:3px;background:rgba(16,185,129,0.1);color:var(--green);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;border:1px solid rgba(16,185,129,0.3);cursor:pointer;margin-right:3px;" title="Visual Intel: ${e.visualBuzz.count} chart/image mentions | ${sampleTip}">📷 ${e.visualBuzz.count}</span>`;
-        }
+
+        const recentStatus = e.p?.recent_7d_status || [0,0,0,0,0,0,0];
+        const momHtml = recentStatus.map(s => `<div class="mb ${s ? 'up' : 'down'}"></div>`).join('');
 
         tr.innerHTML = `
-            <td><span class="pin-btn ${isPinned?'active':''}" onclick="togglePin('${esc(e.ticker)}')">★</span></td>
-            <td><span class="rank-num">${rank}</span></td>
-            <td class="ticker">${buildTickerHTML(e.ticker)}<div class="momentum-strip"><div class="mb ${getMom(e.p,'1m')}"></div><div class="mb ${getMom(e.p,'3m')}"></div><div class="mb ${getMom(e.p,'6m')}"></div><div class="mb ${getMom(e.p,'1y')}"></div></div></td>
+            <td style="text-align:center;"><span class="pin-btn ${isPinned ? 'active' : ''}" onclick="togglePin('${esc(e.ticker)}')">★</span></td>
+            <td style="text-align:center; padding-left: 0; padding-right: 0;"><span class="rank-num">${rank}</span></td>
+            <td class="ticker">${buildTickerHTML(e.ticker)}<div class="momentum-strip">${momHtml}</div></td>
             <td title="${esc(e.h.Company)}" style="font-size:11px;white-space:normal;line-height:1.3;"><b>${esc(e.h.Company)}</b></td>
-            <td><div class="chip" style="border:1px solid var(--gold);">${esc(e.h['Alpha Score']||'?')}</div></td>
-            <td><div class="chip" style="border:1px solid var(--danger);">${esc(e.h['Risk Adj']||'?')}</div></td>
-            <td><div class="chip" style="border:1px solid var(--accent);">${esc(e.h['Hiddenness']||'?')}</div></td>
+            <td><div class="chip" style="border:1px solid ${getScoreColor(e.h['Alpha Score'], 'alpha')}; background:rgba(212,163,115,0.05); color:${getScoreColor(e.h['Alpha Score'], 'alpha')}">${esc(e.h['Alpha Score'] || '?')}</div></td>
+            <td><div class="chip" style="border:1px solid ${getScoreColor(e.h['Risk Adj'], 'risk')}; background:rgba(244,63,94,0.05); color:${getScoreColor(e.h['Risk Adj'], 'risk')}">${esc(e.h['Risk Adj'] || '?')}</div></td>
+            <td><div class="chip" style="border:1px solid ${getScoreColor(e.h['Hiddenness'], 'hidden')}; background:rgba(14,165,233,0.05); color:${getScoreColor(e.h['Hiddenness'], 'hidden')}">${esc(e.h['Hiddenness'] || '?')}</div></td>
             <td><span class="region-tag">${getExchAbbrev(e.exchange)}</span></td>
             <td style="font-weight:700;font-size:12px;">${formatMCap(e.mcapB)}</td>
             <td><span class="chip">${pe26f}</span></td>
-            <td><span class="chip" style="color:var(--accent);">${pe27f}</span></td>
-            <td style="color:var(--gold);font-weight:800;">${esc(e.h['Target Upside']||'--')}</td>
-            <td class="${(e.perf1y||0)>=0?'up':'down'}">${e.perf1y!==undefined?Math.round(e.perf1y)+'%':'--'}</td>
+            <td><span class="chip" style="opacity:0.6;">${pe27f}</span></td>
+            <td class="upside-cell" style="font-weight:700; font-size:12px;">${upsideVal}</td>
+            <td style="font-size:11px; font-weight:900; color:${(e.perf1y || 0) >= 0 ? 'var(--green)' : 'var(--danger)'};">${e.perf1y !== undefined ? (e.perf1y > 0 ? '+' : '') + e.perf1y.toFixed(1) + '%' : '--'}</td>
             <td style="font-weight:800;">
-                <div style="font-size:12px;color:var(--gold);">${e.price ? '$'+e.price.toFixed(2) : '--'}</div>
-                <div style="font-size:9px;" class="${todayCls}">${e.todayChg !== null ? (e.todayChg > 0 ? '+$'+e.todayChg.toFixed(2) : '-$'+Math.abs(e.todayChg).toFixed(2)) : '--'}</div>
+                <div style="font-size:12px;color:var(--gold);">${e.price ? '$' + e.price.toFixed(2) : '--'}</div>
+                <div style="font-size:9px;" class="${todayCls}">${e.todayChg !== null ? (e.todayChg > 0 ? '+$' + e.todayChg.toFixed(2) : '-$' + Math.abs(e.todayChg).toFixed(2)) : '--'}</div>
             </td>
             <td class="${todayCls}" style="font-weight:800; font-size:11px;">
                 ${todayStr}
@@ -591,13 +584,13 @@ function render() {
 
             <td style="font-weight:700;">
                 ${extStr !== null ? `
-                <div style="font-size:8px;color:var(--text-dim);font-weight:700;">${e.extType||''}</div>
+                <div style="font-size:8px;color:var(--text-dim);font-weight:700;">${e.extType || ''}</div>
                 <div style="font-size:11px;color:var(--gold);font-weight:800;">$${e.extPrice.toFixed(2)}</div>
                 <div style="font-size:9px;" class="${extCls}">${extStr}</div>
                 ` : '<span style="color:var(--text-dim);font-size:10px;">--</span>'}
             </td>
-            <td style="font-weight:700;color:var(--accent);">${e.rev_num?e.rev_num+'%':'--'}</td>
-            <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${buzzHtml}${esc(e.h.Role)}</div><div style="font-size:10px;color:#cbd5e1;margin-top:1px;">${esc((e.h.Notes||'').replace(/\s*[|,]?\s*(Valuation|US ADR|US OTC|OTC)[^|]*/gi,'').trim())}</div>${obbHtml}</td>
+            <td style="font-weight:700;color:var(--accent);">${e.rev_num ? e.rev_num + '%' : '--'}</td>
+            <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${newsHtml}${esc(e.h.Role)}</div><div style="font-size:10px;color:#cbd5e1;margin-top:1px;">${esc((e.h.Notes || '').replace(/\s*[|,]?\s*(Valuation|US ADR|US OTC|OTC)[^|]*/gi, '').trim())}</div>${obbHtml}</td>
         `;
         frag.appendChild(tr); rank++;
     });
@@ -675,10 +668,22 @@ function passesFilters(e) {
     }
 
     if (state.selectedBuckets.length > 0 && !state.selectedBuckets.includes(e.h.Bucket)) return false;
-    if (state.selectedExchanges.length > 0 && !state.selectedExchanges.includes(e.h.Country)) return false;
+    if (state.selectedExchanges.length > 0 && !state.selectedExchanges.includes(e.exchange)) return false;
     if (sfloat(e.h['Alpha Score']) < state.minAlpha || sfloat(e.h['Alpha Score']) > state.maxAlpha) return false;
     if (e.rev_num < state.minRev) return false;
     return true;
+}
+
+function getExchAbbrev(full) {
+    if (!full) return '--';
+    const map = {
+        'CANADA': 'CA', 'CHINA': 'CN', 'EUROPE': 'EU', 'HONG KONG': 'HK',
+        'JAPAN': 'JP', 'MALAYSIA': 'MY', 'S.KOREA': 'KR', 'SWEDEN': 'SE',
+        'TAIWAN': 'TW', 'UK': 'UK', 'US': 'US',
+        'NasdaqGS': 'NSQ', 'NasdaqGM': 'NSQ', 'Nasdaq': 'NSQ', 'NYSE': 'NYSE', 'Pink Sheets': 'OTC', 'NMS': 'NSQ', 'NYQ': 'NYSE', 'PNK': 'PINK', 'BTS': 'BITS', 'NGM': 'NSQ', 'NCM': 'NSQ'
+    };
+    const key = String(full).toUpperCase();
+    return map[key] || full.substring(0,3).toUpperCase();
 }
 
 
@@ -707,8 +712,12 @@ function sortFn(a, b) {
 }
 
 function initBuckets() {
+    const entries = buildEntries();
     const buckets = new Set(), exchanges = new Set();
-    Object.values(data).forEach(e => { if (e.human_research?.Bucket!=='Private') buckets.add(e.human_research.Bucket); if (e.human_research.Country) exchanges.add(e.human_research.Country); });
+    entries.forEach(e => { 
+        if (e.h.Bucket !== 'Private') buckets.add(e.h.Bucket); 
+        if (e.exchange) exchanges.add(e.exchange); 
+    });
     const container = document.getElementById('bucketPills'); container.innerHTML = '';
     
     const mk = (t, s, k) => {
@@ -763,163 +772,7 @@ window.setSort = function(col) {
     render();
 };
 
-// Filter intelligence
-function filterIntel() {
-    const query = document.getElementById('modalIntelSearch').value.toLowerCase();
-    const timeFilter = document.getElementById('intelTimeFilter').value;
-    const userFilter = document.getElementById('intelUserFilter').value;
-    const dateFrom = document.getElementById('intelDateFrom').value;
-    const dateTo = document.getElementById('intelDateTo').value;
 
-    const module = window.X_INTEL_MODULE || { posts: [] };
-    const posts = module.posts || [];
-    
-    // Update sync timestamp in UI
-    const syncTimeEl = document.getElementById('intel-sync-time');
-    if (syncTimeEl && (module.visual_last_updated || module.last_updated)) {
-        const d = new Date(module.visual_last_updated || module.last_updated);
-        syncTimeEl.innerText = `LATEST SYNC: ${d.toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})} EST`;
-    }
-    
-    let filtered = posts;
-    
-    // Keyword Filter
-    if (query) {
-        filtered = filtered.filter(p => (p.text||"").toLowerCase().includes(query) || (p.username||"").toLowerCase().includes(query));
-    }
-    
-    // User Filter
-    if (userFilter !== 'all') {
-        filtered = filtered.filter(p => p.username === userFilter);
-    }
-    
-    // Date Range Filter
-    if (dateFrom) {
-        filtered = filtered.filter(p => p.timestamp >= dateFrom);
-    }
-    if (dateTo) {
-        const toLimit = new Date(dateTo);
-        toLimit.setDate(toLimit.getDate() + 1);
-        const toStr = toLimit.toISOString().split('T')[0];
-        filtered = filtered.filter(p => p.timestamp < toStr);
-    }
-
-    // Relative Time Filter
-    if (timeFilter !== 'all') {
-        const now = new Date();
-        const hours = timeFilter === '24h' ? 24 : 168;
-        const cutoff = new Date(now.getTime() - (hours * 60 * 60 * 1000));
-        filtered = filtered.filter(p => new Date(p.timestamp) >= cutoff);
-    }
-    
-    renderIntel(filtered, query);
-    renderBuzz(module.buzz);
-}
-
-function openIntelModal() {
-    document.getElementById('intelModal').classList.add('active');
-    
-    // Lazy-populate user list
-    const userSel = document.getElementById('intelUserFilter');
-    if (userSel.options.length <= 1) {
-        const module = window.X_INTEL_MODULE || { posts: [] };
-        const usernames = [...new Set(module.posts.map(p => p.username))].sort();
-        usernames.forEach(u => {
-            const opt = document.createElement('option');
-            opt.value = u;
-            opt.innerText = '@' + u.toUpperCase();
-            userSel.appendChild(opt);
-        });
-    }
-
-    filterIntel();
-}
-
-function closeIntelModal() {
-    document.getElementById('intelModal').classList.remove('active');
-}
-
-function renderBuzz(buzz = {}) {
-    const bar = document.getElementById('buzzBar');
-    const visualMentions = window.X_INTEL_MODULE?.visual_mentions || {};
-
-    // Merge tweet buzz + visual buzz into unified ranking
-    const allTickers = new Set([...Object.keys(buzz), ...Object.keys(visualMentions)]);
-    const merged = Array.from(allTickers).map(t => {
-        const tw = buzz[t] || {};
-        const vi = visualMentions[t] || {};
-        return [t, { '7d': tw['7d'] || 0, '24h': tw['24h'] || 0, img: vi.count || 0 }];
-    });
-    const sorted = merged
-        .filter(([,s]) => s['7d'] > 0 || s.img > 0)
-        .sort((a,b) => (b[1]['7d'] + b[1].img) - (a[1]['7d'] + a[1].img))
-        .slice(0, 14);
-    
-    if (sorted.length === 0) {
-        bar.innerHTML = '<div style="font-size:8px;color:var(--text-dim);padding:4px;">NO TRENDING TICKERS IN CACHE.</div>';
-        return;
-    }
-    
-    bar.innerHTML = sorted.map(([t, stats]) => {
-        const twBadge = stats['7d'] > 0 ? `<span style="color:var(--gold);">𝕏${stats['7d']}</span>` : '';
-        const imgBadge = stats.img > 0 ? `<span style="color:var(--green);font-size:9px;">📷${stats.img}</span>` : '';
-        const change24 = stats['24h'] > 0 ? `<span style="color:var(--green);font-size:9px;">+${stats['24h']}</span>` : '';
-        return `<div class="buzz-tag" onclick="syncIntelSearch('${t}')" title="$${t}: ${stats['7d']} tweets (7d) | ${stats.img} image hits"><b>$${t}</b> ${twBadge}${imgBadge}${change24}</div>`;
-    }).join('');
-}
-
-function renderIntel(posts, query = "") {
-    const container = document.getElementById('intelBody');
-    const countLabel = document.getElementById('intel-count');
-    
-    countLabel.innerText = `${posts.length} POSTS`;
-    container.innerHTML = "";
-    
-    if (posts.length === 0) {
-        container.innerHTML = `<div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">NO MATCHING INTEL FOUND.</div>`;
-        return;
-    }
-
-    posts.forEach(p => {
-        const date = p.timestamp ? p.timestamp.split('T')[0] : 'Unknown';
-        let text = p.text;
-        
-        // Highlight search query
-        if (query && query.length > 2) {
-            const regex = new RegExp(`(${query})`, 'gi');
-            text = text.replace(regex, '<span class="highlight">$1</span>');
-        }
-
-        // Highlight ticker-like words ($ABCD)
-        text = text.replace(/(\$[A-Z]+)/g, '<span style="color:var(--gold);font-weight:700;">$1</span>');
-
-        // Images local-only (OCR input). Text extracted. No remote URLs to fetch.
-        const imagesHtml = '';
-        const visualHtml = '';
-
-        const item = document.createElement('div');
-        item.className = 'intel-item';
-        item.innerHTML = `
-            <div class="meta">
-                <span class="user">@${p.username}</span>
-                <span>${date}</span>
-            </div>
-            <div class="text">${text}</div>
-            ${imagesHtml}
-            ${visualHtml}
-            <div style="margin-top:6px; text-align:right;">
-                <a href="${p.url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;">VIEW SOURCE ↗</a>
-            </div>
-        `;
-        container.appendChild(item);
-    });
-}
-
-function syncIntelSearch(ticker) {
-    const intelSearch = document.getElementById('modalIntelSearch');
-    intelSearch.value = ticker.startsWith('$') ? ticker : '$' + ticker;
-    openIntelModal();
-}
 
 window.togglePin = t => { state.pinned.includes(t) ? state.pinned=state.pinned.filter(x=>x!==t) : state.pinned.push(t); render(); updateChart(); };
 window.clearPins = () => { state.pinned = []; render(); updateChart(); };

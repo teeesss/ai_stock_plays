@@ -3,7 +3,7 @@
 ## 🚀 Active Context: V19.5 (AI Terminal Momentum & UX Refinement)
 
 ### 🧩 Logic & Patterns
-1. **AI UI Generation (V19.4)**:
+1. **AI UI Generation (V19.5)**:
    - AI/index.html is a GENERATED artifact. Source of truth is `AI/index_template.html`.
    - Use `python AI/engine/generate_ui.py` to rebuild UI. NEVER edit index.html directly.
    - Target Resolution: Columns Alpha/Risk/Hidden must be 60px.
@@ -41,7 +41,7 @@
    - ALWAYS ensure parent directories exist before Playwright `storage_state` calls.
    - Use absolute paths for `stealth_session.json` to prevent CWD-dependent `FileNotFoundError` when running from subdirectories (e.g., `AI/engine`).
 
-6. **AI Watchlist Isolation (V19.4)**:
+6. **AI Watchlist Isolation (V19.2)**:
    - **Hardened Boundary**: ALL AI-specific logic, data, and tests are contained in `AI/`.
    - **Sync Orchestration**: Use `AI/engine/sync_ai_watchlist.py`. NEVER integrate AI tasks into root sync.
    - **Relativity**: All AI scripts must use relative pathing via `pathlib` for the `AI/` directory.

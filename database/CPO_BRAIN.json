@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "CPO Intelligence Brain",
-    "last_synced": "2026-04-16 15:33:58",
+    "last_synced": "2026-04-17 10:49:15",
     "owner": "Ray"
   },
   "ecosystem": {
@@ -31,6 +31,92 @@
           "inst_ownership_pct": 77.7,
           "short_interest_pct": 5.7,
           "last_updated": "2026-04-13T00:58:08.161756+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 21065146,
+              "date_reported": "2025-12-31",
+              "pct_out": 11.42,
+              "value": 3347883499,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 16585229,
+              "date_reported": "2025-12-31",
+              "pct_out": 8.9899994,
+              "value": 2635890323,
+              "is_conviction": true
+            },
+            {
+              "holder": "JPMORGAN CHASE & CO",
+              "shares": 5794510,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.1400003,
+              "value": 920921431,
+              "is_conviction": false
+            },
+            {
+              "holder": "Point72 Asset Management, L.P.",
+              "shares": 5562656,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.0199999,
+              "value": 884072877,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 4486320,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.4300002000000003,
+              "value": 713010804,
+              "is_conviction": true
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 3862041,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.09,
+              "value": 613794147,
+              "is_conviction": false
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 3811596,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.07,
+              "value": 605776924,
+              "is_conviction": false
+            },
+            {
+              "holder": "Alliancebernstein L.P.",
+              "shares": 2206091,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.2,
+              "value": 350614026,
+              "is_conviction": false
+            },
+            {
+              "holder": "Swedbank AB",
+              "shares": 2062779,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.1199999999999999,
+              "value": 327837451,
+              "is_conviction": false
+            },
+            {
+              "holder": "Wellington Management Group, LLP",
+              "shares": 2064731,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.1199999999999999,
+              "value": 328147682,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:17:56.901026+00:00"
         }
       },
       "financials": {
@@ -1968,6 +2054,50 @@
         "openbb_supplement": {
           "inst_ownership_pct": 0.0,
           "last_updated": "2026-04-12T22:11:48.673332+00:00"
+        },
+        "glass_substrate_v16": {
+          "node_type": "Advanced Packaging / Back-end Equipment",
+          "tech_stack": [
+            "Hybrid Bonding",
+            "Die Attach for HBM4/Glass"
+          ],
+          "key_partners": [
+            "TSMC",
+            "Intel"
+          ],
+          "sentiment": "Critical Bottleneck Supplier",
+          "market_narrative": "LIDE/TGV supercycle for AI/HBM4 packaging",
+          "last_updated": "2026-04-17T01:52:08.675625+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Salomon & Ludwin, LLC",
+              "shares": 23,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 6051,
+              "is_conviction": false
+            },
+            {
+              "holder": "Rhumbline Advisers",
+              "shares": 435,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 114448,
+              "is_conviction": false
+            },
+            {
+              "holder": "Gamma Investing LLC",
+              "shares": 11,
+              "date_reported": "2026-03-31",
+              "pct_out": 0.0,
+              "value": 2894,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:17:59.813582+00:00"
         }
       },
       "financials": {
@@ -3840,6 +3970,92 @@
           "inst_ownership_pct": 91.3,
           "short_interest_pct": 3.0,
           "last_updated": "2026-04-12T22:11:48.673852+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 8503676,
+              "date_reported": "2025-12-31",
+              "pct_out": 16.25,
+              "value": 677402861,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 3513023,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.710000000000001,
+              "value": 279847425,
+              "is_conviction": true
+            },
+            {
+              "holder": "Manufacturers Life Insurance Co.",
+              "shares": 2144818,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.099999700000001,
+              "value": 170856209,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 2009633,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.8399997999999997,
+              "value": 160087372,
+              "is_conviction": true
+            },
+            {
+              "holder": "Capital International Investors",
+              "shares": 1744923,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.3299996999999997,
+              "value": 139000572,
+              "is_conviction": false
+            },
+            {
+              "holder": "Dimensional Fund Advisors LP",
+              "shares": 1603418,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.06,
+              "value": 127728283,
+              "is_conviction": false
+            },
+            {
+              "holder": "American Century Companies Inc",
+              "shares": 1597547,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.05,
+              "value": 127260599,
+              "is_conviction": false
+            },
+            {
+              "holder": "Copeland Capital Management, LLC",
+              "shares": 1477365,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.8199999,
+              "value": 117686901,
+              "is_conviction": false
+            },
+            {
+              "holder": "Point72 Asset Management, L.P.",
+              "shares": 1390151,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.6600001,
+              "value": 110739433,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 1259609,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.41,
+              "value": 100340457,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:18:02.634122+00:00"
         }
       },
       "financials": {
@@ -5963,6 +6179,92 @@
           "inst_ownership_pct": 115.3,
           "short_interest_pct": 8.1,
           "last_updated": "2026-04-12T22:11:48.675874+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 17885023,
+              "date_reported": "2025-12-31",
+              "pct_out": 11.77,
+              "value": 2430932293,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 15748669,
+              "date_reported": "2025-12-31",
+              "pct_out": 10.3599995,
+              "value": 2140559061,
+              "is_conviction": true
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 14656565,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.64,
+              "value": 1992120287,
+              "is_conviction": false
+            },
+            {
+              "holder": "Barrow, Hanley Mewhinney & Strauss, LLC",
+              "shares": 6816946,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.4799999999999995,
+              "value": 926559287,
+              "is_conviction": false
+            },
+            {
+              "holder": "Capital Research Global Investors",
+              "shares": 5979634,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.9300002000000003,
+              "value": 812751842,
+              "is_conviction": false
+            },
+            {
+              "holder": "Principal Financial Group, Inc.",
+              "shares": 5817087,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.83,
+              "value": 790658454,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 5152176,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.39,
+              "value": 700283752,
+              "is_conviction": true
+            },
+            {
+              "holder": "Invesco Ltd.",
+              "shares": 3592669,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.3599999,
+              "value": 488315563,
+              "is_conviction": false
+            },
+            {
+              "holder": "LONDON CO OF VIRGINIA",
+              "shares": 3169391,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.09,
+              "value": 430783618,
+              "is_conviction": false
+            },
+            {
+              "holder": "Primecap Management Company",
+              "shares": 3160334,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.08,
+              "value": 429552591,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:18:05.567367+00:00"
         }
       },
       "financials": {
@@ -8090,6 +8392,92 @@
           "inst_ownership_pct": 98.7,
           "short_interest_pct": 3.4,
           "last_updated": "2026-04-12T22:11:48.678408+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 5576305,
+              "date_reported": "2025-12-31",
+              "pct_out": 11.21,
+              "value": 1489709846,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 4931826,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.91,
+              "value": 1317537285,
+              "is_conviction": true
+            },
+            {
+              "holder": "William Blair Investment Management, LLC",
+              "shares": 1726587,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.47,
+              "value": 461257706,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 1459278,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.93,
+              "value": 389846108,
+              "is_conviction": true
+            },
+            {
+              "holder": "Franklin Resources, Inc.",
+              "shares": 1353001,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.7199999999999998,
+              "value": 361454208,
+              "is_conviction": false
+            },
+            {
+              "holder": "Wellington Management Group, LLP",
+              "shares": 1218548,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.4500001,
+              "value": 325535090,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 1127532,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.27,
+              "value": 301220166,
+              "is_conviction": false
+            },
+            {
+              "holder": "Paradigm Capital Management",
+              "shares": 1125838,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.26,
+              "value": 300767614,
+              "is_conviction": false
+            },
+            {
+              "holder": "Voya Investment Management LLC",
+              "shares": 971242,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.95,
+              "value": 259467294,
+              "is_conviction": false
+            },
+            {
+              "holder": "Thrivent Financial For Lutherans",
+              "shares": 960911,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.9299999,
+              "value": 256707367,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:18:08.511779+00:00"
         }
       },
       "financials": {
@@ -10261,6 +10649,92 @@
           "inst_ownership_pct": 87.8,
           "short_interest_pct": 6.9,
           "last_updated": "2026-04-12T22:11:48.682119+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "FMR, LLC",
+              "shares": 23607003,
+              "date_reported": "2025-12-31",
+              "pct_out": 12.590000000000002,
+              "value": 7743096984,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 16127729,
+              "date_reported": "2025-12-31",
+              "pct_out": 8.6,
+              "value": 5289895112,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 14453877,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.71,
+              "value": 4740871656,
+              "is_conviction": true
+            },
+            {
+              "holder": "Bain Capital Investors Llc",
+              "shares": 9775846,
+              "date_reported": "2025-12-31",
+              "pct_out": 5.21,
+              "value": 3206477488,
+              "is_conviction": false
+            },
+            {
+              "holder": "Invesco Ltd.",
+              "shares": 5375616,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.87,
+              "value": 1763202048,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 4716450,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.52,
+              "value": 1546995600,
+              "is_conviction": true
+            },
+            {
+              "holder": "Jane Street Group, LLC",
+              "shares": 3577530,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.91,
+              "value": 1173429840,
+              "is_conviction": false
+            },
+            {
+              "holder": "Point72 Asset Management, L.P.",
+              "shares": 3338935,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.78,
+              "value": 1095170680,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 2793423,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.49,
+              "value": 916242744,
+              "is_conviction": false
+            },
+            {
+              "holder": "Wellington Management Group, LLP",
+              "shares": 2465651,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.3200001,
+              "value": 808733528,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:18:14.284982+00:00"
         }
       },
       "financials": {
@@ -16410,6 +16884,104 @@
           "inst_ownership_pct": 85.4,
           "short_interest_pct": 1.7,
           "last_updated": "2026-04-12T22:11:48.688320+00:00"
+        },
+        "glass_substrate_v16": {
+          "node_type": "Equipment Supplier / Strategic Venture",
+          "tech_stack": [
+            "Deposition & Etching Systems"
+          ],
+          "key_partners": [
+            "Absolics"
+          ],
+          "sentiment": "Ecosystem Enabler",
+          "market_narrative": "LIDE/TGV supercycle for AI/HBM4 packaging",
+          "last_updated": "2026-04-17T01:52:08.667144+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 76779340,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.67,
+              "value": 29936264197,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 75259089,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.4799995,
+              "value": 29343518341,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 37930623,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.78,
+              "value": 14789149676,
+              "is_conviction": true
+            },
+            {
+              "holder": "Capital Research Global Investors",
+              "shares": 32707049,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.1199997,
+              "value": 12752478205,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 18608698,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.34,
+              "value": 7255531236,
+              "is_conviction": false
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 11470835,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.45000005,
+              "value": 4472478496,
+              "is_conviction": true
+            },
+            {
+              "holder": "NORGES BANK",
+              "shares": 11123168,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.39999995,
+              "value": 4336923135,
+              "is_conviction": false
+            },
+            {
+              "holder": "UBS AM, a distinct business unit of UBS ASSET MANAGEMENT AMERICAS LLC",
+              "shares": 10688232,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.35,
+              "value": 4167341591,
+              "is_conviction": false
+            },
+            {
+              "holder": "Ameriprise Financial, Inc.",
+              "shares": 10293252,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.2999999,
+              "value": 4013338891,
+              "is_conviction": false
+            },
+            {
+              "holder": "Northern Trust Corporation",
+              "shares": 8997927,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.13,
+              "value": 3508291682,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:18:23.038050+00:00"
         }
       },
       "financials": {
@@ -18540,6 +19112,92 @@
           "inst_ownership_pct": 79.5,
           "short_interest_pct": 10.7,
           "last_updated": "2026-04-12T22:11:48.690454+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "FMR, LLC",
+              "shares": 25334941,
+              "date_reported": "2025-12-31",
+              "pct_out": 14.790000000000001,
+              "value": 4327461210,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 13827506,
+              "date_reported": "2025-12-31",
+              "pct_out": 8.0699995,
+              "value": 2361876266,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 12968858,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.57,
+              "value": 2215210603,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 3099809,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.8099998999999998,
+              "value": 529478367,
+              "is_conviction": true
+            },
+            {
+              "holder": "Shaw D.E. & Co., Inc.",
+              "shares": 2452380,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.43,
+              "value": 418891021,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 2429078,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.4199998999999999,
+              "value": 414910807,
+              "is_conviction": false
+            },
+            {
+              "holder": "Alliancebernstein L.P.",
+              "shares": 2177795,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.27,
+              "value": 371989158,
+              "is_conviction": false
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 1934467,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.13,
+              "value": 330426303,
+              "is_conviction": true
+            },
+            {
+              "holder": "Fred Alger Management, LLC",
+              "shares": 1934688,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.13,
+              "value": 330464052,
+              "is_conviction": false
+            },
+            {
+              "holder": "Atreides Management, LP",
+              "shares": 1611194,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.9400000000000001,
+              "value": 275208043,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 5,
+          "last_updated": "2026-04-17T02:18:25.956476+00:00"
         }
       },
       "financials": {
@@ -20037,6 +20695,92 @@
           "inst_ownership_pct": 91.1,
           "short_interest_pct": 2.5,
           "last_updated": "2026-04-12T22:11:48.692066+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 18464862,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.64,
+              "value": 8145773758,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 15140606,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.9,
+              "value": 6679278244,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 8788890,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.5900002,
+              "value": 3877218769,
+              "is_conviction": true
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 7492168,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.9100002000000003,
+              "value": 3305169867,
+              "is_conviction": true
+            },
+            {
+              "holder": "Capital World Investors",
+              "shares": 6635080,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.46,
+              "value": 2927065501,
+              "is_conviction": false
+            },
+            {
+              "holder": "Nvidia Corp                          ",
+              "shares": 4821717,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.52,
+              "value": 2127100425,
+              "is_conviction": false
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 4573980,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.39,
+              "value": 2017811249,
+              "is_conviction": true
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 4310846,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.25,
+              "value": 1901729686,
+              "is_conviction": false
+            },
+            {
+              "holder": "Victory Capital Management Inc.",
+              "shares": 2730643,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.43,
+              "value": 1204623142,
+              "is_conviction": false
+            },
+            {
+              "holder": "Edgewood Management Llc",
+              "shares": 2626465,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.37,
+              "value": 1158665018,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 5,
+          "last_updated": "2026-04-17T02:18:28.881327+00:00"
         }
       },
       "financials": {
@@ -22168,6 +22912,92 @@
           "inst_ownership_pct": 113.5,
           "short_interest_pct": 18.0,
           "last_updated": "2026-04-12T22:11:48.695909+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "FMR, LLC",
+              "shares": 9330198,
+              "date_reported": "2025-12-31",
+              "pct_out": 13.069999,
+              "value": 8315258788,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 8344266,
+              "date_reported": "2025-12-31",
+              "pct_out": 11.690000000000001,
+              "value": 7436576500,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 7388774,
+              "date_reported": "2025-12-31",
+              "pct_out": 10.35,
+              "value": 6585022947,
+              "is_conviction": true
+            },
+            {
+              "holder": "Capital World Investors",
+              "shares": 3618324,
+              "date_reported": "2025-12-31",
+              "pct_out": 5.07,
+              "value": 3224722609,
+              "is_conviction": false
+            },
+            {
+              "holder": "Invesco Ltd.",
+              "shares": 2300334,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.2199999999999998,
+              "value": 2050103600,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 2128565,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.98,
+              "value": 1897019636,
+              "is_conviction": true
+            },
+            {
+              "holder": "JPMORGAN CHASE & CO",
+              "shares": 1965662,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.75,
+              "value": 1751837230,
+              "is_conviction": false
+            },
+            {
+              "holder": "Arrowstreet Capital, Limited Partnership",
+              "shares": 1854801,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.5999999,
+              "value": 1653035692,
+              "is_conviction": false
+            },
+            {
+              "holder": "UBS Group AG",
+              "shares": 1582492,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.22,
+              "value": 1410348473,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 1412213,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.9800000000000002,
+              "value": 1258592428,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:18:35.021816+00:00"
         }
       },
       "financials": {
@@ -24264,6 +25094,92 @@
           "inst_ownership_pct": 23.4,
           "short_interest_pct": 8.9,
           "last_updated": "2026-04-12T22:11:48.698108+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 9794276,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.090000400000001,
+              "value": 121155192,
+              "is_conviction": true
+            },
+            {
+              "holder": "Davidson Kempner Capital Management LP",
+              "shares": 2128639,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.9800000000000002,
+              "value": 26331264,
+              "is_conviction": false
+            },
+            {
+              "holder": "Citadel Advisors Llc",
+              "shares": 1947675,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.8099998999999998,
+              "value": 24092739,
+              "is_conviction": false
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 1828266,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.7000000000000002,
+              "value": 22615650,
+              "is_conviction": true
+            },
+            {
+              "holder": "Alyeska Investment Group, L.p.",
+              "shares": 1700000,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.5800001000000001,
+              "value": 21028999,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 1694599,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.5700001000000001,
+              "value": 20962189,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 1593600,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.48,
+              "value": 19712831,
+              "is_conviction": true
+            },
+            {
+              "holder": "Marshall Wace LLP",
+              "shares": 1013735,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.9400000000000001,
+              "value": 12539901,
+              "is_conviction": false
+            },
+            {
+              "holder": "Millennium Management Llc",
+              "shares": 1006720,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.9299999999999999,
+              "value": 12453126,
+              "is_conviction": false
+            },
+            {
+              "holder": "Jane Street Group, LLC",
+              "shares": 862039,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.8,
+              "value": 10663422,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:18:37.955342+00:00"
         }
       },
       "financials": {
@@ -28183,6 +29099,92 @@
           "inst_ownership_pct": 7.6,
           "short_interest_pct": 7.7,
           "last_updated": "2026-04-12T22:11:48.705804+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "MMCAP International, Inc. SPC",
+              "shares": 1526205,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.16,
+              "value": 11202344,
+              "is_conviction": false
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 1220206,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.9199999999999999,
+              "value": 8956312,
+              "is_conviction": true
+            },
+            {
+              "holder": "Susquehanna International Group, LLP",
+              "shares": 686181,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.52,
+              "value": 5036568,
+              "is_conviction": false
+            },
+            {
+              "holder": "Raymond James Financial, Inc.",
+              "shares": 689017,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.52,
+              "value": 5057384,
+              "is_conviction": false
+            },
+            {
+              "holder": "Citadel Advisors Llc",
+              "shares": 678216,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.50999997,
+              "value": 4978105,
+              "is_conviction": false
+            },
+            {
+              "holder": "Federation Des Caisses Desjardins Du Quebec",
+              "shares": 618604,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.47000000000000003,
+              "value": 4540553,
+              "is_conviction": false
+            },
+            {
+              "holder": "Paragon Capital Management Ltd",
+              "shares": 471720,
+              "date_reported": "2026-03-31",
+              "pct_out": 0.36000002,
+              "value": 3462424,
+              "is_conviction": false
+            },
+            {
+              "holder": "Private Advisor Group, LLC",
+              "shares": 427696,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.32,
+              "value": 3139288,
+              "is_conviction": false
+            },
+            {
+              "holder": "Jane Street Group, LLC",
+              "shares": 349776,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.26,
+              "value": 2567355,
+              "is_conviction": false
+            },
+            {
+              "holder": "IMC-Chicago, LLC",
+              "shares": 314783,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.23999999000000002,
+              "value": 2310507,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 1,
+          "last_updated": "2026-04-17T02:18:43.641402+00:00"
         }
       },
       "financials": {
@@ -30337,6 +31339,92 @@
           "inst_ownership_pct": 51.9,
           "short_interest_pct": 11.8,
           "last_updated": "2026-04-12T22:11:48.708494+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Davidson Kempner Capital Management LP",
+              "shares": 2734693,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.9200002,
+              "value": 223643190,
+              "is_conviction": false
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 2106554,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.7900000000000005,
+              "value": 172273983,
+              "is_conviction": true
+            },
+            {
+              "holder": "Hood River Capital Management LLC",
+              "shares": 2012228,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.6199997999999995,
+              "value": 164560003,
+              "is_conviction": false
+            },
+            {
+              "holder": "Point72 Asset Management, L.P.",
+              "shares": 1516156,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.73,
+              "value": 123991235,
+              "is_conviction": false
+            },
+            {
+              "holder": "Cloudalpha Capital Management Limited/hong Kong",
+              "shares": 1390730,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.5,
+              "value": 113733897,
+              "is_conviction": false
+            },
+            {
+              "holder": "E Fund Management Co., Ltd.",
+              "shares": 1262719,
+              "date_reported": "2026-03-31",
+              "pct_out": 2.27,
+              "value": 103265158,
+              "is_conviction": false
+            },
+            {
+              "holder": "Alyeska Investment Group, L.p.",
+              "shares": 1234693,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.22,
+              "value": 100973192,
+              "is_conviction": false
+            },
+            {
+              "holder": "Jane Street Group, LLC",
+              "shares": 904599,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.63,
+              "value": 73978105,
+              "is_conviction": false
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 890629,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.6,
+              "value": 72835638,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 836520,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.50999995,
+              "value": 68410604,
+              "is_conviction": true
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:18:46.566678+00:00"
         }
       },
       "financials": {
@@ -32979,6 +34067,92 @@
           "inst_ownership_pct": 77.4,
           "short_interest_pct": 2.3,
           "last_updated": "2026-04-12T22:11:48.713072+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 6257600,
+              "date_reported": "2025-12-31",
+              "pct_out": 11.219999999999999,
+              "value": 1731477996,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 3917032,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.0199996,
+              "value": 1083842802,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 2863210,
+              "date_reported": "2025-12-31",
+              "pct_out": 5.13,
+              "value": 792250241,
+              "is_conviction": true
+            },
+            {
+              "holder": "Kayne Anderson Rudnick Investment Management LLC",
+              "shares": 2263686,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.0599998,
+              "value": 626361943,
+              "is_conviction": false
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 1582637,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.8399997999999997,
+              "value": 437915677,
+              "is_conviction": true
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 1512403,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.71,
+              "value": 418481928,
+              "is_conviction": false
+            },
+            {
+              "holder": "Massachusetts Financial Services Co.",
+              "shares": 996417,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.79,
+              "value": 275708596,
+              "is_conviction": false
+            },
+            {
+              "holder": "Invesco Ltd.",
+              "shares": 964477,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.73,
+              "value": 266870797,
+              "is_conviction": false
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 912558,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.6400000000000001,
+              "value": 252504809,
+              "is_conviction": true
+            },
+            {
+              "holder": "JPMORGAN CHASE & CO",
+              "shares": 891016,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.6,
+              "value": 246544138,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 5,
+          "last_updated": "2026-04-17T02:18:52.826993+00:00"
         }
       },
       "financials": {
@@ -36224,6 +37398,92 @@
           "inst_ownership_pct": 106.5,
           "short_interest_pct": 6.5,
           "last_updated": "2026-04-12T22:11:48.720038+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 7487305,
+              "date_reported": "2025-12-31",
+              "pct_out": 11.12,
+              "value": 2020748856,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 6138839,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.120000000000001,
+              "value": 1656811347,
+              "is_conviction": true
+            },
+            {
+              "holder": "Invesco Ltd.",
+              "shares": 3855511,
+              "date_reported": "2025-12-31",
+              "pct_out": 5.7299999999999995,
+              "value": 1040563920,
+              "is_conviction": false
+            },
+            {
+              "holder": "Capital International Investors",
+              "shares": 3239230,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.81,
+              "value": 874235832,
+              "is_conviction": false
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 3198335,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.75,
+              "value": 863198680,
+              "is_conviction": true
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 2753850,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.0900003,
+              "value": 743236616,
+              "is_conviction": false
+            },
+            {
+              "holder": "Victory Capital Management Inc.",
+              "shares": 2562399,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.81,
+              "value": 691565903,
+              "is_conviction": false
+            },
+            {
+              "holder": "Wellington Management Group, LLP",
+              "shares": 2552021,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.7900000000000005,
+              "value": 688764985,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 2017590,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.0,
+              "value": 544527394,
+              "is_conviction": true
+            },
+            {
+              "holder": "JPMORGAN CHASE & CO",
+              "shares": 1551443,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.3,
+              "value": 418718973,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:19:01.806323+00:00"
         }
       },
       "financials": {
@@ -38349,6 +39609,92 @@
           "inst_ownership_pct": 105.3,
           "short_interest_pct": 16.2,
           "last_updated": "2026-04-12T22:11:48.722837+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 9298054,
+              "date_reported": "2025-12-31",
+              "pct_out": 15.4,
+              "value": 398793530,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 7674779,
+              "date_reported": "2025-12-31",
+              "pct_out": 12.709999999999999,
+              "value": 329171266,
+              "is_conviction": true
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 5835597,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.659999599999999,
+              "value": 250288751,
+              "is_conviction": true
+            },
+            {
+              "holder": "Neuberger Berman Group, LLC",
+              "shares": 3413826,
+              "date_reported": "2025-12-31",
+              "pct_out": 5.6500003,
+              "value": 146418995,
+              "is_conviction": false
+            },
+            {
+              "holder": "Manufacturers Life Insurance Co.",
+              "shares": 2550593,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.22,
+              "value": 109394932,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 2447267,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.05,
+              "value": 104963280,
+              "is_conviction": true
+            },
+            {
+              "holder": "Westwood Holdings Group Inc.",
+              "shares": 2437649,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.04,
+              "value": 104550764,
+              "is_conviction": false
+            },
+            {
+              "holder": "Paradigm Capital Management",
+              "shares": 2400499,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.9699999999999998,
+              "value": 102957400,
+              "is_conviction": false
+            },
+            {
+              "holder": "Dimensional Fund Advisors LP",
+              "shares": 2305512,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.82,
+              "value": 98883408,
+              "is_conviction": false
+            },
+            {
+              "holder": "Fisher Asset Management, LLC",
+              "shares": 1820357,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.01,
+              "value": 78075110,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:19:04.782491+00:00"
         }
       },
       "financials": {
@@ -40454,6 +41800,92 @@
           "rec_mean_raw": 2.0,
           "inst_ownership_pct": 0.5,
           "last_updated": "2026-04-12T22:11:48.725864+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Boston Common Asset Management, LLC",
+              "shares": 6819,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.01,
+              "value": 6155715,
+              "is_conviction": false
+            },
+            {
+              "holder": "Yousif Capital Management, LLC",
+              "shares": 565,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 510042,
+              "is_conviction": false
+            },
+            {
+              "holder": "Salomon & Ludwin, LLC",
+              "shares": 18,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 16249,
+              "is_conviction": false
+            },
+            {
+              "holder": "PNC Financial Services Group, Inc.",
+              "shares": 47,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 42428,
+              "is_conviction": false
+            },
+            {
+              "holder": "Hantz Financial Services, Inc.                          ",
+              "shares": 2157,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 1947188,
+              "is_conviction": false
+            },
+            {
+              "holder": "Front Row Advisors LLC",
+              "shares": 25,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 22568,
+              "is_conviction": false
+            },
+            {
+              "holder": "Rhumbline Advisers",
+              "shares": 1389,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 1253891,
+              "is_conviction": false
+            },
+            {
+              "holder": "SkyView Investment Advisors, LLC",
+              "shares": 1818,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 1641163,
+              "is_conviction": false
+            },
+            {
+              "holder": "Gamma Investing LLC",
+              "shares": 446,
+              "date_reported": "2026-03-31",
+              "pct_out": 0.0,
+              "value": 402617,
+              "is_conviction": false
+            },
+            {
+              "holder": "Nbc Securities, Inc.                          ",
+              "shares": 50,
+              "date_reported": "2026-03-31",
+              "pct_out": 0.0,
+              "value": 45136,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:19:07.729796+00:00"
         }
       },
       "financials": {
@@ -42439,6 +43871,92 @@
           "inst_ownership_pct": 54.4,
           "short_interest_pct": 11.5,
           "last_updated": "2026-04-12T22:11:48.728532+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Wasatch Advisors LP",
+              "shares": 3167997,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.909999999999999,
+              "value": 572235313,
+              "is_conviction": false
+            },
+            {
+              "holder": "Menora Mivtachim Holdings Ltd.",
+              "shares": 2099351,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.58,
+              "value": 379205781,
+              "is_conviction": false
+            },
+            {
+              "holder": "Clal Insurance Enterprises Holdings Ltd",
+              "shares": 1900493,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.1500002,
+              "value": 343286059,
+              "is_conviction": false
+            },
+            {
+              "holder": "Harel Insurance Investments & Financial Services Ltd.",
+              "shares": 1665236,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.63,
+              "value": 300791586,
+              "is_conviction": false
+            },
+            {
+              "holder": "Migdal Insurance & Financial Holdings Ltd.",
+              "shares": 1318396,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.8800000999999997,
+              "value": 238141875,
+              "is_conviction": false
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 1254248,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.74,
+              "value": 226554822,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 1086242,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.3699999,
+              "value": 196207897,
+              "is_conviction": true
+            },
+            {
+              "holder": "Brown Capital Management, LLC",
+              "shares": 1075053,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.35,
+              "value": 194186828,
+              "is_conviction": false
+            },
+            {
+              "holder": "Analog Century Management, LP",
+              "shares": 693720,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.50999995,
+              "value": 125306646,
+              "is_conviction": false
+            },
+            {
+              "holder": "Y.D. More Investments Ltd",
+              "shares": 648574,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.4199998999999999,
+              "value": 117151924,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 2,
+          "last_updated": "2026-04-17T02:19:10.904075+00:00"
         }
       },
       "financials": {
@@ -44557,6 +46075,92 @@
           "inst_ownership_pct": 78.9,
           "short_interest_pct": 5.2,
           "last_updated": "2026-04-12T22:11:48.730831+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "FMR, LLC",
+              "shares": 2925519,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.2,
+              "value": 1504360294,
+              "is_conviction": true
+            },
+            {
+              "holder": "Migdal Insurance & Financial Holdings Ltd.",
+              "shares": 1493657,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.7,
+              "value": 768068258,
+              "is_conviction": false
+            },
+            {
+              "holder": "Harel Insurance Investments & Financial Services Ltd.",
+              "shares": 1468863,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.62,
+              "value": 755318688,
+              "is_conviction": false
+            },
+            {
+              "holder": "Wasatch Advisors LP",
+              "shares": 1338123,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.21,
+              "value": 688089569,
+              "is_conviction": false
+            },
+            {
+              "holder": "Clal Insurance Enterprises Holdings Ltd",
+              "shares": 1204147,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.7900000000000005,
+              "value": 619196435,
+              "is_conviction": false
+            },
+            {
+              "holder": "Menora Mivtachim Holdings Ltd.",
+              "shares": 1165333,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.6700000000000004,
+              "value": 599237501,
+              "is_conviction": false
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 1128957,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.55,
+              "value": 580532235,
+              "is_conviction": true
+            },
+            {
+              "holder": "Invesco Ltd.",
+              "shares": 634284,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.0,
+              "value": 326161499,
+              "is_conviction": false
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 588501,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.8499999999999999,
+              "value": 302618966,
+              "is_conviction": true
+            },
+            {
+              "holder": "Renaissance Technologies, LLC",
+              "shares": 565986,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.78,
+              "value": 291041304,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:19:13.862904+00:00"
         }
       },
       "financials": {
@@ -47215,6 +48819,92 @@
           "inst_ownership_pct": 73.8,
           "short_interest_pct": 1.9,
           "last_updated": "2026-04-12T22:11:48.735669+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Clal Insurance Enterprises Holdings Ltd",
+              "shares": 4822838,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.38,
+              "value": 1035704460,
+              "is_conviction": false
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 4682152,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.25,
+              "value": 1005492142,
+              "is_conviction": false
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 4338080,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.94,
+              "value": 931602680,
+              "is_conviction": true
+            },
+            {
+              "holder": "Senvest Management LLC",
+              "shares": 3971656,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.61,
+              "value": 852913126,
+              "is_conviction": false
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 3907144,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.55,
+              "value": 839059174,
+              "is_conviction": true
+            },
+            {
+              "holder": "Phoenix Financial Ltd.",
+              "shares": 3829537,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.4799999999999995,
+              "value": 822393070,
+              "is_conviction": false
+            },
+            {
+              "holder": "Migdal Insurance & Financial Holdings Ltd.",
+              "shares": 3002806,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.73,
+              "value": 644852588,
+              "is_conviction": false
+            },
+            {
+              "holder": "Harel Insurance Investments & Financial Services Ltd.",
+              "shares": 2318130,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.11,
+              "value": 497818417,
+              "is_conviction": false
+            },
+            {
+              "holder": "Goldman Sachs Group Inc",
+              "shares": 2206467,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.0,
+              "value": 473838788,
+              "is_conviction": false
+            },
+            {
+              "holder": "Capital International Investors",
+              "shares": 1895161,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.72,
+              "value": 406985824,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 2,
+          "last_updated": "2026-04-17T02:19:19.979557+00:00"
         }
       },
       "financials": {
@@ -52419,6 +54109,68 @@
         "openbb_supplement": {
           "inst_ownership_pct": 0.0,
           "last_updated": "2026-04-12T22:11:48.747500+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Salomon & Ludwin, LLC",
+              "shares": 268,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 17152,
+              "is_conviction": false
+            },
+            {
+              "holder": "PNC Financial Services Group, Inc.",
+              "shares": 81,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 5184,
+              "is_conviction": false
+            },
+            {
+              "holder": "Murphy & Mullick Capital Management Corp                          ",
+              "shares": 2,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 128,
+              "is_conviction": false
+            },
+            {
+              "holder": "IMA Advisory Services, Inc.",
+              "shares": 50,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 3200,
+              "is_conviction": false
+            },
+            {
+              "holder": "Rhumbline Advisers",
+              "shares": 7460,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 477440,
+              "is_conviction": false
+            },
+            {
+              "holder": "Signature Equity Partners, LLC",
+              "shares": 88,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 5632,
+              "is_conviction": false
+            },
+            {
+              "holder": "Gamma Investing LLC",
+              "shares": 2237,
+              "date_reported": "2026-03-31",
+              "pct_out": 0.0,
+              "value": 143168,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:19:28.866490+00:00"
         }
       },
       "financials": {
@@ -56229,6 +57981,28 @@
           "analyst_count": 15,
           "inst_ownership_pct": 53.1,
           "last_updated": "2026-04-12T22:11:48.755595+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Paradigm Asset Management Company, LLC",
+              "shares": 10000,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 293100000,
+              "is_conviction": false
+            },
+            {
+              "holder": "Pacer Advisors, Inc.",
+              "shares": 2749,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 80573190,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:19:37.906501+00:00"
         }
       },
       "financials": {
@@ -58305,6 +60079,172 @@
           "inst_ownership_pct": 81.4,
           "short_interest_pct": 1.1,
           "last_updated": "2026-04-12T22:11:48.758344+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Guggenheim Capital, LLC",
+              "shares": 1572170,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.46,
+              "value": 17309592,
+              "is_conviction": false
+            },
+            {
+              "holder": "Bank of America Corporation",
+              "shares": 504344,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.43,
+              "value": 5552827,
+              "is_conviction": false
+            },
+            {
+              "holder": "Readystate Asset Management LP                          ",
+              "shares": 490138,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.39,
+              "value": 5396419,
+              "is_conviction": false
+            },
+            {
+              "holder": "Marathon Strategic Advisors, LLC                          ",
+              "shares": 392654,
+              "date_reported": "2026-03-31",
+              "pct_out": 1.11,
+              "value": 4323120,
+              "is_conviction": false
+            },
+            {
+              "holder": "Invesco Ltd.",
+              "shares": 374050,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.06,
+              "value": 4118290,
+              "is_conviction": false
+            },
+            {
+              "holder": "Raymond James Financial, Inc.",
+              "shares": 364336,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.0299999,
+              "value": 4011339,
+              "is_conviction": false
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 298840,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.8500000000000001,
+              "value": 3290228,
+              "is_conviction": true
+            },
+            {
+              "holder": "Edgemoor Investment Advisors, Inc.",
+              "shares": 296213,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.84,
+              "value": 3261305,
+              "is_conviction": false
+            },
+            {
+              "holder": "Royal Bank of Canada",
+              "shares": 285678,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.8099999999999999,
+              "value": 3145314,
+              "is_conviction": false
+            },
+            {
+              "holder": "LPL Financial LLC",
+              "shares": 279099,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.7900001,
+              "value": 3072880,
+              "is_conviction": false
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 254322763,
+              "date_reported": "2025-12-31",
+              "pct_out": 10.299999999999999,
+              "value": 29364105983,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 219095465,
+              "date_reported": "2025-12-31",
+              "pct_out": 8.870000000000001,
+              "value": 25296762188,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 120040168,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.8600003,
+              "value": 13859837687,
+              "is_conviction": true
+            },
+            {
+              "holder": "Wellington Management Group, LLP",
+              "shares": 86435458,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.5000000000000004,
+              "value": 9979837901,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 60047984,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.4300002000000003,
+              "value": 6933140177,
+              "is_conviction": false
+            },
+            {
+              "holder": "Charles Schwab Investment Management, Inc.",
+              "shares": 48563804,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.97,
+              "value": 5607176765,
+              "is_conviction": false
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 44946021,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.82,
+              "value": 5189467543,
+              "is_conviction": true
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 40836566,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.6500000000000001,
+              "value": 4714989872,
+              "is_conviction": true
+            },
+            {
+              "holder": "NORGES BANK",
+              "shares": 37981502,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.54,
+              "value": 4385344186,
+              "is_conviction": false
+            },
+            {
+              "holder": "JPMORGAN CHASE & CO",
+              "shares": 29199978,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.17999995,
+              "value": 3371429433,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 6,
+          "last_updated": "2026-04-17T02:19:40.891847+00:00"
         }
       },
       "financials": {
@@ -58907,6 +60847,92 @@
           "inst_ownership_pct": 112.5,
           "short_interest_pct": 5.6,
           "last_updated": "2026-04-12T22:11:48.760496+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 13189055,
+              "date_reported": "2025-12-31",
+              "pct_out": 14.19,
+              "value": 1351086826,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 11858352,
+              "date_reported": "2025-12-31",
+              "pct_out": 12.76,
+              "value": 1214769607,
+              "is_conviction": true
+            },
+            {
+              "holder": "Ameriprise Financial, Inc.",
+              "shares": 7552252,
+              "date_reported": "2025-12-31",
+              "pct_out": 8.1199996,
+              "value": 773652713,
+              "is_conviction": false
+            },
+            {
+              "holder": "Capital Research Global Investors",
+              "shares": 4502720,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.84,
+              "value": 461258647,
+              "is_conviction": false
+            },
+            {
+              "holder": "Whale Rock Capital Management LLC",
+              "shares": 3901469,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.2,
+              "value": 399666493,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 3848245,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.14,
+              "value": 394214227,
+              "is_conviction": true
+            },
+            {
+              "holder": "Alliancebernstein L.P.",
+              "shares": 2965189,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.19,
+              "value": 303753968,
+              "is_conviction": false
+            },
+            {
+              "holder": "Disciplined Growth Investors, Inc.",
+              "shares": 2801291,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.01,
+              "value": 286964256,
+              "is_conviction": false
+            },
+            {
+              "holder": "Nomura Asset Management International Inc",
+              "shares": 2453294,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.6400002,
+              "value": 251315443,
+              "is_conviction": false
+            },
+            {
+              "holder": "Westfield Capital Management Co LP",
+              "shares": 2448612,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.6300002,
+              "value": 250835819,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:19:44.475021+00:00"
         }
       },
       "financials": {
@@ -61012,6 +63038,92 @@
           "inst_ownership_pct": 93.9,
           "short_interest_pct": 1.2,
           "last_updated": "2026-04-12T22:11:48.763482+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 21525694,
+              "date_reported": "2025-12-31",
+              "pct_out": 12.550001,
+              "value": 7102617808,
+              "is_conviction": true
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 17419811,
+              "date_reported": "2025-12-31",
+              "pct_out": 10.16,
+              "value": 5747840688,
+              "is_conviction": false
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 17400627,
+              "date_reported": "2025-12-31",
+              "pct_out": 10.15,
+              "value": 5741510736,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 8191895,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.78,
+              "value": 2702997604,
+              "is_conviction": true
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 4904324,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.86,
+              "value": 1618230705,
+              "is_conviction": false
+            },
+            {
+              "holder": "Boston Partners",
+              "shares": 4029610,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.35,
+              "value": 1329610081,
+              "is_conviction": false
+            },
+            {
+              "holder": "Capital World Investors",
+              "shares": 3940767,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.3,
+              "value": 1300295445,
+              "is_conviction": false
+            },
+            {
+              "holder": "T. Rowe Price Investment Management, Inc.",
+              "shares": 3188308,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.8599999999999999,
+              "value": 1052014080,
+              "is_conviction": false
+            },
+            {
+              "holder": "Victory Capital Management Inc.",
+              "shares": 2304835,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.34000005,
+              "value": 760503336,
+              "is_conviction": false
+            },
+            {
+              "holder": "NORGES BANK",
+              "shares": 2143520,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.25,
+              "value": 707275840,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:19:47.462940+00:00"
         }
       },
       "financials": {
@@ -63121,6 +65233,92 @@
           "inst_ownership_pct": 98.4,
           "short_interest_pct": 3.8,
           "last_updated": "2026-04-12T22:11:48.766029+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 20298150,
+              "date_reported": "2025-12-31",
+              "pct_out": 11.690000000000001,
+              "value": 7427499320,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 15398237,
+              "date_reported": "2025-12-31",
+              "pct_out": 8.870000000000001,
+              "value": 5634523089,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 7078635,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.0799997999999995,
+              "value": 2590214214,
+              "is_conviction": true
+            },
+            {
+              "holder": "Ameriprise Financial, Inc.",
+              "shares": 4490356,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.5899999,
+              "value": 1643111127,
+              "is_conviction": false
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 4203546,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.42,
+              "value": 1538161608,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 4163538,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.4,
+              "value": 1523521880,
+              "is_conviction": false
+            },
+            {
+              "holder": "JPMORGAN CHASE & CO",
+              "shares": 3502893,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.02,
+              "value": 1281778653,
+              "is_conviction": false
+            },
+            {
+              "holder": "Allspring Global Investments Holdings, LLC",
+              "shares": 3305785,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.9,
+              "value": 1209652891,
+              "is_conviction": false
+            },
+            {
+              "holder": "Invesco Ltd.",
+              "shares": 2951394,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.7000000000000002,
+              "value": 1079974132,
+              "is_conviction": false
+            },
+            {
+              "holder": "Point72 Asset Management, L.P.",
+              "shares": 2816571,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.6199999999999999,
+              "value": 1030639698,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:19:50.343523+00:00"
         }
       },
       "financials": {
@@ -65251,6 +67449,92 @@
           "inst_ownership_pct": 82.1,
           "short_interest_pct": 1.7,
           "last_updated": "2026-04-12T22:11:48.768042+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 398943293,
+              "date_reported": "2025-12-31",
+              "pct_out": 10.100000000000001,
+              "value": 33710708258,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 378336071,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.58,
+              "value": 31969397999,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 195521161,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.95,
+              "value": 16521538104,
+              "is_conviction": true
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 99624866,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.52,
+              "value": 8418301177,
+              "is_conviction": false
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 75326258,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.91,
+              "value": 6365068801,
+              "is_conviction": true
+            },
+            {
+              "holder": "Charles Schwab Investment Management, Inc.",
+              "shares": 70521797,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.79,
+              "value": 5959091846,
+              "is_conviction": false
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 65445654,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.66,
+              "value": 5530157763,
+              "is_conviction": true
+            },
+            {
+              "holder": "Invesco Ltd.",
+              "shares": 59836782,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.50999995,
+              "value": 5056208079,
+              "is_conviction": false
+            },
+            {
+              "holder": "NORGES BANK",
+              "shares": 58071810,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.47,
+              "value": 4907067945,
+              "is_conviction": false
+            },
+            {
+              "holder": "Bank of America Corporation",
+              "shares": 52148049,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.3200001,
+              "value": 4406510140,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 5,
+          "last_updated": "2026-04-17T02:19:53.591878+00:00"
         }
       },
       "financials": {
@@ -67381,6 +69665,92 @@
           "inst_ownership_pct": 71.7,
           "short_interest_pct": 13.7,
           "last_updated": "2026-04-13T00:58:07.629778+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 5306432,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.72,
+              "value": 834807921,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 4982660,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.3100000000000005,
+              "value": 783872107,
+              "is_conviction": true
+            },
+            {
+              "holder": "Invesco Ltd.",
+              "shares": 3512309,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.4499997,
+              "value": 552556477,
+              "is_conviction": false
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 2229757,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.8199999,
+              "value": 350785387,
+              "is_conviction": false
+            },
+            {
+              "holder": "Oberweis Asset Management Inc.",
+              "shares": 2039641,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.5799999000000002,
+              "value": 320876337,
+              "is_conviction": false
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 1699855,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.15,
+              "value": 267421201,
+              "is_conviction": true
+            },
+            {
+              "holder": "Hawk Ridge Capital Management, LP",
+              "shares": 1700900,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.15,
+              "value": 267585600,
+              "is_conviction": false
+            },
+            {
+              "holder": "Jane Street Group, LLC",
+              "shares": 1682894,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.1300000999999997,
+              "value": 264752896,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 1606236,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.0299999,
+              "value": 252693059,
+              "is_conviction": true
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 1512902,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.9199998999999999,
+              "value": 238009753,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:19:56.508243+00:00"
         }
       },
       "financials": {
@@ -69499,6 +71869,92 @@
           "inst_ownership_pct": 114.4,
           "short_interest_pct": 14.9,
           "last_updated": "2026-04-12T22:11:48.772459+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 4580729,
+              "date_reported": "2025-12-31",
+              "pct_out": 12.839999999999998,
+              "value": 576713788,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 4340698,
+              "date_reported": "2025-12-31",
+              "pct_out": 12.16,
+              "value": 546493884,
+              "is_conviction": true
+            },
+            {
+              "holder": "Conestoga Capital Advisors, LLC",
+              "shares": 1458259,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.0900003,
+              "value": 183594810,
+              "is_conviction": false
+            },
+            {
+              "holder": "Allspring Global Investments Holdings, LLC",
+              "shares": 1399462,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.92,
+              "value": 176192267,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 1319474,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.6999999999999997,
+              "value": 166121778,
+              "is_conviction": true
+            },
+            {
+              "holder": "BAMCO Inc.",
+              "shares": 936962,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.6300002,
+              "value": 117963517,
+              "is_conviction": false
+            },
+            {
+              "holder": "William Blair Investment Management, LLC",
+              "shares": 908906,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.55,
+              "value": 114431266,
+              "is_conviction": false
+            },
+            {
+              "holder": "Congress Asset Management Co",
+              "shares": 909710,
+              "date_reported": "2026-03-31",
+              "pct_out": 2.55,
+              "value": 114532490,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 904819,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.54,
+              "value": 113916713,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geneva Capital Management LLC",
+              "shares": 903088,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.53,
+              "value": 113698780,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:19:59.497677+00:00"
         }
       },
       "financials": {
@@ -71609,6 +74065,92 @@
           "inst_ownership_pct": 96.7,
           "short_interest_pct": 4.7,
           "last_updated": "2026-04-12T22:11:48.773972+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 3300636,
+              "date_reported": "2025-12-31",
+              "pct_out": 15.870000000000001,
+              "value": 549720935,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 2344101,
+              "date_reported": "2025-12-31",
+              "pct_out": 11.270001,
+              "value": 390410028,
+              "is_conviction": true
+            },
+            {
+              "holder": "Capital Research Global Investors",
+              "shares": 1893919,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.1000006,
+              "value": 315432215,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 1209634,
+              "date_reported": "2025-12-31",
+              "pct_out": 5.82,
+              "value": 201464546,
+              "is_conviction": true
+            },
+            {
+              "holder": "Dimensional Fund Advisors LP",
+              "shares": 990694,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.760000000000001,
+              "value": 165000088,
+              "is_conviction": false
+            },
+            {
+              "holder": "Barrow, Hanley Mewhinney & Strauss, LLC",
+              "shares": 563369,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.71,
+              "value": 93829108,
+              "is_conviction": false
+            },
+            {
+              "holder": "American Century Companies Inc",
+              "shares": 521376,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.5100000000000002,
+              "value": 86835174,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 489539,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.35,
+              "value": 81532721,
+              "is_conviction": false
+            },
+            {
+              "holder": "Ack Asset Management Llc",
+              "shares": 474800,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.2800000000000002,
+              "value": 79077941,
+              "is_conviction": false
+            },
+            {
+              "holder": "Trigran Investments Inc",
+              "shares": 458073,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.1999999999999997,
+              "value": 76292059,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:20:02.437600+00:00"
         }
       },
       "financials": {
@@ -73730,6 +76272,92 @@
           "inst_ownership_pct": 104.7,
           "short_interest_pct": 16.5,
           "last_updated": "2026-04-12T22:11:48.775498+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 7122001,
+              "date_reported": "2025-12-31",
+              "pct_out": 15.100000999999999,
+              "value": 280393171,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 4361164,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.25,
+              "value": 171699022,
+              "is_conviction": true
+            },
+            {
+              "holder": "Victory Capital Management Inc.",
+              "shares": 2472480,
+              "date_reported": "2025-12-31",
+              "pct_out": 5.239999699999999,
+              "value": 97341534,
+              "is_conviction": false
+            },
+            {
+              "holder": "Royce & Associates LP",
+              "shares": 1918424,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.0700004,
+              "value": 75528350,
+              "is_conviction": false
+            },
+            {
+              "holder": "Barrow, Hanley Mewhinney & Strauss, LLC",
+              "shares": 1892347,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.01,
+              "value": 74501699,
+              "is_conviction": false
+            },
+            {
+              "holder": "Dimensional Fund Advisors LP",
+              "shares": 1849027,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.92,
+              "value": 72796191,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 1819530,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.8599998,
+              "value": 71634894,
+              "is_conviction": true
+            },
+            {
+              "holder": "Systematic Financial Management, L.P.",
+              "shares": 1541082,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.27,
+              "value": 60672396,
+              "is_conviction": false
+            },
+            {
+              "holder": "SG Capital Management, LLC",
+              "shares": 1425621,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.0199999,
+              "value": 56126697,
+              "is_conviction": false
+            },
+            {
+              "holder": "Frontier Capital Management Company LLC",
+              "shares": 1398897,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.97,
+              "value": 55074573,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:20:05.408844+00:00"
         }
       },
       "financials": {
@@ -75914,6 +78542,92 @@
           "inst_ownership_pct": 98.0,
           "short_interest_pct": 1.4,
           "last_updated": "2026-04-12T22:11:48.782654+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 126553498,
+              "date_reported": "2025-12-31",
+              "pct_out": 10.290000000000001,
+              "value": 18851409911,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 106137606,
+              "date_reported": "2025-12-31",
+              "pct_out": 8.63,
+              "value": 15810258502,
+              "is_conviction": true
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 86420795,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.0300005,
+              "value": 12873242203,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 56913598,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.63,
+              "value": 8477849940,
+              "is_conviction": true
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 37923065,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.08,
+              "value": 5649020017,
+              "is_conviction": false
+            },
+            {
+              "holder": "JPMORGAN CHASE & CO",
+              "shares": 34325148,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.79,
+              "value": 5113074276,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 30318652,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.4699999999999998,
+              "value": 4516266605,
+              "is_conviction": false
+            },
+            {
+              "holder": "Capital International Investors",
+              "shares": 23680749,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.9299999,
+              "value": 3527484530,
+              "is_conviction": false
+            },
+            {
+              "holder": "NORGES BANK",
+              "shares": 22585063,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.8399999999999999,
+              "value": 3364271136,
+              "is_conviction": false
+            },
+            {
+              "holder": "Bank of America Corporation",
+              "shares": 21957452,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.79,
+              "value": 3270782197,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:20:11.200957+00:00"
         }
       },
       "financials": {
@@ -80624,6 +83338,92 @@
           "inst_ownership_pct": 72.1,
           "short_interest_pct": 2.8,
           "last_updated": "2026-04-12T22:11:48.795471+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "FMR, LLC",
+              "shares": 7411298,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.45,
+              "value": 2833487505,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 4811695,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.19,
+              "value": 1839607267,
+              "is_conviction": true
+            },
+            {
+              "holder": "JPMORGAN CHASE & CO",
+              "shares": 4017623,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.49,
+              "value": 1536017654,
+              "is_conviction": false
+            },
+            {
+              "holder": "Arrowstreet Capital, Limited Partnership",
+              "shares": 3152285,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.74,
+              "value": 1205181624,
+              "is_conviction": false
+            },
+            {
+              "holder": "Franklin Resources, Inc.",
+              "shares": 2278214,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.9800000000000002,
+              "value": 871006793,
+              "is_conviction": false
+            },
+            {
+              "holder": "CIBC World Market, Inc.",
+              "shares": 2265680,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.97,
+              "value": 866214794,
+              "is_conviction": false
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 2090701,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.82,
+              "value": 799316821,
+              "is_conviction": true
+            },
+            {
+              "holder": "Whale Rock Capital Management LLC",
+              "shares": 1882391,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.6400000000000001,
+              "value": 719675740,
+              "is_conviction": true
+            },
+            {
+              "holder": "Viking Global Investors, L.P.",
+              "shares": 1699236,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.48,
+              "value": 649651919,
+              "is_conviction": false
+            },
+            {
+              "holder": "Goldman Sachs Group Inc",
+              "shares": 1637367,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.4199998999999999,
+              "value": 625998163,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:20:27.276662+00:00"
         }
       },
       "financials": {
@@ -82736,6 +85536,105 @@
           "inst_ownership_pct": 74.8,
           "short_interest_pct": 2.0,
           "last_updated": "2026-04-12T22:11:48.799468+00:00"
+        },
+        "glass_substrate_v16": {
+          "node_type": "Specialty Glass Material Producer",
+          "tech_stack": [
+            "Fusion Forming Precision Glass"
+          ],
+          "key_partners": [
+            "LPKF",
+            "Intel"
+          ],
+          "sentiment": "Dominant Material Supplier",
+          "market_narrative": "LIDE/TGV supercycle for AI/HBM4 packaging",
+          "last_updated": "2026-04-17T01:52:08.649876+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 99283317,
+              "date_reported": "2025-12-31",
+              "pct_out": 11.560000500000001,
+              "value": 16488973469,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 63584864,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.3999999999999995,
+              "value": 10560174329,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 36788356,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.279999999999999,
+              "value": 6109810231,
+              "is_conviction": true
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 20411824,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.3800000000000003,
+              "value": 3389995767,
+              "is_conviction": false
+            },
+            {
+              "holder": "Bank of America Corporation",
+              "shares": 17381978,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.02,
+              "value": 2886798938,
+              "is_conviction": false
+            },
+            {
+              "holder": "Capital Research Global Investors",
+              "shares": 16890802,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.97,
+              "value": 2805224427,
+              "is_conviction": false
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 15206561,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.77,
+              "value": 2525505678,
+              "is_conviction": true
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 14450509,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.68,
+              "value": 2399940561,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Farm Mutual Automobile Insurance Co",
+              "shares": 13919847,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.6199999999999999,
+              "value": 2311808215,
+              "is_conviction": false
+            },
+            {
+              "holder": "Wellington Management Group, LLP",
+              "shares": 12572185,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.46,
+              "value": 2087988507,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 5,
+          "last_updated": "2026-04-17T02:20:30.291401+00:00"
         }
       },
       "financials": {
@@ -84866,6 +87765,92 @@
           "inst_ownership_pct": 83.6,
           "short_interest_pct": 4.6,
           "last_updated": "2026-04-12T22:11:48.804195+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "FMR, LLC",
+              "shares": 126817429,
+              "date_reported": "2025-12-31",
+              "pct_out": 14.499999999999998,
+              "value": 16913639886,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 78755386,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.0100005,
+              "value": 10503605446,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 59806492,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.84,
+              "value": 7976391546,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 22834816,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.6099999,
+              "value": 3045479298,
+              "is_conviction": true
+            },
+            {
+              "holder": "Ameriprise Financial, Inc.",
+              "shares": 17146932,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.96,
+              "value": 2286886237,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 12108452,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.38,
+              "value": 1614904184,
+              "is_conviction": false
+            },
+            {
+              "holder": "Franklin Resources, Inc.",
+              "shares": 11550963,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.3200001,
+              "value": 1540551878,
+              "is_conviction": false
+            },
+            {
+              "holder": "Bank of America Corporation",
+              "shares": 11460873,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.3099999,
+              "value": 1528536576,
+              "is_conviction": false
+            },
+            {
+              "holder": "NORGES BANK",
+              "shares": 10537246,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.21,
+              "value": 1405352447,
+              "is_conviction": false
+            },
+            {
+              "holder": "Goldman Sachs Group Inc",
+              "shares": 10464787,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.2,
+              "value": 1395688591,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:20:33.327975+00:00"
         }
       },
       "financials": {
@@ -86996,6 +89981,92 @@
           "inst_ownership_pct": 79.5,
           "short_interest_pct": 1.1,
           "last_updated": "2026-04-12T22:11:48.808083+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 482707302,
+              "date_reported": "2025-12-31",
+              "pct_out": 10.2,
+              "value": 192344379217,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 379894948,
+              "date_reported": "2025-12-31",
+              "pct_out": 8.02,
+              "value": 151376740393,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 190084351,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.01,
+              "value": 75742911575,
+              "is_conviction": true
+            },
+            {
+              "holder": "Capital International Investors",
+              "shares": 141864077,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.0,
+              "value": 56528578935,
+              "is_conviction": false
+            },
+            {
+              "holder": "Capital World Investors",
+              "shares": 123257172,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.5999999,
+              "value": 49114285477,
+              "is_conviction": false
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 123186236,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.5999999,
+              "value": 49086019609,
+              "is_conviction": true
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 111277280,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.35,
+              "value": 44340657897,
+              "is_conviction": false
+            },
+            {
+              "holder": "JPMORGAN CHASE & CO",
+              "shares": 93758850,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.9800000000000002,
+              "value": 37360089073,
+              "is_conviction": false
+            },
+            {
+              "holder": "Capital Research Global Investors",
+              "shares": 86361719,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.82,
+              "value": 34412554275,
+              "is_conviction": false
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 85546083,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.8099998999999998,
+              "value": 34087547797,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:20:36.141497+00:00"
         }
       },
       "financials": {
@@ -90531,6 +93602,92 @@
           "inst_ownership_pct": 102.8,
           "short_interest_pct": 27.4,
           "last_updated": "2026-04-12T22:11:48.810260+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Mubadala Investment Co PJSC",
+              "shares": 450387613,
+              "date_reported": "2025-12-31",
+              "pct_out": 80.94,
+              "value": 22695031544,
+              "is_conviction": false
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 55462583,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.9700004,
+              "value": 2794759523,
+              "is_conviction": true
+            },
+            {
+              "holder": "Slate Path Capital, LP",
+              "shares": 4856000,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.8699999999999999,
+              "value": 244693837,
+              "is_conviction": false
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 2880863,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.52,
+              "value": 145166684,
+              "is_conviction": true
+            },
+            {
+              "holder": "AQR Capital Management, LLC",
+              "shares": 2865046,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.50999997,
+              "value": 144369666,
+              "is_conviction": false
+            },
+            {
+              "holder": "Marshall Wace LLP",
+              "shares": 2382003,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.43,
+              "value": 120029129,
+              "is_conviction": false
+            },
+            {
+              "holder": "Millennium Management Llc",
+              "shares": 2286806,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.41000000000000003,
+              "value": 115232152,
+              "is_conviction": false
+            },
+            {
+              "holder": "Squarepoint Ops LLC",
+              "shares": 2021035,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.36000002,
+              "value": 101839952,
+              "is_conviction": false
+            },
+            {
+              "holder": "Two Sigma Investments, LP",
+              "shares": 1844267,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.33000002,
+              "value": 92932613,
+              "is_conviction": false
+            },
+            {
+              "holder": "UBS Group AG",
+              "shares": 1809232,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.33000002,
+              "value": 91167199,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 2,
+          "last_updated": "2026-04-17T02:20:42.080031+00:00"
         }
       },
       "financials": {
@@ -94557,6 +97714,92 @@
           "inst_ownership_pct": 86.5,
           "short_interest_pct": 3.7,
           "last_updated": "2026-04-12T22:11:48.817475+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "FMR, LLC",
+              "shares": 49525737,
+              "date_reported": "2025-12-31",
+              "pct_out": 14.99,
+              "value": 3357845119,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 38044426,
+              "date_reported": "2025-12-31",
+              "pct_out": 11.510000400000001,
+              "value": 2579412198,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 33125015,
+              "date_reported": "2025-12-31",
+              "pct_out": 10.0200005,
+              "value": 2245876118,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 10953501,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.3099998,
+              "value": 742647401,
+              "is_conviction": true
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 7716158,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.33,
+              "value": 523155535,
+              "is_conviction": false
+            },
+            {
+              "holder": "T. Rowe Price Investment Management, Inc.",
+              "shares": 5473293,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.66,
+              "value": 371089282,
+              "is_conviction": false
+            },
+            {
+              "holder": "Disciplined Growth Investors, Inc.",
+              "shares": 4897406,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.48,
+              "value": 332044141,
+              "is_conviction": false
+            },
+            {
+              "holder": "Atreides Management, LP",
+              "shares": 4177675,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.26,
+              "value": 283246377,
+              "is_conviction": false
+            },
+            {
+              "holder": "Arrowstreet Capital, Limited Partnership",
+              "shares": 3994727,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.21,
+              "value": 270842502,
+              "is_conviction": false
+            },
+            {
+              "holder": "NORGES BANK",
+              "shares": 3959514,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.2,
+              "value": 268455061,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:20:50.716623+00:00"
         }
       },
       "financials": {
@@ -96654,6 +99897,92 @@
           "inst_ownership_pct": 10.4,
           "short_interest_pct": 1.8,
           "last_updated": "2026-04-12T22:11:48.820103+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Van Eck Associates Corporation",
+              "shares": 10532428,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.16,
+              "value": 437833028,
+              "is_conviction": false
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 8269221,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.91,
+              "value": 343751514,
+              "is_conviction": true
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 6156161,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.6799999999999999,
+              "value": 255911610,
+              "is_conviction": true
+            },
+            {
+              "holder": "Slate Path Capital, LP",
+              "shares": 5280500,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.58,
+              "value": 219510383,
+              "is_conviction": false
+            },
+            {
+              "holder": "Invesco Ltd.",
+              "shares": 5199951,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.5700000000000001,
+              "value": 216161961,
+              "is_conviction": false
+            },
+            {
+              "holder": "Goldman Sachs Group Inc",
+              "shares": 4553170,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.5,
+              "value": 189275275,
+              "is_conviction": false
+            },
+            {
+              "holder": "Two Sigma Investments, LP",
+              "shares": 3602842,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.4,
+              "value": 149770140,
+              "is_conviction": false
+            },
+            {
+              "holder": "JPMORGAN CHASE & CO",
+              "shares": 3370579,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.37,
+              "value": 140114968,
+              "is_conviction": false
+            },
+            {
+              "holder": "Dimensional Fund Advisors LP",
+              "shares": 3063194,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.33999999999999997,
+              "value": 127336973,
+              "is_conviction": false
+            },
+            {
+              "holder": "FIL LTD",
+              "shares": 3107386,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.33999999999999997,
+              "value": 129174035,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 2,
+          "last_updated": "2026-04-17T02:20:53.602315+00:00"
         }
       },
       "financials": {
@@ -98777,6 +102106,20 @@
           "rec_mean_raw": 1.55,
           "inst_ownership_pct": 61.1,
           "last_updated": "2026-04-12T22:11:48.822103+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Pacer Advisors, Inc.",
+              "shares": 1663,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 8356575,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:20:56.466756+00:00"
         }
       },
       "financials": {
@@ -100850,6 +104193,92 @@
           "inst_ownership_pct": 93.5,
           "short_interest_pct": 3.2,
           "last_updated": "2026-04-12T22:11:48.824676+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 38421283,
+              "date_reported": "2025-12-31",
+              "pct_out": 13.089999999999998,
+              "value": 9085864839,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 22696298,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.7299999999999995,
+              "value": 5367220454,
+              "is_conviction": true
+            },
+            {
+              "holder": "Dodge & Cox Inc.",
+              "shares": 14873850,
+              "date_reported": "2025-12-31",
+              "pct_out": 5.07,
+              "value": 3517367984,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 13105219,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.4699997,
+              "value": 3099122133,
+              "is_conviction": true
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 11604495,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.95,
+              "value": 2744230928,
+              "is_conviction": false
+            },
+            {
+              "holder": "Ameriprise Financial, Inc.",
+              "shares": 7529735,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.5700000000000003,
+              "value": 1780631700,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 6284933,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.1399999999999997,
+              "value": 1486260928,
+              "is_conviction": false
+            },
+            {
+              "holder": "Bank of America Corporation",
+              "shares": 6150740,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.1,
+              "value": 1454526968,
+              "is_conviction": false
+            },
+            {
+              "holder": "ClearBridge Investments, LLC",
+              "shares": 4566738,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.5599999999999998,
+              "value": 1079942182,
+              "is_conviction": false
+            },
+            {
+              "holder": "Bank Of New York Mellon Corporation",
+              "shares": 4403794,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.5,
+              "value": 1041409186,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:20:59.294448+00:00"
         }
       },
       "financials": {
@@ -102977,6 +106406,92 @@
           "inst_ownership_pct": 93.9,
           "short_interest_pct": 2.5,
           "last_updated": "2026-04-12T22:11:48.826046+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 13872663,
+              "date_reported": "2025-12-31",
+              "pct_out": 10.58,
+              "value": 24066989066,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 12387325,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.45,
+              "value": 21490150473,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 6219297,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.7399998,
+              "value": 10789547248,
+              "is_conviction": true
+            },
+            {
+              "holder": "Capital International Investors",
+              "shares": 5450833,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.16,
+              "value": 9456377496,
+              "is_conviction": false
+            },
+            {
+              "holder": "Capital World Investors",
+              "shares": 3649831,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.78,
+              "value": 6331909221,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 3510391,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.6800001,
+              "value": 6090001740,
+              "is_conviction": false
+            },
+            {
+              "holder": "Primecap Management Company",
+              "shares": 2875962,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.19,
+              "value": 4989362605,
+              "is_conviction": false
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 2704973,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.0599999,
+              "value": 4692722343,
+              "is_conviction": false
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 2544216,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.94,
+              "value": 4413833065,
+              "is_conviction": true
+            },
+            {
+              "holder": "NORGES BANK",
+              "shares": 2457794,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.8800000000000001,
+              "value": 4263903860,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:21:02.244857+00:00"
         }
       },
       "financials": {
@@ -105107,6 +108622,92 @@
           "inst_ownership_pct": 97.2,
           "short_interest_pct": 4.5,
           "last_updated": "2026-04-12T22:11:48.829655+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 7524936,
+              "date_reported": "2025-12-31",
+              "pct_out": 10.03,
+              "value": 1967168870,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 7225100,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.629999999999999,
+              "value": 1888785739,
+              "is_conviction": true
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 6480651,
+              "date_reported": "2025-12-31",
+              "pct_out": 8.64,
+              "value": 1694171871,
+              "is_conviction": true
+            },
+            {
+              "holder": "T. Rowe Price Investment Management, Inc.",
+              "shares": 5400028,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.199999999999999,
+              "value": 1411675392,
+              "is_conviction": false
+            },
+            {
+              "holder": "Invesco Ltd.",
+              "shares": 3424570,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.5700002,
+              "value": 895251135,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 2118667,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.8199999,
+              "value": 553861955,
+              "is_conviction": true
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 1934684,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.5799999000000002,
+              "value": 505765117,
+              "is_conviction": false
+            },
+            {
+              "holder": "Capital Research Global Investors",
+              "shares": 1336714,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.78,
+              "value": 349443791,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 1267103,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.6900001000000002,
+              "value": 331246083,
+              "is_conviction": false
+            },
+            {
+              "holder": "Artisan Partners Limited Partnership",
+              "shares": 1246723,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.66,
+              "value": 325918343,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:21:05.253903+00:00"
         }
       },
       "financials": {
@@ -107208,6 +110809,92 @@
           "inst_ownership_pct": 110.7,
           "short_interest_pct": 9.4,
           "last_updated": "2026-04-12T22:11:48.830673+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 5612214,
+              "date_reported": "2025-12-31",
+              "pct_out": 15.67,
+              "value": 3774999707,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 4064023,
+              "date_reported": "2025-12-31",
+              "pct_out": 11.3400005,
+              "value": 2733624490,
+              "is_conviction": true
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 4041227,
+              "date_reported": "2025-12-31",
+              "pct_out": 11.2799995,
+              "value": 2718290988,
+              "is_conviction": false
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 2316716,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.47,
+              "value": 1558315884,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 1273307,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.55,
+              "value": 856477239,
+              "is_conviction": true
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 1108813,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.09,
+              "value": 745831992,
+              "is_conviction": false
+            },
+            {
+              "holder": "JPMORGAN CHASE & CO",
+              "shares": 1065414,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.97,
+              "value": 716640088,
+              "is_conviction": false
+            },
+            {
+              "holder": "Wasatch Advisors LP",
+              "shares": 822917,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.3,
+              "value": 553526902,
+              "is_conviction": false
+            },
+            {
+              "holder": "Capital Research Global Investors",
+              "shares": 711306,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.9900000000000002,
+              "value": 478452878,
+              "is_conviction": false
+            },
+            {
+              "holder": "Whale Rock Capital Management LLC",
+              "shares": 616047,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.72,
+              "value": 414377863,
+              "is_conviction": true
+            }
+          ],
+          "conviction_count": 5,
+          "last_updated": "2026-04-17T02:21:08.156444+00:00"
         }
       },
       "financials": {
@@ -109314,6 +113001,92 @@
           "inst_ownership_pct": 47.0,
           "short_interest_pct": 5.7,
           "last_updated": "2026-04-12T22:11:48.833187+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 15704172,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.34,
+              "value": 987792442,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 12922945,
+              "date_reported": "2025-12-31",
+              "pct_out": 5.21,
+              "value": 812853260,
+              "is_conviction": true
+            },
+            {
+              "holder": "Dimensional Fund Advisors LP",
+              "shares": 12772891,
+              "date_reported": "2025-12-31",
+              "pct_out": 5.1499999999999995,
+              "value": 803414863,
+              "is_conviction": false
+            },
+            {
+              "holder": "Earnest Partners LLC",
+              "shares": 3792424,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.53,
+              "value": 238543475,
+              "is_conviction": false
+            },
+            {
+              "holder": "American Century Companies Inc",
+              "shares": 3576888,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.4400001,
+              "value": 224986260,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 3473925,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.39999995,
+              "value": 218509887,
+              "is_conviction": true
+            },
+            {
+              "holder": "AQR Capital Management, LLC",
+              "shares": 3299975,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.3300001000000001,
+              "value": 207568432,
+              "is_conviction": false
+            },
+            {
+              "holder": "Point72 Asset Management, L.P.",
+              "shares": 3064101,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.24,
+              "value": 192731957,
+              "is_conviction": false
+            },
+            {
+              "holder": "LSV Asset Management",
+              "shares": 2820062,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.1400000000000001,
+              "value": 177381904,
+              "is_conviction": false
+            },
+            {
+              "holder": "First Trust Advisors LP",
+              "shares": 2722310,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.0999999999999999,
+              "value": 171233303,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:21:11.085425+00:00"
         }
       },
       "financials": {
@@ -111441,6 +115214,92 @@
           "inst_ownership_pct": 69.1,
           "short_interest_pct": 15.3,
           "last_updated": "2026-04-12T22:11:48.836017+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "FMR, LLC",
+              "shares": 2507920,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.969999999999999,
+              "value": 202765328,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 2337433,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.430000000000001,
+              "value": 188981454,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 2127105,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.760000400000001,
+              "value": 171976436,
+              "is_conviction": true
+            },
+            {
+              "holder": "AWM Investment Company, Inc.",
+              "shares": 1536771,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.8899997,
+              "value": 124247933,
+              "is_conviction": false
+            },
+            {
+              "holder": "BAILLIE GIFFORD & CO",
+              "shares": 1290734,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.099999700000001,
+              "value": 104355841,
+              "is_conviction": false
+            },
+            {
+              "holder": "Wellington Management Group, LLP",
+              "shares": 830664,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.6400002,
+              "value": 67159183,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 685694,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.18,
+              "value": 55438358,
+              "is_conviction": false
+            },
+            {
+              "holder": "Halter Ferguson Financial Inc.                          ",
+              "shares": 642129,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.0399998999999998,
+              "value": 51916128,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 624085,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.9800000000000002,
+              "value": 50457271,
+              "is_conviction": true
+            },
+            {
+              "holder": "Next Century Growth Investors LLC",
+              "shares": 552506,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.76,
+              "value": 44670109,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:21:13.968814+00:00"
         }
       },
       "financials": {
@@ -113557,6 +117416,92 @@
           "inst_ownership_pct": 100.9,
           "short_interest_pct": 7.5,
           "last_updated": "2026-04-12T22:11:48.840406+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 33240965,
+              "date_reported": "2025-12-31",
+              "pct_out": 14.37,
+              "value": 1368198114,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 29303129,
+              "date_reported": "2025-12-31",
+              "pct_out": 12.659999999999998,
+              "value": 1206116785,
+              "is_conviction": true
+            },
+            {
+              "holder": "Capital World Investors",
+              "shares": 15620410,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.75,
+              "value": 642936073,
+              "is_conviction": false
+            },
+            {
+              "holder": "Wellington Management Group, LLP",
+              "shares": 10999595,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.75,
+              "value": 452743328,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 8570145,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.6999999999999997,
+              "value": 352747166,
+              "is_conviction": true
+            },
+            {
+              "holder": "T. Rowe Price Investment Management, Inc.",
+              "shares": 8497432,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.6700000000000004,
+              "value": 349754299,
+              "is_conviction": false
+            },
+            {
+              "holder": "Arrowstreet Capital, Limited Partnership",
+              "shares": 6673145,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.8800000999999997,
+              "value": 274666647,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 5351211,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.31,
+              "value": 220255843,
+              "is_conviction": false
+            },
+            {
+              "holder": "Dimensional Fund Advisors LP",
+              "shares": 4871415,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.11,
+              "value": 200507440,
+              "is_conviction": false
+            },
+            {
+              "holder": "Schroder Investment Management Group",
+              "shares": 4759016,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.0599999,
+              "value": 195881097,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:21:20.098368+00:00"
         }
       },
       "financials": {
@@ -118278,6 +122223,92 @@
           "inst_ownership_pct": 7.7,
           "short_interest_pct": 0.3,
           "last_updated": "2026-04-12T22:11:48.847340+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Lazard Asset Management LLC",
+              "shares": 20010829,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.8999999999999999,
+              "value": 552298888,
+              "is_conviction": false
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 19460980,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.8699999999999999,
+              "value": 537123055,
+              "is_conviction": true
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 10607588,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.47999998000000005,
+              "value": 292769432,
+              "is_conviction": true
+            },
+            {
+              "holder": "UBS Group AG",
+              "shares": 9038322,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.41000000000000003,
+              "value": 249457690,
+              "is_conviction": false
+            },
+            {
+              "holder": "Bank of America Corporation",
+              "shares": 8769918,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.38999999999999996,
+              "value": 242049740,
+              "is_conviction": false
+            },
+            {
+              "holder": "Schroder Investment Management Group",
+              "shares": 7249719,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.33000002,
+              "value": 200092247,
+              "is_conviction": false
+            },
+            {
+              "holder": "Acadian Asset Management. LLC",
+              "shares": 6262066,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.27999999999999997,
+              "value": 172833023,
+              "is_conviction": false
+            },
+            {
+              "holder": "Goldman Sachs Group Inc",
+              "shares": 6027209,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.27,
+              "value": 166350970,
+              "is_conviction": false
+            },
+            {
+              "holder": "Cullen Capital Management, LLC",
+              "shares": 5607381,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.25,
+              "value": 154763717,
+              "is_conviction": false
+            },
+            {
+              "holder": "Rafferty Asset Management, LLC",
+              "shares": 4653904,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.21,
+              "value": 128447752,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 2,
+          "last_updated": "2026-04-17T02:21:29.503956+00:00"
         }
       },
       "financials": {
@@ -120405,6 +124436,92 @@
           "inst_ownership_pct": 99.4,
           "short_interest_pct": 4.7,
           "last_updated": "2026-04-12T22:11:48.849744+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 11569639,
+              "date_reported": "2025-12-31",
+              "pct_out": 14.840000999999999,
+              "value": 1477211511,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 10221530,
+              "date_reported": "2025-12-31",
+              "pct_out": 13.11,
+              "value": 1305084953,
+              "is_conviction": true
+            },
+            {
+              "holder": "Earnest Partners LLC",
+              "shares": 5774992,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.4099995000000005,
+              "value": 737350980,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 2869544,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.6799999999999997,
+              "value": 366383378,
+              "is_conviction": true
+            },
+            {
+              "holder": "Bank of America Corporation",
+              "shares": 2516390,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.2300000000000004,
+              "value": 321292675,
+              "is_conviction": false
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 2271562,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.91,
+              "value": 290033036,
+              "is_conviction": true
+            },
+            {
+              "holder": "Primecap Management Company",
+              "shares": 2081246,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.6700001,
+              "value": 265733489,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 1885847,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.42,
+              "value": 240784945,
+              "is_conviction": false
+            },
+            {
+              "holder": "Dimensional Fund Advisors LP",
+              "shares": 1722259,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.21,
+              "value": 219898029,
+              "is_conviction": false
+            },
+            {
+              "holder": "SEI Investments Co",
+              "shares": 1685072,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.16,
+              "value": 215149993,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:21:32.498954+00:00"
         }
       },
       "financials": {
@@ -124328,6 +128445,20 @@
           "rec_mean_raw": 1.5,
           "inst_ownership_pct": 38.9,
           "last_updated": "2026-04-12T22:11:48.853585+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "MAI Capital Management",
+              "shares": 16100,
+              "date_reported": "2024-09-30",
+              "pct_out": 0.18000001,
+              "value": 3528636,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:21:38.502307+00:00"
         }
       },
       "financials": {
@@ -127533,6 +131664,92 @@
           "inst_ownership_pct": 58.0,
           "short_interest_pct": 10.1,
           "last_updated": "2026-04-12T22:11:48.859308+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Marshall Wace LLP",
+              "shares": 9978729,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.37,
+              "value": 1072314209,
+              "is_conviction": false
+            },
+            {
+              "holder": "IDG China Capital Fund III Associates L.P.",
+              "shares": 9965659,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.36,
+              "value": 1070909707,
+              "is_conviction": false
+            },
+            {
+              "holder": "Idg-accel China Capital II Associates L.P.",
+              "shares": 6996111,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.06,
+              "value": 751802081,
+              "is_conviction": false
+            },
+            {
+              "holder": "Accel XI Associates, L.L.C.",
+              "shares": 6479748,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.8399997999999997,
+              "value": 696313714,
+              "is_conviction": false
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 5674208,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.48,
+              "value": 609750386,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 5653110,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.4699999999999998,
+              "value": 607483195,
+              "is_conviction": true
+            },
+            {
+              "holder": "ARK Investment Management, LLC",
+              "shares": 4141628,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.8099998999999998,
+              "value": 445059341,
+              "is_conviction": false
+            },
+            {
+              "holder": "Sumitomo Mitsui Trust Group, Inc.",
+              "shares": 2575684,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.13,
+              "value": 276783000,
+              "is_conviction": false
+            },
+            {
+              "holder": "Amova Asset Management Americas Inc",
+              "shares": 2570408,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.1199999999999999,
+              "value": 276216041,
+              "is_conviction": false
+            },
+            {
+              "holder": "Bank of America Corporation",
+              "shares": 2085055,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.91,
+              "value": 224060008,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 2,
+          "last_updated": "2026-04-17T02:21:47.316398+00:00"
         }
       },
       "financials": {
@@ -128750,6 +132967,92 @@
           "inst_ownership_pct": 51.8,
           "short_interest_pct": 34.6,
           "last_updated": "2026-04-12T22:11:48.861767+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 17760708,
+              "date_reported": "2025-12-31",
+              "pct_out": 8.180001,
+              "value": 116155029,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 14050050,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.47,
+              "value": 91887326,
+              "is_conviction": true
+            },
+            {
+              "holder": "Electron Capital Partners, LLC",
+              "shares": 6054051,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.79,
+              "value": 39593493,
+              "is_conviction": false
+            },
+            {
+              "holder": "UBS Group AG",
+              "shares": 5975345,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.75,
+              "value": 39078756,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 4413492,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.0299999,
+              "value": 28864237,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 3959029,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.82,
+              "value": 25892049,
+              "is_conviction": true
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 3092556,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.4199998999999999,
+              "value": 20225316,
+              "is_conviction": true
+            },
+            {
+              "holder": "Royal Bank of Canada",
+              "shares": 2525268,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.16,
+              "value": 16515252,
+              "is_conviction": false
+            },
+            {
+              "holder": "Fred Alger Management, LLC",
+              "shares": 2292315,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.06,
+              "value": 14991740,
+              "is_conviction": false
+            },
+            {
+              "holder": "Susquehanna International Group, LLP",
+              "shares": 2085424,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.9599999499999999,
+              "value": 13638672,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:21:51.970412+00:00"
         }
       },
       "financials": {
@@ -130846,6 +135149,92 @@
           "inst_ownership_pct": 99.1,
           "short_interest_pct": 6.7,
           "last_updated": "2026-04-12T22:11:48.863996+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "FMR, LLC",
+              "shares": 21128210,
+              "date_reported": "2025-12-31",
+              "pct_out": 14.940000000000001,
+              "value": 10462056029,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 16668830,
+              "date_reported": "2025-12-31",
+              "pct_out": 11.790000000000001,
+              "value": 8253904774,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 14376579,
+              "date_reported": "2025-12-31",
+              "pct_out": 10.17,
+              "value": 7118850816,
+              "is_conviction": true
+            },
+            {
+              "holder": "Elyxium Wealth, LLC                          ",
+              "shares": 11749306,
+              "date_reported": "2025-12-31",
+              "pct_out": 8.3100006,
+              "value": 5817904009,
+              "is_conviction": false
+            },
+            {
+              "holder": "JPMORGAN CHASE & CO",
+              "shares": 10864292,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.6799995999999995,
+              "value": 5379671615,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 5102409,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.61,
+              "value": 2526559933,
+              "is_conviction": true
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 4051625,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.87,
+              "value": 2006243205,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 2687437,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.9,
+              "value": 1330738215,
+              "is_conviction": false
+            },
+            {
+              "holder": "Arrowstreet Capital, Limited Partnership",
+              "shares": 2236835,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.5800001000000001,
+              "value": 1107613616,
+              "is_conviction": false
+            },
+            {
+              "holder": "Bank of America Corporation",
+              "shares": 2164447,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.53,
+              "value": 1071769250,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:21:54.929544+00:00"
         }
       },
       "financials": {
@@ -132958,6 +137347,92 @@
           "inst_ownership_pct": 15.4,
           "short_interest_pct": 1.0,
           "last_updated": "2026-04-12T22:11:48.865606+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Nvidia Corp                          ",
+              "shares": 166389351,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.9000001,
+              "value": 1712146415,
+              "is_conviction": false
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 165279651,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.8800000999999997,
+              "value": 1700727602,
+              "is_conviction": true
+            },
+            {
+              "holder": "Artisan Partners Limited Partnership",
+              "shares": 99477170,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.73,
+              "value": 1023620075,
+              "is_conviction": false
+            },
+            {
+              "holder": "Pzena Investment Management LLC",
+              "shares": 91942507,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.6,
+              "value": 946088393,
+              "is_conviction": false
+            },
+            {
+              "holder": "Arrowstreet Capital, Limited Partnership",
+              "shares": 47321058,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.8200000000000001,
+              "value": 486933685,
+              "is_conviction": false
+            },
+            {
+              "holder": "Slate Path Capital, LP",
+              "shares": 33686602,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.58999998,
+              "value": 346635133,
+              "is_conviction": false
+            },
+            {
+              "holder": "Point72 Asset Management, L.P.",
+              "shares": 26104442,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.44999999999999996,
+              "value": 268614707,
+              "is_conviction": false
+            },
+            {
+              "holder": "Oaktree Capital Management LP",
+              "shares": 18752229,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.33000002,
+              "value": 192960435,
+              "is_conviction": false
+            },
+            {
+              "holder": "Alyeska Investment Group, L.p.",
+              "shares": 17490101,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.3,
+              "value": 179973138,
+              "is_conviction": false
+            },
+            {
+              "holder": "UBS Group AG",
+              "shares": 16324752,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.27999999999999997,
+              "value": 167981697,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 1,
+          "last_updated": "2026-04-17T02:21:57.953867+00:00"
         }
       },
       "financials": {
@@ -135086,6 +139561,92 @@
           "inst_ownership_pct": 22.9,
           "short_interest_pct": 20.0,
           "last_updated": "2026-04-12T22:11:48.867581+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 857011,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.99,
+              "value": 14869141,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 824185,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.72,
+              "value": 14299610,
+              "is_conviction": true
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 285732,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.33,
+              "value": 4957450,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 213405,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.7399999999999998,
+              "value": 3702576,
+              "is_conviction": true
+            },
+            {
+              "holder": "Apis Capital Advisors, LLC",
+              "shares": 202000,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.6500000000000001,
+              "value": 3504700,
+              "is_conviction": false
+            },
+            {
+              "holder": "AWM Investment Company, Inc.",
+              "shares": 200000,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.63,
+              "value": 3470000,
+              "is_conviction": false
+            },
+            {
+              "holder": "Millennium Management Llc",
+              "shares": 147194,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.2,
+              "value": 2553815,
+              "is_conviction": false
+            },
+            {
+              "holder": "Susquehanna International Group, LLP",
+              "shares": 137525,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.1199999999999999,
+              "value": 2386058,
+              "is_conviction": false
+            },
+            {
+              "holder": "Thompson, Siegel & Walmsley LLC",
+              "shares": 118390,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.97,
+              "value": 2054066,
+              "is_conviction": false
+            },
+            {
+              "holder": "Northern Trust Corporation",
+              "shares": 110119,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.8999999999999999,
+              "value": 1910564,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:22:00.964199+00:00"
         }
       },
       "financials": {
@@ -136774,6 +141335,92 @@
           "inst_ownership_pct": 18.7,
           "short_interest_pct": 0.2,
           "last_updated": "2026-04-12T22:11:48.869103+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Fisher Asset Management, LLC",
+              "shares": 4484949,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.16,
+              "value": 6327500400,
+              "is_conviction": false
+            },
+            {
+              "holder": "Capital World Investors",
+              "shares": 3881791,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.0,
+              "value": 5476547025,
+              "is_conviction": false
+            },
+            {
+              "holder": "Capital International Investors",
+              "shares": 3409421,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.88,
+              "value": 4810113279,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Farm Mutual Automobile Insurance Co",
+              "shares": 2758173,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.70999996,
+              "value": 3891313092,
+              "is_conviction": false
+            },
+            {
+              "holder": "Van Eck Associates Corporation",
+              "shares": 2017883,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.52,
+              "value": 2846889784,
+              "is_conviction": false
+            },
+            {
+              "holder": "WCM Investment Management, LLC",
+              "shares": 1890995,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.49,
+              "value": 2667872392,
+              "is_conviction": false
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 1703116,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.44,
+              "value": 2402807071,
+              "is_conviction": true
+            },
+            {
+              "holder": "JPMORGAN CHASE & CO",
+              "shares": 1643350,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.42,
+              "value": 2318487408,
+              "is_conviction": false
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 1550630,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.4,
+              "value": 2187675254,
+              "is_conviction": true
+            },
+            {
+              "holder": "Arrowstreet Capital, Limited Partnership",
+              "shares": 1544705,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.4,
+              "value": 2179316087,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 2,
+          "last_updated": "2026-04-17T02:22:03.908625+00:00"
         }
       },
       "financials": {
@@ -138902,6 +143549,92 @@
           "inst_ownership_pct": 102.0,
           "short_interest_pct": 7.2,
           "last_updated": "2026-04-12T22:11:48.871114+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 5289882,
+              "date_reported": "2025-12-31",
+              "pct_out": 15.22,
+              "value": 336859687,
+              "is_conviction": true
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 3333902,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.6,
+              "value": 212302880,
+              "is_conviction": true
+            },
+            {
+              "holder": "Invesco Ltd.",
+              "shares": 3023882,
+              "date_reported": "2025-12-31",
+              "pct_out": 8.7,
+              "value": 192560806,
+              "is_conviction": false
+            },
+            {
+              "holder": "Barrow, Hanley Mewhinney & Strauss, LLC",
+              "shares": 1957656,
+              "date_reported": "2025-12-31",
+              "pct_out": 5.63,
+              "value": 124663534,
+              "is_conviction": false
+            },
+            {
+              "holder": "Royce & Associates LP",
+              "shares": 1449082,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.17,
+              "value": 92277542,
+              "is_conviction": false
+            },
+            {
+              "holder": "Dimensional Fund Advisors LP",
+              "shares": 1414162,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.0700004,
+              "value": 90053836,
+              "is_conviction": false
+            },
+            {
+              "holder": "Shaw D.E. & Co., Inc.",
+              "shares": 1406927,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.05,
+              "value": 89593111,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 1285419,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.6999999999999997,
+              "value": 81855482,
+              "is_conviction": true
+            },
+            {
+              "holder": "Nuveen, LLC",
+              "shares": 1137451,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.27,
+              "value": 72432880,
+              "is_conviction": false
+            },
+            {
+              "holder": "Wellington Management Group, LLP",
+              "shares": 1103590,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.18,
+              "value": 70276611,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:22:06.881885+00:00"
         }
       },
       "financials": {
@@ -140998,6 +145731,92 @@
           "inst_ownership_pct": 85.4,
           "short_interest_pct": 2.3,
           "last_updated": "2026-04-12T22:11:48.873688+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 37947566,
+              "date_reported": "2025-12-31",
+              "pct_out": 9.7799994,
+              "value": 14903148012,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 29394078,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.580000000000001,
+              "value": 11543936575,
+              "is_conviction": true
+            },
+            {
+              "holder": "JPMORGAN CHASE & CO",
+              "shares": 18179197,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.6899999999999995,
+              "value": 7139516237,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 16861321,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.35,
+              "value": 6621946781,
+              "is_conviction": true
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 12978790,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.35,
+              "value": 5097160339,
+              "is_conviction": true
+            },
+            {
+              "holder": "Bank of America Corporation",
+              "shares": 11518774,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.97,
+              "value": 4523768239,
+              "is_conviction": false
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 8905537,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.3,
+              "value": 3497471643,
+              "is_conviction": true
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 8656864,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.23,
+              "value": 3399810293,
+              "is_conviction": false
+            },
+            {
+              "holder": "Massachusetts Financial Services Co.",
+              "shares": 5503013,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.4199998999999999,
+              "value": 2161198355,
+              "is_conviction": false
+            },
+            {
+              "holder": "Raymond James Financial, Inc.",
+              "shares": 5332986,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.37,
+              "value": 2094423650,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 5,
+          "last_updated": "2026-04-17T02:22:09.859803+00:00"
         }
       },
       "financials": {
@@ -143693,6 +148512,92 @@
           "inst_ownership_pct": 71.0,
           "short_interest_pct": 1.6,
           "last_updated": "2026-04-12T22:11:48.877420+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 101189629,
+              "date_reported": "2025-12-31",
+              "pct_out": 8.05,
+              "value": 16292541609,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 95448955,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.6,
+              "value": 15368235720,
+              "is_conviction": true
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 46970697,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.74,
+              "value": 7562751665,
+              "is_conviction": true
+            },
+            {
+              "holder": "FMR, LLC",
+              "shares": 39038299,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.11,
+              "value": 6285556307,
+              "is_conviction": true
+            },
+            {
+              "holder": "Price (T.Rowe) Associates Inc",
+              "shares": 37171766,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.96,
+              "value": 5985025839,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 26447629,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.1,
+              "value": 4258332600,
+              "is_conviction": false
+            },
+            {
+              "holder": "Cresset Asset Management, LLC",
+              "shares": 20694095,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.6500000000000001,
+              "value": 3331956122,
+              "is_conviction": false
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 18179893,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.45000005,
+              "value": 2927144472,
+              "is_conviction": true
+            },
+            {
+              "holder": "Capital Research Global Investors",
+              "shares": 15299794,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.2200001,
+              "value": 2463419747,
+              "is_conviction": false
+            },
+            {
+              "holder": "Nuveen, LLC",
+              "shares": 12184753,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.97,
+              "value": 1961867013,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 5,
+          "last_updated": "2026-04-17T02:22:16.016792+00:00"
         }
       },
       "financials": {
@@ -147863,6 +152768,20 @@
           "rec_mean_raw": 2.43,
           "inst_ownership_pct": 50.7,
           "last_updated": "2026-04-12T22:11:48.881492+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Pacer Advisors, Inc.",
+              "shares": 1222,
+              "date_reported": "2024-06-30",
+              "pct_out": 0.0,
+              "value": 21311,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:22:21.832891+00:00"
         }
       },
       "financials": {
@@ -149830,6 +154749,28 @@
           "rec_mean_raw": 1.5,
           "inst_ownership_pct": 26.8,
           "last_updated": "2026-04-12T22:11:48.883537+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Nano Cap New Millennium Growth Fund L P",
+              "shares": 12000,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.029999999000000003,
+              "value": 278519,
+              "is_conviction": false
+            },
+            {
+              "holder": "Ancora Advisors, LLC",
+              "shares": 400,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 9283,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:22:24.771989+00:00"
         }
       },
       "financials": {
@@ -153907,7 +158848,59 @@
         "Notes": "Monopoly on CPO die bonders. Essential for ASE/TSMC CPO plants.",
         "Target Upside": "5x",
         "Risk Adj": "4",
-        "Hiddenness": "9"
+        "Hiddenness": "9",
+        "glass_substrate_v16": {
+          "node_type": "Thermal Compression Bonding",
+          "tech_stack": [
+            "TCB for HBM",
+            "Advanced Packaging"
+          ],
+          "key_partners": [
+            "SK Hynix",
+            "Micron"
+          ],
+          "sentiment": "High Volume Memory Packaging",
+          "market_narrative": "LIDE/TGV supercycle for AI/HBM4 packaging",
+          "last_updated": "2026-04-17T01:52:08.684844+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "PNC Financial Services Group, Inc.",
+              "shares": 808,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 40739,
+              "is_conviction": false
+            },
+            {
+              "holder": "Rhumbline Advisers",
+              "shares": 177,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 8924,
+              "is_conviction": false
+            },
+            {
+              "holder": "Gamma Investing LLC",
+              "shares": 112,
+              "date_reported": "2026-03-31",
+              "pct_out": 0.0,
+              "value": 5647,
+              "is_conviction": false
+            },
+            {
+              "holder": "Nbc Securities, Inc.                          ",
+              "shares": 26,
+              "date_reported": "2026-03-31",
+              "pct_out": 0.0,
+              "value": 1310,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:22:33.760387+00:00"
+        }
       },
       "financials": {
         "summaryDetail": {
@@ -153935,7 +158928,45 @@
         "Notes": "Global monopoly on ABF (Ajinomoto Build-up Film). Every AI chip substrate \u2014 CoWoS, FOPLP, glass core \u2014 requires ABF. Was incorrectly labeled AI Hub (demand anchor). Fixed to Core: this is a physical chokepoint, not a consumer/demand player.",
         "Target Upside": "3x",
         "Risk Adj": "3",
-        "Hiddenness": "8"
+        "Hiddenness": "8",
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Gamma Investing LLC",
+              "shares": 3884,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 109489,
+              "is_conviction": false
+            },
+            {
+              "holder": "Salomon & Ludwin, LLC",
+              "shares": 407,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 11473,
+              "is_conviction": false
+            },
+            {
+              "holder": "PNC Financial Services Group, Inc.",
+              "shares": 4,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 112,
+              "is_conviction": false
+            },
+            {
+              "holder": "Rhumbline Advisers",
+              "shares": 9780,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 275698,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:22:36.723866+00:00"
+        }
       },
       "financials": {
         "summaryDetail": {
@@ -153963,7 +158994,21 @@
         "Notes": "Critical bottleneck for lens arrays in CPO modules.",
         "Target Upside": "4x",
         "Risk Adj": "6",
-        "Hiddenness": "9"
+        "Hiddenness": "9",
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "PNC Financial Services Group, Inc.",
+              "shares": 53,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 756,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:22:39.806425+00:00"
+        }
       },
       "financials": {
         "summaryDetail": {
@@ -153991,7 +159036,21 @@
         "Notes": "Testing bottleneck for 800G/1.6T transceivers.",
         "Target Upside": "5x",
         "Risk Adj": "5",
-        "Hiddenness": "9"
+        "Hiddenness": "9",
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Pacer Advisors, Inc.",
+              "shares": 24,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 176,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:22:42.749468+00:00"
+        }
       },
       "financials": {
         "summaryDetail": {
@@ -154019,7 +159078,21 @@
         "Notes": "LIDE tech is the holy grail for through-glass vias in CPO packaging.",
         "Target Upside": "10x",
         "Risk Adj": "8",
-        "Hiddenness": "10"
+        "Hiddenness": "10",
+        "glass_substrate_v16": {
+          "node_type": "LIDE Technology Provider (Critical Patent Holder)",
+          "tech_stack": [
+            "Laser Induced Deep Etching",
+            "TGV Hole Formation"
+          ],
+          "key_partners": [
+            "Intel",
+            "Corning"
+          ],
+          "sentiment": "S-Tier Technology",
+          "market_narrative": "LIDE/TGV supercycle for AI/HBM4 packaging",
+          "last_updated": "2026-04-17T01:52:08.634755+00:00"
+        }
       },
       "financials": {
         "summaryDetail": {
@@ -154048,7 +159121,93 @@
         "Hiddenness": "5",
         "Target Upside": "1.5x",
         "Notes": "World leader in high-power fiber lasers. Pump laser tech relevant to Erbium-doped fiber amplifiers (EDFAs) used in long-reach CPO optical links. Less direct than LITE/COHR (no CW ELS for CPO) but relevant for datacenter interconnect amplification. Revenue headwinds from industrial slowdown. Monitor for CPO pivot.",
-        "Rev Growth Est": "8%"
+        "Rev Growth Est": "8%",
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "First Eagle Investment Management, LLC",
+              "shares": 4487103,
+              "date_reported": "2025-12-31",
+              "pct_out": 10.569999,
+              "value": 541638199,
+              "is_conviction": false
+            },
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 2802047,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.6000000000000005,
+              "value": 338235090,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 2457691,
+              "date_reported": "2025-12-31",
+              "pct_out": 5.79,
+              "value": 296667878,
+              "is_conviction": true
+            },
+            {
+              "holder": "Dimensional Fund Advisors LP",
+              "shares": 1815042,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.279999999999999,
+              "value": 219093718,
+              "is_conviction": false
+            },
+            {
+              "holder": "Lazard Asset Management LLC",
+              "shares": 1769283,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.17,
+              "value": 213570149,
+              "is_conviction": false
+            },
+            {
+              "holder": "Sumitomo Mitsui Trust Group, Inc.",
+              "shares": 1724502,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.0599998,
+              "value": 208164634,
+              "is_conviction": false
+            },
+            {
+              "holder": "Alliancebernstein L.P.",
+              "shares": 1363627,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.2099999999999995,
+              "value": 164603413,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 805435,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.9,
+              "value": 97224058,
+              "is_conviction": true
+            },
+            {
+              "holder": "Morgan Stanley",
+              "shares": 745246,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.76,
+              "value": 89958643,
+              "is_conviction": true
+            },
+            {
+              "holder": "Neuberger Berman Group, LLC",
+              "shares": 709783,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.67,
+              "value": 85677905,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 4,
+          "last_updated": "2026-04-17T02:22:48.753933+00:00"
+        }
       },
       "financials": {},
       "performance": {},
@@ -154065,7 +159224,93 @@
         "Hiddenness": "7",
         "Target Upside": "1.5x",
         "Notes": "Fiber management systems and fiber distribution hubs. End-to-end fiber connectivity as hyperscalers build out the physical fiber fabric feeding CPO switches. More adjacent than direct CPO play \u2014 benefits from fiber build-out. Small-cap with hyperscaler exposure. Added from research queue 2026-04-10.",
-        "Rev Growth Est": "15%"
+        "Rev Growth Est": "15%",
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 947982,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.9299996,
+              "value": 27368241,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 927046,
+              "date_reported": "2025-12-31",
+              "pct_out": 6.77,
+              "value": 26763818,
+              "is_conviction": true
+            },
+            {
+              "holder": "Mairs & Power Inc",
+              "shares": 730188,
+              "date_reported": "2025-12-31",
+              "pct_out": 5.3400002,
+              "value": 21080528,
+              "is_conviction": false
+            },
+            {
+              "holder": "Ack Asset Management Llc",
+              "shares": 625200,
+              "date_reported": "2025-12-31",
+              "pct_out": 4.5700002,
+              "value": 18049524,
+              "is_conviction": false
+            },
+            {
+              "holder": "Cooper Creek Partners Management LLC",
+              "shares": 479741,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.5099998,
+              "value": 13850123,
+              "is_conviction": false
+            },
+            {
+              "holder": "Royce & Associates LP",
+              "shares": 379912,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.78,
+              "value": 10968059,
+              "is_conviction": false
+            },
+            {
+              "holder": "Dimensional Fund Advisors LP",
+              "shares": 316730,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.31,
+              "value": 9143995,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 282599,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.0599999,
+              "value": 8158633,
+              "is_conviction": true
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 278866,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.0399998999999998,
+              "value": 8050861,
+              "is_conviction": false
+            },
+            {
+              "holder": "Punch & Associates Investment Management, Inc.",
+              "shares": 278110,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.0299999,
+              "value": 8029035,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:22:51.957365+00:00"
+        }
       },
       "financials": {},
       "performance": {},
@@ -154082,7 +159327,93 @@
         "Hiddenness": "7",
         "Target Upside": "2x",
         "Notes": "High-power semiconductor laser manufacturer. Currently focused on defense (fiber lasers for directed energy) and industrial. Core laser physics expertise is directly applicable to ELS (External Laser Sources) for CPO. Watch for any CPO pivot announcement or hyperscaler customer win. Catalyst: US Govt defense contracts provide stable revenue while optionality builds. Added from research queue 2026-04-10.",
-        "Rev Growth Est": "18%"
+        "Rev Growth Est": "18%",
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Vanguard Group Inc",
+              "shares": 4989758,
+              "date_reported": "2025-12-31",
+              "pct_out": 8.939999,
+              "value": 346688402,
+              "is_conviction": true
+            },
+            {
+              "holder": "Blackrock Inc.",
+              "shares": 4450383,
+              "date_reported": "2025-12-31",
+              "pct_out": 7.9799999999999995,
+              "value": 309212625,
+              "is_conviction": true
+            },
+            {
+              "holder": "Needham Investment Management, L.L.C.",
+              "shares": 1857740,
+              "date_reported": "2025-12-31",
+              "pct_out": 3.3299996999999997,
+              "value": 129075781,
+              "is_conviction": false
+            },
+            {
+              "holder": "Neuberger Berman Group, LLC",
+              "shares": 1486380,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.6600001,
+              "value": 103273687,
+              "is_conviction": false
+            },
+            {
+              "holder": "Invesco Ltd.",
+              "shares": 1399229,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.5100000000000002,
+              "value": 97218435,
+              "is_conviction": false
+            },
+            {
+              "holder": "Geode Capital Management, LLC",
+              "shares": 1234696,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.21,
+              "value": 85786682,
+              "is_conviction": false
+            },
+            {
+              "holder": "Harvey Partners, LLC",
+              "shares": 1202502,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.16,
+              "value": 83549842,
+              "is_conviction": false
+            },
+            {
+              "holder": "AWM Investment Company, Inc.",
+              "shares": 1169680,
+              "date_reported": "2025-12-31",
+              "pct_out": 2.1,
+              "value": 81269370,
+              "is_conviction": false
+            },
+            {
+              "holder": "Artisan Partners Limited Partnership",
+              "shares": 1101436,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.97,
+              "value": 76527776,
+              "is_conviction": false
+            },
+            {
+              "holder": "State Street Corporation",
+              "shares": 1050869,
+              "date_reported": "2025-12-31",
+              "pct_out": 1.8800000000000001,
+              "value": 73014381,
+              "is_conviction": true
+            }
+          ],
+          "conviction_count": 3,
+          "last_updated": "2026-04-17T02:22:54.994445+00:00"
+        }
       },
       "financials": {},
       "performance": {},
@@ -154162,6 +159493,20 @@
           "analyst_count": 2,
           "inst_ownership_pct": 55.7,
           "last_updated": "2026-04-12T22:11:48.905909+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Nano Cap New Millennium Growth Fund L P",
+              "shares": 1000000,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.1,
+              "value": 58599998,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:23:00.854270+00:00"
         }
       },
       "financials": {
@@ -156070,6 +161415,28 @@
           "rec_mean_raw": 2.05,
           "inst_ownership_pct": 40.3,
           "last_updated": "2026-04-12T22:11:48.907496+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Stanley-Laman Group, Ltd.",
+              "shares": 400,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 29336000,
+              "is_conviction": false
+            },
+            {
+              "holder": "Pacer Advisors, Inc.",
+              "shares": 1154,
+              "date_reported": "2025-12-31",
+              "pct_out": 0.0,
+              "value": 84634360,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:23:04.221640+00:00"
         }
       },
       "financials": {
@@ -158121,6 +163488,20 @@
           "rec_mean_raw": 1.5,
           "inst_ownership_pct": 42.7,
           "last_updated": "2026-04-12T22:11:48.909753+00:00"
+        },
+        "inst_13f_alpha": {
+          "top_holders": [
+            {
+              "holder": "Legato Capital Management LLC",
+              "shares": 128100,
+              "date_reported": "2022-09-30",
+              "pct_out": 0.27,
+              "value": 859551000,
+              "is_conviction": false
+            }
+          ],
+          "conviction_count": 0,
+          "last_updated": "2026-04-17T02:23:07.121802+00:00"
         }
       },
       "financials": {
@@ -164177,6 +169558,19 @@
           "rec_mean_raw": 3.75,
           "inst_ownership_pct": 13.8,
           "last_updated": "2026-04-12T22:11:48.914589+00:00"
+        },
+        "glass_substrate_v16": {
+          "node_type": "Glass Core Substrate Manufacturer",
+          "tech_stack": [
+            "High-Volume Manufacturing (Georgia Factory)"
+          ],
+          "key_partners": [
+            "Applied Materials",
+            "Samsung"
+          ],
+          "sentiment": "Leading Commercial Execution",
+          "market_narrative": "LIDE/TGV supercycle for AI/HBM4 packaging",
+          "last_updated": "2026-04-17T01:52:08.643132+00:00"
         }
       },
       "financials": {
