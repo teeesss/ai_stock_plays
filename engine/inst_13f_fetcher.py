@@ -34,33 +34,36 @@ CONVICTION_TARGETS = [
 def clean_ticker(ticker: str) -> str:
     return ticker.split(' / ')[0].strip()
 
+from yahooquery import Ticker as YQTicker
+
 def fetch_inst_data(ticker_symbol: str):
-    """Retrieve institutional holders using yfinance."""
+    """Retrieve institutional holders using yahooquery (bypasses yfinance crumbs)."""
     log.info(f"Fetching 13F data for ${ticker_symbol}...")
     try:
-        t = yf.Ticker(ticker_symbol)
+        t = YQTicker(ticker_symbol)
+        df = t.institution_ownership
         
-        # yfinance periodic 401/Invalid Crumb check
-        # We try to get major_holders or institutional_holders
-        inst = t.institutional_holders
-        
-        if inst is None or inst.empty:
-            log.warning(f"No institutional data for ${ticker_symbol} (yfinance returned empty)")
+        if df is None or (isinstance(df, dict) and not df) or (hasattr(df, 'empty') and df.empty):
+            log.warning(f"No institutional data for ${ticker_symbol}")
             return None
             
-        # Standardize columns
-        # Expected: Holder, Shares, Date Reported, % Out, Value
-        inst.columns = [c.strip() for c in inst.columns]
-        
         holders = []
-        for _, row in inst.iterrows():
-            holder_name = str(row.get('Holder', 'Unknown'))
+        # yahooquery returns a DataFrame or a dict depending on ticker validity
+        if isinstance(df, dict):
+             # Check if it has an error entry
+             if ticker_symbol in df and isinstance(df[ticker_symbol], str):
+                 log.error(f"Ticker ${ticker_symbol} error: {df[ticker_symbol]}")
+                 return None
+             return None
+
+        for _, row in df.iterrows():
+            holder_name = str(row.get('organization', 'Unknown'))
             holders.append({
                 "holder": holder_name,
-                "shares": int(row.get('Shares', 0)),
-                "date_reported": str(row.get('Date Reported', 'Unknown')),
-                "pct_out": float(row.get('% Out', 0)),
-                "value": int(row.get('Value', 0)),
+                "shares": int(row.get('position', 0)),
+                "date_reported": str(row.get('reportDate', 'Unknown')),
+                "pct_out": float(row.get('pctHeld', 0)) * 100, # Normalize to %
+                "value": int(row.get('value', 0)),
                 "is_conviction": any(target.lower() in holder_name.lower() for target in CONVICTION_TARGETS)
             })
             
