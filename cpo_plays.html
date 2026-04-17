@@ -379,42 +379,6 @@ const RANK_EXPLAIN = {
 const sfloat = v => { try { return parseFloat(String(v).replace('%','').trim())||0; } catch { return 0; } };
 const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
-function calcScore(h, mcapB, perf1y, rev_num, pe26, agg) {
-    const w = getWeights(agg);
-    const alpha = sfloat(h['Alpha Score'] || 0);
-    const subjectiveSafety = 10 - sfloat(h['Risk Adj'] || 5);
-    const discovery = sfloat(h['Hiddenness'] || 5);
-    const mom = momentumScore(perf1y);
-    const multiplier = BUCKET_MULT[h.Bucket] || 0.20;
-
-    let mcapAdj = 0;
-    if (mcapB > 200) mcapAdj = 2.0;
-    else if (mcapB > 10) mcapAdj = 1.0;
-    else if (mcapB >= 2) mcapAdj = 0;
-    else if (mcapB >= 0.3) mcapAdj = -1.0;
-    else if (mcapB > 0) mcapAdj = -2.0;
-
-    let safety = subjectiveSafety + mcapAdj;
-    if (safety < 0) safety = 0;
-    if (safety > 10) safety = 10;
-
-    let finalMult = 1.0;
-    if (agg <= 3 && mcapB < 2.0) finalMult *= 0.15;
-    else if (agg <= 5 && mcapB < 0.3) finalMult *= 0.30;
-
-    if (agg >= 6) {
-        if (rev_num > 100) finalMult *= 1.20;
-        else if (rev_num > 30) finalMult *= 1.10;
-        if (pe26 > 100 && pe26 < 999 && rev_num < 20) finalMult *= 0.90;
-    }
-
-    let convictionBoost = 0;
-    if (h.inst_13f_alpha && h.inst_13f_alpha.conviction_count) {
-        convictionBoost = h.inst_13f_alpha.conviction_count * 15;
-    }
-
-    return (alpha * w.alpha + safety * w.safety + discovery * w.discovery + mom * w.momentum) * multiplier * 10 * finalMult + convictionBoost;
-}
 
 function buildTickerHTML(ticker) {
     const primary = ticker.includes('/') ? ticker.split('/')[0].trim() : ticker;
