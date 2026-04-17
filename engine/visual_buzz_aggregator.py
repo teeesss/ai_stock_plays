@@ -140,13 +140,16 @@ def merge_into_master(visual_buzz: dict):
         json.dump(master, f, ensure_ascii=True)
     log.info(f"Saved visual_mentions -> {MASTER_INTEL_PATH}")
 
-    # Rebuild intel.js (dashboard bridge)
-    js_content = "window.X_INTEL_MODULE = " + json.dumps(master) + ";"
+    # Rebuild intel.js (dashboard bridge) — strip image arrays to prevent 404 storm
+    def _strip(p):
+        c = p.copy(); c.pop("images", None); c.pop("visual_intel", None); return c
+    bridge = {**master, "posts": [_strip(p) for p in master.get("posts", [])]}
+    js_content = "// GIGACPO Intelligence Data - images stripped for performance\nwindow.X_INTEL_MODULE = " + json.dumps(bridge) + ";"
     with open(INTEL_JS_PATH, 'w', encoding='utf-8') as f:
         f.write(js_content)
     with open(ROOT_INTEL_JS, 'w', encoding='utf-8') as f:
         f.write(js_content)
-    log.info(f"Rebuilt intel.js ({INTEL_JS_PATH.stat().st_size / 1024:.0f} KB)")
+    log.info(f"Rebuilt intel.js ({INTEL_JS_PATH.stat().st_size / 1024:.0f} KB) [stripped]")
 
 
 def run():

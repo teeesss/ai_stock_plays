@@ -587,14 +587,17 @@ def rebuild_master():
     # Save master JSON
     master_path.write_text(json.dumps(payload, indent=2, ensure_ascii=True), encoding="utf-8")
 
-    # Save intel.js for dashboard (both locations)
-    js_content = ("// GIGACPO Intelligence Data - Auto-generated\n"
-                  "window.X_INTEL_MODULE = " + json.dumps(payload, ensure_ascii=True) + ";")
+    # Save intel.js for dashboard (images stripped — prevents 404 storm)
+    def _strip_assets(p):
+        c = p.copy(); c.pop("images", None); c.pop("visual_intel", None); return c
+    bridge_payload = {**payload, "posts": [_strip_assets(p) for p in all_posts]}
+    js_content = ("// GIGACPO Intelligence Data - images stripped for performance\n"
+                  "window.X_INTEL_MODULE = " + json.dumps(bridge_payload, ensure_ascii=True) + ";")
     (DB_DIR / "intel.js").write_text(js_content, encoding="utf-8")
     (ROOT / "intel.js").write_text(js_content, encoding="utf-8")
 
     log.info(f"Master rebuilt: {len(all_posts)} posts, {len(buzz)} tickers, "
-             f"{len(existing_visual_mentions)} visual tickers preserved")
+             f"{len(existing_visual_mentions)} visual tickers preserved. JS Bridge stripped.")
     return payload
 
 

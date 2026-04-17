@@ -185,6 +185,21 @@
         <span class="sync-dot" id="syncDot"></span> MASTER SYNC
     </button>
 </div>
+<!-- NEWS MODAL -->
+<div class="intel-modal" id="newsModal">
+    <div class="intel-modal-content">
+        <div class="intel-header">
+            <div>📰 YAHOO NEWS INTELLIGENCE <span id="news-count" style="font-size:9px;color:var(--text-dim);margin-left:15px;font-weight:700;">0 ARTICLES</span></div>
+            <div style="display:flex;gap:15px;align-items:center;">
+                <input type="text" id="newsSearch" class="search-bar" style="width:280px;background:#0f172a;" placeholder="SEARCH TICKER / KEYWORD... (e.g. $NVDA)" oninput="filterNews()">
+                <div class="close-modal" onclick="closeNewsModal()">&times;</div>
+            </div>
+        </div>
+        <div class="intel-scroll" id="newsBody"></div>
+    </div>
+</div>
+
+<script src="YAHOO_NEWS_MODULE.js" defer></script>
 
 <script>
 // Handle Remote vs Local UI
@@ -385,11 +400,12 @@ function momentumScore(perf1y) {
 
 function buildTickerHTML(ticker) {
     const primary = ticker.includes('/') ? ticker.split('/')[0].trim() : ticker;
-    const xIcon = `<span class="x-intel-icon" onclick="syncIntelSearch('${primary}'); event.stopPropagation();" title="Search 𝕏 Intelligence for $${primary}">𝕏</span>`;
+    const xIcon = `<span class="x-intel-icon" onclick="syncIntelSearch('${primary}'); event.stopPropagation();" title="Search \u{1D54F} Intelligence for $${primary}">\u{1D54F}</span>`;
+    const newsIcon = `<span class="x-intel-icon" style="color:var(--gold);margin-left:4px;" onclick="syncNewsSearch('${primary}'); event.stopPropagation();" title="Search Yahoo News for $${primary}">\u{1F4F0}</span>`;
 
-    if (!ticker.includes('/')) return `<a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" class="ticker-link">${ticker}</a>${xIcon}`;
+    if (!ticker.includes('/')) return `<a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" class="ticker-link">${ticker}</a>${xIcon}${newsIcon}`;
     const parts = ticker.split('/').map(t => t.trim());
-    return `<a href="https://finance.yahoo.com/quote/${parts[0]}" target="_blank" class="ticker-link">${parts[0]}</a><a href="https://finance.yahoo.com/quote/${parts[1]}" target="_blank" class="ticker-otc" title="US OTC: ${parts[1]}">OTC:${parts[1]}</a>${xIcon}`;
+    return `<a href="https://finance.yahoo.com/quote/${parts[0]}" target="_blank" class="ticker-link">${parts[0]}</a><a href="https://finance.yahoo.com/quote/${parts[1]}" target="_blank" class="ticker-otc" title="US OTC: ${parts[1]}">OTC:${parts[1]}</a>${xIcon}${newsIcon}`;
 }
 
 function calcScore(h, mcapB, perf1y, rev_num, pe26, agg) {
@@ -974,7 +990,73 @@ function initPulse() {
     pulse.innerHTML = html;
 }
 
+
+// ═══════════════════════════════════════════════════
+//  NEWS MODAL — Yahoo News Intelligence
+// ═══════════════════════════════════════════════════
+function filterNews() {
+    const db = window.YAHOO_NEWS_MODULE;
+    if (!db || !db.articles) {
+        document.getElementById('newsBody').innerHTML = '<div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">NO NEWS DATA. RUN engine/sync_news.py TO POPULATE.</div>';
+        return;
+    }
+    const q = (document.getElementById('newsSearch')?.value || '').toLowerCase().trim();
+    const articles = db.articles.filter(a => {
+        if (!q) return true;
+        return (a.title||'').toLowerCase().includes(q) || (a.summary||'').toLowerCase().includes(q) || (a.tickers||[]).some(t => t.toLowerCase().includes(q.replace('$','')));
+    });
+    renderNews(articles, q);
+}
+
+function renderNews(articles, query='', limit=50) {
+    const container = document.getElementById('newsBody');
+    const countEl = document.getElementById('news-count');
+    const shown = articles.slice(0, limit);
+    if (countEl) countEl.innerText = `${articles.length} ARTICLES`;
+    if (!shown.length) {
+        container.innerHTML = '<div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">NO MATCHING ARTICLES.</div>';
+        return;
+    }
+    container.innerHTML = shown.map(a => {
+        const tickers = (a.tickers||[]).map(t => `<span style="background:rgba(212,163,115,0.15);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;margin-right:3px;cursor:pointer;" onclick="syncNewsSearch('${t}')">\$${t}</span>`).join('');
+        const pub = a.published_est || a.published || '';
+        const src = a.source || '';
+        let title = a.title || '';
+        if (query && query.length > 1) {
+            const re = new RegExp(`(${query.replace(/[$]/g,'\\$')})`, 'gi');
+            title = title.replace(re, '<span class="highlight">$1</span>');
+        }
+        return `<div class="intel-item">
+            <div class="meta" style="justify-content:space-between;">
+                <span style="color:var(--accent);font-weight:700;font-size:9px;">${src}</span>
+                <span style="color:var(--text-dim);font-size:9px;">${pub}</span>
+            </div>
+            <div style="margin:4px 0 5px;font-size:11px;font-weight:700;line-height:1.4;">${title}</div>
+            <div style="font-size:9px;color:#94a3b8;margin-bottom:5px;">${a.summary ? a.summary.substring(0,180)+'...' : ''}</div>
+            <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${tickers}</div>
+            <div style="margin-top:6px;text-align:right;"><a href="${a.url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;">READ ARTICLE ↗</a></div>
+        </div>`;
+    }).join('');
+}
+
+function openNewsModal() {
+    document.getElementById('newsModal').classList.add('active');
+    filterNews();
+}
+
+function closeNewsModal() {
+    document.getElementById('newsModal').classList.remove('active');
+}
+
+function syncNewsSearch(ticker) {
+    const q = ticker.startsWith('$') ? ticker.replace('$','') : ticker;
+    const el = document.getElementById('newsSearch');
+    if (el) el.value = '$' + q;
+    openNewsModal();
+}
+
 initChart(); initBuckets(); initPulse(); render();
+
 </script>
 </body>
 </html>
