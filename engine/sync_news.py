@@ -99,5 +99,47 @@ async def run_sync():
     except Exception as e:
         print(f"[ERR] Failed to save news database: {e}")
 
+    # Rebuild flat YAHOO_NEWS_MODULE.js for dashboard
+    _rebuild_news_module(current_news)
+
+def _rebuild_news_module(news: dict):
+    """Flatten ticker-keyed news into articles array for dashboard consumption."""
+    from datetime import timezone
+    ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    OUT_JS = os.path.join(ROOT, 'database', 'YAHOO_NEWS_MODULE.js')
+    seen_ids = set()
+    flat = []
+    for ticker, articles in news.items():
+        for a in articles:
+            key = a.get('link') or a.get('url') or ''
+            if key and key in seen_ids:
+                for ex in flat:
+                    if ex.get('url') == key:
+                        if ticker not in ex['tickers']:
+                            ex['tickers'].append(ticker)
+                continue
+            seen_ids.add(key)
+            raw = a.get('date') or a.get('published') or 0
+            if isinstance(raw, (int, float)) and raw > 1_000_000_000:
+                from datetime import datetime, timezone
+                pub = datetime.fromtimestamp(raw, tz=timezone.utc).strftime('%Y-%m-%d %H:%M EST')
+            else:
+                pub = str(raw)[:16] if raw else ''
+            flat.append({
+                'title': a.get('title', ''),
+                'url':   a.get('link') or a.get('url') or '',
+                'source': a.get('provider') or a.get('source') or '',
+                'summary': a.get('summary') or '',
+                'published_est': pub,
+                'tickers': [ticker],
+                'vibe_score': a.get('vibe_score', 0),
+            })
+    flat.sort(key=lambda x: x['published_est'], reverse=True)
+    payload = {'last_updated': datetime.now().isoformat(), 'total': len(flat), 'articles': flat}
+    js = 'window.YAHOO_NEWS_MODULE = ' + json.dumps(payload, ensure_ascii=True) + ';'
+    with open(OUT_JS, 'w', encoding='utf-8') as f:
+        f.write(js)
+    print(f"[SUCCESS] YAHOO_NEWS_MODULE.js rebuilt: {len(flat)} articles")
+
 if __name__ == "__main__":
     asyncio.run(run_sync())
