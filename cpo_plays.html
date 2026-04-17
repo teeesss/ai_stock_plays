@@ -6,8 +6,8 @@
     <title>GIGACPO Intelligence Terminal (V6.1) — Pure Play SiPh/CPO Ecosystem</title>
     <script src="database/dashboard_data.js"></script>
     <script src="database/live_prices.js"></script>
-    <script src="database/YAHOO_NEWS_MODULE.js" onerror="console.warn('News Module not found.')"></script>
     <script src="intel.js"></script>
+    <!-- Defer heavy news module to end of body -->
     <!-- Live prices: run 'python engine/live_prices.py' to refresh -->
     <script>
     // Graceful load: LIVE_PRICES is optional, terminal works without it
@@ -378,45 +378,47 @@ const RANK_EXPLAIN = {
 const sfloat = v => { try { return parseFloat(String(v).replace('%','').trim())||0; } catch { return 0; } };
 const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
-function formatMCap(b) {
-    if (!b || b <= 0) return '--';
-    let res = '';
-    if (b >= 1000) {
-        const t = b / 1000;
-        res = (t < 10 ? t.toFixed(2) : t.toFixed(1)).replace('.00','').replace('.0','') + 'T';
-    } else if (b >= 1) {
-        res = b.toFixed(1).replace('.0','') + 'B';
-    } else {
-        const m = b * 1000;
-        res = m.toFixed(1).replace('.0','') + 'M';
-    }
-    return res.length > 7 ? res.substring(0, 7) : res;
-}
+function calcScore(h, mcapB, perf1y, rev_num, pe26, agg) {
+    const w = getWeights(agg);
+    const alpha = sfloat(h['Alpha Score'] || 0);
+    const subjectiveSafety = 10 - sfloat(h['Risk Adj'] || 5);
+    const discovery = sfloat(h['Hiddenness'] || 5);
+    const mom = momentumScore(perf1y);
+    const multiplier = BUCKET_MULT[h.Bucket] || 0.20;
 
-function getWeights(agg) {
-    const w1 = { s: 0.70, a: 0.20, d: 0.00, m: 0.00 }; // As requested
-    const w5 = { s: 0.30, a: 0.40, d: 0.15, m: 0.15 };
-    const w10= { s: 0.05, a: 0.40, d: 0.50, m: 0.15 }; // As requested
-    if (agg <= 5) {
-        const ratio = (agg - 1) / 4;
-        return { safety: w1.s + ratio*(w5.s - w1.s), alpha: w1.a + ratio*(w5.a - w1.a), discovery: w1.d + ratio*(w5.d - w1.d), momentum: w1.m + ratio*(w5.m - w1.m) };
-    } else {
-        const ratio = (agg - 5) / 5;
-        return { safety: w5.s + ratio*(w10.s - w5.s), alpha: w5.a + ratio*(w10.a - w5.a), discovery: w5.d + ratio*(w10.d - w5.d), momentum: w5.m + ratio*(w10.m - w5.m) };
-    }
-}
+    let mcapAdj = 0;
+    if (mcapB > 200) mcapAdj = 2.0;
+    else if (mcapB > 10) mcapAdj = 1.0;
+    else if (mcapB >= 2) mcapAdj = 0;
+    else if (mcapB >= 0.3) mcapAdj = -1.0;
+    else if (mcapB > 0) mcapAdj = -2.0;
 
-function momentumScore(perf1y) {
-    if (perf1y === undefined || perf1y === null) return 4;
-    if (perf1y > 300) return 5; if (perf1y > 100) return 9;
-    if (perf1y > 40) return 10; if (perf1y > 10) return 7;
-    if (perf1y > 0) return 5; if (perf1y > -25) return 3; return 1;
+    let safety = subjectiveSafety + mcapAdj;
+    if (safety < 0) safety = 0;
+    if (safety > 10) safety = 10;
+
+    let finalMult = 1.0;
+    if (agg <= 3 && mcapB < 2.0) finalMult *= 0.15;
+    else if (agg <= 5 && mcapB < 0.3) finalMult *= 0.30;
+
+    if (agg >= 6) {
+        if (rev_num > 100) finalMult *= 1.20;
+        else if (rev_num > 30) finalMult *= 1.10;
+        if (pe26 > 100 && pe26 < 999 && rev_num < 20) finalMult *= 0.90;
+    }
+
+    let convictionBoost = 0;
+    if (h.inst_13f_alpha && h.inst_13f_alpha.conviction_count) {
+        convictionBoost = h.inst_13f_alpha.conviction_count * 15;
+    }
+
+    return (alpha * w.alpha + safety * w.safety + discovery * w.discovery + mom * w.momentum) * multiplier * 10 * finalMult + convictionBoost;
 }
 
 function buildTickerHTML(ticker) {
     const primary = ticker.includes('/') ? ticker.split('/')[0].trim() : ticker;
     const xIcon = `<span class="x-intel-icon" onclick="syncIntelSearch('${primary}'); event.stopPropagation();" title="Search 𝕏 Intelligence for $${primary}">𝕏</span>`;
-    const newsIcon = `<span class="x-intel-icon" style="color:var(--gold);margin-left:5px;" onclick="syncNewsSearch('${primary}'); event.stopPropagation();" title="Search Yahoo News for $${primary}">📰</span>`;
+    const newsIcon = `<span class="x-intel-icon" style="color:var(--gold);margin-left:8px; display:inline-block !important;" onclick="syncNewsSearch('${primary}'); event.stopPropagation();" title="Search Yahoo News for $${primary}">📰</span>`;
 
     if (!ticker.includes('/')) return `<a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" class="ticker-link">${ticker}</a>${xIcon}${newsIcon}`;
     const parts = ticker.split('/').map(t => t.trim());
@@ -1064,10 +1066,10 @@ function filterNews() {
         );
     }
 
-    renderNews(allNews, query);
+    renderNews(allNews, query, 50); // Performance: Limit to first 50
 }
 
-function renderNews(articles, query = "") {
+function renderNews(articles, query = "", limit = 50) {
     const container = document.getElementById('newsBody');
     const countLabel = document.getElementById('news-count');
     countLabel.innerText = `${articles.length} ARTICLES`;
@@ -1078,7 +1080,8 @@ function renderNews(articles, query = "") {
         return;
     }
 
-    articles.forEach(a => {
+    const displaySet = articles.slice(0, limit);
+    displaySet.forEach(a => {
         const d = new Date(a.date * 1000);
         const dateStr = d.toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
         
@@ -1133,5 +1136,6 @@ document.getElementById('modalNewsSearch').addEventListener('input', filterNews)
 initChart(); initBuckets(); initPulse(); render();
 filterNews();
 </script>
+<script src="database/YAHOO_NEWS_MODULE.js" onerror="console.warn('News Module not found.')"></script>
 </body>
 </html>
