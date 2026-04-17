@@ -1,4 +1,4 @@
-# Quickstart Guide (V6.1 Autonomous Terminal)
+# Quickstart Guide (V18.2 Autonomous Terminal)
 
 ## 1. Launching the Command Center
 The terminal now operates via a Web Server Bridge for real-time synchronization. To launch:
