@@ -1,6 +1,12 @@
 # 🎯 X-Intelligence: Project Roadmap
 
-### 🚀 Current Status: V16.0 (Institutional Alpha + Glass Supercycle)
+### 🚀 Current Status: V17.1 (Hardened Sync + Performance Bridge)
+- **Deployment**: Flattened SFTP structure targeting root `/stocks/` to eliminate script 404s.
+- **Performance**: Deferred JS hydration logic + Paginated News rendering (50-item limit).
+- **Hardening**: Standardized paramiko-based push.
+- **Data Integrity**: Institutional Whale conviction + SiPh News universe parity (6,900 articles).
+- Date: 2026-04-17
+
 - **Data Integrity**: China-only stocks (INNO, EOPT) reclassified → Private/no_dashboard.
 - **Image Pipeline**: OCR → `processed_images.json` → `visual_intel[]` per post → `visual_mentions` in master.
 - **Dashboard**: Visual buzz (📷) badges alongside tweet buzz (𝕏) in buzz bar + row chips.
@@ -10,7 +16,10 @@
 - **Unicode**: All JSON writes use `ensure_ascii=True` — no more VS Code ambiguous-unicode warnings.
 - **Logging**: Python scripts now autonomously output to `logs/*.log` to prevent debugging noise.
 - **Scraper Search**: Fixed Nitter date constraint parsing to prevent recursive vintage deep fetches.
-- Date: 2026-04-16
+- **Quality**: 7-day lookback filtering active for news sanity.
+- **Deduplication**: SHA-256 Title-based news deduplication verified.
+- **Architecture**: Move to root-flattened deployment on bmwseals.com.
+- Date: 2026-04-17
 
 ---
 

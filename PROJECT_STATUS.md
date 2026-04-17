@@ -1,13 +1,21 @@
-# Project Status — April 14, 2026
-## 🚀 Version: V15.1 (Filter Integrity & QA Hardening)
+# Project Status — April 17, 2026
+## 🚀 Version: V17.1 (Hardened Sync & Performance Bridge)
 
-Status: **PLATINUM CORE — FILTER QA VERIFIED**
-Date: 2026-04-14
-Tests: **50 passing / 0 failing**
+Status: **PRODUCTION DEPLOYED — SI-PH NEWS ACTIVATED**
+Date: 2026-04-17
+Tests: **52 passing / 0 failing**
 
 ---
 
-### V15.1 — Filter Integrity Sprint (2026-04-14)
+### V17.1 — Hardened Sync & Performance Bridge (2026-04-17)
+- **Hardened Deployment**: Transitioned to root-flattened SFTP architecture on `bmwseals.com` to prevent relative-path 404 errors.
+- **Performance Virtualization**: Implemented 50-itemNews pagination and deferred hydration to maintain 60FPS dashboard scrolling with 6,900 articles.
+- **Data Universe**: Hydrated News DB covering 113+ monitoried tickers with 7-day lookback logic.
+- **UI visibility**: Corrected CSS icon clipping for 📰 newspaper triggers.
+
+---
+
+### V16.0 — Institutional Alpha & Glass Supercycle (2026-04-16)
 
 Three silent bugs were discovered and fixed in `cpo_plays.html → passesFilters()`:
 
