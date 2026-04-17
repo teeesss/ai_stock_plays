@@ -478,6 +478,32 @@ function calcScore(h, mcapB, perf1y, rev_num, pe26, agg) {
     return baseScore + convictionBoost;
 }
 
+function getWeights(agg) {
+    const table = {
+        1:  { alpha: 0.20, safety: 0.70, discovery: 0.00, momentum: 0.10 },
+        2:  { alpha: 0.25, safety: 0.60, discovery: 0.00, momentum: 0.15 },
+        3:  { alpha: 0.30, safety: 0.50, discovery: 0.04, momentum: 0.16 },
+        4:  { alpha: 0.35, safety: 0.40, discovery: 0.08, momentum: 0.17 },
+        5:  { alpha: 0.40, safety: 0.30, discovery: 0.15, momentum: 0.15 },
+        6:  { alpha: 0.42, safety: 0.25, discovery: 0.18, momentum: 0.15 },
+        7:  { alpha: 0.44, safety: 0.20, discovery: 0.21, momentum: 0.15 },
+        8:  { alpha: 0.46, safety: 0.15, discovery: 0.24, momentum: 0.15 },
+        9:  { alpha: 0.48, safety: 0.10, discovery: 0.27, momentum: 0.15 },
+        10: { alpha: 0.50, safety: 0.05, discovery: 0.30, momentum: 0.15 }
+    };
+    return table[agg] || table[5];
+}
+
+function momentumScore(perf1y) {
+    if (perf1y === undefined) return 5;
+    if (perf1y > 100) return 10;
+    if (perf1y > 50) return 8.5;
+    if (perf1y > 20) return 7;
+    if (perf1y > 0) return 6;
+    if (perf1y > -20) return 4;
+    return 2;
+}
+
 function parseUpside(str) {
     if (!str || str === '--') return 0;
     const m = String(str).match(/([\d.]+)/); if (!m) return 0;
@@ -917,10 +943,6 @@ function renderIntel(posts, query = "") {
 
         // Highlight ticker-like words ($ABCD)
         text = text.replace(/(\$[A-Z]+)/g, '<span style="color:var(--gold);font-weight:700;">$1</span>');
-
-        // Image rendering removed V17.4 for performance.
-        let imagesHtml = '';
-        let visualHtml = '';
 
         const item = document.createElement('div');
         item.className = 'intel-item';
