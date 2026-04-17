@@ -6,6 +6,7 @@
     <title>GIGACPO Intelligence Terminal (V6.1) — Pure Play SiPh/CPO Ecosystem</title>
     <script src="database/dashboard_data.js"></script>
     <script src="database/live_prices.js"></script>
+    <script src="database/YAHOO_NEWS_MODULE.js" onerror="console.warn('News Module not found.')"></script>
     <script src="intel.js"></script>
     <!-- Live prices: run 'python engine/live_prices.py' to refresh -->
     <script>
@@ -157,6 +158,17 @@
         
         .x-intel-icon { font-size: 10px; margin-left: 5px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s, color 0.2s; color: var(--text-dim); }
         .x-intel-icon:hover { opacity: 1; color: var(--accent); }
+        .conviction-badge { display:inline-flex; align-items:center; gap:2px; background:rgba(168,85,247,0.12); color:var(--purple); border:1px solid rgba(168,85,247,0.4); padding:2px 6px; border-radius:4px; font-size:9px; font-weight:900; margin-left:5px; text-transform:uppercase; letter-spacing:0.5px; vertical-align:middle; box-shadow:0 0 8px rgba(168,85,247,0.1); }
+        .conviction-badge.high { background:rgba(168,85,247,0.25); border-color:var(--purple); box-shadow:0 0 12px rgba(168,85,247,0.2); }
+        .conviction-icon { font-size:10px; }
+        .vibe-tag { display:inline-flex; align-items:center; gap:4px; padding:2px 6px; border-radius:4px; font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:0.5px; }
+        .vibe-bullish { background:rgba(16,185,129,0.15); color:var(--green); border:1px solid rgba(16,185,129,0.4); }
+        .vibe-bearish { background:rgba(244,63,94,0.15); color:var(--danger); border:1px solid rgba(244,63,94,0.4); }
+        .vibe-neutral { background:rgba(100,116,139,0.15); color:var(--text-dim); border:1px solid rgba(100,116,139,0.4); }
+        .news-item { background:rgba(15,23,42,0.4); border:1px solid var(--border); border-radius:8px; padding:12px; margin-bottom:8px; transition:all 0.2s; cursor:pointer; text-decoration:none; display:block; }
+        .news-item:hover { border-color:var(--gold); transform:translateY(-2px); background:rgba(15,23,42,0.6); }
+        .news-title { font-size:14px; font-weight:800; color:var(--text-main); line-height:1.4; margin-bottom:6px; }
+        .news-meta { display:flex; justify-content:space-between; align-items:center; font-size:9px; color:var(--text-dim); text-transform:uppercase; font-weight:700; }
     </style>
 </head>
 <body style="display:flex;flex-direction:column;min-height:100vh;">
@@ -173,11 +185,13 @@
         <div class="search-row">
             <div class="search-box">
                 <input type="text" id="searchInput" class="search-bar" placeholder="SEARCH TICKERS...">
-                <span class="search-tag">TICKERS</span>
+            <div class="search-box">
+                <input type="text" id="intelSearch" class="search-bar" placeholder="𝕏 SOCIAL..." readonly onclick="openIntelModal()">
+                <span class="search-tag" style="color:var(--accent)">SOCIAL</span>
             </div>
             <div class="search-box">
-                <input type="text" id="intelSearch" class="search-bar" placeholder="𝕏 SOCIAL INTELLIGENCE SEARCH..." readonly onclick="openIntelModal()">
-                <span class="search-tag" style="color:var(--accent)">SOCIAL</span>
+                <input type="text" id="newsSearch" class="search-bar" placeholder="YAHOO NEWS..." readonly onclick="openNewsModal()">
+                <span class="search-tag" style="color:var(--gold)">NEWS</span>
             </div>
         </div>
     </div>
@@ -275,11 +289,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     <th style="width:65px;" onclick="setSort('todayPct')">% Chg</th>
                     <th style="width:72px;" onclick="setSort('ext')">PM/AH</th>
                     <th style="width:58px;" onclick="setSort('rev')">Rev Gth</th>
+                    <th style="width:85px;" onclick="setSort('conviction')">13F Conv.</th>
                     <th onclick="setSort('info')">Research Info / Role</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
         </table>
+    </div>
+</div>
+
+<div class="intel-modal" id="newsModal">
+    <div class="intel-modal-content" style="border-color:var(--gold)">
+        <div class="intel-header" style="background:#1a1c1e; color:var(--gold)">
+            <div>YAHOO NEWS INTELLIGENCE <span id="news-sync-time" style="font-size:9px; color:var(--text-dim); margin-left:15px; font-weight:700;"></span></div>
+            <div style="display:flex;gap:15px;align-items:center;">
+                <input type="text" id="modalNewsSearch" class="search-bar" style="width:250px;background:#0f172a;" placeholder="SEARCH HEADLINES / TICKERS...">
+                <div style="font-size:10px;color:var(--text-dim);white-space:nowrap;" id="news-count">0 ARTICLES</div>
+                <div class="close-modal" onclick="closeNewsModal()">&times;</div>
+            </div>
+        </div>
+        <div class="buzz-bar" id="newsBuzzBar"></div>
+        <div class="intel-scroll" id="newsBody"></div>
     </div>
 </div>
 
@@ -386,10 +416,18 @@ function momentumScore(perf1y) {
 function buildTickerHTML(ticker) {
     const primary = ticker.includes('/') ? ticker.split('/')[0].trim() : ticker;
     const xIcon = `<span class="x-intel-icon" onclick="syncIntelSearch('${primary}'); event.stopPropagation();" title="Search 𝕏 Intelligence for $${primary}">𝕏</span>`;
+    const newsIcon = `<span class="x-intel-icon" style="color:var(--gold);margin-left:5px;" onclick="syncNewsSearch('${primary}'); event.stopPropagation();" title="Search Yahoo News for $${primary}">📰</span>`;
 
-    if (!ticker.includes('/')) return `<a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" class="ticker-link">${ticker}</a>${xIcon}`;
+    if (!ticker.includes('/')) return `<a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" class="ticker-link">${ticker}</a>${xIcon}${newsIcon}`;
     const parts = ticker.split('/').map(t => t.trim());
-    return `<a href="https://finance.yahoo.com/quote/${parts[0]}" target="_blank" class="ticker-link">${parts[0]}</a><a href="https://finance.yahoo.com/quote/${parts[1]}" target="_blank" class="ticker-otc" title="US OTC: ${parts[1]}">OTC:${parts[1]}</a>${xIcon}`;
+    return `<a href="https://finance.yahoo.com/quote/${parts[0]}" target="_blank" class="ticker-link">${parts[0]}</a><a href="https://finance.yahoo.com/quote/${parts[1]}" target="_blank" class="ticker-otc" title="US OTC: ${parts[1]}">OTC:${parts[1]}</a>${xIcon}${newsIcon}`;
+}
+
+function getConvictionBadge(count) {
+    if (!count || count <= 0) return '';
+    const cls = count >= 5 ? 'conviction-badge high' : 'conviction-badge';
+    const label = count >= 5 ? 'STRONG WHALE' : 'WHALE';
+    return `<span class="${cls}" title="${count} Conviction Institutional Holders (13F Analysis)">${label} x${count}</span>`;
 }
 
 function calcScore(h, mcapB, perf1y, rev_num, pe26, agg) {
@@ -579,6 +617,7 @@ function render() {
                 ` : '<span style="color:var(--text-dim);font-size:10px;">--</span>'}
             </td>
             <td style="font-weight:700;color:var(--accent);">${e.rev_num?e.rev_num+'%':'--'}</td>
+            <td>${getConvictionBadge(e.h.inst_13f_alpha?.conviction_count)}</td>
             <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${buzzHtml}${esc(e.h.Role)}</div><div style="font-size:10px;color:#cbd5e1;margin-top:1px;">${esc((e.h.Notes||'').replace(/\s*[|,]?\s*(Valuation|US ADR|US OTC|OTC)[^|]*/gi,'').trim())}</div>${obbHtml}</td>
         `;
         frag.appendChild(tr); rank++;
@@ -683,6 +722,7 @@ function sortFn(a, b) {
     else if (col === 'today') { av = a.todayChg??-9999; bv = b.todayChg??-9999; }
     else if (col === 'todayPct') { av = a.todayPct??-9999; bv = b.todayPct??-9999; }
     else if (col === 'ext')   { av = a.extPct??-9999;   bv = b.extPct??-9999; }
+    else if (col === 'conviction') { av = a.h.inst_13f_alpha?.conviction_count||0; bv = b.h.inst_13f_alpha?.conviction_count||0; }
     else { av = (a.h.Role||'')+(a.h.Notes||''); bv = (b.h.Role||'')+(b.h.Notes||''); }
     if (typeof av === 'string' && typeof bv === 'string') return av.localeCompare(bv) * state.sortDir;
     return (av < bv ? -1 : (av > bv ? 1 : 0)) * state.sortDir;
@@ -998,7 +1038,100 @@ function initPulse() {
     pulse.innerHTML = html;
 }
 
+function filterNews() {
+    const query = document.getElementById('modalNewsSearch').value.toLowerCase();
+    const module = window.YAHOO_NEWS_MODULE || { news: {}, last_updated: "" };
+    
+    // Update sync time
+    const syncTimeEl = document.getElementById('news-sync-time');
+    if (syncTimeEl && module.last_updated) {
+        syncTimeEl.innerText = `LATEST SYNC: ${module.last_updated} EST`;
+    }
+
+    let allNews = [];
+    Object.entries(module.news || {}).forEach(([ticker, articles]) => {
+        articles.forEach(a => allNews.push({...a, ticker}));
+    });
+
+    // Sort by date desc
+    allNews.sort((a,b) => b.date - a.date);
+
+    if (query) {
+        allNews = allNews.filter(a => 
+            a.ticker.toLowerCase().includes(query) || 
+            a.title.toLowerCase().includes(query) ||
+            (a.provider || "").toLowerCase().includes(query)
+        );
+    }
+
+    renderNews(allNews, query);
+}
+
+function renderNews(articles, query = "") {
+    const container = document.getElementById('newsBody');
+    const countLabel = document.getElementById('news-count');
+    countLabel.innerText = `${articles.length} ARTICLES`;
+    container.innerHTML = "";
+
+    if (articles.length === 0) {
+        container.innerHTML = `<div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">NO MATCHING NEWS FOUND.</div>`;
+        return;
+    }
+
+    articles.forEach(a => {
+        const d = new Date(a.date * 1000);
+        const dateStr = d.toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+        
+        let title = a.title;
+        if (query && query.length > 2) {
+            const regex = new RegExp(`(${query})`, 'gi');
+            title = title.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        const vibe = a.vibe_score || 0;
+        let vibeClass = "vibe-neutral";
+        let vibeLabel = "NEUTRAL";
+        if (vibe >= 0.05) { vibeClass = "vibe-bullish"; vibeLabel = "BULLISH"; }
+        else if (vibe <= -0.05) { vibeClass = "vibe-bearish"; vibeLabel = "BEARISH"; }
+
+        const item = document.createElement('a');
+        item.className = 'news-item';
+        item.href = a.link;
+        item.target = '_blank';
+        item.innerHTML = `
+            <div class="news-title">${title}</div>
+            <div class="news-meta">
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <span style="color:var(--gold);font-weight:900;">$${a.ticker}</span>
+                    <span>${a.provider}</span>
+                    <span>${dateStr}</span>
+                </div>
+                <div class="vibe-tag ${vibeClass}">${vibeLabel} (${vibe.toFixed(2)})</div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+function openNewsModal() {
+    document.getElementById('newsModal').classList.add('active');
+    filterNews();
+}
+
+function closeNewsModal() {
+    document.getElementById('newsModal').classList.remove('active');
+}
+
+function syncNewsSearch(ticker) {
+    const newsSearch = document.getElementById('modalNewsSearch');
+    newsSearch.value = ticker.startsWith('$') ? ticker.substring(1) : ticker;
+    openNewsModal();
+}
+
+document.getElementById('modalNewsSearch').addEventListener('input', filterNews);
+
 initChart(); initBuckets(); initPulse(); render();
+filterNews();
 </script>
 </body>
 </html>

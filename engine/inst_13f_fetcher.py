@@ -16,7 +16,13 @@ LOG_DIR = ROOT / "logs"
 LOG_DIR.mkdir(exist_ok=True)
 DB_PATH = ROOT / "database" / "CPO_MASTER_DATA.json"
 
-# Logging
+import sys
+from yahooquery import Ticker as YQTicker
+
+if sys.platform == "win32":
+    try: sys.stdout.reconfigure(encoding='utf-8')
+    except AttributeError: pass
+
 logging.basicConfig(
     level=logging.INFO,
     format="[%(asctime)s] %(message)s",
@@ -99,10 +105,10 @@ def run():
                 "last_updated": datetime.now(timezone.utc).isoformat()
             }
             updated_count += 1
-            log.info(f"  ✅ Updated ${ticker} | {len(holdings)} holders | {master_data[ticker]['human_research']['inst_13f_alpha']['conviction_count']} conviction")
+            log.info(f"  [OK] Updated ${ticker} | {len(holdings)} holders | {master_data[ticker]['human_research']['inst_13f_alpha']['conviction_count']} conviction")
         
         # Be nice
-        time.sleep(2)
+        time.sleep(3)
 
     if updated_count > 0:
         with open(DB_PATH, "w", encoding="utf-8") as f:

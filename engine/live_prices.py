@@ -292,12 +292,25 @@ async def async_run_fetch(tickers: list = None, dry_run: bool = False) -> dict:
 
     return all_prices
 
-def run_fetch(tickers: list = None, dry_run: bool = False) -> dict:
-    return asyncio.run(async_run_fetch(tickers, dry_run))
-    
-if __name__ == '__main__':
+PRICE_TTL_SECONDS = 600
+
+async def async_main():
     parser = argparse.ArgumentParser(description='GIGACPO Live Price Fetcher')
-    parser.add_argument('--tickers', nargs='+', help='Specific tickers (default: all public)')
-    parser.add_argument('--dry-run', action='store_true', help='Print output, do not write files')
+    parser.add_argument('--tickers', nargs='+', help='Specific tickers')
+    parser.add_argument('--dry-run', action='store_true', help='Print, do not write')
+    parser.add_argument('--force', action='store_true', help='Override cache')
     args = parser.parse_args()
-    run_fetch(tickers=args.tickers, dry_run=args.dry_run)
+
+    if not args.force and not args.dry_run and OUT_JSON.exists():
+        try:
+            mtime = OUT_JSON.stat().st_mtime
+            if (time.time() - mtime) < PRICE_TTL_SECONDS:
+                log.info(f"Price cache fresh ({(time.time()-mtime)/60:.1f}m old). Skipping. Use --force to override.")
+                return
+        except: pass
+
+    await async_run_fetch(tickers=args.tickers, dry_run=args.dry_run)
+
+if __name__ == '__main__':
+    asyncio.run(async_main())
+
