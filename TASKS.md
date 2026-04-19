@@ -1,13 +1,18 @@
 # 🎯 X-Intelligence: Project Roadmap
 
-### 🚀 Current Status: V17.1 (Hardened Sync + Performance Bridge)
-- **Deployment**: Flattened SFTP structure targeting root `/stocks/` to eliminate script 404s.
-- **Performance**: Deferred JS hydration logic + Paginated News rendering (50-item limit).
-- **Hardening**: Standardized paramiko-based push.
-- **Data Integrity**: Institutional Whale conviction + SiPh News universe parity (6,900 articles).
-- Date: 2026-04-17
+### 🚀 Current Status: V20.0 — Unified Stability & Pipeline Mastery
+- **Global Orchestration**: Unified `PipelineOrchestrator` automates News, Prices, OBB, and Deployment.
+- **Yahoo Stealth**: Decoupled Auth (`engine/yahoo_auth.py`) + `chrome146` TLS Handshake (Max Supported).
+- **AI Terminal**: Hardened 100% data coverage for ADRs/Small-caps; fixed momentum/perf rendering.
+- **Reliability**: 52+ tests passing; automated regression checks for momentum and filters.
+- **Deployment**: Unified SFTP sync for both Root and AI terminals.
+- Date: 2026-04-18
 
-- **Data Integrity**: China-only stocks (INNO, EOPT) reclassified → Private/no_dashboard.
+- **Modular Engine**: Migrated scoring and aggregation logic to `engine/` for high reuse.
+- **Dynamic Intelligence**: Upside, MCAP, and P/E metrics now pulled from master DB with zero placeholders.
+- **Scraper Hardening**: Integrated randomized human-jitter (3s-10s) and batching (8-13 tickers).
+- **Documentation**: Full technical architecture and user guides generated for V20.0.
+
 - **Image Pipeline**: OCR → `processed_images.json` → `visual_intel[]` per post → `visual_mentions` in master.
 - **Dashboard**: Visual buzz (📷) badges alongside tweet buzz (𝕏) in buzz bar + row chips.
 - **Scraper Safety**: `visual_intel` now survives `_deduplicate_file` and `_incremental_save` rewrites.
@@ -20,8 +25,29 @@
 - **Quality**: 7-day lookback filtering active for news sanity.
 - **Deduplication**: SHA-256 Title-based news deduplication verified.
 - **Testing**: `test_news_fetcher` updated for async+playwright stealth logic execution.
-- **Architecture**: Move to root-flattened deployment on bmwseals.com.
-- Date: 2026-04-17
+- **Dashboard**: Fixed `#` column centering/cut-off + 7-day momentum dots (Green/Red) on both root and AI terminals.
+- Date: 2026-04-18
+- **AI Terminal**: Consistently consolidated Ticker + Company + Momentum into a single column.
+- **AI Terminal**: Implemented Case-Insensitive filtering (toUpperCase) for Sectors and Exchanges.
+- **AI Terminal**: Hardened `LIVE_PRICES` data binding to fix "Day $" and "% Chg" display issues.
+- **Sync**: Automated SFTP upload enabled for both root and AI `live_prices.py` scripts.
+- **Scoring**: Deployed percentile-based Intelligence Engine for Alpha/Risk/Hidden metrics.
+- **Root Terminal**: Merged Company column under Ticker (same as AI terminal): Ticker → Company name → 7-day momentum strip.
+- **Root Terminal**: Added `getExchAbbrev()` — exchange names now display as abbreviations (NSQ, NYSE, OTC, TSE, TPEX, etc.).
+- **Root Terminal**: Fixed `todayChg` to read `live.price_chg` (was `live.change` — causing blank Day $ column).
+- **Root Terminal**: Momentum strip now reads from `e.obb.recent_7d_status` (openbb_supplement) as primary — correct green/red bars.
+- **AI Terminal**: Fixed `todayChg`, `obb`, and `p` mappings to use `live.price_chg`, `h.openbb_supplement`, `entry.performance`.
+- **Data Integrity**: Renamed `4062.T → 4062.T / IBIDY` and `7912.T → 7912.T / DNPLY` in master DB to surface US ADR symbols.
+- **Data Integrity**: Force-fetched `recent_7d_status` + `perf_1y` for 3105.TWO, 7912.T, 4062.T — all now show correct momentum + 1Y return.
+- **Data Discovery**: Full 113-ticker data audit run — restored `performance{}` for all tickers with `history` and `1y` data.
+- **Pipeline**: Fixed `NameError` in `remote_sync.py` `__main__` block (was calling bare `sync()` instead of `RemoteSync.sync()`).
+- **Pipeline**: Fixed `PipelineOrchestrator` to pull from `AI_MASTER_DATA.json` instead of raw research file, restoring momentum/financials to AI terminal.
+- Date: 2026-04-18
+- **Yahoo Stealth Protocol (V19.5)**: Decoupled authentication logic from extraction loops. `engine/yahoo_auth.py` now harvests and caches session crumbs/cookies via Playwright, providing them to lightweight `curl_cffi` clients.
+- **Yahoo Stealth Protocol (V19.5)**: Standardized Chrome 147.0.7727.101/105/110 identity across all scripts.
+- **Yahoo Stealth Protocol (V19.5)**: Implemented randomized "human" batching (8-13 units per burst, 3.3s-10s delay).
+- **Yahoo Stealth Protocol (V19.5)**: Updated `openbb_fetcher.py` and `news_fetcher.py` to use the unified stealth session, eliminating `yfinance` 401 blocks.
+- **Yahoo Stealth Protocol (V19.5)**: Audited all `curl_cffi` instances to ensure `chrome147` handshake integrity.
 
 ---
 

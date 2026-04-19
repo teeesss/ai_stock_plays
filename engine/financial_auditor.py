@@ -8,7 +8,7 @@ import sys
 import json
 from datetime import datetime
 from curl_cffi import requests
-from stealth_navigator import StealthNavigator
+from yahoo_auth import get_valid_auth
 
 # Ensure UTF-8 output
 if sys.stdout.encoding != 'utf-8':
@@ -45,27 +45,17 @@ async def audit_financials(csv_path, max_tickers=None):
     updated_count = 0
     
     async def heat_session():
-        nonlocal nav, client, crumb
-        print("👻 Heating up new stealth session...")
-        if nav: await nav.close()
-        
-        # Pick a random ticker for session heating to avoid patterns
-        heating_ticker = random.choice(valid_tickers) if valid_tickers else "NVDA"
-        
-        nav = StealthNavigator(headless=True)
-        await nav.initialize()
+        nonlocal client, crumb
+        print("👻 Retrieving decoupled stealth session...")
         try:
-            cookies_list, crumb = await nav.get_session_state(f"https://finance.yahoo.com/quote/{heating_ticker}")
-            cookie_dict = {c['name']: c['value'] for c in cookies_list}
-            client = requests.Session(impersonate="chrome")
-            client.headers.update({"User-Agent": nav.current_ua, "Accept": "*/*"})
+            cookie_dict, crumb, user_agent = await get_valid_auth()
+            client = requests.Session(impersonate="chrome146")
+            client.headers.update({"User-Agent": user_agent, "Accept": "*/*"})
             client.cookies.update(cookie_dict)
-            print(f"  Session Active. Target: {heating_ticker} | Crumb: {crumb[:8]}...")
+            print(f"  Session Active. | Crumb: {crumb[:8]}...")
         except Exception as e:
             print(f"  [!] Session failed: {e}")
             client = None
-        finally:
-            await nav.close()
 
     def clean_ticker(ticker):
         """Extract primary ticker from compound format 'A.XX / B' -> 'A.XX'."""
@@ -121,11 +111,6 @@ async def audit_financials(csv_path, max_tickers=None):
                             updated_count += 1
                             data_found = True
                             break 
-                    time.sleep(random.uniform(0.7, 1.5))
-                except Exception: continue
-
-            if not data_found: failures.append(ticker)
-            processed_count += 1
             
             if processed_count % 10 == 0:
                 with open(MASTER_JSON_PATH, 'w', encoding='utf-8') as f:
@@ -134,8 +119,6 @@ async def audit_financials(csv_path, max_tickers=None):
         # FINAL JSON EXPORT
         with open(MASTER_JSON_PATH, 'w', encoding='utf-8') as f:
             json.dump(master_data, f, indent=2)
-        
-        if nav: await nav.close()
     
     print(f"\n✅ Audit Complete. Updated {updated_count} authoritative entries in {MASTER_JSON_PATH}")
 

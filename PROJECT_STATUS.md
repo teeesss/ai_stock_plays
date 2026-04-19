@@ -1,11 +1,28 @@
-# Project Status — April 17, 2026
-## 🚀 Version: V17.1 (Hardened Sync & Performance Bridge)
+# Project Status — April 19, 2026
+## 🚀 Version: V20.0 (Unified Pipeline & Production Mastery)
 
 Status: **PRODUCTION DEPLOYED — SI-PH NEWS ACTIVATED**
 Date: 2026-04-17
 Tests: **52 passing / 0 failing**
 
 ---
+
+### V20.0 — Unified Pipeline Orchestration (2026-04-18)
+- **Global Orchestrator**: Unified full system sync including `VisualBuzzAggregator` and `sync_news` into a single entry point (`engine/global_orchestrator.py`).
+- **Dynamic Research**: `PipelineOrchestrator` now sources live financials and consensus upside from `CPO_MASTER_DATA.json` instead of placeholders.
+- **Scoring Engine**: Verified Alpha/Risk/Hidden scoring logic across 29 tickers with dynamic percentile normalization.
+- **Deprecation**: Cleaned up legacy `rebuild_master.py` scripts to point exclusively to the modular pipeline.
+- **QA**: 100% pass on refactored `tests/test_intelligence_engine.py`.
+
+### V19.6 — Intelligence Engine V2.0 Modular (2026-04-18)
+
+### V19.5 — AI Terminal UX Refinement (2025-04-18)
+- **AI Terminal**: Consistently consolidated Ticker + Company + Momentum into a single column.
+- **AI Terminal**: Implemented Case-Insensitive filtering (toUpperCase) for Sectors and Exchanges.
+- **AI Terminal**: Hardened `LIVE_PRICES` data binding to fix "Day $" and "% Chg" display issues.
+- **Sync**: Automated SFTP upload enabled for both root and AI `live_prices.py` scripts.
+- **Refactor**: Intelligence Engine V2.0 Modularized into `engine/` for cross-terminal reuse.
+- **Testing**: Regression suite `test_modular_engine.py` verified 100% pass on Alpha floor logic.
 
 ### V17.1 — Hardened Sync & Performance Bridge (2026-04-17)
 - **Hardened Deployment**: Transitioned to root-flattened SFTP architecture on `bmwseals.com` to prevent relative-path 404 errors.
@@ -35,19 +52,15 @@ Full suite: **50 tests, 100% passing.**
 ### V15.0 — Surgical Repair & Dependency Hardening (2026-04-14)
 - **V11.0 Surgical Ticker Repair**: Boundary-aware regex to collapse fragmented tickers.
 - **Dependency Hardening**: Centralized `requirements.txt`. Synchronized `bs4`, `playwright-stealth`, `curl_cffi`, `deep_translator`.
-- **Windows I/O Stability**: Fixed Unicode "I/O operation on closed file" errors.
-- **Precision Sync**: `x_intel_instant_sync.py` verified 100% bug-free.
-- **Broadened Detection**: Expanded ticker mapping regex from (3-6) to (2-12) chars.
-
----
-
-### 🎯 Current Focus
-1. **INNO Country Fix**: Change `"Country": "US"` → `"China"` for InnoLight (China A-share, not US-listed).
-2. **Glass Substrate Supercycle**: Intensify LIDE/TGV analysis as HVM approaches (Intel/Samsung/ASE).
-3. **13F Institutional Layer**: Automated tracking of top-tier hedge fund positioning in CPO names.
-
-### 🏛️ Engineering Standard
-- **Core Engine**: Scraper V11.0 + Forensic V14.1 + Hyper-Drive V12.6 + Visual Intel V1.0.
+- [x] **Task 2: Expanded X Search Filtering** — Added Username select and Date From/To inputs to dashboard; updated `x_intel_deep_scraper.py` with CLI flags (`--since`, `--until`, `--query`).
+- [x] **Task 3: Username Management Script** — Created `engine/manage_users.py` and `database/monitored_users.json` for dynamic user tracking.
+- [x] **Task 4: BetterTwitFix Integration** — Implemented `engine/vx_rescue_fetcher.py` and integrated into scraper as a fallback repair layer for truncated/broken tweets.
+- [x] **Task 5: Image Intelligence Hardening** — Removed OCR batch limits in `image_analyzer.py`; modernized `visual_buzz_aggregator.py` to handle all monitored users dynamically.
+- [x] **Task 6: Unified Terminal** — Created `terminal.py` menu system for orchestrating all 11 engine scripts.
+- [x] **Task 13F: Institutional Alpha** — Created `engine/inst_13f_fetcher.py` to pull 13F hedge fund positioning (WhaleRock, Altimeter, Coatue) into master data.
+- [x] **Task LIDE: Glass Supercycle Mapping** — Created `engine/glass_intel_mapper.py` to map the LIDE/TGV supply chain (LPKF, Absolics, Corning) into the terminal.
+- [x] **Task AI: Alpha Intelligence Engine** — Created `AI/engine/rebuild_master.py` with dynamic percentile scoring formula + case-insensitive filter normalization.
+- [x] **Task AI: Live Price Autopilot** — Updated `live_prices.py` (Both) to auto-upload to SFTP.
 - **Test Suite**: 50 tests across ticker reconstruction, filter logic, audit, and ticker repair.
 - **Top Alpha Plays**: $ASMVY (ASMPT), $SIVE (Sivers), $AJINY (Ajinomoto), $LPK.DE (LPKF), $COHR (Coherent), $LITE (Lumentum), $CRDO (Credo).
 - **Stealth Strategy**: Ghost-Mode V2.8 (Playwright + curl-cffi) active.

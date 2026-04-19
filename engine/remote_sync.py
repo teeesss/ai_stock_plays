@@ -18,111 +18,135 @@ log = logging.getLogger("remote_sync")
 
 ROOT = Path(__file__).parent.parent
 
-def get_creds():
-    host = os.environ.get("SFTP_HOST")
-    user = os.environ.get("SFTP_USER")
-    pas  = os.environ.get("SFTP_PASS")
-    path = os.environ.get("SFTP_PATH")
-    
-    if not all([host, user, pas, path]):
-        log.error("Missing SFTP credentials in .env")
-        return None
+class RemoteSync:
+    @staticmethod
+    def get_creds():
+        host = os.environ.get("SFTP_HOST")
+        user = os.environ.get("SFTP_USER")
+        pas  = os.environ.get("SFTP_PASS")
+        path = os.environ.get("SFTP_PATH")
         
-    return {
-        "remote": {
-            "host": host,
-            "user": user,
-            "pass": pas,
-            "path": path
+        if not all([host, user, pas, path]):
+            log.error("Missing SFTP credentials in .env")
+            return None
+            
+        return {
+            "remote": {
+                "host": host,
+                "user": user,
+                "pass": pas,
+                "path": path
+            }
         }
-    }
 
-def sync(from_dist=False):
-    creds = get_creds()
-    if not creds or "remote" not in creds:
-        log.error("Missing remote credentials.")
-        return False
+    @staticmethod
+    def sync_files(files_to_sync, base_dir=ROOT):
+        """Syncs a specific dictionary of {local_rel_path: remote_rel_path} to SFTP."""
+        creds = RemoteSync.get_creds()
+        if not creds: return False
+        remote = creds["remote"]
 
-    remote = creds["remote"]
-    
-    if from_dist:
-        base_dir = ROOT / "dist"
-        if not base_dir.exists():
-            log.error("dist directory not found. Run build first.")
+        transport = None
+        try:
+            log.info(f"Connecting to {remote['host']} (SFTP)...")
+            transport = paramiko.Transport((remote["host"], 22))
+            transport.connect(username=remote["user"], password=remote["pass"])
+            sftp = paramiko.SFTPClient.from_transport(transport)
+            
+            # Navigate to root target
+            target_parts = remote["path"].strip("/").split("/")
+            for part in target_parts:
+                try:
+                    sftp.chdir(part)
+                except FileNotFoundError:
+                    sftp.mkdir(part)
+                    sftp.chdir(part)
+
+            for local_rel, remote_rel in files_to_sync.items():
+                local_path = base_dir / local_rel
+                if not local_path.exists():
+                    log.warning(f"Skipping missing file: {local_path}")
+                    continue
+
+                remote_parent = os.path.dirname(remote_rel)
+                if remote_parent:
+                    parts = remote_parent.split('/')
+                    curr_rem = ""
+                    for part in parts:
+                        if not part: continue
+                        curr_rem = f"{curr_rem}/{part}" if curr_rem else part
+                        try:
+                            sftp.stat(curr_rem)
+                        except FileNotFoundError:
+                            sftp.mkdir(curr_rem)
+
+                log.info(f"Uploading {local_rel} -> {remote_rel}...")
+                sftp.put(str(local_path), remote_rel)
+                sftp.chmod(remote_rel, 0o644)
+
+            sftp.close()
+            transport.close()
+            log.info("Secure SFTP sync completed successfully.")
+            return True
+        except Exception as e:
+            log.error(f"Secure Sync Failed: {e}")
+            if transport: transport.close()
             return False
-        # In dist mode, we sync EVERYTHING in dist
-        files_to_sync = {}
-        for p in base_dir.rglob("*"):
-            if p.is_file():
-                rel = p.relative_to(base_dir)
-                files_to_sync[str(rel)] = str(rel).replace("\\", "/")
-    else:
-        base_dir = ROOT
-        # Mapping local paths to remote paths
-        files_to_sync = {
-            "cpo_plays.html": "index.html",
-            "database/dashboard_data.js": "database/dashboard_data.js",
-            "database/live_prices.js": "database/live_prices.js",
-            "database/intel.js": "intel.js"
-        }
 
-    transport = None
-    try:
-        log.info(f"Connecting to {remote['host']} (SFTP)...")
-        transport = paramiko.Transport((remote["host"], 22))
-        transport.connect(username=remote["user"], password=remote["pass"])
-        sftp = paramiko.SFTPClient.from_transport(transport)
-        
-        # Navigate using relative parts
-        target_parts = remote["path"].strip("/").split("/")
-        for part in target_parts:
-            try:
-                sftp.chdir(part)
-                log.info(f"Changed to {part}")
-            except FileNotFoundError:
-                log.info(f"Creating directory {part}")
-                sftp.mkdir(part)
-                sftp.chmod(part, 0o755)
-                sftp.chdir(part)
+    @staticmethod
+    def sync_file(abs_path):
+        """Convenience method to sync a single file. Bypasses mount mismatches by string anchoring."""
+        try:
+            abs_str = str(abs_path).replace("\\", "/")
+            
+            # Find the persistent folder name as anchor
+            anchor = "COS_Stock_Plays/"
+            if anchor in abs_str:
+                rel_path = abs_str.split(anchor)[-1]
+            else:
+                rel_path = os.path.basename(abs_path)
 
-        for local_rel, remote_rel in files_to_sync.items():
-            local_path = base_dir / local_rel
-            if not local_path.exists():
-                log.warning(f"Skipping missing file: {local_path}")
-                continue
+            # Force lowercase for remote consistency (Linux servers)
+            rel_path = rel_path.lower()
+            rem_path = rel_path
+            if rem_path == "cpo_plays.html": rem_path = "index.html"
+            
+            log.info(f"Targeting relative path for sync: {rel_path}")
+            return RemoteSync.sync_files({rel_path: rem_path}, base_dir=ROOT)
+        except Exception as e:
+            log.error(f"Sync file failed: {e}")
+            return False
 
-            # Ensure remote parent directory exists (Recursive)
-            remote_parent = os.path.dirname(remote_rel)
-            if remote_parent:
-                parts = remote_parent.split('/')
-                curr_rem = ""
-                for part in parts:
-                    if not part: continue
-                    curr_rem = f"{curr_rem}/{part}" if curr_rem else part
-                    try:
-                        sftp.stat(curr_rem)
-                    except FileNotFoundError:
-                        log.info(f"Creating remote directory: {curr_rem}")
-                        sftp.mkdir(curr_rem)
-                        sftp.chmod(curr_rem, 0o755)
-
-            log.info(f"Uploading {local_rel} -> {remote_rel}...")
-            sftp.put(str(local_path), remote_rel)
-            sftp.chmod(remote_rel, 0o644)
-
-        sftp.close()
-        transport.close()
-        log.info("Secure SFTP sync completed successfully.")
-        return True
-
-    except Exception as e:
-        log.error(f"Secure Sync Failed: {e}")
-        if transport: transport.close()
-        return False
+    @staticmethod
+    def sync(from_dist=False):
+        if from_dist:
+            base_dir = ROOT / "dist"
+            if not base_dir.exists(): return False
+            files_to_sync = {str(p.relative_to(base_dir)): str(p.relative_to(base_dir)).replace("\\", "/") for p in base_dir.rglob("*") if p.is_file()}
+            return RemoteSync.sync_files(files_to_sync, base_dir=base_dir)
+        else:
+            files_to_sync = {}
+            
+            # 1. Semi Mapping (bmwseals.com/stocks)
+            semi_local = ROOT / "web" / "semi"
+            if semi_local.exists():
+                files_to_sync["web/semi/index.html"] = "index.html"
+                files_to_sync["web/semi/dashboard_data.js"] = "database/dashboard_data.js"
+            
+            # 2. AI Mapping (bmwseals.com/stocks/ai)
+            ai_local = ROOT / "web" / "ai"
+            if ai_local.exists():
+                files_to_sync["web/ai/index.html"] = "ai/index.html"
+                files_to_sync["web/ai/dashboard_data.js"] = "ai/database/dashboard_data.js"
+                
+            # 3. Global prices
+            files_to_sync["database/live_prices.js"] = "database/live_prices.js"
+            
+            return RemoteSync.sync_files(files_to_sync, base_dir=ROOT)
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--dist", action="store_true", help="Sync from dist folder")
     args = parser.parse_args()
-    sync(from_dist=args.dist)
+    RemoteSync.sync(from_dist=args.dist)

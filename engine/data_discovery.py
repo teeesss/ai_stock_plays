@@ -6,16 +6,18 @@ import re
 import sys
 import time
 from datetime import datetime
+from pathlib import Path
 from curl_cffi import requests
-from stealth_navigator import StealthNavigator
+from yahoo_auth import get_valid_auth
 
 # Ensure UTF-8 output
 if sys.stdout.encoding != 'utf-8':
     import io
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-MASTER_JSON_PATH = 'database/CPO_MASTER_DATA.json'
-SESSION_STATE_PATH = 'database/stealth_session.json'
+ROOT = Path(__file__).resolve().parent.parent
+MASTER_JSON_PATH = ROOT / 'database' / 'CPO_MASTER_DATA.json'
+SESSION_STATE_PATH = ROOT / 'database' / 'stealth_session.json'
 
 class DataDiscoveryEngine:
     """
@@ -35,26 +37,18 @@ class DataDiscoveryEngine:
         print(f"Loaded {len(self.master_data)} authoritative entries.")
 
     async def heat_session(self):
-        """HEAT PHASE: Mandatory Session Warmup as per Stealth Protocol"""
-        print("\n🔥 [HEAT] Initializing Stealth Session...")
-        nav = StealthNavigator(headless=True)
-        await nav.initialize()
-        try:
-            # Heat using a high-volume ticker
-            heat_ticker = random.choice(["AAPL", "NVDA", "TSLA", "MSFT"])
-            cookies_list, self.crumb = await nav.get_session_state(f"https://finance.yahoo.com/quote/{heat_ticker}")
-            
-            cookie_dict = {c['name']: c['value'] for c in cookies_list}
-            self.client = requests.Session(impersonate="chrome")
-            self.client.headers.update({
-                "User-Agent": nav.current_ua,
-                "Accept": "*/*",
-                "Referer": "https://finance.yahoo.com/"
-            })
-            self.client.cookies.update(cookie_dict)
-            print(f"  [HEAT] Session Active. Crumb: {self.crumb[:10]}...")
-        finally:
-            await nav.close()
+        \"\"\"HEAT PHASE: Fast retrieval of cached auth session\"\"\"
+        print("\n🔥 [HEAT] Retrieving Auth Session...")
+        cookie_dict, self.crumb, user_agent = await get_valid_auth()
+        
+        self.client = requests.Session(impersonate="chrome146")
+        self.client.headers.update({
+            "User-Agent": user_agent,
+            "Accept": "*/*",
+            "Referer": "https://finance.yahoo.com/"
+        })
+        self.client.cookies.update(cookie_dict)
+        print(f"  [HEAT] Session Active. Crumb: {self.crumb[:10]}...")
 
     @staticmethod
     def clean_ticker(ticker: str) -> str:
@@ -148,12 +142,14 @@ class DataDiscoveryEngine:
 
             self.master_data[ticker]["last_updated"] = datetime.now().isoformat()
             
-            # Stealth Throttling (V4.7)
-            time.sleep(random.uniform(1.5, 3.5))
+            # Stealth Throttling (V4.7) - Radically Random
+            delay = random.uniform(3.3, 10.0)
+            time.sleep(delay)
             
             # Session Refresh logic
             if (i+1) % 25 == 0:
                 self.save_checkpoint()
+                print("\n  [!] Refueling session...")
                 await self.heat_session()
             
             # Progressive Save

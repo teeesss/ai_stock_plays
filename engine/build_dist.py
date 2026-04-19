@@ -2,7 +2,7 @@ import os
 import shutil
 from pathlib import Path
 
-ROOT = Path(__file__).parent.parent
+ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
 
 def build():
@@ -10,42 +10,43 @@ def build():
     
     # 1. Clean/Create dist folder
     if DIST.exists():
-        shutil.rmtree(DIST)
+        shutil.rmtree(DIST, ignore_errors=True)
     DIST.mkdir(exist_ok=True)
-    (DIST / "database").mkdir(exist_ok=True)
 
-    # 2. Files to copy
-    # Mapping: local_path -> dist_path
-    files = {
-        # Root Dashboard
-        "cpo_plays.html": "index.html",
-        "database/dashboard_data.js": "database/dashboard_data.js",
-        "database/live_prices.js": "database/live_prices.js",
-        "database/intel.js": "intel.js",
-        
-        # AI Dashboard (Subdirectory)
-        "AI/index.html": "ai/index.html",
-        "AI/database/dashboard_data.js": "ai/database/dashboard_data.js",
-        "AI/database/live_prices.js": "ai/database/live_prices.js",
-        "AI/database/YAHOO_NEWS_MODULE.js": "ai/database/YAHOO_NEWS_MODULE.js", # Match script tag in AI/index.html
+    # 2. Copy Web Endpoints
+    # Mapping: local_web_dir -> dist_dir
+    web_endpoints = {
+        "web/semi": ".",      # Root /stocks/
+        "web/ai": "ai",       # /stocks/ai/
     }
 
-    # Verify what remote_sync.py does:
-    # "cpo_plays.html": "index.html"
-    # "database/dashboard_data.js": "database/dashboard_data.js"
-    # "database/live_prices.js": "database/live_prices.js"
-    # "database/intel.js": "intel.js"
+    shared_assets = [
+        "database/live_prices.js",
+        "database/YAHOO_NEWS_MODULE.js"
+    ]
 
-    for local_rel, dist_rel in files.items():
-        src = ROOT / local_rel
-        dst = DIST / dist_rel
+    for web_rel, dist_rel in web_endpoints.items():
+        src = ROOT / web_rel
+        dst = DIST if dist_rel == "." else DIST / dist_rel
         
+        if src.exists():
+            dst.mkdir(parents=True, exist_ok=True)
+            # Copy all files in the web endpoint directory (index.html, dashboard_data.js)
+            for item in src.iterdir():
+                if item.is_file() and not item.name.endswith("_template.html"):
+                    shutil.copy2(item, dst / item.name)
+                    print(f"  Copied {item.relative_to(ROOT)} -> dist/{dist_rel}/{item.name}")
+        else:
+            print(f"  Warning: {web_rel} not found, skipping.")
+
+    # 3. Copy Shared Database Assets (mirrored structure)
+    for asset in shared_assets:
+        src = ROOT / asset
+        dst = DIST / asset
         if src.exists():
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dst)
-            print(f"  Copied {local_rel} -> dist/{dist_rel}")
-        else:
-            print(f"  Warning: {local_rel} not found, skipping.")
+            print(f"  Copied {asset} -> dist/{asset}")
 
     print("Build complete.")
 

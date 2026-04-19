@@ -1,462 +1,544 @@
 {
-    "last_updated": "2026-04-17T00:39:38.653542",
+    "last_updated": "2026-04-18T12:57:34.830133",
     "ticker_meta": {
         "BESIY": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "KLIC": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ENTG": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ONTO": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "DNPCY": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "COHR": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ALRIB.PA": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776530598.1432035,
+            "fetch_date": "2026-04-18T11:50:06.610812"
         },
         "SMHN.DE": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "AMAT": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ALAB": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "SNPS": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ANSS": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "LITE": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "LWLG": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "2455.TW": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "POET": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "CelestialAI": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "AYAR": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "RANV": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "VECO": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "3105.TW": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776530598.1432035,
+            "fetch_date": "2026-04-18T11:50:06.610812"
         },
         "ASMVY": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "AJINY": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776530598.1432035,
+            "fetch_date": "2026-04-18T11:50:06.610812"
         },
         "LPK.DE": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "SIVE.ST / SIVEF": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "6146.T / DSCSY": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "3110.T": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "CRDO": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "AXTI": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ASMPT": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "NDSN": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "TWCPY": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "AIXNY": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "MKSI": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ASMIY": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "CAMT": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "NVMI": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "IBIEY": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "TSEM": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "LPKF": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "SHWDY": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "INNO": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "EOPT": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "SMTOY": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ATS.VI": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "PLET.DE": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776530598.1432035,
+            "fetch_date": "2026-04-18T11:50:06.610812"
         },
         "7741.T": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "FRA:MRK": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "SMTC": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "KEYS": {
-            "last_fetch": 1776403835.4968748,
-            "fetch_date": "2026-04-17T00:33:39.881294"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "TER": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "CSCO": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "AAOI": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "SCINTIL": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "NOVT": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "MTRN": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "COHU": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ASE": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "APH": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "MYCRF": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "PROB.MI": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776530598.1432035,
+            "fetch_date": "2026-04-18T11:50:06.610812"
         },
         "6941.T": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "SOI": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "CLS": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "GLW": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "MRVL": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "AVGO": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "PTF": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "GFS": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "5201.T": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "SCHN.PA": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776530598.1432035,
+            "fetch_date": "2026-04-18T11:50:06.610812"
         },
         "PSTG": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "STM": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "6361.T": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "TEL": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "KLAC": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "MTSI": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "FN": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "AMKR": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "AEHR": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "TYO:6028": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "VIAV": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "5801.T": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ASX": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "FORM": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "6451.TW": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "HPS-A.TO": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "3363.TW": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776530598.1432035,
+            "fetch_date": "2026-04-18T11:50:06.610812"
         },
         "4979.TW": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776530598.1432035,
+            "fetch_date": "2026-04-18T11:50:06.610812"
         },
         "CRCL": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ENVX": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "CIEN": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "NOK": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ALMU": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ASML": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ICHR": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ETN": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "INRI": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "ANET": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "5713.T": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "UMI.BR": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "NEO.TO": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "0097.KL": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "6408.TW": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776530598.1432035,
+            "fetch_date": "2026-04-18T11:50:06.610812"
         },
         "SMSMY": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "YAMHF": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "IPGP": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "CLFD": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "LASR": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "IQE.L / IQEPF": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "6890.T / FERRF": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "3037.TW": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
         },
         "011790.KS": {
-            "last_fetch": 1776404147.47946,
-            "fetch_date": "2026-04-17T00:39:38.634143"
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
+        },
+        "3105.TWO": {
+            "last_fetch": 1776534068.4229343,
+            "fetch_date": "2026-04-18T12:41:23.414507"
+        },
+        "3363.TWO": {
+            "last_fetch": 1776534068.4229343,
+            "fetch_date": "2026-04-18T12:41:23.414507"
+        },
+        "4979.TWO": {
+            "last_fetch": 1776534068.4229343,
+            "fetch_date": "2026-04-18T12:41:23.414507"
+        },
+        "ATE.PA": {
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
+        },
+        "PVS.DE": {
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
+        },
+        "PRY.MI": {
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
+        },
+        "SU.PA": {
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
+        },
+        "3443.TW": {
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
+        },
+        "2802.T": {
+            "last_fetch": 1776534443.3004067,
+            "fetch_date": "2026-04-18T12:54:02.010569"
+        },
+        "ASMPY": {
+            "last_fetch": 1776534929.2362542,
+            "fetch_date": "2026-04-18T12:55:40.818657"
+        },
+        "LPKFF": {
+            "last_fetch": 1776534929.2362542,
+            "fetch_date": "2026-04-18T12:55:40.818657"
+        },
+        "SOI.PA": {
+            "last_fetch": 1776534929.2362542,
+            "fetch_date": "2026-04-18T12:55:40.818657"
+        },
+        "7912.T": {
+            "last_fetch": 1776535036.409568,
+            "fetch_date": "2026-04-18T12:57:34.810806"
+        },
+        "4062.T": {
+            "last_fetch": 1776535036.409568,
+            "fetch_date": "2026-04-18T12:57:34.810806"
+        },
+        "MRK.DE": {
+            "last_fetch": 1776535036.409568,
+            "fetch_date": "2026-04-18T12:57:34.810806"
+        },
+        "2311.TW": {
+            "last_fetch": 1776535036.409568,
+            "fetch_date": "2026-04-18T12:57:34.810806"
+        },
+        "6028.T": {
+            "last_fetch": 1776535036.409568,
+            "fetch_date": "2026-04-18T12:57:34.810806"
         }
     },
     "news": {
         "BESIY": [],
         "KLIC": [
+            {
+                "title": "Semtech, Allegro MicroSystems, and Kulicke and Soffa Shares Skyrocket, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/semtech-allegro-microsystems-kulicke-soffa-114426469.html",
+                "provider": "StockStory",
+                "date": 1776512666,
+                "vibe_score": 0.296
+            },
+            {
+                "title": "Semtech, Allegro MicroSystems, and Kulicke and Soffa Shares Are Soaring, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/semtech-allegro-microsystems-kulicke-soffa-062426051.html",
+                "provider": "StockStory",
+                "date": 1776493466,
+                "vibe_score": 0.296
+            },
             {
                 "title": "Assessing Kulicke and Soffa (KLIC) Valuation After A 132.18% One Year Total Return",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/assessing-kulicke-soffa-klic-valuation-030953974.html",
@@ -472,8 +554,107 @@
                 "vibe_score": 0.0
             }
         ],
-        "ENTG": [],
+        "ENTG": [
+            {
+                "title": "Amkor, Entegris, and FormFactor Stocks Trade Up, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/amkor-entegris-formfactor-stocks-trade-044826446.html",
+                "provider": "StockStory",
+                "date": 1776487706,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Is It Too Late To Consider Entegris (ENTG) After A 99% One Year Surge",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/too-consider-entegris-entg-99-180630415.html",
+                "provider": "Simply Wall St.",
+                "date": 1776449190,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Entegris to Report Results for First Quarter of 2026 on Thursday, April 30, 2026",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/entegris-report-results-first-quarter-220000739.html",
+                "provider": "Business Wire",
+                "date": 1776376800,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "3 Semiconductor ETFs to Buy Before the AI Chip Market Hits $500 Billion",
+                "link": "https://finance.yahoo.com/m/c1ac8318-b9c3-31cd-861b-aa4d6d5c329e/3-semiconductor-etfs-to-buy.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776286619,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Alpha and Omega (AOSL) Soars 10.9%: Is Further Upside Left in the Stock?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/alpha-omega-aosl-soars-10-124500353.html",
+                "provider": "Zacks",
+                "date": 1776257100,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Entegris Declares Quarterly Cash Dividend",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/entegris-declares-quarterly-cash-dividend-110000183.html",
+                "provider": "Business Wire",
+                "date": 1776250800,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Chip Stocks Are on Pace for Their Longest Win Streak Since 2017",
+                "link": "https://finance.yahoo.com/m/b89575b9-bbf2-32ea-b2e8-20a55634b021/chip-stocks-are-on-pace-for.html",
+                "provider": "Barrons.com",
+                "date": 1776173953,
+                "vibe_score": 0.5859
+            },
+            {
+                "title": "1 Mid-Cap Stock for Long-Term Investors and 2 We Avoid",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/1-mid-cap-stock-long-092401284.html",
+                "provider": "StockStory",
+                "date": 1776072241,
+                "vibe_score": -0.296
+            }
+        ],
         "ONTO": [
+            {
+                "title": "Stifel Upgrades Onto Innovation to Buy With a Massive New Price Target: Did the Market Miss a Huge Semiconductor Signal?",
+                "link": "https://finance.yahoo.com/m/a8d07e9b-cbb1-34f9-a4dd-527cb8e02149/stifel-upgrades-onto.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776437780,
+                "vibe_score": 0.5106
+            },
+            {
+                "title": "Onto Innovation's Turnaround Looks 'Strong', Momentum Building Across AI, Oppenheimer Says",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/onto-innovation-apos-turnaround-looks-135050267.html",
+                "provider": "MT Newswires",
+                "date": 1776433850,
+                "vibe_score": 0.5106
+            },
+            {
+                "title": "Apple upgraded, Qualcomm downgraded: Wall Street's top analyst calls",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/apple-upgraded-qualcomm-downgraded-wall-133634577.html",
+                "provider": "The Fly",
+                "date": 1776432994,
+                "vibe_score": 0.2023
+            },
+            {
+                "title": "Oppenheimer Adjusts Price Target on Onto Innovation to $350 From $265, Maintains Outperform Rating",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/oppenheimer-adjusts-price-target-onto-132157745.html",
+                "provider": "MT Newswires",
+                "date": 1776432117,
+                "vibe_score": 0.3818
+            },
+            {
+                "title": "Stifel Nicolaus Upgrades Onto Innovation to Buy From Hold, Adjusts Price Target to $350 From $220",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/stifel-nicolaus-upgrades-onto-innovation-121552389.html",
+                "provider": "MT Newswires",
+                "date": 1776428152,
+                "vibe_score": 0.3818
+            },
+            {
+                "title": "B. Riley Raises Price Target on Onto Innovation to $330 From $310, Keeps Buy Rating",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/b-riley-raises-price-target-120007023.html",
+                "provider": "MT Newswires",
+                "date": 1776427207,
+                "vibe_score": 0.3818
+            },
             {
                 "title": "Onto Innovation to Report First Quarter 2026 Financial Results on May 5, 2026",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/onto-innovation-report-first-quarter-200500320.html",
@@ -527,6 +708,62 @@
         "DNPCY": [],
         "COHR": [
             {
+                "title": "Fabrinet's Non-Optical Growth Accelerates: More Upside Ahead?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/fabrinets-non-optical-growth-accelerates-171900186.html",
+                "provider": "Zacks",
+                "date": 1776446340,
+                "vibe_score": 0.3818
+            },
+            {
+                "title": "MAN's Q1 Earnings and Revenues Surpass Estimates, Increase Y/Y",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/mans-q1-earnings-revenues-surpass-151800065.html",
+                "provider": "Zacks",
+                "date": 1776439080,
+                "vibe_score": 0.3182
+            },
+            {
+                "title": "2 Reasons to Like COHR and 1 to Stay Skeptical",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/2-reasons-cohr-1-stay-142407285.html",
+                "provider": "StockStory",
+                "date": 1776435847,
+                "vibe_score": 0.0516
+            },
+            {
+                "title": "10 Tech Stocks Soar In The New Rally \u2014 None Are Magnificent 7",
+                "link": "https://finance.yahoo.com/m/3ae31bd7-6688-317f-875e-daa1a35153f8/10-tech-stocks-soar-in-the.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776424806,
+                "vibe_score": -0.4847
+            },
+            {
+                "title": "Winners And Losers Of Q4: Coherent (NYSE:COHR) Vs The Rest Of The Electronic Components & Manufacturing Stocks",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/winners-losers-q4-coherent-nyse-102407993.html",
+                "provider": "StockStory",
+                "date": 1776421447,
+                "vibe_score": -0.0772
+            },
+            {
+                "title": "Best-Performing European Stock of 2026 Rides Photonics Wave",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/best-performing-european-stock-2026-091606105.html",
+                "provider": "Bloomberg",
+                "date": 1776417366,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Zacks Investment Ideas feature highlights: Coherent, Bloom Energy, Nebius Group, Amazon, Alphabet and Meta Platforms",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/zacks-investment-ideas-feature-highlights-070400672.html",
+                "provider": "Zacks",
+                "date": 1776323040,
+                "vibe_score": 0.4215
+            },
+            {
+                "title": "Jim Cramer on Lightwave Logic: \u201cI Think There Are Better, Cheaper Ways to Play This\u201d",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-lightwave-logic-think-070231157.html",
+                "provider": "Insider Monkey",
+                "date": 1776322951,
+                "vibe_score": 0.6486
+            },
+            {
                 "title": "Is Coherent (COHR) Quietly Repositioning Itself at the Core of AI Power Infrastructure?",
                 "link": "https://finance.yahoo.com/sectors/technology/articles/coherent-cohr-quietly-repositioning-itself-180704811.html",
                 "provider": "Simply Wall St.",
@@ -545,6 +782,62 @@
         "SMHN.DE": [],
         "AMAT": [
             {
+                "title": "Micron (MU) Is Riding the AI Boom, but the Stock Still Trades at a Discount",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/micron-mu-riding-ai-boom-141614202.html",
+                "provider": "TipRanks",
+                "date": 1776521774,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Taiwan Semiconductor Q1 Earnings Beat Estimates, Revenues Rise Y/Y",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/taiwan-semiconductor-q1-earnings-beat-144400227.html",
+                "provider": "Zacks",
+                "date": 1776437040,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Is Trending Stock Applied Materials, Inc. (AMAT) a Buy Now?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/trending-stock-applied-materials-inc-130004327.html",
+                "provider": "Zacks",
+                "date": 1776430804,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "LRCX Likely to Beat Q3 Earnings Estimates: How to Play the Stock?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/lrcx-likely-beat-q3-earnings-120800518.html",
+                "provider": "Zacks",
+                "date": 1776427680,
+                "vibe_score": 0.34
+            },
+            {
+                "title": "Musk Moving at \u201cLight Speed\u201d to Sign Up Suppliers for $25B Terafab Chip Dream",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/musk-moving-light-speed-sign-110616588.html",
+                "provider": "TipRanks",
+                "date": 1776423976,
+                "vibe_score": 0.25
+            },
+            {
+                "title": "Stocks to Watch: TSMC, Abbott Laboratories, Nvidia, Netflix",
+                "link": "https://finance.yahoo.com/m/19f95ae1-0c4d-374d-8981-5816ba60063e/stocks-to-watch%3A-tsmc%2C-abbott.html",
+                "provider": "The Wall Street Journal",
+                "date": 1776371401,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Tesla, SpaceX Search For Suppliers For Elon Musk's Terafab Project: Report",
+                "link": "https://finance.yahoo.com/m/dbfbad02-9177-3c1b-89c0-da3330cad1da/tesla%2C-spacex-search-for.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776370714,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "ASML Premium Shrinks To Decade Low As Shares Rise 36% YTD",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/asml-premium-shrinks-decade-low-180223220.html",
+                "provider": "GuruFocus.com",
+                "date": 1776362543,
+                "vibe_score": 0.0258
+            },
+            {
                 "title": "Applied Materials (AMAT) Is Up 14.64% in One Week: What You Should Know",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/applied-materials-amat-14-64-160007359.html",
                 "provider": "Zacks",
@@ -561,6 +854,55 @@
         ],
         "ALAB": [
             {
+                "title": "Why Astera Labs, Inc. (ALAB) Outpaced the Stock Market Today",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/why-astera-labs-inc-alab-221501213.html",
+                "provider": "Zacks",
+                "date": 1776464101,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "3 Growth Companies With Insider Ownership Up To 12%",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/3-growth-companies-insider-ownership-173603823.html",
+                "provider": "Simply Wall St.",
+                "date": 1776447363,
+                "vibe_score": 0.3818
+            },
+            {
+                "title": "April 2026's Top Growth Companies With Strong Insider Ownership",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/april-2026s-top-growth-companies-113550199.html",
+                "provider": "Simply Wall St.",
+                "date": 1776425750,
+                "vibe_score": 0.7717
+            },
+            {
+                "title": "April 2026's Leading Growth Stocks With Insider Confidence",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/april-2026s-leading-growth-stocks-173605364.html",
+                "provider": "Simply Wall St.",
+                "date": 1776360965,
+                "vibe_score": 0.7096
+            },
+            {
+                "title": "Insider-Favored Growth Stocks Including Pagaya Technologies",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/insider-favored-growth-stocks-including-113549499.html",
+                "provider": "Simply Wall St.",
+                "date": 1776339349,
+                "vibe_score": 0.3818
+            },
+            {
+                "title": "Top Growth Companies With Strong Insider Ownership In April 2026",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/top-growth-companies-strong-insider-173624260.html",
+                "provider": "Simply Wall St.",
+                "date": 1776274584,
+                "vibe_score": 0.7717
+            },
+            {
+                "title": "3 Growth Stocks With High Insider Ownership And 43% Earnings Growth",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/3-growth-stocks-high-insider-113553162.html",
+                "provider": "Simply Wall St.",
+                "date": 1776252953,
+                "vibe_score": 0.6369
+            },
+            {
                 "title": "Amphenol vs. ALAB: Which Data Infrastructure Stock Should You Buy?",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/amphenol-vs-alab-data-infrastructure-155300625.html",
                 "provider": "Zacks",
@@ -569,6 +911,48 @@
             }
         ],
         "SNPS": [
+            {
+                "title": "Synopsys (SNPS) Beats Stock Market Upswing: What Investors Need to Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/synopsys-snps-beats-stock-market-214503224.html",
+                "provider": "Zacks",
+                "date": 1776462303,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Baird Adjusts Synopsys Price Target to $499 From $555, Maintains Neutral Rating",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/baird-adjusts-synopsys-price-target-153102045.html",
+                "provider": "MT Newswires",
+                "date": 1776439862,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "AI Is Rewriting Corporate Lingo. ChatGPT Is Leaving Its Mark.",
+                "link": "https://finance.yahoo.com/m/876e6581-ed70-35ac-98fe-e4220a59243d/ai-is-rewriting-corporate.html",
+                "provider": "Barrons.com",
+                "date": 1776434400,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Automotive Chiplets Market Strategic InsightsReport 2025-2026 Featuring Qualcomm, NVIDIA, BMW, Renesas, NXP, TSMC, SIFIVE, SYNOPSYS, AMKOR Technology, and Athos Silicon",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/automotive-chiplets-market-strategic-insightsreport-114000617.html",
+                "provider": "GlobeNewswire",
+                "date": 1776253200,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Synopsys Supports NASA Artemis Program With Simulation Work",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/synopsys-supports-nasa-artemis-program-134616529.html",
+                "provider": "MT Newswires",
+                "date": 1776174376,
+                "vibe_score": 0.3612
+            },
+            {
+                "title": "Synopsys Solutions Support NASA's Artemis Program with Spacesuit Analysis and Communication System Development",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/synopsys-solutions-support-nasas-artemis-130000549.html",
+                "provider": "PR Newswire",
+                "date": 1776171600,
+                "vibe_score": 0.5267
+            },
             {
                 "title": "Here\u2019s Why Synopsys Inc\u2019s (SNPS) Partnership With Nvidia Is Important",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/why-synopsys-inc-snps-partnership-155609045.html",
@@ -594,6 +978,48 @@
         "ANSS": [],
         "LITE": [
             {
+                "title": "Best-Performing European Stock of 2026 Rides Photonics Wave",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/best-performing-european-stock-2026-091606105.html",
+                "provider": "Bloomberg",
+                "date": 1776417366,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "The Zacks Analyst Blog Highlights Ciena, Corning and Lumentum",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/zacks-analyst-blog-highlights-ciena-072500355.html",
+                "provider": "Zacks",
+                "date": 1776237900,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Up 1,539% Over the Past Year, What Is Next for Red-Hot Lumentum Stock?",
+                "link": "https://finance.yahoo.com/m/b2499452-03b6-3e03-a6b9-0655f1c20b36/up-1%2C539%25-over-the-past-year%2C.html",
+                "provider": "Barchart",
+                "date": 1776185122,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Nvidia Says It Isn\u2019t Buying Dell",
+                "link": "https://finance.yahoo.com/m/8a201f73-d2b3-3351-936c-f0604a343f83/nvidia-says-it-isn%E2%80%99t-buying.html",
+                "provider": "Barrons.com",
+                "date": 1776180600,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "5 Stocks in the S&P 500 ETF That Helped Erase Iran War Losses",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/5-stocks-p-500-etf-141700760.html",
+                "provider": "Zacks",
+                "date": 1776176220,
+                "vibe_score": -0.765
+            },
+            {
+                "title": "Why retirees are buying this closed-end fund yielding 8% on venture-stage tech",
+                "link": "https://finance.yahoo.com/m/cf815dba-0c26-3dd5-82df-38612a414680/why-retirees-are-buying-this.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776175241,
+                "vibe_score": 0.0
+            },
+            {
                 "title": "How NVIDIA Optics Deal and New AI Facility Will Impact Lumentum Holdings (LITE) Investors",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/nvidia-optics-deal-ai-facility-001705791.html",
                 "provider": "Simply Wall St.",
@@ -609,6 +1035,20 @@
             }
         ],
         "LWLG": [
+            {
+                "title": "Jim Cramer on Lightwave Logic: \u201cI Think There Are Better, Cheaper Ways to Play This\u201d",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-lightwave-logic-think-070231157.html",
+                "provider": "Insider Monkey",
+                "date": 1776322951,
+                "vibe_score": 0.6486
+            },
+            {
+                "title": "Lightwave Logic Announces Scheduling of Annual Shareholder Meeting",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/lightwave-logic-announces-scheduling-annual-123000366.html",
+                "provider": "ACCESS Newswire",
+                "date": 1776169800,
+                "vibe_score": 0.0
+            },
             {
                 "title": "Do Lightwave Logic\u2019s (LWLG) New Foundry Ties Quietly Redefine Its Commercialization Path?",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/lightwave-logic-lwlg-foundry-ties-010955355.html",
@@ -718,6 +1158,48 @@
         "3110.T": [],
         "CRDO": [
             {
+                "title": "Credo Technology Group (CRDO) Upgraded to Strong Buy: Here's Why",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/credo-technology-group-crdo-upgraded-160003253.html",
+                "provider": "Zacks",
+                "date": 1776441603,
+                "vibe_score": 0.5106
+            },
+            {
+                "title": "Do You Buy or Sell Stocks, When the S&P500 Hits a New Record?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/buy-sell-stocks-p500-hits-195200738.html",
+                "provider": "Zacks",
+                "date": 1776369120,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Stifel Raises Marvell\u2019s Target to $140: Is This AI Chip Dark Horse Ready to Break Out?",
+                "link": "https://finance.yahoo.com/m/d716bee6-e339-38b4-9923-b801eb0d40cc/stifel-raises-marvell%E2%80%99s.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776349186,
+                "vibe_score": 0.3612
+            },
+            {
+                "title": "Credo\u2019s First GHG Report Adds ESG Context To High\u2011Growth Valuation",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/credo-first-ghg-report-adds-060302298.html",
+                "provider": "Simply Wall St.",
+                "date": 1776319382,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Credo Releases 2025 GHG Report, Expands Transparency in Environmental Performance",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/credo-releases-2025-ghg-report-130000142.html",
+                "provider": "Business Wire",
+                "date": 1776258000,
+                "vibe_score": 0.1027
+            },
+            {
+                "title": "Credo Technology Group to Buy DustPhotonics, Boosting AI Optical Portfolio and FY2027 Growth Outlook",
+                "link": "https://finance.yahoo.com/m/d1c79207-9646-3250-b8c2-6e48c92acf6c/credo-technology-group-to-buy.html",
+                "provider": "MarketBeat",
+                "date": 1776252168,
+                "vibe_score": 0.6124
+            },
+            {
                 "title": "Credo Technology Group Holding Ltd (CRDO) Acquires DustPhotonics in $750M Deal",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/credo-technology-group-holding-ltd-092641721.html",
                 "provider": "Insider Monkey",
@@ -733,6 +1215,20 @@
             }
         ],
         "AXTI": [
+            {
+                "title": "AXT Inc. (AXTI) Climbs 400% This Year on Chip Boom, Upbeat Outlook",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/axt-inc-axti-climbs-400-114352331.html",
+                "provider": "Insider Monkey",
+                "date": 1776426232,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "AXT Inc. (AXT) Up 21.5% Ahead of Earnings",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/axt-inc-axt-21-5-214412877.html",
+                "provider": "Insider Monkey",
+                "date": 1775943852,
+                "vibe_score": 0.0
+            },
             {
                 "title": "AXT Inc. (AXTI) Soars on Semiconductor Optimism, Ahead of Earnings",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/axt-inc-axti-soars-semiconductor-020023954.html",
@@ -773,6 +1269,27 @@
         ],
         "NDSN": [
             {
+                "title": "Nordson (NDSN) is an Incredible Growth Stock: 3 Reasons Why",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/nordson-ndsn-incredible-growth-stock-164502615.html",
+                "provider": "Zacks",
+                "date": 1776444302,
+                "vibe_score": 0.4391
+            },
+            {
+                "title": "Buy These 5 Manufacturing Stocks to Tap Recent Industry Rally",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/buy-5-manufacturing-stocks-tap-124200612.html",
+                "provider": "Zacks",
+                "date": 1776084120,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Nordson Electronics Solutions Wins the EM China Innovation Award for Best Supplier of the Year",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/nordson-electronics-solutions-wins-em-152000221.html",
+                "provider": "Business Wire",
+                "date": 1776007200,
+                "vibe_score": 0.9403
+            },
+            {
                 "title": "Do Nordson's (NDSN) Steady Dividend and New Directors Quietly Reshape Its Risk-Reward Profile?",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/nordsons-ndsn-steady-dividend-directors-060334534.html",
                 "provider": "Simply Wall St.",
@@ -797,6 +1314,20 @@
         "TWCPY": [],
         "AIXNY": [],
         "MKSI": [
+            {
+                "title": "New Strong Buy Stocks for April 16th",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/strong-buy-stocks-april-16th-100000864.html",
+                "provider": "Zacks",
+                "date": 1776333600,
+                "vibe_score": 0.5106
+            },
+            {
+                "title": "MKS Inc. Announces First Quarter 2026 Earnings Conference Call",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/mks-inc-announces-first-quarter-120000601.html",
+                "provider": "GlobeNewswire",
+                "date": 1776081600,
+                "vibe_score": 0.0
+            },
             {
                 "title": "MKS (MKSI) Upgraded to Strong Buy: Here's What You Should Know",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/mks-mksi-upgraded-strong-buy-160006796.html",
@@ -829,6 +1360,27 @@
             }
         ],
         "CAMT": [
+            {
+                "title": "Stifel Downgrades Camtek to Hold From Buy, Price Target is $185",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/stifel-downgrades-camtek-hold-buy-121442709.html",
+                "provider": "MT Newswires",
+                "date": 1776428082,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "inTest (INTT) Moves 9.2% Higher: Will This Strength Last?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/intest-intt-moves-9-2-075300960.html",
+                "provider": "Zacks",
+                "date": 1776412380,
+                "vibe_score": 0.5789
+            },
+            {
+                "title": "Sector Update: Tech Stocks Edge Higher Premarket Tuesday",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/sector-tech-stocks-edge-higher-131313735.html",
+                "provider": "MT Newswires",
+                "date": 1776172393,
+                "vibe_score": 0.0
+            },
             {
                 "title": "Camtek to Acquire Visual Layer",
                 "link": "https://finance.yahoo.com/sectors/technology/articles/camtek-acquire-visual-layer-103721671.html",
@@ -874,6 +1426,13 @@
         ],
         "NVMI": [
             {
+                "title": "Nova to Report First Quarter 2026 Financial Results on May 14",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/nova-report-first-quarter-2026-120000585.html",
+                "provider": "PR Newswire",
+                "date": 1776081600,
+                "vibe_score": 0.0
+            },
+            {
                 "title": "Will Nova's (NVMI) Rapid EPS And Cash Flow Gains Reshape Its Process Control Investment Narrative",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/novas-nvmi-rapid-eps-cash-043045110.html",
                 "provider": "Simply Wall St.",
@@ -890,6 +1449,34 @@
         ],
         "IBIEY": [],
         "TSEM": [
+            {
+                "title": "Satellite Boom Launches STMicroelectronics Stock Into Orbit",
+                "link": "https://finance.yahoo.com/m/1b1acf24-17d8-35f4-8b69-d637e32e57b6/satellite-boom-launches.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776457201,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Aeluma Wins $4 Million in Contracts for US Government Semiconductor Program; Shares Rise Pre-Bell",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/aeluma-wins-4-million-contracts-113449050.html",
+                "provider": "MT Newswires",
+                "date": 1776080089,
+                "vibe_score": 0.7096
+            },
+            {
+                "title": "Aeluma Secures More Than $4 Million in Contracts for Quantum Materials and Lasers",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/aeluma-secures-more-4-million-110000071.html",
+                "provider": "GlobeNewswire",
+                "date": 1776078000,
+                "vibe_score": 0.3182
+            },
+            {
+                "title": "Do Lightwave Logic\u2019s (LWLG) New Foundry Ties Quietly Redefine Its Commercialization Path?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/lightwave-logic-lwlg-foundry-ties-010955355.html",
+                "provider": "Simply Wall St.",
+                "date": 1776042595,
+                "vibe_score": 0.0
+            },
             {
                 "title": "Jim Cramer on Tower Semiconductor (TSEM): \u201cI Would Take a Little Off Just Because It\u2019s Had, It\u2019s Had a Parabolic Move in the Last Few Weeks\u201d",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-tower-semiconductor-tsem-211002134.html",
@@ -924,6 +1511,55 @@
         "FRA:MRK": [],
         "SMTC": [
             {
+                "title": "Semtech, Allegro MicroSystems, and Kulicke and Soffa Shares Skyrocket, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/semtech-allegro-microsystems-kulicke-soffa-114426469.html",
+                "provider": "StockStory",
+                "date": 1776512666,
+                "vibe_score": 0.296
+            },
+            {
+                "title": "Semtech, Allegro MicroSystems, and Kulicke and Soffa Shares Are Soaring, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/semtech-allegro-microsystems-kulicke-soffa-062426051.html",
+                "provider": "StockStory",
+                "date": 1776493466,
+                "vibe_score": 0.296
+            },
+            {
+                "title": "Will Navitas Semiconductor\u2019s (NVTS) New Board Veteran Quietly Reshape Its Execution And Governance Priorities?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/navitas-semiconductor-nvts-board-veteran-030815097.html",
+                "provider": "Simply Wall St.",
+                "date": 1776481695,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Semtech and Amkor Stocks Trade Up, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/semtech-amkor-stocks-trade-know-061027616.html",
+                "provider": "StockStory",
+                "date": 1776406227,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "AMD, Onsemi, Semtech Latest Chip Stocks To Break Out",
+                "link": "https://finance.yahoo.com/m/768646e3-5861-3ef9-a59a-0c7f0095eb98/amd%2C-onsemi%2C-semtech-latest.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776373736,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "B. Riley Raises Price Target on Semtech to $122 From $115, Keeps Buy Rating",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/b-riley-raises-price-target-120457400.html",
+                "provider": "MT Newswires",
+                "date": 1776341097,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Navitas Semiconductor Appoints Gregory Fischer to Board",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/navitas-semiconductor-appoints-gregory-fischer-210154563.html",
+                "provider": "MT Newswires",
+                "date": 1776114114,
+                "vibe_score": 0.0
+            },
+            {
                 "title": "Why Is Semtech (SMTC) Up 13.8% Since Last Earnings Report?",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/why-semtech-smtc-13-8-153003449.html",
                 "provider": "Zacks",
@@ -939,6 +1575,13 @@
             }
         ],
         "KEYS": [
+            {
+                "title": "3 Hyped Up  Stocks with Open Questions",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/3-hyped-stocks-open-questions-091427981.html",
+                "provider": "StockStory",
+                "date": 1776244467,
+                "vibe_score": 0.0
+            },
             {
                 "title": "Keysight Technologies (KEYS): One of the Best Performing AI Stocks to Watch?",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/keysight-technologies-keys-one-best-202301486.html",
@@ -984,6 +1627,27 @@
         ],
         "TER": [
             {
+                "title": "Teradyne and onsemi Shares Are Soaring, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/teradyne-onsemi-shares-soaring-know-054426858.html",
+                "provider": "StockStory",
+                "date": 1776491066,
+                "vibe_score": 0.296
+            },
+            {
+                "title": "Teradyne Buys TestInsight To Deepen Role In AI Chip Testing",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/teradyne-buys-testinsight-deepen-role-050355760.html",
+                "provider": "Simply Wall St.",
+                "date": 1776488635,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Chip Stocks Are on Pace for Their Longest Win Streak Since 2017",
+                "link": "https://finance.yahoo.com/m/b89575b9-bbf2-32ea-b2e8-20a55634b021/chip-stocks-are-on-pace-for.html",
+                "provider": "Barrons.com",
+                "date": 1776173953,
+                "vibe_score": 0.5859
+            },
+            {
                 "title": "Teradyne Acquires TestInsight to Accelerate AI and Data Center Test Development",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/teradyne-acquires-testinsight-accelerate-ai-134740926.html",
                 "provider": "MT Newswires",
@@ -1021,6 +1685,55 @@
         ],
         "CSCO": [
             {
+                "title": "1 Momentum  Stock to Consider Right Now and 2 We Ignore",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/1-momentum-stock-consider-now-092826646.html",
+                "provider": "StockStory",
+                "date": 1776504506,
+                "vibe_score": -0.3612
+            },
+            {
+                "title": "Cisco Systems Inc. (CSCO) Price Target Raised to $96 by JPMorgan",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/cisco-systems-inc-csco-price-090944036.html",
+                "provider": "Insider Monkey",
+                "date": 1776503384,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "What Stock Will be the Next 1990s Cisco?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/stock-next-1990s-cisco-231500805.html",
+                "provider": "Zacks",
+                "date": 1776467700,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Analyst Report: Cisco Systems, Inc.",
+                "link": "https://finance.yahoo.com/m/60ba7a59-0b2c-348a-9f9f-cd51df2b0fb5/analyst-report%3A-cisco.html",
+                "provider": "Morningstar Research",
+                "date": 1776466217,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Market rally breakdown: Dow Jones, bitcoin, Tesla, and more",
+                "link": "https://finance.yahoo.com/video/market-rally-breakdown-dow-jones-bitcoin-tesla-and-more-193947251.html",
+                "provider": "Yahoo Finance Video",
+                "date": 1776454787,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "AI Chips Used to Be Nvidia\u2019s Game. Now More Winners Are Emerging.",
+                "link": "https://finance.yahoo.com/m/d6accfba-5876-31ae-857c-fa352e716ff5/ai-chips-used-to-be-nvidia%E2%80%99s.html",
+                "provider": "Barrons.com",
+                "date": 1776454200,
+                "vibe_score": 0.5256
+            },
+            {
+                "title": "Ciena Soars 182% in 6 Months: Should Investors Buy the Stock Now?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/ciena-soars-182-6-months-161400394.html",
+                "provider": "Zacks",
+                "date": 1776356040,
+                "vibe_score": -0.5994
+            },
+            {
                 "title": "Cisco Systems (CSCO) Exceeds Market Returns: Some Facts to Consider",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/cisco-systems-csco-exceeds-market-214503167.html",
                 "provider": "Zacks",
@@ -1029,6 +1742,62 @@
             }
         ],
         "AAOI": [
+            {
+                "title": "A Look At Applied Optoelectronics (AAOI) Valuation After Major US Manufacturing Expansion For AI Data Center Demand",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/look-applied-optoelectronics-aaoi-valuation-110503723.html",
+                "provider": "Simply Wall St.",
+                "date": 1776510303,
+                "vibe_score": -0.128
+            },
+            {
+                "title": "ASML vs. AAOI: Which Stock Leads the Data Center Supply Chain?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/asml-vs-aaoi-stock-leads-151800655.html",
+                "provider": "Zacks",
+                "date": 1776439080,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Applied Optoelectronics (AAOI) Expansion Fuels 351% Rally This Year",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/applied-optoelectronics-aaoi-expansion-fuels-113655104.html",
+                "provider": "Insider Monkey",
+                "date": 1776425815,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Applied Optoelectronics Expands Houston-Area Manufacturing Capacity for AI Data Center Transceivers",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/applied-optoelectronics-expands-houston-area-113055922.html",
+                "provider": "MT Newswires",
+                "date": 1776425455,
+                "vibe_score": 0.1027
+            },
+            {
+                "title": "AOI Expands Its Houston-Area Footprint to 900,000 Square Feet to Increase Capacity and Support Future Growth",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/aoi-expands-houston-area-footprint-110000503.html",
+                "provider": "GlobeNewswire",
+                "date": 1776423600,
+                "vibe_score": 0.7906
+            },
+            {
+                "title": "Applied Optoelectronics Announces Date of First Quarter 2026 Financial Results Conference Call",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/applied-optoelectronics-announces-date-first-201000637.html",
+                "provider": "GlobeNewswire",
+                "date": 1776370200,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Zacks Investment Ideas feature highlights: Micron, SanDisk, Blue Owl Capital, Moody's and Applied Optoelectronics",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/zacks-investment-ideas-feature-highlights-063600161.html",
+                "provider": "Zacks",
+                "date": 1776234960,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "The Fog Clears: Why the AI Stagnation Just Ended",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/fog-clears-why-ai-stagnation-024000954.html",
+                "provider": "Zacks",
+                "date": 1776134400,
+                "vibe_score": 0.0772
+            },
             {
                 "title": "Strength Seen in Applied Optoelectronics (AAOI): Can Its 13.0% Jump Turn into More Strength?",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/strength-seen-applied-optoelectronics-aaoi-123900577.html",
@@ -1045,8 +1814,31 @@
             }
         ],
         "SCINTIL": [],
-        "NOVT": [],
-        "MTRN": [],
+        "NOVT": [
+            {
+                "title": "Novanta Inc. Announces Schedule of First Quarter 2026 Earnings Release and Conference Call",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/novanta-inc-announces-schedule-first-150000165.html",
+                "provider": "Business Wire",
+                "date": 1776178800,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "1 High-Flying Stock for Long-Term Investors and 2 Facing Headwinds",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/1-high-flying-stock-long-122801022.html",
+                "provider": "StockStory",
+                "date": 1776083281,
+                "vibe_score": 0.0
+            }
+        ],
+        "MTRN": [
+            {
+                "title": "Materion Corporation to Announce First Quarter 2026 Financial Results on April 29",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/materion-corporation-announce-first-quarter-203000448.html",
+                "provider": "Business Wire",
+                "date": 1776285000,
+                "vibe_score": 0.0
+            }
+        ],
         "COHU": [
             {
                 "title": "Cohu To Announce First Quarter Financial Results on April 30",
@@ -1081,6 +1873,55 @@
         ],
         "APH": [
             {
+                "title": "JPMorgan Raises Amphenol (APH) Target Ahead of Q1, Sees AI Infrastructure Upside",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/jpmorgan-raises-amphenol-aph-target-012857157.html",
+                "provider": "Insider Monkey",
+                "date": 1776475737,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Will Earnings Give Amphenol Stock The Push It Needs To Break Out?",
+                "link": "https://finance.yahoo.com/m/2a95c9c9-042e-3ab1-9ea4-4bf9f9f3aa8f/will-earnings-give-amphenol.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776446081,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Amphenol And The Rising Humidity Sensor Opportunity In IoT Markets",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/amphenol-rising-humidity-sensor-opportunity-170357165.html",
+                "provider": "Simply Wall St.",
+                "date": 1776445437,
+                "vibe_score": 0.4215
+            },
+            {
+                "title": "Amphenol vs. ALAB: Which Data Infrastructure Stock Should You Buy?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/amphenol-vs-alab-data-infrastructure-155300625.html",
+                "provider": "Zacks",
+                "date": 1776354780,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Humidity Sensor Market Growth: Projected to Reach $4.64 Billion by 2030",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/humidity-sensor-market-growth-projected-143000161.html",
+                "provider": "GlobeNewswire",
+                "date": 1776177000,
+                "vibe_score": 0.4019
+            },
+            {
+                "title": "UBS Adjusts Price Target on Amphenol to $170 From $174, Maintains Buy Rating",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/ubs-adjusts-price-target-amphenol-135243484.html",
+                "provider": "MT Newswires",
+                "date": 1776174763,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "JBL vs. GLW: Which Tech Hardware Stock is the Better Buy?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/jbl-vs-glw-tech-hardware-172900483.html",
+                "provider": "Zacks",
+                "date": 1776101340,
+                "vibe_score": 0.4404
+            },
+            {
                 "title": "APH's IT Datacom Growth Surges With AI Push: What Lies Ahead?",
                 "link": "https://finance.yahoo.com/sectors/technology/articles/aphs-datacom-growth-surges-ai-181600286.html",
                 "provider": "Zacks",
@@ -1092,8 +1933,114 @@
         "PROB.MI": [],
         "6941.T": [],
         "SOI": [],
-        "CLS": [],
+        "CLS": [
+            {
+                "title": "Celestica, Inc. (CLS) Is a Trending Stock: Facts to Know Before Betting on It",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/celestica-inc-cls-trending-stock-130002634.html",
+                "provider": "Zacks",
+                "date": 1776430802,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Can Jabil's Alliance With Sivers for AI Data Center Boost Its Shares?",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/jabils-alliance-sivers-ai-data-154000040.html",
+                "provider": "Zacks",
+                "date": 1776354000,
+                "vibe_score": 0.5994
+            },
+            {
+                "title": "CIBC Confirms Outperformer Rating on Celestica and Raises Target to US$425 Ahead of Q1 Results",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/cibc-confirms-outperformer-rating-celestica-155655864.html",
+                "provider": "MT Newswires",
+                "date": 1776182215,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Why retirees are buying this closed-end fund yielding 8% on venture-stage tech",
+                "link": "https://finance.yahoo.com/m/cf815dba-0c26-3dd5-82df-38612a414680/why-retirees-are-buying-this.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776175241,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Celestica Price Target Raised to US$425 at CIBC",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/celestica-price-target-raised-us-121230812.html",
+                "provider": "MT Newswires",
+                "date": 1776168750,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Celestica vs. Sanmina: Which EMS Stock is the Better Buy?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/celestica-vs-sanmina-ems-stock-181500156.html",
+                "provider": "Zacks",
+                "date": 1776104100,
+                "vibe_score": 0.4404
+            },
+            {
+                "title": "Can Sanmina's Modern Defense Portfolio Boost Its Growth Prospects?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/sanminas-modern-defense-portfolio-boost-151900819.html",
+                "provider": "Zacks",
+                "date": 1776093540,
+                "vibe_score": 0.7906
+            },
+            {
+                "title": "Ballard Power Systems Appoints Ralph Robinett as Chief Operating Officer",
+                "link": "https://finance.yahoo.com/sectors/energy/articles/ballard-power-systems-appoints-ralph-124650771.html",
+                "provider": "MT Newswires",
+                "date": 1776084410,
+                "vibe_score": 0.0
+            }
+        ],
         "GLW": [
+            {
+                "title": "Ericsson's Q1 Earnings Match Estimates, Revenues Decline Y/Y",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/ericssons-q1-earnings-match-estimates-164900523.html",
+                "provider": "Zacks",
+                "date": 1776444540,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Corning (GLW) Is Up 15.77% in One Week: What You Should Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/corning-glw-15-77-one-160004284.html",
+                "provider": "Zacks",
+                "date": 1776441604,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Buy 5 Stocks With High ROE as Markets Hit Record High on Likely Truce",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/buy-5-stocks-high-roe-144600666.html",
+                "provider": "Zacks",
+                "date": 1776437160,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Why Corning (GLW) Stock Is Down Today",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/why-corning-glw-stock-down-054627362.html",
+                "provider": "StockStory",
+                "date": 1776404787,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "These Stocks Are Today\u2019s Movers: AMD, Intel, TSMC, Abbott, Hims, Corning, Schwab, Polaris, and More",
+                "link": "https://finance.yahoo.com/m/5370e667-4977-33cd-bc67-4e37e5dfb2d5/these-stocks-are-today%E2%80%99s.html",
+                "provider": "Barrons.com",
+                "date": 1776370980,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Corning Stock Is Falling. Why J.P. Morgan Disagrees With the \u2018Blue-Sky Scenario.\u2019",
+                "link": "https://finance.yahoo.com/m/974af069-1dd0-339f-8beb-1b4162e04b2f/corning-stock-is-falling.-why.html",
+                "provider": "Barrons.com",
+                "date": 1776370320,
+                "vibe_score": -0.4404
+            },
+            {
+                "title": "Niron Magnetics Appoints Mike Brommer as Chief Operations Officer to Advance Manufacturing Capacity",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/niron-magnetics-appoints-mike-brommer-125500687.html",
+                "provider": "Business Wire",
+                "date": 1776344100,
+                "vibe_score": 0.0
+            },
             {
                 "title": "Are Computer and Technology Stocks Lagging  Corning (GLW) This Year?",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/computer-technology-stocks-lagging-corning-134004941.html",
@@ -1102,8 +2049,128 @@
                 "vibe_score": -0.2732
             }
         ],
-        "MRVL": [],
+        "MRVL": [
+            {
+                "title": "The software rebound is real, but not every big name is back: Chart of the Day",
+                "link": "https://finance.yahoo.com/news/the-software-rebound-is-real-but-not-every-big-name-is-back-chart-of-the-day-121425237.html",
+                "provider": "Yahoo Finance",
+                "date": 1776514465,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Marvell Technology (MRVL) Stock Is Up, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/marvell-technology-mrvl-stock-know-060826516.html",
+                "provider": "StockStory",
+                "date": 1776492506,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Marvell and Broadcom Stocks Are on Fire. They\u2019re Not Done Yet.",
+                "link": "https://finance.yahoo.com/m/f7533120-dad9-32c0-bacc-c3d95b2adccc/marvell-and-broadcom-stocks.html",
+                "provider": "Barrons.com",
+                "date": 1776458760,
+                "vibe_score": -0.34
+            },
+            {
+                "title": "Marvel Biosciences Announces Closing of Convertible Debenture Offering",
+                "link": "https://finance.yahoo.com/sectors/healthcare/articles/marvel-biosciences-announces-closing-convertible-203000048.html",
+                "provider": "TMX Newsfile",
+                "date": 1776457800,
+                "vibe_score": 0.4215
+            },
+            {
+                "title": "AI Chips Used to Be Nvidia\u2019s Game. Now More Winners Are Emerging.",
+                "link": "https://finance.yahoo.com/m/d6accfba-5876-31ae-857c-fa352e716ff5/ai-chips-used-to-be-nvidia%E2%80%99s.html",
+                "provider": "Barrons.com",
+                "date": 1776454200,
+                "vibe_score": 0.5256
+            },
+            {
+                "title": "Marvell Technology Stock Just Hit New All-Time Highs. Should You Buy It Here?",
+                "link": "https://finance.yahoo.com/m/2537bb81-676d-3077-906d-1006dad36cb7/marvell-technology-stock-just.html",
+                "provider": "Barchart",
+                "date": 1776433532,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Why Anthropic's Custom Chip Plans Could Benefit Broadcom",
+                "link": "https://finance.yahoo.com/m/e84fe671-c908-39bd-8956-8218a1f13274/why-anthropic%27s-custom-chip.html",
+                "provider": "MarketBeat",
+                "date": 1776424500,
+                "vibe_score": 0.4588
+            },
+            {
+                "title": "The rally in tech stocks is widening beyond semiconductors and into software",
+                "link": "https://finance.yahoo.com/news/the-rally-in-tech-stocks-is-widening-beyond-semiconductors-and-into-software-100008649.html",
+                "provider": "Yahoo Finance",
+                "date": 1776420008,
+                "vibe_score": 0.0
+            }
+        ],
         "AVGO": [
+            {
+                "title": "Broadcom vs. AMD: Which AI Chipmaker Is the Better Buy?",
+                "link": "https://finance.yahoo.com/m/79ddda56-9d4d-3c45-b110-bb089291ead5/broadcom-vs.-amd%3A-which-ai.html",
+                "provider": "Motley Fool",
+                "date": 1776531000,
+                "vibe_score": 0.4404
+            },
+            {
+                "title": "Most Investors Have Never Heard of This Semiconductor Stock. That's About to Change.",
+                "link": "https://finance.yahoo.com/m/462aa26a-19ce-307b-874a-4855cb111c47/most-investors-have-never.html",
+                "provider": "Motley Fool",
+                "date": 1776524700,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "The software rebound is real, but not every big name is back: Chart of the Day",
+                "link": "https://finance.yahoo.com/news/the-software-rebound-is-real-but-not-every-big-name-is-back-chart-of-the-day-121425237.html",
+                "provider": "Yahoo Finance",
+                "date": 1776514465,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Broadcom Inc (AVGO) Among the Unstoppable Growth Stocks to Invest In According to Reddit",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/broadcom-inc-avgo-among-unstoppable-094234110.html",
+                "provider": "Insider Monkey",
+                "date": 1776505354,
+                "vibe_score": 0.2023
+            },
+            {
+                "title": "Broadcom Inc. (AVGO) Stock Surges Due to AI-related Deals",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/broadcom-inc-avgo-stock-surges-084343892.html",
+                "provider": "Insider Monkey",
+                "date": 1776501823,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Will Navitas Semiconductor\u2019s (NVTS) New Board Veteran Quietly Reshape Its Execution And Governance Priorities?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/navitas-semiconductor-nvts-board-veteran-030815097.html",
+                "provider": "Simply Wall St.",
+                "date": 1776481695,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "I Sold My Warner Bros. Shares and Bought These 2 Growth Stocks Instead. The AI Supercycle Made It Obvious.",
+                "link": "https://finance.yahoo.com/m/e28a3c28-0458-36e1-9046-f12b6553bf15/i-sold-my-warner-bros.-shares.html",
+                "provider": "Motley Fool",
+                "date": 1776467100,
+                "vibe_score": 0.5859
+            },
+            {
+                "title": "Marvell and Broadcom Stocks Are on Fire. They\u2019re Not Done Yet.",
+                "link": "https://finance.yahoo.com/m/f7533120-dad9-32c0-bacc-c3d95b2adccc/marvell-and-broadcom-stocks.html",
+                "provider": "Barrons.com",
+                "date": 1776458760,
+                "vibe_score": -0.34
+            },
+            {
+                "title": "How Broadcom\u2019s 93% Margin Software Machine Is Powering Its AI Bets",
+                "link": "https://finance.yahoo.com/m/9922ba24-1ecf-31e7-baee-c45c5ebb8e92/how-broadcom%E2%80%99s-93%25-margin.html",
+                "provider": "Trefis",
+                "date": 1776458252,
+                "vibe_score": 0.0
+            },
             {
                 "title": "Broadcom (AVGO) Is Up 13.1% After Expanded Meta AI Chip Partnership - What's Changed",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/broadcom-avgo-13-1-expanded-190347442.html",
@@ -1113,10 +2180,25 @@
             }
         ],
         "PTF": [],
-        "GFS": [],
+        "GFS": [
+            {
+                "title": "Analyst Report: GLOBALFOUNDRIES Inc.",
+                "link": "https://finance.yahoo.com/m/5c070442-3821-3d23-9194-d01decb1a488/analyst-report%3A.html",
+                "provider": "Morningstar Research",
+                "date": 1776465782,
+                "vibe_score": 0.0
+            }
+        ],
         "5201.T": [],
         "SCHN.PA": [],
         "PSTG": [
+            {
+                "title": "1 of Wall Street\u2019s Favorite Stock to Own for Decades and 2 We Avoid",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/1-wall-street-favorite-stock-200227872.html",
+                "provider": "StockStory",
+                "date": 1776369747,
+                "vibe_score": 0.2023
+            },
             {
                 "title": "Everpure (PSTG) Exceeds Market Returns: Some Facts to Consider",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/everpure-pstg-exceeds-market-returns-220004993.html",
@@ -1153,9 +2235,80 @@
                 "vibe_score": 0.4767
             }
         ],
-        "STM": [],
+        "STM": [
+            {
+                "title": "Satellite Boom Launches STMicroelectronics Stock Into Orbit",
+                "link": "https://finance.yahoo.com/m/1b1acf24-17d8-35f4-8b69-d637e32e57b6/satellite-boom-launches.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776457201,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "STMicroelectronics Shares Rise After Upgrade From Mizuho Securities",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/stmicroelectronics-shares-rise-upgrade-mizuho-182500340.html",
+                "provider": "MT Newswires",
+                "date": 1776450300,
+                "vibe_score": 0.5267
+            },
+            {
+                "title": "Apple upgraded, Qualcomm downgraded: Wall Street's top analyst calls",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/apple-upgraded-qualcomm-downgraded-wall-133634577.html",
+                "provider": "The Fly",
+                "date": 1776432994,
+                "vibe_score": 0.2023
+            },
+            {
+                "title": "[Latest] Global Power Schottky Diode Market Size/Share Worth USD 8.14 Billion by 2035 at a 8.7% CAGR: Custom Market Insights (Analysis, Outlook, Leaders, Report, Trends, Forecast, Segmentation, Growth Rate, Value, SWOT Analysis)",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/latest-global-power-schottky-diode-143000534.html",
+                "provider": "GlobeNewswire",
+                "date": 1776177000,
+                "vibe_score": 0.7096
+            },
+            {
+                "title": "TSM Likely to Beat Q1 Earnings Estimates: How to Play the Stock?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/tsm-likely-beat-q1-earnings-130000148.html",
+                "provider": "Zacks",
+                "date": 1776085200,
+                "vibe_score": 0.34
+            }
+        ],
         "6361.T": [],
         "TEL": [
+            {
+                "title": "Buy 5 Stocks With High ROE as Markets Hit Record High on Likely Truce",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/buy-5-stocks-high-roe-144600666.html",
+                "provider": "Zacks",
+                "date": 1776437160,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "TE Connectivity (TEL) Q2 Earnings Preview: What You Should Know Beyond the Headline Estimates",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/te-connectivity-tel-q2-earnings-131507117.html",
+                "provider": "Zacks",
+                "date": 1776431707,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Zacks.com featured highlights include Biogen, TE Connectivity and ZTO Express (Cayman)",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/zacks-com-featured-highlights-biogen-085100282.html",
+                "provider": "Zacks",
+                "date": 1776415860,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "3 Stocks With Upgraded Broker Ratings As Markets Hit All-Time High",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/3-stocks-upgraded-broker-ratings-120200297.html",
+                "provider": "Zacks",
+                "date": 1776340920,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "APH's IT Datacom Growth Surges With AI Push: What Lies Ahead?",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/aphs-datacom-growth-surges-ai-181600286.html",
+                "provider": "Zacks",
+                "date": 1776190560,
+                "vibe_score": -0.0516
+            },
             {
                 "title": "Are You Looking for a Top Momentum Pick? Why TE Connectivity (TEL) is a Great Choice",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/looking-top-momentum-pick-why-160003338.html",
@@ -1201,6 +2354,41 @@
         ],
         "KLAC": [
             {
+                "title": "LRCX Likely to Beat Q3 Earnings Estimates: How to Play the Stock?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/lrcx-likely-beat-q3-earnings-120800518.html",
+                "provider": "Zacks",
+                "date": 1776427680,
+                "vibe_score": 0.34
+            },
+            {
+                "title": "ASML Trades At Decade-Low Premium Despite 36% Rally",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/asml-trades-decade-low-premium-124932043.html",
+                "provider": "GuruFocus.com",
+                "date": 1776343772,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "ASML valuation gap with US peers hits decade low",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/asml-valuation-gap-us-peers-110411802.html",
+                "provider": "Investing.com",
+                "date": 1776337451,
+                "vibe_score": -0.2732
+            },
+            {
+                "title": "KLA Corporation and Lam Research Shares Plummet, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/kla-corporation-lam-research-shares-035427274.html",
+                "provider": "StockStory",
+                "date": 1776311667,
+                "vibe_score": 0.296
+            },
+            {
+                "title": "3 Semiconductor ETFs to Buy Before the AI Chip Market Hits $500 Billion",
+                "link": "https://finance.yahoo.com/m/c1ac8318-b9c3-31cd-861b-aa4d6d5c329e/3-semiconductor-etfs-to-buy.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776286619,
+                "vibe_score": 0.0
+            },
+            {
                 "title": "Assessing KLA (KLAC) Valuation As Earnings Approach And Export Control Concerns Meet AI Chip Demand",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/assessing-kla-klac-valuation-earnings-200323849.html",
                 "provider": "Simply Wall St.",
@@ -1231,6 +2419,55 @@
         ],
         "MTSI": [
             {
+                "title": "1 Surging  Stock Worth Investigating and 2 We Find Risky",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/1-surging-stock-worth-investigating-233626096.html",
+                "provider": "StockStory",
+                "date": 1776468986,
+                "vibe_score": 0.0258
+            },
+            {
+                "title": "Satellite Boom Launches STMicroelectronics Stock Into Orbit",
+                "link": "https://finance.yahoo.com/m/1b1acf24-17d8-35f4-8b69-d637e32e57b6/satellite-boom-launches.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776457201,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Zacks Industry Outlook Highlights Magnachip, Analog Devices and MACOM Technology",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/zacks-industry-outlook-highlights-magnachip-085700623.html",
+                "provider": "Zacks",
+                "date": 1776416220,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Magnachip, Analog Devices, MACOM Are Analog-Mixed Signal Gems",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/magnachip-analog-devices-macom-analog-193400488.html",
+                "provider": "Zacks",
+                "date": 1776368040,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Sandisk, Marvell Hit New Highs. Other Chip Stocks Nearing Buy Points.",
+                "link": "https://finance.yahoo.com/m/13f1792c-b757-3b1c-9b47-3794c06946c0/sandisk%2C-marvell-hit-new.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776115592,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Semiconductor Demand in Data Centers, AI Offset by Automotive, Consumer Sectors, BofA Says",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/semiconductor-demand-data-centers-ai-151033624.html",
+                "provider": "MT Newswires",
+                "date": 1776093033,
+                "vibe_score": -0.128
+            },
+            {
+                "title": "BofA Adjusts Price Target on MACOM Technology Solutions to $305 From $260, Maintains Buy Rating",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/bofa-adjusts-price-target-macom-142048659.html",
+                "provider": "MT Newswires",
+                "date": 1776090048,
+                "vibe_score": 0.1779
+            },
+            {
                 "title": "How The MACOM Technology Solutions Holdings (MTSI) Story Is Shifting With Fresh Analyst Valuation Calls",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/macom-technology-solutions-holdings-mtsi-051337963.html",
                 "provider": "Simply Wall St.",
@@ -1240,6 +2477,27 @@
         ],
         "FN": [
             {
+                "title": "Is It Too Late To Consider Fabrinet (FN) After A 276% One\u2011Year Surge?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/too-consider-fabrinet-fn-276-020930213.html",
+                "provider": "Simply Wall St.",
+                "date": 1776478170,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Fabrinet's Non-Optical Growth Accelerates: More Upside Ahead?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/fabrinets-non-optical-growth-accelerates-171900186.html",
+                "provider": "Zacks",
+                "date": 1776446340,
+                "vibe_score": 0.3818
+            },
+            {
+                "title": "Is Fabrinet Stock's 43.59X P/E Still Worth it? Buy, Sell or Hold?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/fabrinet-stocks-43-59x-p-164000573.html",
+                "provider": "Zacks",
+                "date": 1776271200,
+                "vibe_score": 0.3094
+            },
+            {
                 "title": "FN's Optical Communications Revenues Accelerate: What's Ahead?",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/fns-optical-communications-revenues-accelerate-171300133.html",
                 "provider": "Zacks",
@@ -1248,6 +2506,48 @@
             }
         ],
         "AMKR": [
+            {
+                "title": "Amkor, Entegris, and FormFactor Stocks Trade Up, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/amkor-entegris-formfactor-stocks-trade-044826446.html",
+                "provider": "StockStory",
+                "date": 1776487706,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "1 Mooning  Stock for Long-Term Investors and 2 Facing Headwinds",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/1-mooning-stock-long-term-013626500.html",
+                "provider": "StockStory",
+                "date": 1776476186,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Semtech and Amkor Stocks Trade Up, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/semtech-amkor-stocks-trade-know-061027616.html",
+                "provider": "StockStory",
+                "date": 1776406227,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Seagate, Amtech, and Amkor Shares Are Falling, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/seagate-amtech-amkor-shares-falling-194600853.html",
+                "provider": "StockStory",
+                "date": 1776282360,
+                "vibe_score": 0.1531
+            },
+            {
+                "title": "Automotive Chiplets Market Strategic InsightsReport 2025-2026 Featuring Qualcomm, NVIDIA, BMW, Renesas, NXP, TSMC, SIFIVE, SYNOPSYS, AMKOR Technology, and Athos Silicon",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/automotive-chiplets-market-strategic-insightsreport-114000617.html",
+                "provider": "GlobeNewswire",
+                "date": 1776253200,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Is Aehr Test Systems (AEHR) Stock Outpacing Its Computer and Technology Peers This Year?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/aehr-test-systems-aehr-stock-134002626.html",
+                "provider": "Zacks",
+                "date": 1776087602,
+                "vibe_score": 0.0
+            },
             {
                 "title": "Amkor Technology (AMKR) Laps the Stock Market: Here's Why",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/amkor-technology-amkr-laps-stock-220002342.html",
@@ -1285,6 +2585,41 @@
             }
         ],
         "AEHR": [
+            {
+                "title": "A Look At Aehr Test Systems (AEHR) Valuation After Record AI Hyperscaler Order",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/look-aehr-test-systems-aehr-230356075.html",
+                "provider": "Simply Wall St.",
+                "date": 1776467036,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "A $41 Million Reason to Buy Aehr Test Systems Stock Here",
+                "link": "https://finance.yahoo.com/m/1f4a95f1-33a8-3440-9f21-02b9f191de73/a-%2441-million-reason-to-buy.html",
+                "provider": "Barchart",
+                "date": 1776446196,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Aehr Test (AEHR) Up 300% on Chip Boom",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/aehr-test-aehr-300-chip-113142116.html",
+                "provider": "Insider Monkey",
+                "date": 1776425502,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Aehr Test Systems Insider Sold Shares Worth $1,210,800, According to a Recent SEC Filing",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/aehr-test-systems-insider-sold-075556699.html",
+                "provider": "MT Newswires",
+                "date": 1776412556,
+                "vibe_score": 0.4767
+            },
+            {
+                "title": "Top Midday Gainers",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/top-midday-gainers-173112656.html",
+                "provider": "MT Newswires",
+                "date": 1776360672,
+                "vibe_score": 0.2023
+            },
             {
                 "title": "Aehr Test Systems Soars More Than 15% on ASIC Chip Testing News. Should You Buy AEHR Stock Today?",
                 "link": "https://finance.yahoo.com/m/473912aa-e5f9-3f54-885a-296583cc2b40/aehr-test-systems-soars-more.html",
@@ -1331,6 +2666,27 @@
         "TYO:6028": [],
         "VIAV": [
             {
+                "title": "1 Russell 2000 Stock with Competitive Advantages and 2 We Avoid",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/1-russell-2000-stock-competitive-100026141.html",
+                "provider": "StockStory",
+                "date": 1776506426,
+                "vibe_score": 0.25
+            },
+            {
+                "title": "A Look At Viavi Solutions (VIAV) Valuation After Its Powerful Recent Share Price Surge",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/look-viavi-solutions-viav-valuation-110642040.html",
+                "provider": "Simply Wall St.",
+                "date": 1776424002,
+                "vibe_score": 0.6908
+            },
+            {
+                "title": "3 Unpopular Stocks We Think Twice About",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/3-unpopular-stocks-think-twice-080401443.html",
+                "provider": "StockStory",
+                "date": 1776067441,
+                "vibe_score": 0.0
+            },
+            {
                 "title": "Inertial Labs, a VIAVI Solutions Company, Advances 3D Terrain and Surface Modeling with PCMasterPro 1.16 for RESEPI",
                 "link": "https://finance.yahoo.com/sectors/technology/articles/inertial-labs-viavi-solutions-company-103000432.html",
                 "provider": "PR Newswire",
@@ -1360,8 +2716,44 @@
             }
         ],
         "5801.T": [],
-        "ASX": [],
+        "ASX": [
+            {
+                "title": "Dow Jones E-Commerce Giant Amazon, Alphabet Eye New Buy Points",
+                "link": "https://finance.yahoo.com/m/3e60f74b-9567-364b-a5ed-fdb1f60223cd/dow-jones-e-commerce-giant.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776195405,
+                "vibe_score": 0.1779
+            },
+            {
+                "title": "Asian Equities Traded in the US as American Depositary Receipts Begin Week Lower",
+                "link": "https://finance.yahoo.com/markets/world-indices/articles/asian-equities-traded-us-american-143613289.html",
+                "provider": "MT Newswires",
+                "date": 1776090973,
+                "vibe_score": -0.296
+            }
+        ],
         "FORM": [
+            {
+                "title": "Amkor, Entegris, and FormFactor Stocks Trade Up, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/amkor-entegris-formfactor-stocks-trade-044826446.html",
+                "provider": "StockStory",
+                "date": 1776487706,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "FormFactor (FORM) is a Top-Ranked Momentum Stock: Should You Buy?",
+                "link": "https://finance.yahoo.com/news/formfactor-form-top-ranked-momentum-135002295.html",
+                "provider": "Zacks",
+                "date": 1776433802,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "3 Overrated  Stocks That Concern Us",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/3-overrated-stocks-concern-us-135427674.html",
+                "provider": "StockStory",
+                "date": 1776347667,
+                "vibe_score": 0.0
+            },
             {
                 "title": "Are You Looking for a Top Momentum Pick? Why FormFactor (FORM) is a Great Choice",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/looking-top-momentum-pick-why-160007750.html",
@@ -1381,8 +2773,114 @@
         "HPS-A.TO": [],
         "3363.TW": [],
         "4979.TW": [],
-        "CRCL": [],
+        "CRCL": [
+            {
+                "title": "Cathie Wood sells fresh wave of crypto stocks worth $2.57 million",
+                "link": "https://finance.yahoo.com/m/5b1aec1e-6b67-32e5-a251-9783f6365e2e/cathie-wood-sells-fresh-wave.html",
+                "provider": "TheStreet",
+                "date": 1776511427,
+                "vibe_score": 0.4939
+            },
+            {
+                "title": "Circle Lawsuit And Drift Exit Test Confidence In USDC And Valuation",
+                "link": "https://finance.yahoo.com/markets/crypto/articles/circle-lawsuit-drift-exit-test-190439176.html",
+                "provider": "Simply Wall St.",
+                "date": 1776452679,
+                "vibe_score": 0.34
+            },
+            {
+                "title": "Tether extends $127.5 million in funding to crypto platform Drift as critics blast rival Circle for failing to freeze hacked funds",
+                "link": "https://finance.yahoo.com/markets/crypto/articles/tether-extends-127-5-million-184327667.html",
+                "provider": "Fortune",
+                "date": 1776451407,
+                "vibe_score": -0.7579
+            },
+            {
+                "title": "Crypto Soars To End The Week As Strait Of Hormuz Reopens",
+                "link": "https://finance.yahoo.com/m/825df257-605a-3cbe-bd60-55e06cb1c296/crypto-soars-to-end-the-week.html",
+                "provider": "CryptoProwl",
+                "date": 1776449340,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Circle slapped with class-action lawsuit over 2026's largest hack",
+                "link": "https://finance.yahoo.com/m/58d2573a-9795-34fa-8773-eec15b13cc22/circle-slapped-with.html",
+                "provider": "TheStreet",
+                "date": 1776448500,
+                "vibe_score": -0.2263
+            },
+            {
+                "title": "Circle Hit With Class Action Lawsuit Related To Drift Hack",
+                "link": "https://finance.yahoo.com/m/91b84cc9-1ad7-34da-b9b6-9fd34293a282/circle-hit-with-class-action.html",
+                "provider": "CryptoProwl",
+                "date": 1776435480,
+                "vibe_score": -0.2263
+            },
+            {
+                "title": "Strategy vs. Circle: Which Crypto-Linked Stock Has More Upside Now?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/strategy-vs-circle-crypto-linked-123400918.html",
+                "provider": "Zacks",
+                "date": 1776429240,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Morning Minute: $11T+ Schwab Goes All In on Crypto",
+                "link": "https://finance.yahoo.com/m/8ae2b093-b9b1-3821-a5be-61477053a5f3/morning-minute%3A-%2411t%2B-schwab.html",
+                "provider": "decrypt",
+                "date": 1776428502,
+                "vibe_score": 0.0
+            }
+        ],
         "ENVX": [
+            {
+                "title": "3 Growth Companies With Insider Ownership Up To 12%",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/3-growth-companies-insider-ownership-173603823.html",
+                "provider": "Simply Wall St.",
+                "date": 1776447363,
+                "vibe_score": 0.3818
+            },
+            {
+                "title": "April 2026's Top Growth Companies With Strong Insider Ownership",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/april-2026s-top-growth-companies-113550199.html",
+                "provider": "Simply Wall St.",
+                "date": 1776425750,
+                "vibe_score": 0.7717
+            },
+            {
+                "title": "April 2026's Leading Growth Stocks With Insider Confidence",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/april-2026s-leading-growth-stocks-173605364.html",
+                "provider": "Simply Wall St.",
+                "date": 1776360965,
+                "vibe_score": 0.7096
+            },
+            {
+                "title": "Insider-Favored Growth Stocks Including Pagaya Technologies",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/insider-favored-growth-stocks-including-113549499.html",
+                "provider": "Simply Wall St.",
+                "date": 1776339349,
+                "vibe_score": 0.3818
+            },
+            {
+                "title": "Top Growth Companies With Strong Insider Ownership In April 2026",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/top-growth-companies-strong-insider-173624260.html",
+                "provider": "Simply Wall St.",
+                "date": 1776274584,
+                "vibe_score": 0.7717
+            },
+            {
+                "title": "Top Growth Companies With Strong Insider Ownership April 2026",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/top-growth-companies-strong-insider-173641408.html",
+                "provider": "Simply Wall St.",
+                "date": 1776188201,
+                "vibe_score": 0.7717
+            },
+            {
+                "title": "April 2026's Leading Growth Stocks With Strong Insider Ownership",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/april-2026s-leading-growth-stocks-113541006.html",
+                "provider": "Simply Wall St.",
+                "date": 1776080141,
+                "vibe_score": 0.7096
+            },
             {
                 "title": "Why Enovix (ENVX) Still Has Room to Grow Despite BofA\u2019s Cautious Start",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/why-enovix-envx-still-room-185305022.html",
@@ -1392,6 +2890,34 @@
             }
         ],
         "CIEN": [
+            {
+                "title": "Ciena Insider Sold Shares Worth $1,379,976, According to a Recent SEC Filing",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/ciena-insider-sold-shares-worth-193114025.html",
+                "provider": "MT Newswires",
+                "date": 1776454274,
+                "vibe_score": 0.4767
+            },
+            {
+                "title": "Ciena Insider Sold Shares Worth $1,169,134, According to a Recent SEC Filing",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/ciena-insider-sold-shares-worth-193043247.html",
+                "provider": "MT Newswires",
+                "date": 1776454243,
+                "vibe_score": 0.4767
+            },
+            {
+                "title": "Ciena Insider Sold Shares Worth $566,148, According to a Recent SEC Filing",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/ciena-insider-sold-shares-worth-191602931.html",
+                "provider": "MT Newswires",
+                "date": 1776453362,
+                "vibe_score": 0.4767
+            },
+            {
+                "title": "PEGA Set to Post Q1 Earnings: What's in Store for the Stock?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/pega-set-post-q1-earnings-174000014.html",
+                "provider": "Zacks",
+                "date": 1776361200,
+                "vibe_score": 0.0
+            },
             {
                 "title": "How Ciena\u2019s AI-Fueled US$7 Billion Backlog Will Impact Ciena (CIEN) Investors",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/ciena-ai-fueled-us-7-210607865.html",
@@ -1444,6 +2970,48 @@
         ],
         "NOK": [
             {
+                "title": "Nokia Oyj (HLSE:NOKIA) Is Up 7.6% After Expanding AI-RAN And Cybersecurity Alliances - Has The Bull Case Changed?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/nokia-oyj-hlse-nokia-7-060714757.html",
+                "provider": "Simply Wall St.",
+                "date": 1776492434,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Ericsson's Q1 Earnings Match Estimates, Revenues Decline Y/Y",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/ericssons-q1-earnings-match-estimates-164900523.html",
+                "provider": "Zacks",
+                "date": 1776444540,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Jim Cramer on Nokia: \u201cHold on to It, You Got Another 30% Going on There\u201d",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-nokia-hold-got-161412740.html",
+                "provider": "Insider Monkey",
+                "date": 1776442452,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "BlackBerry, JVCKENWOOD and SK Telecom Join Sisvel POS Patent Pool as Licensors",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/blackberry-jvckenwood-sk-telecom-join-070400299.html",
+                "provider": "Business Wire",
+                "date": 1776409440,
+                "vibe_score": 0.296
+            },
+            {
+                "title": "Ciena Soars 182% in 6 Months: Should Investors Buy the Stock Now?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/ciena-soars-182-6-months-161400394.html",
+                "provider": "Zacks",
+                "date": 1776356040,
+                "vibe_score": -0.5994
+            },
+            {
+                "title": "The New Nokia: A Bullish Upgrade Ignites This Big AI Bet",
+                "link": "https://finance.yahoo.com/m/8f968057-ecd8-3463-850c-1c61d9c56332/the-new-nokia%3A-a-bullish.html",
+                "provider": "MarketBeat",
+                "date": 1776351300,
+                "vibe_score": 0.0
+            },
+            {
                 "title": "Nokia (NOK) is a Great Momentum Stock: Should You Buy?",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/nokia-nok-great-momentum-stock-160006483.html",
                 "provider": "Zacks",
@@ -1472,8 +3040,107 @@
                 "vibe_score": 0.2732
             }
         ],
-        "ALMU": [],
+        "ALMU": [
+            {
+                "title": "A Look At Aeluma (ALMU) Valuation After New US Government Quantum And Datacom Contracts",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/look-aeluma-almu-valuation-us-100449858.html",
+                "provider": "Simply Wall St.",
+                "date": 1776420289,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Top Growth Companies With Strong Insider Ownership April 2026",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/top-growth-companies-strong-insider-173641408.html",
+                "provider": "Simply Wall St.",
+                "date": 1776188201,
+                "vibe_score": 0.7717
+            },
+            {
+                "title": "Sector Update: Tech Stocks Gain Monday Afternoon",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/sector-tech-stocks-gain-monday-174631342.html",
+                "provider": "MT Newswires",
+                "date": 1776102391,
+                "vibe_score": 0.5267
+            },
+            {
+                "title": "Sector Update: Tech Stocks Decline Premarket Monday",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/sector-tech-stocks-decline-premarket-130830711.html",
+                "provider": "MT Newswires",
+                "date": 1776085710,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Aeluma Wins $4 Million in Contracts for US Government Semiconductor Program; Shares Rise Pre-Bell",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/aeluma-wins-4-million-contracts-113449050.html",
+                "provider": "MT Newswires",
+                "date": 1776080089,
+                "vibe_score": 0.7096
+            },
+            {
+                "title": "Aeluma Secures More Than $4 Million in Contracts for Quantum Materials and Lasers",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/aeluma-secures-more-4-million-110000071.html",
+                "provider": "GlobeNewswire",
+                "date": 1776078000,
+                "vibe_score": 0.3182
+            }
+        ],
         "ASML": [
+            {
+                "title": "Chip Stocks and Bank Earnings Extravaganza",
+                "link": "https://finance.yahoo.com/m/f7e0cb1a-6f62-3830-b297-f23d9e7647ac/chip-stocks-and-bank-earnings.html",
+                "provider": "Motley Fool",
+                "date": 1776528200,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Assessing ASML (ENXTAM:ASML) Valuation After Q1 Beat Guidance Hike And China Export Headwinds",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/assessing-asml-enxtam-asml-valuation-041929114.html",
+                "provider": "Simply Wall St.",
+                "date": 1776485969,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Stock Market Hits Highs On Iran Hopes; Goldman Sachs, Netflix, Taiwan Semiconductor In Focus: Weekly Review",
+                "link": "https://finance.yahoo.com/m/3f785ef8-8ee7-38c1-9b3b-5b88e57efad9/stock-market-hits-highs-on.html",
+                "provider": "Investor's Business Daily",
+                "date": 1776448090,
+                "vibe_score": 0.4215
+            },
+            {
+                "title": "The Best Artificial Intelligence (AI) Chip Equipment Stock Just Raised Guidance. Here's What ASML's Earnings Mean for the Nasdaq.",
+                "link": "https://finance.yahoo.com/m/bbbc74c4-e5cc-344f-86bc-e2431bd30aea/the-best-artificial.html",
+                "provider": "Motley Fool",
+                "date": 1776439680,
+                "vibe_score": 0.8074
+            },
+            {
+                "title": "ASML vs. AAOI: Which Stock Leads the Data Center Supply Chain?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/asml-vs-aaoi-stock-leads-151800655.html",
+                "provider": "Zacks",
+                "date": 1776439080,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "LRCX Likely to Beat Q3 Earnings Estimates: How to Play the Stock?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/lrcx-likely-beat-q3-earnings-120800518.html",
+                "provider": "Zacks",
+                "date": 1776427680,
+                "vibe_score": 0.34
+            },
+            {
+                "title": "Market Chatter: Dutch Chip Startup Euclyd Seeks at Least $118 Million in Fresh Funding",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/market-chatter-dutch-chip-startup-083916743.html",
+                "provider": "MT Newswires",
+                "date": 1776415156,
+                "vibe_score": 0.3182
+            },
+            {
+                "title": "Chip Boom in Fine Fettle: ETFs in Focus",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/chip-boom-fine-fettle-etfs-001700145.html",
+                "provider": "Zacks",
+                "date": 1776385020,
+                "vibe_score": 0.2023
+            },
             {
                 "title": "ASML Premium Shrinks To Decade Low As Shares Rise 36% YTD",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/asml-premium-shrinks-decade-low-180223220.html",
@@ -1510,8 +3177,72 @@
                 "vibe_score": 0.0
             }
         ],
-        "ICHR": [],
+        "ICHR": [
+            {
+                "title": "Ichor Holdings (ICHR) Surges 245% This Year on Chip Boom",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/ichor-holdings-ichr-surges-245-112115566.html",
+                "provider": "Insider Monkey",
+                "date": 1776424875,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "B. Riley Lowers Price Target on Ichor Holdings to $75 From $52, Maintains Buy Rating",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/b-riley-lowers-price-target-133752850.html",
+                "provider": "MT Newswires",
+                "date": 1776087472,
+                "vibe_score": -0.128
+            },
+            {
+                "title": "Ichor to Announce First Quarter 2026 Financial Results on May 4th",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/ichor-announce-first-quarter-2026-130000505.html",
+                "provider": "Business Wire",
+                "date": 1776085200,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Three Stocks Estimated To Be Undervalued In April 2026",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/three-stocks-estimated-undervalued-april-113805632.html",
+                "provider": "Simply Wall St.",
+                "date": 1776080285,
+                "vibe_score": 0.0
+            }
+        ],
         "ETN": [
+            {
+                "title": "These Red Hot AI Infrastructure Stocks Keep Paying Dividends",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/red-hot-ai-infrastructure-stocks-153000754.html",
+                "provider": "Zacks",
+                "date": 1776439800,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "6 Stocks That Can Benefit From the Massive Amount of Water That AI Data Centers Need",
+                "link": "https://finance.yahoo.com/m/fc251775-c847-3239-9a8a-6883fc569fe3/6-stocks-that-can-benefit.html",
+                "provider": "Barrons.com",
+                "date": 1776353040,
+                "vibe_score": 0.4588
+            },
+            {
+                "title": "RBC Raises Price Target on Eaton to $457 From $439, Keeps Outperform Rating",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/rbc-raises-price-target-eaton-132709791.html",
+                "provider": "MT Newswires",
+                "date": 1776259629,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Jefferies Adjusts Price Target on Eaton to $460 From $430, Maintains Buy Rating",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/jefferies-adjusts-price-target-eaton-122250759.html",
+                "provider": "MT Newswires",
+                "date": 1776255770,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Eaton Earns Prestigious Gold Medal Rating From EcoVadis for Sustainability Management Maturity",
+                "link": "https://finance.yahoo.com/sectors/energy/articles/eaton-earns-prestigious-gold-medal-104500845.html",
+                "provider": "Business Wire",
+                "date": 1776249900,
+                "vibe_score": 0.4767
+            },
             {
                 "title": "Eaton\u2019s Omaha Switchgear Bet on AI and Electrification Could Be A Game Changer For Eaton (ETN)",
                 "link": "https://finance.yahoo.com/sectors/technology/articles/eaton-omaha-switchgear-bet-ai-001530944.html",
@@ -1536,6 +3267,62 @@
         ],
         "INRI": [],
         "ANET": [
+            {
+                "title": "Rosenblatt Upgrades \u200bArista Networks (ANET) to Buy, Here\u2019s What Changed",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/rosenblatt-upgrades-arista-networks-anet-094256129.html",
+                "provider": "Insider Monkey",
+                "date": 1776505376,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Arista Networks, Inc. (ANET) Price Target Increased to $200",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/arista-networks-inc-anet-price-083853777.html",
+                "provider": "Insider Monkey",
+                "date": 1776501533,
+                "vibe_score": 0.2732
+            },
+            {
+                "title": "Buy 5 Stocks With High ROE as Markets Hit Record High on Likely Truce",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/buy-5-stocks-high-roe-144600666.html",
+                "provider": "Zacks",
+                "date": 1776437160,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Taiwan Semiconductor Q1 Earnings Beat Estimates, Revenues Rise Y/Y",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/taiwan-semiconductor-q1-earnings-beat-144400227.html",
+                "provider": "Zacks",
+                "date": 1776437040,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "Oracle\u2019s Week of Big Gains Masks a Huge Red Flag: Why Conservative Investors Should Look Elsewhere",
+                "link": "https://finance.yahoo.com/m/780ead04-e195-3a65-9446-c1989c8c00d7/oracle%E2%80%99s-week-of-big-gains.html",
+                "provider": "24/7 Wall St.",
+                "date": 1776426917,
+                "vibe_score": 0.5719
+            },
+            {
+                "title": "Arista Networks Insider Sold Shares Worth $1,378,164, According to a Recent SEC Filing",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/arista-networks-insider-sold-shares-075451859.html",
+                "provider": "MT Newswires",
+                "date": 1776412491,
+                "vibe_score": 0.4767
+            },
+            {
+                "title": "Ciena Soars 182% in 6 Months: Should Investors Buy the Stock Now?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/ciena-soars-182-6-months-161400394.html",
+                "provider": "Zacks",
+                "date": 1776356040,
+                "vibe_score": -0.5994
+            },
+            {
+                "title": "Cisco's AI Networking Surge Gathers Momentum: More Upside Ahead?",
+                "link": "https://finance.yahoo.com/sectors/technology/articles/ciscos-ai-networking-surge-gathers-172200827.html",
+                "provider": "Zacks",
+                "date": 1776273720,
+                "vibe_score": 0.0
+            },
             {
                 "title": "Is Rosenblatt\u2019s AI Confidence in Arista Networks (ANET) Reframing Its Cloud Networking Competitive Narrative?",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/rosenblatt-ai-confidence-arista-networks-080456965.html",
@@ -1564,8 +3351,30 @@
         "0097.KL": [],
         "6408.TW": [],
         "SMSMY": [],
-        "YAMHF": [],
+        "YAMHF": [
+            {
+                "title": "Are Investors Undervaluing Suzuki Motor (SZKMY) Right Now?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/investors-undervaluing-suzuki-motor-szkmy-134002288.html",
+                "provider": "Zacks",
+                "date": 1776260402,
+                "vibe_score": 0.0
+            }
+        ],
         "IPGP": [
+            {
+                "title": "IPG Photonics, Photronics, and Power Integrations Shares Skyrocket, What You Need To Know",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/ipg-photonics-photronics-power-integrations-052826937.html",
+                "provider": "StockStory",
+                "date": 1776490106,
+                "vibe_score": 0.296
+            },
+            {
+                "title": "IPG Photonics Insider Selling Raises Questions On Valuation And Recovery Narrative",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/ipg-photonics-insider-selling-raises-130619491.html",
+                "provider": "Simply Wall St.",
+                "date": 1776171979,
+                "vibe_score": 0.0
+            },
             {
                 "title": "IPG Photonics (IPGP) Valuation Check After Strong 1 Year Share Price Momentum",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/ipg-photonics-ipgp-valuation-check-230616197.html",
@@ -1577,6 +3386,20 @@
         "CLFD": [],
         "LASR": [
             {
+                "title": "nLIGHT vs. Lumentum: Which Fiber Laser Stock is a Buy Right Now?",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/nlight-vs-lumentum-fiber-laser-135000172.html",
+                "provider": "Zacks",
+                "date": 1776174600,
+                "vibe_score": 0.0
+            },
+            {
+                "title": "nLIGHT to Announce First Quarter 2026 Financial Results on May 7th",
+                "link": "https://finance.yahoo.com/markets/stocks/articles/nlight-announce-first-quarter-2026-120500771.html",
+                "provider": "Business Wire",
+                "date": 1776081900,
+                "vibe_score": 0.0
+            },
+            {
                 "title": "How The nLIGHT (LASR) Story Is Shifting Toward Directed Energy And Defense Growth",
                 "link": "https://finance.yahoo.com/markets/stocks/articles/nlight-lasr-story-shifting-toward-001909804.html",
                 "provider": "Simply Wall St.",
@@ -1587,6 +3410,23 @@
         "IQE.L / IQEPF": [],
         "6890.T / FERRF": [],
         "3037.TW": [],
-        "011790.KS": []
+        "011790.KS": [],
+        "3105.TWO": [],
+        "3363.TWO": [],
+        "4979.TWO": [],
+        "ATE.PA": [],
+        "PVS.DE": [],
+        "PRY.MI": [],
+        "SU.PA": [],
+        "3443.TW": [],
+        "2802.T": [],
+        "ASMPY": [],
+        "LPKFF": [],
+        "SOI.PA": [],
+        "7912.T": [],
+        "4062.T": [],
+        "MRK.DE": [],
+        "2311.TW": [],
+        "6028.T": []
     }
 }

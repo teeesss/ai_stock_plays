@@ -12,12 +12,11 @@ if sys.stdout.encoding != 'utf-8':
     import io
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-# SPEC 2026: Multi-Browser Rotation (Chrome 142+, Edge 132+)
+# SPEC 2026: Multi-Browser Rotation (Chrome 147.x)
 USER_AGENTS = [
-    f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.7727.55 Safari/537.36",
-    f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.6478.182 Safari/537.36",
-    f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.6261.94 Safari/537.36",
-    f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/132.0.2906.54 Safari/537.36"
+    f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.7727.101 Safari/537.36",
+    f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.7727.105 Safari/537.36",
+    f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.7727.110 Safari/537.36"
 ]
 
 class StealthNavigator:
@@ -200,14 +199,15 @@ class StealthNavigator:
             except:
                 crumb = ""
         
-        # SPEC 2026: Robust path resolution
+        # SPEC 2026: Absolute path resolution to prevent 'Session Split'
         if state_path is None:
-            state_path = "database/stealth_session.json"
+            # Always root to z:\COS_Stock_Plays\database
+            root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            state_path = os.path.join(root_dir, "database", "stealth_session.json")
         
-        # Ensure parent directory exists to prevent Playwright FileNotFoundError
+        # Ensure parent directory exists
         db_dir = os.path.dirname(state_path)
-        if db_dir and not os.path.exists(db_dir):
-            os.makedirs(db_dir, exist_ok=True)
+        os.makedirs(db_dir, exist_ok=True)
             
         await self.context.storage_state(path=state_path)
         

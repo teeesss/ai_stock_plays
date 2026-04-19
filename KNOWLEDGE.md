@@ -732,3 +732,12 @@ Contract Mfg ($FN, $CLS)
   - `PhotonCap` (KR): "I strongly recommended it because I thought it would do really well on Substack, and you have grown surprisingly fast... Kudos!!"
 - **Forensic Status**: All users (aleabitoreddit, PhotonCap, KawzInvests) reset to Oct 1, 2025 for a day-by-day forensic drill backfill.
 
+### 2026-04-18 - V20.0 Stability & Ecosystem Mastery
+- **ASMPT (ASMVY)**: Core CPO conviction. AMICRA division holds sub-0.3μm die bonding monopoly required for photonics-on-die placement. Most "China-discounted" but technically superior Western alternative.
+- **LPKF Laser (LPK.DE)**: TGV (Through-Glass-Vias) becoming mandatory as ABF hits expansion limits. LIDE (Laser Induced Deep Etching) is the only micro-crack-free path to glass substrates.
+- **Ajinomoto (IBIDY)**: Hardened pricing and visibility on US ADR. The ABF monopoly remains the baseline for all current NVIDIA/AMD production.
+- **Win Semiconductors (3105.TWO)**: Broadcom's $60M private placement stake confirms Win Semi as the preferred InP/GaAs foundry for custom optical ASICs.
+- **Momentum Data**: Hardened 7-day trajectory logic now serves as the primary technical sentiment indicator. Green/Red strips provide "Tape Reading" intelligence at a glance.
+- **Architecture**: Transitions from monolithic scripts to a unified `PipelineOrchestrator` brain; ensures data parity between Root and AI/Crypto terminals.
+
+

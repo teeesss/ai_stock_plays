@@ -1,9 +1,20 @@
 # Gemini Memory Bridge - GIGACPO Terminal
 
-## 🚀 Active Context: V19.5 (AI Terminal Momentum & UX Refinement)
+## 🚀 Active Context: V20.0 (Unified Pipeline & Production Stability)
 
 ### 🧩 Logic & Patterns
-1. **AI UI Generation (V19.4)**:
+0. **Pipeline Orchestration (V20.0)**:
+   - **Unified Entry**: `engine/global_orchestrator.py` (or `PipelineOrchestrator` class) manages full sync lifecycle.
+   - **Lifecycle**: Auth Sync → Price Fetch → News Sync → OBB Hydration → Scoring → UI Rebuild → SFTP Push.
+   - **Recovery**: Script fails are logged; atomic JSON writes ensure DB integrity.
+
+1. **Yahoo Stealth Protocol (V19.5)**:
+   - **Decoupled Auth**: `engine/yahoo_auth.py` maintains a golden `auth_state.json`. 
+   - **Stealth Rotation**: Uses Chrome 147.x User Agents (v7727.101/105/110) + `chrome147` TLS Handshake (via `curl_cffi`).
+   - **Velocity Jitter**: Randomized batch sizes (8-13 tickers) with 3.3s - 10.0s delays between bursts.
+   - **Extraction**: Consumer scripts (live_prices, news_fetcher, etc.) use `curl_cffi` for proxy-less, unbannable data retrieval.
+
+2. **AI UI Generation (V19.5)**:
    - AI/index.html is a GENERATED artifact. Source of truth is `AI/index_template.html`.
    - Use `python AI/engine/generate_ui.py` to rebuild UI. NEVER edit index.html directly.
    - Target Resolution: Columns Alpha/Risk/Hidden must be 60px.
@@ -48,8 +59,12 @@
    - **Fierce Rule**: Modifying root CPO configuration from AI scripts is STRICTLY PROHIBITED.
 
 ### 🏛️ File Roles
-- `engine/x_intel_deep_scraper.py`: Primary extraction + Live Reconstruction.
+- `engine/yahoo_auth.py`: Centralized session/crumb manager with cache validation.
+- `engine/live_prices.py`: High-stealth price extractor (10-ticker chunks).
 - `engine/news_fetcher.py`: Stealth Yahoo News extraction with spam payload filtering.
+- `engine/data_discovery.py`: Fundamentals & historical data discovery engine.
+- `engine/openbb_fetcher.py`: Supplemental metrics (Analyst counts/Short interest).
+- `engine/x_intel_deep_scraper.py`: Primary extraction + Live Reconstruction.
 - `engine/sync_news.py`: Builds flat database/YAHOO_NEWS_MODULE.js asynchronously.
 - `engine/translate_intel.py`: High-speed parallel translation.
 - `engine/x_intel_instant_sync.py`: Manual sync override.

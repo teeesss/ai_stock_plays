@@ -3,12 +3,18 @@
 ## 🚀 Active Context: V19.5 (AI Terminal Momentum & UX Refinement)
 
 ### 🧩 Logic & Patterns
-1. **AI UI Generation (V19.5)**:
+1. **Yahoo Stealth Protocol (V19.5)**:
+   - **Decoupled Auth**: `engine/yahoo_auth.py` maintains a persistent `auth_state.json`.
+   - **Stealth Handshake**: Use `curl_cffi` with `impersonate="chrome146"` (max supported).
+   - **Chrome 147.x Identity**: Rotate through Chrome 147.x User Agents (v7727.101/105/110) in both Playwright and client headers.
+   - **Behavioral Latency**: Randomized 8-13 ticker chunks + 3.3s-10.0s random jitter between bursts.
+
+2. **AI UI Generation (V19.5)**:
    - AI/index.html is a GENERATED artifact. Source of truth is `AI/index_template.html`.
    - Use `python AI/engine/generate_ui.py` to rebuild UI. NEVER edit index.html directly.
    - Target Resolution: Columns Alpha/Risk/Hidden must be 60px.
    - Data Formatting: All metrics (mcap, performance, price) MUST show 1 decimal place minimum (e.g. 46.0T).
-   - **Momentum Strip**: Use 7-day price action bars (Green=UP/FLAT, Red=DOWN) displayed under Ticker.
+   - **Momentum Strip**: Using 7-day price action bars (Green=UP/FLAT, Red=DOWN). Secondary data fallback (openbb_supplement -> performance).
    - **Column Alignment**: The `#` column must be perfectly center-aligned with fixed 45px width and zero horizontal padding.
 
 2. **Ticker Reconstruction (V10.3)**: 
@@ -48,8 +54,12 @@
    - **Fierce Rule**: Modifying root CPO configuration from AI scripts is STRICTLY PROHIBITED.
 
 ### 🏛️ File Roles
-- `engine/x_intel_deep_scraper.py`: Primary extraction + Live Reconstruction.
+- `engine/yahoo_auth.py`: Centralized session/crumb manager with cache validation.
+- `engine/live_prices.py`: High-stealth price extractor (10-ticker chunks).
 - `engine/news_fetcher.py`: Stealth Yahoo News extraction with spam payload filtering.
+- `engine/data_discovery.py`: Fundamentals & historical data discovery engine.
+- `engine/openbb_fetcher.py`: Supplemental metrics (Analyst counts/Short interest).
+- `engine/x_intel_deep_scraper.py`: Primary extraction + Live Reconstruction.
 - `engine/sync_news.py`: Builds flat database/YAHOO_NEWS_MODULE.js asynchronously.
 - `engine/translate_intel.py`: High-speed parallel translation.
 - `engine/x_intel_instant_sync.py`: Manual sync override.

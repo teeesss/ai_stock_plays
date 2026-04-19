@@ -24,7 +24,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from curl_cffi import requests
-from stealth_navigator import StealthNavigator
+from yahoo_auth import get_valid_auth
+import random
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
 log = logging.getLogger(__name__)
@@ -37,8 +38,7 @@ OUT_JSON = ROOT / 'database' / 'live_prices.json'
 # Skip private/non-tradable tickers
 SKIP_TICKERS = {'AYAR', 'RANV', 'CelestialAI', 'SCINTIL'}
 
-BATCH_SIZE = 30
-DELAY_BETWEEN_BATCHES = 1.0
+BATCH_SIZE = 10
 
 def load_tickers() -> list[str]:
     """Load all public (non-private) tickers from the master database."""
@@ -120,28 +120,35 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
                 continue
 
             original_ticker = primary_map.get(symbol) or primary_map.get(symbol.upper())
+            
+            # Triple-fallback for prices (Critical for ADRs/OTC)
             price      = item.get('regularMarketPrice')
-            price_chg  = item.get('regularMarketChange')
-            change_pct = item.get('regularMarketChangePercent')
-            volume     = item.get('regularMarketVolume')
-            avg_vol    = item.get('averageDailyVolume10Day')
-            exch_res   = item.get('fullExchangeName') or item.get('exchangeName') or item.get('exchange') or item.get('exchangeDataDelayedBy','??')
+            if price is None: price = item.get('postMarketPrice')
+            if price is None: price = item.get('preMarketPrice')
+            if price is None: price = item.get('previousClose')
+            
+            price_chg  = item.get('regularMarketChange') or item.get('postMarketChange') or 0
+            change_pct = item.get('regularMarketChangePercent') or item.get('postMarketChangePercent') or 0
+            volume     = item.get('regularMarketVolume') or 0
+            avg_vol    = item.get('averageDailyVolume10Day') or 0
+            exch_res   = item.get('fullExchangeName') or item.get('exchangeName') or item.get('exchange') or '???'
+            market_st  = item.get('marketState')
+
+            ext_price = None
+            ext_pct = None
+            ext_type = None
+            if market_st in ('PRE', 'PREPRE'):
+                ext_price = item.get('preMarketPrice')
+                ext_pct   = item.get('preMarketChangePercent')
+                ext_type  = 'PRE'
+            elif market_st in ('POST', 'POSTPOST', 'CLOSED'):
+                ext_price = item.get('postMarketPrice')
+                ext_pct   = item.get('postMarketChangePercent')
+                ext_type  = 'POST'
 
             vol_spike = None
             if volume and avg_vol and avg_vol > 0:
                 vol_spike = round(volume / avg_vol, 2)
-
-            # Extended-hours price (AH or PM)
-            post_price = item.get('postMarketPrice')
-            post_pct   = item.get('postMarketChangePercent')
-            pre_price  = item.get('preMarketPrice')
-            pre_pct    = item.get('preMarketChangePercent')
-
-            ext_price, ext_pct, ext_type = None, None, None
-            if post_price is not None:
-                ext_price, ext_pct, ext_type = post_price, post_pct, 'AH'
-            elif pre_price is not None:
-                ext_price, ext_pct, ext_type = pre_price, pre_pct, 'PM'
 
             entry = {
                 'price':      round(price,      2) if price      is not None else None,
@@ -150,17 +157,16 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
                 'volume':     int(volume)           if volume               else None,
                 'avg_volume': int(avg_vol)          if avg_vol              else None,
                 'vol_spike':  vol_spike,
-                'ext_price':  round(ext_price, 2)  if ext_price is not None else None,
-                'ext_pct':    round(ext_pct,   2)  if ext_pct   is not None else None,
-                'ext_type':   ext_type,
                 'exchange':   exch_res,
                 'updated':    now.strftime('%Y-%m-%d %H:%M EST'),
+                'ext_price':  ext_price,
+                'ext_pct':    ext_pct,
+                'ext_type':   ext_type,
             }
-            entry = {k: v for k, v in entry.items() if v is not None}
             results[original_ticker] = entry
 
             if entry.get('price'):
-                ext_str = f' [{ext_type} ${ext_price:.2f} {ext_pct:+.1f}%]' if ext_price else ''
+                ext_str = f' [{ext_type} ${ext_price:.2f} {ext_pct:+.1f}%]' if ext_price is not None and ext_pct is not None else ''
                 log.info(f'  {original_ticker:12s} ${entry["price"]:.2f} '
                          f'{entry.get("change_pct",0):+.1f}% '
                          f'[{entry.get("exchange")}] '
@@ -211,7 +217,7 @@ def analyze_movers(prices: dict) -> dict:
         'volume_spikes': vol_spikes,
     }
 
-async def async_run_fetch(tickers: list = None, dry_run: bool = False) -> dict:
+async def async_run_fetch(tickers: list = None, dry_run: bool = False, skip_sync: bool = False) -> dict:
     if tickers is None:
         tickers = load_tickers()
 
@@ -219,26 +225,29 @@ async def async_run_fetch(tickers: list = None, dry_run: bool = False) -> dict:
     log.info(f'Output: {OUT_JS}')
     log.info('-' * 50)
     
-    # Setup Stealth Session
-    nav = StealthNavigator(headless=True)
-    await nav.initialize()
-    cookies_list, crumb = await nav.get_session_state('https://finance.yahoo.com/quote/AAPL')
-    await nav.close()
+    # Retrieve Valid/Cached Authenticated Session
+    cookie_dict, crumb, user_agent = await get_valid_auth()
     
-    cookie_dict = {c['name']: c['value'] for c in cookies_list}
-    client = requests.Session(impersonate='chrome')
-    client.headers.update({'User-Agent': nav.current_ua})
+    client = requests.Session(impersonate='chrome146')
+    client.headers.update({'User-Agent': user_agent})
     client.cookies.update(cookie_dict)
 
     all_prices = {}
-    batches = [tickers[i:i+BATCH_SIZE] for i in range(0, len(tickers), BATCH_SIZE)]
-
-    for i, batch in enumerate(batches):
-        log.info(f'Batch {i+1}/{len(batches)}: {batch}')
+    
+    # Randomized Batching (8-13 tickers per burst)
+    i = 0
+    while i < len(tickers):
+        batch_size = random.randint(8, 13)
+        batch = tickers[i : i + batch_size]
+        log.info(f'Batch [Size {len(batch)}]: {batch}')
         results = fetch_batch(batch, client, crumb)
         all_prices.update(results)
-        if i < len(batches) - 1:
-            time.sleep(DELAY_BETWEEN_BATCHES)
+        
+        i += len(batch)
+        if i < len(tickers):
+            delay = random.uniform(3.3, 10.0)
+            log.info(f"Sleeping for {delay:.2f}s before next price batch...")
+            await asyncio.sleep(delay)
 
     # Add metadata including top movers
     movers = analyze_movers(all_prices)
@@ -286,6 +295,15 @@ async def async_run_fetch(tickers: list = None, dry_run: bool = False) -> dict:
             json.dump(all_prices, f, separators=(',', ':'))
             f.write(';\n')
         log.info(f'Saved {OUT_JS}')
+
+        # AUTO-SYNC to SFTP
+        if not skip_sync:
+            try:
+                from remote_sync import RemoteSync
+                rel_js = OUT_JS.relative_to(ROOT)
+                RemoteSync.sync_file(OUT_JS)
+            except Exception as e:
+                log.error(f"Sync failed: {e}")
     else:
         log.info('[DRY RUN] Output not written')
         print(json.dumps(all_prices, indent=2)[:1000] + '\n...[truncated]')
@@ -299,6 +317,7 @@ async def async_main():
     parser.add_argument('--tickers', nargs='+', help='Specific tickers')
     parser.add_argument('--dry-run', action='store_true', help='Print, do not write')
     parser.add_argument('--force', action='store_true', help='Override cache')
+    parser.add_argument('--skip-sync', action='store_true', help='Do not upload to SFTP')
     args = parser.parse_args()
 
     if not args.force and not args.dry_run and OUT_JSON.exists():
@@ -309,7 +328,7 @@ async def async_main():
                 return
         except: pass
 
-    await async_run_fetch(tickers=args.tickers, dry_run=args.dry_run)
+    await async_run_fetch(tickers=args.tickers, dry_run=args.dry_run, skip_sync=args.skip_sync)
 
 if __name__ == '__main__':
     asyncio.run(async_main())

@@ -41,26 +41,26 @@ class TestSkipLogic(unittest.TestCase):
 
 
 class TestYFinanceIntegration(unittest.TestCase):
-    """Test yfinance data extraction with mocked responses."""
+    """Test yfinance data extraction with mocked entry data."""
 
-    def _make_mock_ticker(self, info_dict):
-        mock = MagicMock()
-        mock.info = info_dict
-        return mock
-
-    @patch('engine.openbb_fetcher.yf.Ticker')
-    def test_analyst_data_extracted(self, mock_ticker_cls):
-        mock_ticker_cls.return_value = self._make_mock_ticker({
-            'targetMeanPrice': 45.0,
-            'targetHighPrice': 60.0,
-            'targetLowPrice': 30.0,
-            'numberOfAnalystOpinions': 12,
-            'recommendationMean': 1.8,
-            'heldPercentInstitutions': 0.45,
-            'shortPercentOfFloat': 0.08,
-            'currentPrice': 35.0,
-        })
-        result = fetch_supplement('CRDO', 'Core')
+    def test_analyst_data_extracted(self):
+        entry = {
+            'financials': {
+                'financialData': {
+                    'targetMeanPrice': 45.0,
+                    'targetHighPrice': 60.0,
+                    'targetLowPrice': 30.0,
+                    'numberOfAnalystOpinions': 12,
+                    'recommendationMean': 1.8,
+                    'currentPrice': 35.0,
+                },
+                'defaultKeyStatistics': {
+                    'heldPercentInstitutions': 0.45,
+                    'shortPercentOfFloat': 0.08,
+                }
+            }
+        }
+        result = fetch_supplement('CRDO', 'Core', entry)
         self.assertIn('analyst_target_mean', result)
         self.assertEqual(result['analyst_target_mean'], 45.0)
         self.assertIn('analyst_count', result)
@@ -72,58 +72,63 @@ class TestYFinanceIntegration(unittest.TestCase):
         self.assertIn('analyst_implied_upside_pct', result)
         self.assertAlmostEqual(result['analyst_implied_upside_pct'], 28.6, places=0)
 
-    @patch('engine.openbb_fetcher.yf.Ticker')
-    def test_buy_pct_strong_buy(self, mock_ticker_cls):
-        mock_ticker_cls.return_value = self._make_mock_ticker({
-            'recommendationMean': 1.3,
-            'currentPrice': 10.0,
-            'targetMeanPrice': 12.0,
-            'targetHighPrice': 14.0,
-            'targetLowPrice': 8.0,
-            'numberOfAnalystOpinions': 5,
-        })
-        result = fetch_supplement('TEST', 'Core')
+    def test_buy_pct_strong_buy(self):
+        entry = {
+            'financials': {
+                'financialData': {
+                    'recommendationMean': 1.3,
+                    'currentPrice': 10.0,
+                    'targetMeanPrice': 12.0,
+                    'targetHighPrice': 14.0,
+                    'targetLowPrice': 8.0,
+                    'numberOfAnalystOpinions': 5,
+                }
+            }
+        }
+        result = fetch_supplement('TEST', 'Core', entry)
         self.assertIn('analyst_buy_pct', result)
         self.assertEqual(result['analyst_buy_pct'], 90)
 
-    @patch('engine.openbb_fetcher.yf.Ticker')
-    def test_buy_pct_sell(self, mock_ticker_cls):
-        mock_ticker_cls.return_value = self._make_mock_ticker({
-            'recommendationMean': 4.0,
-            'currentPrice': 10.0,
-            'targetMeanPrice': 8.0,
-            'targetHighPrice': 10.0,
-            'targetLowPrice': 6.0,
-            'numberOfAnalystOpinions': 3,
-        })
-        result = fetch_supplement('TEST', 'Core')
+    def test_buy_pct_sell(self):
+        entry = {
+            'financials': {
+                'financialData': {
+                    'recommendationMean': 4.0,
+                    'currentPrice': 10.0,
+                    'targetMeanPrice': 8.0,
+                    'targetHighPrice': 10.0,
+                    'targetLowPrice': 6.0,
+                    'numberOfAnalystOpinions': 3,
+                }
+            }
+        }
+        result = fetch_supplement('TEST', 'Core', entry)
         self.assertEqual(result['analyst_buy_pct'], 10)
 
-    @patch('engine.openbb_fetcher.yf.Ticker')
-    def test_empty_info_returns_empty(self, mock_ticker_cls):
-        mock_ticker_cls.return_value = self._make_mock_ticker({})
-        result = fetch_supplement('BOGUS', 'Core')
+    def test_empty_info_returns_empty(self):
+        result = fetch_supplement('BOGUS', 'Core', {})
         self.assertEqual(result, {})
 
-    @patch('engine.openbb_fetcher.yf.Ticker')
-    def test_partial_data_no_crash(self, mock_ticker_cls):
+    def test_partial_data_no_crash(self):
         """If only some fields are available, should gracefully handle."""
-        mock_ticker_cls.return_value = self._make_mock_ticker({
-            'numberOfAnalystOpinions': 3,
-            'currentPrice': 10.0,
-            'targetMeanPrice': 12.0,
-            'targetHighPrice': 14.0,
-            'targetLowPrice': 8.0,
-            # Note: no recommendationMean, heldPercentInstitutions, shortPercentOfFloat
-        })
-        result = fetch_supplement('SMALLCAP', 'Hidden')
+        entry = {
+            'financials': {
+                'financialData': {
+                    'numberOfAnalystOpinions': 3,
+                    'currentPrice': 10.0,
+                    'targetMeanPrice': 12.0,
+                    'targetHighPrice': 14.0,
+                    'targetLowPrice': 8.0,
+                }
+            }
+        }
+        result = fetch_supplement('SMALLCAP', 'Hidden', entry)
         self.assertIn('analyst_count', result)
-        self.assertNotIn('inst_ownership_pct', result)  # Not in mock data
+        self.assertNotIn('inst_ownership_pct', result)
 
-    @patch('engine.openbb_fetcher.yf.Ticker', side_effect=Exception('Rate limited'))
-    def test_yfinance_exception_handled(self, mock_ticker_cls):
+    def test_yfinance_exception_handled(self):
         """Exceptions must not crash the fetcher."""
-        result = fetch_supplement('CRASH', 'Core')
+        result = fetch_supplement('CRASH', 'Core', None)
         self.assertEqual(result, {})
 
 
