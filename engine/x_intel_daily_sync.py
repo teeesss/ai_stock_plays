@@ -90,7 +90,7 @@ def sync_all():
             time.sleep(stagger)
 
     log.info("\n" + "=" * 60)
-    log.info("SCRAPE PHASE COMPLETE — Starting Image Analysis Pipeline")
+    log.info("SCRAPE PHASE COMPLETE - Starting Image Analysis Pipeline")
     log.info("=" * 60)
 
     # ── STEP 2: IMAGE ANALYSIS ─────────────────────────────────
@@ -124,4 +124,3 @@ def sync_all():
 
 if __name__ == "__main__":
     sync_all()
-

@@ -9,7 +9,7 @@ import re
 import datetime
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).parent.parent
 DB_DIR = ROOT / "database"
 
 class SocialIntelEngine:

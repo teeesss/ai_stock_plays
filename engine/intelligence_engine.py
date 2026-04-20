@@ -48,9 +48,7 @@ class IntelligenceEngine:
         alpha_runway = self.get_percentile(mcap, 'mcapB', reverse=True) * 0.40
         
         # --- VELOCITY BOOSTERS (20% OF BASE) ---
-        buzz = ticker_stats.get('buzz_7d') or 0
-        news = ticker_stats.get('news_count') or 0
-        total_discovery = buzz + (news * 2)
+        total_discovery = ticker_stats.get('total_discovery') or 0
         alpha_discovery = self.get_percentile(total_discovery, 'total_discovery') * 0.10
         
         recent_7d = ticker_stats.get('recent_7d') or []
@@ -79,15 +77,17 @@ class IntelligenceEngine:
         # 2. HIDDENNESS Pillars (Inverse Discovery)
         h_analysts = self.get_percentile(ticker_stats.get('analysts'), 'analysts', reverse=True) * 0.40
         h_inst = self.get_percentile(ticker_stats.get('inst_pct'), 'inst_pct', reverse=True) * 0.30
-        h_noise = self.get_percentile(news, 'news_count', reverse=True) * 0.30
+        h_noise = self.get_percentile(total_discovery, 'total_discovery', reverse=True) * 0.30
         hidden_score = round((h_analysts + h_inst + h_noise) * 10, 1)
         hidden_score = max(1.0, min(10.0, hidden_score))
 
         # 3. RISK Pillars (Valuation + Short Hazard)
         r_val = self.get_percentile(pe, 'pe26') * 0.40
         r_short = self.get_percentile(ticker_stats.get('short_pct'), 'short_pct') * 0.40
-        is_fud = 1.0 if (news > 5 and mom < 0) else 0.5
-        r_fud = is_fud * 0.20
+        
+        # Hazard check: Falling momentum + High Discovery
+        is_hazard = 1.0 if (total_discovery > 10 and mom < 0) else 0.5
+        r_fud = is_hazard * 0.20
         risk_score = round((r_val + r_short + r_fud) * 10, 1)
         risk_score = max(1.0, min(10.0, risk_score))
 
@@ -108,12 +108,10 @@ class IntelligenceEngine:
                 "pe26": entry.get("pe26"),
                 "upside": entry.get("upside"),
                 "mcapB": entry.get("mcapB"),
-                "buzz_7d": entry.get("buzz_7d", 0),
-                "news_count": entry.get("news_count", 0),
-                "total_discovery": (entry.get("buzz_7d") or 0) + (entry.get("news_count") or 0),
+                "total_discovery": entry.get("total_discovery") or 0,
                 "perf1y": entry.get("perf1y", 0),
-                "recent_7d": entry.get("recent_7d") or [],
-                "momentum_sum": (entry.get("perf1y") or 0) + (sum(entry.get("recent_7d") or []) * 10),
+                "recent_7d": entry.get("recent_7d_list") or [],
+                "momentum_sum": (entry.get("perf1y") or 0) + (sum(entry.get("recent_7d_list") or []) * 10),
                 "analysts": entry.get("analysts"),
                 "inst_pct": entry.get("inst_pct"),
                 "short_pct": entry.get("short_pct"),

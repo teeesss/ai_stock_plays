@@ -34,7 +34,7 @@ async def audit_financials(csv_path, max_tickers=None):
     # 1. RANDOMIZED HEATING (Layer 1 Stealth)
     valid_tickers = [t for t, e in master_data.items() if e.get("human_research", {}).get("Status") != "Private"]
 
-    print(f"🚀 Starting Deep Brain Audit (V4.4) on {len(master_data)} authoritative entries...")
+    print(f"[RUN] Starting Deep Brain Audit (V4.4) on {len(master_data)} authoritative entries...")
     
     # Session State
     nav = None
@@ -46,7 +46,7 @@ async def audit_financials(csv_path, max_tickers=None):
     
     async def heat_session():
         nonlocal client, crumb
-        print("👻 Retrieving decoupled stealth session...")
+        print("? Retrieving decoupled stealth session...")
         try:
             cookie_dict, crumb, user_agent = await get_valid_auth()
             client = requests.Session(impersonate="chrome146")
@@ -111,7 +111,10 @@ async def audit_financials(csv_path, max_tickers=None):
                             updated_count += 1
                             data_found = True
                             break 
+                except Exception as e:
+                    pass
             
+            processed_count += 1
             if processed_count % 10 == 0:
                 with open(MASTER_JSON_PATH, 'w', encoding='utf-8') as f:
                     json.dump(master_data, f, indent=2)
@@ -120,7 +123,7 @@ async def audit_financials(csv_path, max_tickers=None):
         with open(MASTER_JSON_PATH, 'w', encoding='utf-8') as f:
             json.dump(master_data, f, indent=2)
     
-    print(f"\n✅ Audit Complete. Updated {updated_count} authoritative entries in {MASTER_JSON_PATH}")
+    print(f"\n[OK] Audit Complete. Updated {updated_count} authoritative entries in {MASTER_JSON_PATH}")
 
     # TRIGGER SYNC to CSV and HTML
     try:

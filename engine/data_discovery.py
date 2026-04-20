@@ -15,7 +15,7 @@ if sys.stdout.encoding != 'utf-8':
     import io
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).parent.parent
 MASTER_JSON_PATH = ROOT / 'database' / 'CPO_MASTER_DATA.json'
 SESSION_STATE_PATH = ROOT / 'database' / 'stealth_session.json'
 
@@ -37,8 +37,8 @@ class DataDiscoveryEngine:
         print(f"Loaded {len(self.master_data)} authoritative entries.")
 
     async def heat_session(self):
-        \"\"\"HEAT PHASE: Fast retrieval of cached auth session\"\"\"
-        print("\n🔥 [HEAT] Retrieving Auth Session...")
+        """HEAT PHASE: Fast retrieval of cached auth session"""
+        print("\n[HEAT] Retrieving Auth Session...")
         cookie_dict, self.crumb, user_agent = await get_valid_auth()
         
         self.client = requests.Session(impersonate="chrome146")
@@ -123,7 +123,7 @@ class DataDiscoveryEngine:
         tickers = list(self.master_data.keys())
         total = len(tickers)
 
-        print(f"\n🚀 [AUDIT] Starting Discovery on {total} stocks...")
+        print(f"\n[AUDIT] Starting Discovery on {total} stocks...")
         
         for i, ticker in enumerate(tickers):
             print(f"  [{i+1}/{total}] Processing {ticker}...", end="\r")
@@ -157,17 +157,17 @@ class DataDiscoveryEngine:
                 self.save_checkpoint()
 
         self.save_checkpoint()
-        print(f"\n✅ Build Complete. 129 entries audited and synced to {self.master_json}")
+        print(f"\nBuild Complete. 129 entries audited and synced to {self.master_json}")
 
 if __name__ == "__main__":
     engine = DataDiscoveryEngine()
     asyncio.run(engine.run_audit())
     
     # Trigger final bridge sync
-    print("\n🌉 [SYNC] Propagating data to dashboard bridge...")
+    print("\n[SYNC] Propagating data to dashboard bridge...")
     try:
         from sync_enriched import sync_enriched
         sync_enriched()
-        print("✅ Dashboard Logic Synced.")
+        print("Dashboard Logic Synced.")
     except Exception as e:
         print(f"  [!] Bridge Sync Failed: {e}")

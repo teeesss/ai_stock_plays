@@ -12,8 +12,11 @@ import subprocess
 from pathlib import Path
 
 if sys.platform == "win32":
-    try: sys.stdout.reconfigure(encoding='utf-8')
-    except AttributeError: pass
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except AttributeError:
+        pass
 
 ROOT = Path(__file__).parent.parent
 LOG_DIR = ROOT / "logs"
@@ -70,9 +73,12 @@ def run_step(name, command, specific_log=None):
         log.error(f"Error running {name}: {e}")
         return False
 
+from ticker_utils import get_ticker_count_report
+
 def instant_sync():
     log.info("=" * 60)
-    log.info("⚡ INSTANT INTELLIGENCE REFRESH INITIATED")
+    log.info("INSTANT INTELLIGENCE REFRESH INITIATED")
+    log.info(get_ticker_count_report())
     log.info(f"Targets: {', '.join(USERS)}")
     log.info("=" * 60)
 
@@ -83,44 +89,44 @@ def instant_sync():
         user_log = LOG_DIR / f"{user}_sync.log"
         cmd = [sys.executable, "engine/x_intel_deep_scraper.py", "--username", user]
         if not run_step(f"Scrape @{user}", cmd, specific_log=user_log):
-            log.error(f"❌ Failed @{user}")
+            log.error(f"Failed @{user}")
             overall_success = False
         else:
-            log.info(f"✅ @{user} synced.")
+            log.info(f"@{user} synced.")
 
     if not overall_success:
         log.warning("\n" + "!" * 60)
-        log.warning("⚠️ SYNC HAD ERRORS — SKIPPING FURTHER STEPS")
+        log.warning("SYNC HAD ERRORS - SKIPPING FURTHER STEPS")
         log.warning("!" * 60)
         return
 
     # 1.5 REBUILD MASTER (MERGE TEXT POSTS)
-    log.info("\n🔄 STEP 1.5: REBUILDING MASTER INTEL...")
+    log.info("\nSTEP 1.5: REBUILDING MASTER INTEL...")
     if not run_step("Rebuild Master", [sys.executable, "engine/rebuild_master.py"]):
-        log.warning("⚠️ Master rebuild encountered issues, but continuing...")
+        log.warning("Master rebuild encountered issues, but continuing...")
 
     # 2. IMAGE ANALYSIS
-    log.info("\n📸 STEP 2: ANALYZING NEW IMAGES...")
+    log.info("\nSTEP 2: ANALYZING NEW IMAGES...")
     if not run_step("Image Analysis", [sys.executable, "engine/image_analyzer.py"]):
-        log.warning("⚠️ Image analysis encountered issues, but continuing...")
+        log.warning("Image analysis encountered issues, but continuing...")
 
     # 3. VISUAL BUZZ AGGREGATION
-    log.info("\n🐝 STEP 3: AGGREGATING VISUAL BUZZ...")
+    log.info("\nSTEP 3: AGGREGATING VISUAL BUZZ...")
     if not run_step("Visual Buzz", [sys.executable, "engine/visual_buzz_aggregator.py"]):
-        log.warning("⚠️ Visual buzz aggregation encountered issues, but continuing...")
+        log.warning("Visual buzz aggregation encountered issues, but continuing...")
 
     # 4. DOCUMENTATION & BRAIN UPDATE
-    log.info("\n🧠 STEP 4: UPDATING DOCUMENTATION & BRAIN...")
+    log.info("\nSTEP 4: UPDATING DOCUMENTATION & BRAIN...")
     if not run_step("Brain Update", [sys.executable, "engine/generate_CPO_BRAIN.py"]):
-        log.warning("⚠️ Brain update encountered issues, but continuing...")
+        log.warning("Brain update encountered issues, but continuing...")
 
     # 5. BUILD & REMOTE UPLOAD
     log.info("\n" + "=" * 60)
-    log.info("🚀 SYNC SUCCESSFUL — INITIATING BUILD & REMOTE UPLOAD")
+    log.info("SYNC SUCCESSFUL - INITIATING BUILD & REMOTE UPLOAD")
     # 5. LIVE PRICE SYNC
-    log.info("\n💹 STEP 5: REFRESHING LIVE PRICES...")
+    log.info("\nSTEP 5: REFRESHING LIVE PRICES...")
     if not run_step("Live Prices", [sys.executable, "engine/live_prices.py"]):
-        log.warning("⚠️ Live price sync encountered issues.")
+        log.warning("Live price sync encountered issues.")
 
     # 6. Build and Deploy
     log.info("\n" + "=" * 60)
@@ -130,14 +136,14 @@ def instant_sync():
 
     if run_step("Build Bundle", [npm_cmd, "run", "build"]):
         if run_step("Remote Deploy", [npm_cmd, "run", "deploy"]):
-            log.info("✅ REMOTE UPLOAD COMPLETE")
+            log.info("REMOTE UPLOAD COMPLETE")
         else:
-            log.error("❌ REMOTE UPLOAD FAILED")
+            log.error("REMOTE UPLOAD FAILED")
     else:
-        log.error("❌ BUILD FAILED")
+        log.error("BUILD FAILED")
 
     log.info("\n" + "=" * 60)
-    log.info("⚡ INSTANT SYNC COMPLETE")
+    log.info("INSTANT SYNC COMPLETE")
     log.info("=" * 60)
 
 

@@ -11,18 +11,20 @@ import sys
 from pathlib import Path
 
 # Add root to sys path for imports
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).parent.parent
 sys.path.append(str(ROOT / "engine"))
 
 try:
     from intelligence_engine import IntelligenceEngine
     from data_standardizer import DataStandardizer
     from remote_sync import RemoteSync
+    from ticker_utils import load_master_tickers
 except ImportError:
     # If called from within engine folder
     from intelligence_engine import IntelligenceEngine
     from data_standardizer import DataStandardizer
     from remote_sync import RemoteSync
+    from ticker_utils import load_master_tickers
 
 class PipelineOrchestrator:
     def __init__(self, terminal_type="root"):
@@ -35,6 +37,7 @@ class PipelineOrchestrator:
         self.global_buzz_file = self.db_path / "X_INTEL_DB.json"
         self.global_visual_file = self.db_path / "X_INTEL_VISUAL_DB.json"
         
+        # terminal_type logic matches ticker_utils mapping
         if terminal_type == "ai":
             self.web_dir = self.web_root / "ai"
             self.research_file = self.db_path / "AI_MASTER_DATA.json"
@@ -44,7 +47,6 @@ class PipelineOrchestrator:
             self.research_file = self.db_path / "CPO_MASTER_DATA.json"
             self.output_js = self.web_dir / "dashboard_data.js"
         else:
-            # Future endpoints (e.g. energy)
             self.web_dir = self.web_root / terminal_type
             self.research_file = self.db_path / f"{terminal_type.upper()}_MASTER_DATA.json"
             self.output_js = self.web_dir / "dashboard_data.js"
@@ -55,24 +57,23 @@ class PipelineOrchestrator:
             return json.load(f)
 
     def process(self):
-        print(f"--- GIGACPO Pipeline: {self.terminal_type.upper()} ---")
-        
         # 1. LOAD RAW
         master = self.load_json(self.master_file)
         research_raw = self.load_json(self.research_file)
         global_buzz = self.load_json(self.global_buzz_file).get("buzz", {})
         global_visual = self.load_json(self.global_visual_file).get("visual_mentions", {})
-        financial_master = self.load_json(ROOT / "database" / "CPO_MASTER_DATA.json")
         
-        # Normalize target tickers from the research file
-        target_tickers = list(research_raw.keys())
+        # Consistent Ticker Discovery via ticker_utils
+        target_tickers = load_master_tickers(self.terminal_type)
+        print(f"--- GIGACPO Pipeline: {self.terminal_type.upper()} ({len(target_tickers)} tickers) ---")
+        
         research = {}
         
         # 2. STANDARDIZE & PREPARE SCORING
         stats_map = {}
         
         if not target_tickers:
-            print(f"Warning: No tickers found in {self.research_file.name}")
+            print(f"Warning: No tickers loaded for {self.terminal_type}")
             return self
 
         for symbol in target_tickers:
@@ -80,18 +81,28 @@ class PipelineOrchestrator:
             entry = research_raw.get(symbol, {})
             
             # Extract human_research if it's nested (Root style)
-            r_info = entry.get("human_research", entry)
+            r_info_raw = entry.get("human_research", entry)
+            # Ensure we don't clobber the shared entry object if they are the same
+            r_info = r_info_raw.copy() if r_info_raw is entry else r_info_raw
             
-            # Sanitize for searchability (pull from financials if manual research is thin)
-            if not r_info.get("Company"):
-                r_info["Company"] = entry.get("financials", {}).get("summaryProfile", {}).get("longName", symbol)
-            if not r_info.get("Role"):
-                r_info["Role"] = "AI Infrastructure/Crypto Compute"
-            if not r_info.get("Bucket"):
-                r_info["Bucket"] = "Alpha"
-            if not r_info.get("Alpha Score"):
-                r_info["Alpha Score"] = 7.0 # Default decent score for discovered plays
+            # Map legacy AI master keys (often at top level or in r_info)
+            company_name = r_info.get("Company Name") or entry.get("Company Name")
+            role_notes = r_info.get("Role / Notes") or entry.get("Role / Notes")
+            bucket = r_info.get("Bucket") or entry.get("Bucket")
             
+            if company_name and not r_info.get("Company"):
+                r_info["Company"] = company_name
+            if role_notes and not r_info.get("Role"):
+                r_info["Role"] = role_notes
+            if bucket and not r_info.get("Bucket"):
+                r_info["Bucket"] = bucket
+            
+            # Fallback for company name
+            if not r_info.get("Company") or r_info.get("Company") == symbol:
+                long_name = entry.get("financials", {}).get("price", {}).get("longName") or \
+                           entry.get("financials", {}).get("summaryProfile", {}).get("longName")
+                r_info["Company"] = long_name or symbol
+
             research[symbol] = r_info
             
             # Extract Financials and Supplemental data from the rich master
@@ -140,15 +151,15 @@ class PipelineOrchestrator:
                 "mcapB": (summary.get("marketCap", {}).get("raw") or 0) / 1e9,
                 "upside": upside_val,
                 "perf1y": obb.get("perf_1y"),
-                "recent_7d": obb.get("recent_7d_status", [0]*7),
-                "buzz_7d": int(global_buzz.get(symbol, {}).get("7d", 0)),
-                "news_count": len(global_buzz.get(symbol, {}).get("recent_news", [])),
+                "recent_7d_list": obb.get("recent_7d_status", [0]*7),
+                "total_discovery": int(global_buzz.get(symbol, {}).get("7d", 0)) + len(global_buzz.get(symbol, {}).get("recent_news", [])),
                 "analysts": obb.get("analyst_count"),
                 "inst_pct": obb.get("inst_ownership_pct"),
                 "short_pct": obb.get("short_interest_pct"),
                 "conviction_count": financial_master.get(symbol, {}).get("human_research", {}).get("inst_13f_alpha", {}).get("conviction_count", 0),
                 "rev_num": rev_num,
-                "growth_str": growth_str
+                "growth_str": growth_str,
+                "obb_raw": obb # Store to prevent clobbering
             }
 
         # 3. SCORE
@@ -167,13 +178,18 @@ class PipelineOrchestrator:
             history = raw_entry.get("history", [])
             
             # 7-day momentum trajectory (Up/Flat=1, Down=0)
-            obb = stats_map.get(symbol, {}).get("recent_7d", [0]*7)
+            mom_bars = stats_map.get(symbol, {}).get("recent_7d", [0]*7)
             
             # Use obb calculated status as primary, history-calc as fallback
-            trajectory = obb
+            trajectory = mom_bars
             if not any(trajectory) and len(history) >= 8:
                 pts = history[-8:]
                 trajectory = [1 if pts[i]['y'] >= pts[i-1]['y'] else 0 for i in range(1, 8)]
+
+            # Determine Alpha Score (math-driven unless manual override is NON-PLACEHOLDER)
+            alpha_val = r_info.get("Alpha Score")
+            if not alpha_val or alpha_val == 7.0:
+                alpha_val = scores['alpha']
 
             # Build the finalized entry
             entry_payload = {
@@ -181,7 +197,7 @@ class PipelineOrchestrator:
                 **stats_map[symbol],
                 "human_research": {
                     **r_info,
-                    "Alpha Score": r_info.get("Alpha Score") or scores['alpha'],
+                    "Alpha Score": alpha_val,
                     "Risk Adj": r_info.get("Risk Adj") or scores['risk'],
                     "Hiddenness": r_info.get("Hiddenness") or scores['hidden'],
                     "Target Upside": r_info.get("Target Upside") or f"+{int(stats_map[symbol]['upside']*100)}%",
@@ -197,7 +213,7 @@ class PipelineOrchestrator:
             # Aliases for legacy/AI terminal compatibility
             entry_payload["h"] = entry_payload["human_research"]
             entry_payload["p"] = entry_payload["performance"]
-            entry_payload["obb"] = obb # OpenBB supplement mapped in scoring phase
+            entry_payload["obb"] = stats_map[symbol].get("obb_raw", {})
             
             payload[symbol] = entry_payload
 
@@ -242,7 +258,7 @@ class PipelineOrchestrator:
         """Auto-syncs to remote if configured."""
         if os.getenv("SFTP_HOST"):
             print(f"Deploying {self.output_js.name}...")
-            RemoteSync.sync_file(Path(self.output_js).resolve())
+            RemoteSync.sync_file(Path(self.output_js))
             
             # Also sync the HTML template for this terminal
             target_html = self.web_dir / "index.html"

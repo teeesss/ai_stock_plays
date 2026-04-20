@@ -127,15 +127,24 @@ async def _get_yf_supplement_stealth(ticker_symbol: str, entry: dict, client, cr
     return result
 
 async def run_fetch_async(tickers: list = None, force: bool = False, dry_run: bool = False):
-    with open(DB_PATH, encoding='utf-8') as f:
-        data = json.load(f)
+    db_paths = [DB_PATH, ROOT / 'database' / 'AI_MASTER_DATA.json']
+    all_data = {}
+    
+    for path in db_paths:
+        if path.exists():
+            with open(path, encoding='utf-8') as f:
+                all_data[path.name] = json.load(f)
 
     if tickers is None:
-        tickers = [t for t, e in data.items()
-                   if e.get('human_research', {}).get('Bucket') != 'Private'
-                   and t not in SKIP_TICKERS]
+        tickers = []
+        for db_name, data in all_data.items():
+            tickers.extend([t for t, e in data.items()
+                       if e.get('human_research', {}).get('Bucket') != 'Private'
+                       and t not in SKIP_TICKERS])
+                       
+    tickers = list(set(tickers))
 
-    log.info(f'OpenBB Supplement Fetcher — {len(tickers)} tickers')
+    log.info(f'OpenBB Supplement Fetcher - {len(tickers)} tickers')
     
     # Retrieve Valid/Cached Authenticated Session
     cookie_dict, crumb, user_agent = await get_valid_auth()
@@ -152,12 +161,20 @@ async def run_fetch_async(tickers: list = None, force: bool = False, dry_run: bo
     skipped = 0
 
     for i, ticker in enumerate(tickers):
-        if ticker not in data:
+        # Find which DB owns this ticker
+        owning_db = None
+        entry = None
+        for db_name, data in all_data.items():
+            if ticker in data:
+                owning_db = db_name
+                entry = data[ticker]
+                break
+                
+        if not entry:
             skipped += 1
             continue
 
-        entry = data[ticker]
-        h = entry.get('human_research', {})
+        h = entry.get('human_research', entry)
         
         # Skip if already fresh and not forcing
         existing = h.get('openbb_supplement', {})
@@ -177,7 +194,11 @@ async def run_fetch_async(tickers: list = None, force: bool = False, dry_run: bo
         if supplement:
             supplement['last_updated'] = datetime.now(timezone.utc).isoformat()
             if not dry_run:
-                data[ticker]['human_research']['openbb_supplement'] = supplement
+                # Update the specific DB object natively
+                if 'human_research' in entry:
+                    all_data[owning_db][ticker]['human_research']['openbb_supplement'] = supplement
+                else:
+                    all_data[owning_db][ticker]['openbb_supplement'] = supplement
             updated += 1
             log.info(f"  -> {ticker}: 1y={supplement.get('perf_1y')}% | analysts={supplement.get('analyst_count')}")
         else:
@@ -186,18 +207,20 @@ async def run_fetch_async(tickers: list = None, force: bool = False, dry_run: bo
         # Periodic checkpoint
         if updated > 0 and updated % 10 == 0:
             if not dry_run:
-                with open(DB_PATH, 'w', encoding='utf-8') as f:
-                    json.dump(data, f, indent=4)
+                for db_name, data in all_data.items():
+                    path = DB_PATH if db_name == 'CPO_MASTER_DATA.json' else ROOT / 'database' / db_name
+                    with open(path, 'w', encoding='utf-8') as f:
+                        json.dump(data, f, indent=4)
 
     if not dry_run and updated > 0:
-        with open(DB_PATH, 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=4)
+        for db_name, data in all_data.items():
+            path = DB_PATH if db_name == 'CPO_MASTER_DATA.json' else ROOT / 'database' / db_name
+            with open(path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=4)
         
-        # Sync JS
-        with open(JS_PATH, 'w', encoding='utf-8') as f:
-            f.write('window.CPO_MASTER_DATA = ')
-            json.dump(data, f, indent=2)
-            f.write(';')
+        # We don't overwrite CPO_MASTER_DATA dashboard_data.js directly anymore here,
+        # since it's now handled entirely by PipelineOrchestrator.
+        pass
             
     log.info(f'Complete: {updated} updated, {skipped} skipped')
 

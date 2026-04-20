@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 # ─────────────────────────────────────────────────────────────
 # GIGACPO Glass Substrate (LIDE/TGV) Intelligence
-# V1.0 — Supply Chain Mapping
+# V1.0 - Supply Chain Mapping
 # ─────────────────────────────────────────────────────────────
 
 ROOT = Path(__file__).parent.parent
@@ -94,7 +94,7 @@ def analyze():
                 break
         
         if found_key:
-            log.info(f"  🔍 Integrating Glass Intel into ${found_key}")
+            log.info(f"  ? Integrating Glass Intel into ${found_key}")
             if "human_research" not in master[found_key]:
                 master[found_key]["human_research"] = {}
             
@@ -108,7 +108,7 @@ def analyze():
             }
             updates += 1
         else:
-            log.warning(f"  ⚠️ Node {node_name} (${ticker}) not found in master DB. High conviction play missing.")
+            log.warning(f"  [WARN] Node {node_name} (${ticker}) not found in master DB. High conviction play missing.")
 
     if updates > 0:
         with open(DB_PATH, "w", encoding="utf-8") as f:

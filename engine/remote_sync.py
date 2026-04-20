@@ -107,9 +107,20 @@ class RemoteSync:
                 rel_path = os.path.basename(abs_path)
 
             # Force lowercase for remote consistency (Linux servers)
-            rel_path = rel_path.lower()
+            rel_path = rel_path.replace("\\", "/") # Ensure forward slashes
             rem_path = rel_path
-            if rem_path == "cpo_plays.html": rem_path = "index.html"
+            
+            if rem_path.lower().startswith("web/semi/"):
+                rem_path = rem_path[9:]  # Strip 'web/semi/'
+                if rem_path == "dashboard_data.js":
+                    rem_path = "database/dashboard_data.js"
+            elif rem_path.lower().startswith("web/ai/"):
+                rem_path = rem_path[7:]  # Strip 'web/ai/'
+                if rem_path == "dashboard_data.js":
+                    rem_path = "database/dashboard_data.js"
+                rem_path = "ai/" + rem_path
+
+            if rem_path.lower() == "cpo_plays.html": rem_path = "index.html"
             
             log.info(f"Targeting relative path for sync: {rel_path}")
             return RemoteSync.sync_files({rel_path: rem_path}, base_dir=ROOT)

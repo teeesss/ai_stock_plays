@@ -1,4 +1,4 @@
-# GIGACPO Technical Architecture (V20.0)
+# GIGACPO Technical Architecture (V22.94)
 
 ## Overview
 Financial data is adversarial. Standard APIs (Standard & Poor's, FactSet) are expensive or laggy. Public scrapers (YFinance) are frequently blocked. GIGACPO solves this through a decoupled, multi-layered stealth architecture.
@@ -28,41 +28,39 @@ Never hit a target directly.
 
 ### Layer 3: Intelligence Engine (`intelligence_engine.py`)
 - **Formula**: Bayesian-style percentile normalization.
-- **Metrics**: MCAP, P/E, Analyst counts, Buzz counts, Revenue Growth.
-- **Scoring**:
-  - `Alpha`: High growth + High upside + High buzz.
-  - `Risk`: High P/E + High short interest + Low Analyst support.
-  - `Hidden`: Low MCAP + Low Analyst count + High Growth.
+- **Scoring**: `Alpha` (High growth/upside/buzz), `Risk` (High P/E/short interest), `Hidden` (Low MCAP/Analyst count + High Growth).
 
 ### Layer 4: Pipeline Orchestrator (`pipeline_orchestrator.py`)
-- **Role**: The state-machine conductor.
-- **Workflow**:
-  1. Load Financials from master DB.
-  2. Normalize field names (Growth, MCAP).
-  3. Calculate dynamic scores.
-  4. Generate `dashboard_data.js` artifact.
-  5. Deploy via SFTP to production.
+- **Role**: The centralized state-machine conductor.
+- **Workflow**: Load Financials -> Normalize legacy fields -> Calculate dynamic scores -> Generate `dashboard_data.js` -> Deploy via SFTP to mapped nesting.
+
+### Layer 5: Sovereign Intelligence Engine (`email_market_synopsis.py`)
+- **Extractive NLP**: Uses `local_nlp.py` (LSA + VADER) for offline synthesis of market catalysts.
+- **Signal Governance**: Implements a `NEWS_BLACKLIST` (e.g., Jim Cramer) to sanitize the ingestion pool.
+- **Responsive Parity**: Employs `@media` independent styling definitions for Desktop (14-24px) vs Mobile (9-12px) typography.
 
 ---
 
 ## 3. Data Integrity & QA
-- **Surgical Regex**: `engine/forensic_repair.py` ensures tickers like $N V D A$ are collapsed to $NVDA without smashing surrounding text.
-- **P/E Sentinels**: The logic uses `999` as a sentinel for missing EPS data. Dashboard filters are hardened to handle this (Max filter active -> exclude 999).
-- **Automated Tests**:
-  - `tests/test_dashboard_filters.py`: Verifies P/E, OBB, and Buzz filtering logic.
-  - `tests/test_momentum_data.py`: Ensures 7-day trajectory bars are correctly calculated.
+- **Strict 15-Minute Protocol**: Verified by the `is_entity_fresh` helper. Ensures a 900s global TTL for all asset classes (Indices, Crypto, and news-discovered tickers), preventing Yahoo Finance rate-limiting and redundant fetching.
+- **Surgical Regex**: `engine/forensic_repair.py` ensures tickers like $N V D A$ are collapsed to $NVDA.
+- **P/E Sentinels**: Uses `999` for missing EPS data.
+- **Self-Hydrating Discovery**: The engine scans narratives for tickers and force-hydrates stale/missing prices while strictly honoring the 15-minute global pulse.
+- **Session-Aware Labeling**: Integrated `PM`/`AH` markers and `OVN` (Overnight) session detection. Uses high-fidelity BOATS data via `overnightPrice=true` to capture institutional-standard real-time prices while other sources remain stale.
+- **Extended-Hours Cascade**: Prioritizes `OVN` (BOATS) > `PRE` > `POST`, ensuring the terminal reflects the most active trading state at all times.
 
 ---
 
 ## 4. UI Rendering System
-- **Template-Driven**: `AI/index_template.html` is the source of truth. `generate_ui.py` populates it with dynamic sector filters.
-- **Zero-Padding Table**: The terminal uses a high-density table (13px font) designed for financial analysts.
-- **Momentum Strips**: Visual trajectory bars (Green/Red dots) derived from the last 7 sessions of price action.
+- **Template-Driven**: Root and AI terminals use isolated `index_template.html` structures.
+- **Dual-Surface Emails**: Liquid-table layouts with independent Desktop/Mobile scale definitions via CSS Media Queries.
+- **High-Density Output**: Terminals use strict tables (13px); dossiers use scaled block-level tiles for multi-device readability.
 
 ---
 
 ## Technical Summary
-- **Language**: Python 3.10+ (Engine) / Vanilla JS (UI).
-- **Auth**: Playwright (Headless).
-- **Network**: `curl_cffi` (Impersonating Chrome 147).
-- **Data**: JSON persistence with 7-bit ASCII encoding.
+- **Primary Languages**: Python 3.12+ / Vanilla JS / CSS3 (Grid/Flexbox/@media).
+- **Extraction Engine**: `curl_cffi` (Chrome 146 Impersonation) + Playwright Stealth.
+- **NLP Suite**: `sumy` (LSA), `vaderSentiment`, `scikit-learn` (TF-IDF).
+- **Delivery**: SMTP (TLS 1.2) via Gmail App Passwords.
+- **Data Model**: JSON persistence (UTF-8) with atomic transactional writes.

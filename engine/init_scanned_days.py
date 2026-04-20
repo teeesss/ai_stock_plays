@@ -1,5 +1,5 @@
 """
-init_scanned_days.py — Bootstrap scanned_days.json from existing post timestamps.
+init_scanned_days.py - Bootstrap scanned_days.json from existing post timestamps.
 Any day that has at least 1 post in the JSON is marked as "already scanned."
 Run ONCE after migrate_v9.py.
 """
@@ -24,7 +24,7 @@ if SCANNED_FILE.exists():
 for user in USERS:
     file = DB_DIR / f"x_intel_{user}.json"
     if not file.exists():
-        print(f"  SKIP @{user} — file not found")
+        print(f"  SKIP @{user} - file not found")
         continue
 
     raw = json.loads(file.read_text(encoding="utf-8"))

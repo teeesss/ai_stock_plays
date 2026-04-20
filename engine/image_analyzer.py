@@ -104,7 +104,7 @@ def analyze_images():
                 update_user_file(username, post_id, finding)
                 continue
             
-            # No limit — process everything in the queue to ensure 100% coverage
+            # No limit - process everything in the queue to ensure 100% coverage
             # as requested in V15.5 Hardening.
 
             log.info(f"[{processed_count+1}/Batch] OCR: {img_path_rel}")

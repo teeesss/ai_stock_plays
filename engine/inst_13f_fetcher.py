@@ -7,7 +7,7 @@ import yfinance as yf
 
 # ─────────────────────────────────────────────────────────────
 # GIGACPO Institutional 13F Fetcher
-# V1.0 — Alpha Institutional Layer
+# V1.0 - Alpha Institutional Layer
 # ─────────────────────────────────────────────────────────────
 
 # Paths

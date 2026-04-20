@@ -1,5 +1,5 @@
 """
-migrate_v9.py — Step 1: Deduplicate + Backup all x_intel JSON files.
+migrate_v9.py - Step 1: Deduplicate + Backup all x_intel JSON files.
 Keeps bare array format. Removes duplicate IDs. Backs up originals.
 """
 import json
@@ -16,7 +16,7 @@ USERS = ["aleabitoreddit", "PhotonCap", "KawzInvests"]
 for user in USERS:
     file = DB_DIR / f"x_intel_{user}.json"
     if not file.exists():
-        print(f"  SKIP {user} — file not found")
+        print(f"  SKIP {user} - file not found")
         continue
 
     # Backup original

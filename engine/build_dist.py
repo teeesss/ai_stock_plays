@@ -2,7 +2,7 @@ import os
 import shutil
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).parent.parent
 DIST = ROOT / "dist"
 
 def build():

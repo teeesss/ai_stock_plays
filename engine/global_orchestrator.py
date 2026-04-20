@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 # Add project root to sys path
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).parent.parent
 sys.path.append(str(ROOT))
 
 from engine.social_intel_engine import SocialIntelEngine

@@ -5,7 +5,7 @@ from pathlib import Path
 
 # ─────────────────────────────────────────────────────────────
 # GIGACPO Terminal Menu
-# V1.0 — Unified Orchestration
+# V1.0 - Unified Orchestration
 # ─────────────────────────────────────────────────────────────
 
 ROOT = Path(__file__).parent
@@ -17,26 +17,26 @@ def clear():
 def run_script(script_name, args=[]):
     script_path = ENGINE_DIR / script_name
     if not script_path.exists():
-        print(f"❌ Error: {script_name} not found.")
+        print(f"Error: {script_name} not found.")
         input("Press Enter to continue...")
         return
     
     cmd = [sys.executable, str(script_path)] + args
-    print(f"🚀 Running: {' '.join(cmd)}")
+    print(f"Running: {' '.join(cmd)}")
     try:
         subprocess.run(cmd, check=True)
     except subprocess.CalledProcessError as e:
-        print(f"❌ Script failed: {e}")
+        print(f"Script failed: {e}")
     except KeyboardInterrupt:
-        print("\n⏹ Script interrupted by user.")
+        print("\nScript interrupted by user.")
     
-    input("\n✅ Done. Press Enter to return to menu...")
+    input("\nDone. Press Enter to return to menu...")
 
 def menu():
     while True:
         clear()
         print("="*60)
-        print("   GIGACPO FINANCIAL INTELLIGENCE TERMINAL — CONTROL PANEL")
+        print("   GIGACPO FINANCIAL INTELLIGENCE TERMINAL - CONTROL PANEL")
         print("="*60)
         print("   [1] DAILY SYNC (Scrape + OCR + Buzz)")
         print("   [2] INSTANT SYNC (Last 24h fast fetch)")
@@ -57,7 +57,11 @@ def menu():
         choice = input("Select Option > ").lower().strip()
         
         if choice == '1':
-            run_script("x_intel_daily_sync.py")
+            ocr = input("Include OCR (Slow)? (y/n): ").strip().lower()
+            if ocr == 'n':
+                run_script("sync_triple.py", ["--skip-ocr"])
+            else:
+                run_script("sync_triple.py")
         elif choice == '2':
             run_script("x_intel_instant_sync.py")
         elif choice == '3':

@@ -83,7 +83,7 @@ def generate_brain_from_master(master_path=MASTER_JSON):
 
     # 3. GENERATE MARKDOWN BRAIN
     with open(BRAIN_MD, 'w', encoding='utf-8') as f:
-        f.write(f"# ⚡ CPO INTELLIGENCE BRAIN\n")
+        f.write(f"# [FAST] CPO INTELLIGENCE BRAIN\n")
         f.write(f"**Last Sync**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
         f.write(f"## 1. STRUCTURED ECOSYSTEM ({len(master_data)} Plays)\n\n")
         f.write("| Ticker | Market Cap | P/E | Rev Growth | Target |\n")

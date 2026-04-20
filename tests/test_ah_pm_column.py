@@ -27,7 +27,7 @@ from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
 ROOT = Path(__file__).parent.parent
-HTML_FILE = ROOT / "cpo_plays.html"
+HTML_FILE = ROOT / "web" / "semi" / "index_template.html"
 LIVE_PRICES_SRC = ROOT / "engine" / "live_prices.py"
 
 # ---------------------------------------------------------------------------

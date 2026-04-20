@@ -1,17 +1,92 @@
-# 🎯 X-Intelligence: Project Roadmap
+### 🚀 Current Status: V22.96 — Granular 15-Minute Protocol
+- [x] **Granular 15-Minute Lock (V22.96)**: Hardened `live_prices.py` to check TTL at the ticker level. Assets are now only re-fetched if their specific timestamp in the price database is > 15m old.
+- [x] **Email Hardening (V22.96)**: Implemented global link neutralization (zero-width spaces) and set sender name to "Market News".
+- [x] **Universe Decoupling (V22.96)**: Reverted global unification. `live_prices.py` now specifically tracks only the **Static Terminal Universe** (Root + AI), while `email_market_synopsis.py` handles its own **Dynamic Discovery** without shared-list bloat.
+- [x] **Unified Monitored Universe (V22.95)**: (Partially Reverted for decoupling) Moved ticker loading to `ticker_utils.py` but maintained terminal-specific entry points.
+- [x] **BOATS Overnight Integration (V22.94)**: Decoupled and fixed the overnight price issue. Now uses `overnightPrice=true` and `overnightMarketPrice` field to capture Blue Ocean ATS data (e.g., $16.44 for ALMU) with 100% fidelity.
+- Date: 2026-04-20
 
-### 🚀 Current Status: V20.0 — Unified Stability & Pipeline Mastery
-- **Global Orchestration**: Unified `PipelineOrchestrator` automates News, Prices, OBB, and Deployment.
+# Project Status — April 20, 2026
+## 🚀 Version: V22.96 (Granular 15-Minute Protocol)
+
+Status: **PRODUCTION HARDENED — DECOUPLED & GRANULAR**
+
+📊 **Project Status: Sovereign Intel**
+- **Current Tier**: V22.96 (Granular Lock + Email Hardened) / V22.94 (High-Fidelity OVN)
+- **Critical Progress**: Decoupled the terminal universe from the dynamic discovery engine. Implemented per-ticker TTL locks (15m) and deployed a multi-layer email link-suppression protocol (zero-width spaces) to kill URL creep. Finalized professional branding with "Market News" sender identity.
+- **Next Milestone**: Deep-intel extraction for M&A targets mentioned in news headlines.
+- Date: 2026-04-20
+
+### 🚀 Previous Status: V22.51 — Sovereign Intelligence Hardening (Futures Divergence)
+- [x] **Index Divergence Pulse**: Integrated comparative row-tracking for all major US indices. Shows **Friday Cash Close** vs. **Sunday Night Futures** side-by-side to highlight market opening sentiment.
+- [x] **Futures Support**: Added active tracking for `NQ=F` (Nasdaq), `ES=F` (S&P 500), and `YM=F` (Dow 30).
+- [x] **Comparative UI**: Redesigned the Pulse block into high-contrast comparative tiles with directional background chips.
+- [x] **International Ticker Shield**: Enhanced regex to capture dot-suffixed tickers (`LPK.DE`, `SOI.PA`, etc.).
+- [x] **Universal Gold Protocol**: Standardized symbol linking in brand gold to prevent blue auto-links.
+- Date: 2026-04-19
+
+### 🚀 Previous Status: V22.45 — Sovereign Intelligence Hardening (Desktop UX)
+- [x] **Global Market Normalization**: Balanced tile sizes for HSI, Nikkei, DAX, FTSE to match US Pulse tiles on desktop.
+- [x] **Description Visibility**: Extended description truncation (240 chars) and brightened note color (`#64748b`) for professional legibility.
+- Date: 2026-04-19
+
+### 🚀 Previous Status: V22.44 — Sovereign Intelligence Hardening (Content Quality)
+- [x] **Momentum Velocity Block-Formatting**: Refactored momentum chips into block-level tiles for multi-device readability.
+- [x] **Data-Void Hydration**: Added a sector-wide scan to automatically identify and fill price gaps in the intelligence universe.
+- Date: 2026-04-19
+
+### 🚀 Previous Status: V22.10 — Sovereign Intelligence Stability
+- [x] **Dynamic Price Recovery**: Restored high-fidelity ticker discovery and real-time price flair injection.
+- [x] **Massive Symbol Bridge**: Integrated S&P 500 + Russell 2000 (3,100+ mappings).
+- [x] **15-Minute Restraint**: Hardened cache TTL to 900s for conservative Yahoo API usage.
+- [x] **Production Leak Hardening**: Blacklisted `CEO`, `IRA`, `NV`, `SAVE`, `LAYER`, etc.
+- [x] **Recursive Aliasing**: Resolved `KLA->KLAC`, `BMW->BMWYY`, `IPG->IPGP` for headline narratives.
+- [x] **Zero-Silence Protocol**: Suppress broken chips/leaks in narratives.
+- [x] **Smart Aliasing**: Pivot from names (Nvidia) to tickers (NVDA) automatically.
+- [x] **Cross-Correlative Prioritization**: Narrative synthesis now led by Alpha (1.5x) and Hiddenness (0.8x) scoring.
+- [x] **Adaptive Lexicon Biasing**: VADER sentiment analyzer now weights tokens based on real-time Fear & Greed vibes.
+- [x] **NER Entity Discovery**: Lightweight NLTK pipeline identifies unmapped organization catalysts in headlines.
+- [x] **Token Efficiency**: Redundant RSS descriptions cleaned and summarization window optimized.
+- Date: 2026-04-19
+
+### 🚀 Previous Status: V22.1 — Documentation & Hardening
+- [x] **Documentation Overhaul**: Upgraded `SOVEREIGN_INTEL_SYSTEM.md` with high-fidelity Mermaid architecture and technical specifications.
+- [x] **NLP Pipeline Mapping**: Documented LSA, TF-IDF, and VADER logic for future parity.
+- [x] **Hardening Guide**: Captured anti-clipping and deduplication protocols.
+- Date: 2026-04-19
+
+### 🚀 Previous Status: V22.0 — Local NLP Intelligence & Autonomous Dossiers
+- [x] **Local NLP Engine**: Deployed `engine/local_nlp.py` using VADER (Sentiment), Sumy (Summarization), and TF-IDF (Keywords).
+- [x] **Autonomous Synthesis**: Refactored `email_market_synopsis.py` to generate distinct 80%-unique Market and Sector overviews.
+- [x] **Aesthetic Hardening**: Implemented liquid-table layout with hyperlinked headlines and color-coded `$TICKER` price injection.
+- [x] **Dual Stream Intelligence**: Separated Market RSS headlines from Monitoring news to prevent data overlap.
+- [x] **Hot-Fetch Integration**: Macro index prices ($BTC, $NQ, etc.) now auto-hydrate inside the email loop using root `live_prices` engine.
+- Date: 2026-04-19
+
+### 🚀 Previous Status: V21.0 — Modular Pipeline & High Density Web endpoints
+- [x] **Triple-Layer Sync**: Deployed `engine/sync_triple.py` (Tweets + News + OCR) and unified the `terminal.py` conductor.
+- [x] **Documentation**: Generated `docs/SYNC_GUIDE.md` explaining the update cycle and recommendations.
+- [x] **Pipeline Integrity**: Deployed `tests/verify_integrity.py` for automated syntax and Windows encoding (UTF-8) audits.
+- [x] **Dual Deployment**: Hardened `PipelineOrchestrator` to simultaneously update `/web/semi` and `/web/ai`.
+- **Modular Refactor**: Migrated all Semi/AI assets to `/web/*` and consolidated core logic in Root.
+- **Unified Orchestration**: Global `PipelineOrchestrator` automates News, Prices, OBB, and Deployment.
 - **Yahoo Stealth**: Decoupled Auth (`engine/yahoo_auth.py`) + `chrome146` TLS Handshake (Max Supported).
-- **AI Terminal**: Hardened 100% data coverage for ADRs/Small-caps; fixed momentum/perf rendering.
-- **Reliability**: 52+ tests passing; automated regression checks for momentum and filters.
-- **Deployment**: Unified SFTP sync for both Root and AI terminals.
+- **AI Terminal**: Hardened 100% data coverage for ADRs/Small-caps; fixed legacy path drift.
+- [x] **AI Terminal Integrity**: Restored 100% dynamic Alpha scoring (math-driven); fixed OpenBB data clobbering to restore Analyst/Institutional/Short counts.
+- [x] **AI Terminal Mapping**: Repaired Ticker-to-Company mapping to prioritize Actual Company Names (e.g. Terrestrial Energy) over raw symbols.
+- [x] **Data Cross-Pollination**: Refactored `openbb_fetcher.py` and `PipelineOrchestrator` to synchronously enrich both Terminals.
+- [x] **Reliability**: 55+ tests passing; automated regression checks for modular paths.
+- **Deployment**: Unified SFTP sync for modular directory nesting.
 - Date: 2026-04-18
 
 - **Modular Engine**: Migrated scoring and aggregation logic to `engine/` for high reuse.
 - **Dynamic Intelligence**: Upside, MCAP, and P/E metrics now pulled from master DB with zero placeholders.
-- **Scraper Hardening**: Integrated randomized human-jitter (3s-10s) and batching (8-13 tickers).
-- **Documentation**: Full technical architecture and user guides generated for V20.0.
+- **AI Dashboard Fidelity**: Patched `PipelineOrchestrator` to automatically map legacy research keys (`Company Name`, `Role / Notes`).
+## Recent UI Hardening (V22.49)
+- **News Link Purge**: Removed all internal news titles links; dossier now focuses exclusively on Yahoo Finance price discovery.
+- **Global Market Visibility**: Hardened HSI/Nikkei tiles. `CLOSED` status is now bold Red. Percentages upsized to 15px with directional background chips.
+- **Ticker Standard**: All symbols ($TICKER) now use `@f59e0b` (Gold) and link directly to Yahoo Finance.
+- **Typography Alignment**: Eliminated `monospace` drift in Macro and Momentum sections.
 
 - **Image Pipeline**: OCR → `processed_images.json` → `visual_intel[]` per post → `visual_mentions` in master.
 - **Dashboard**: Visual buzz (📷) badges alongside tweet buzz (𝕏) in buzz bar + row chips.
@@ -42,6 +117,7 @@
 - **Data Discovery**: Full 113-ticker data audit run — restored `performance{}` for all tickers with `history` and `1y` data.
 - **Pipeline**: Fixed `NameError` in `remote_sync.py` `__main__` block (was calling bare `sync()` instead of `RemoteSync.sync()`).
 - **Pipeline**: Fixed `PipelineOrchestrator` to pull from `AI_MASTER_DATA.json` instead of raw research file, restoring momentum/financials to AI terminal.
+- **Pipeline Integrity**: Automated syntax and non-ASCII audit check installed to prevent Windows terminal crashes.
 - Date: 2026-04-18
 - **Yahoo Stealth Protocol (V19.5)**: Decoupled authentication logic from extraction loops. `engine/yahoo_auth.py` now harvests and caches session crumbs/cookies via Playwright, providing them to lightweight `curl_cffi` clients.
 - **Yahoo Stealth Protocol (V19.5)**: Standardized Chrome 147.0.7727.101/105/110 identity across all scripts.
@@ -64,6 +140,18 @@
 ---
 
 ## ✅ Completed — V15.4 Pipeline Durability + Unicode (2026-04-14)
+
+## ⚡ Market Intelligence (Email Synopsis)
+
+- [x] **V4.3.1 Architecture (Architect Edition)**: Implemented Sovereign Pulse Bar and Narrative Synthesis.
+- [x] **Live Macro Integration**: Automated Yahoo Finance RSS feed for global headlines.
+- [x] **Ticker Injection**: Formatted chips ($META, $AVGO) now inject prices into news sentences.
+- [x] **Strategic Segmentation**: Separate section for Private/Pre-IPO vetting (Celestial AI, etc.). 
+- [x] **Live/Current Market Price Scraper**: Automate the price for BTC, ETH, Nasdaq, S&P 500, DOW. Last 24 hours % up/down for BTC/ETH and full $ prices.
+- [x] **Live Sentiment Scraper**: Automate the `feargreedmeter.com` scrape for Market and Crypto.
+- [x] **Ticker Discovery Wrapper**: Hardened the loop to call `live_prices.py` for unknown news mentions.
+- [x] **NLP Synthesis**: Integrated offline local summarization (LSA) and keyword extraction (TF-IDF).
+- [ ] **Automation Logic**: Configure Windows Task Scheduler for 7:30 AM / 4:30 PM delivery.
 
 - [x] **Merge ISSUES.md into TASKS.md**: Integrated historical issues and cleared ISSUES.md.
 - [x] **Unicode fix (all writers)**: `ensure_ascii=False` → `True` in `rebuild_master.py`,

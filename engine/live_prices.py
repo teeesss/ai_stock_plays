@@ -27,26 +27,20 @@ from curl_cffi import requests
 from yahoo_auth import get_valid_auth
 import random
 
+from ticker_utils import load_master_tickers
+
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
 log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).parent.parent
-DB_PATH = ROOT / 'database' / 'CPO_MASTER_DATA.json'
 OUT_JS  = ROOT / 'database' / 'live_prices.js'
 OUT_JSON = ROOT / 'database' / 'live_prices.json'
-
-# Skip private/non-tradable tickers
-SKIP_TICKERS = {'AYAR', 'RANV', 'CelestialAI', 'SCINTIL'}
 
 BATCH_SIZE = 10
 
 def load_tickers() -> list[str]:
-    """Load all public (non-private) tickers from the master database."""
-    with open(DB_PATH, encoding='utf-8') as f:
-        data = json.load(f)
-    return [t for t, e in data.items()
-            if e.get('human_research', {}).get('Bucket') != 'Private'
-            and t not in SKIP_TICKERS]
+    """Load only the static terminal tickers (Root + AI)."""
+    return load_master_tickers("static")
 
 def clean_ticker(ticker: str) -> str:
     """Extract primary ticker from compound 'A.XX / B' format."""
@@ -95,7 +89,9 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
     
     all_symbols = list(primary_map.keys())
     symbols_str = ','.join(all_symbols)
-    url = f'https://query1.finance.yahoo.com/v7/finance/quote?symbols={symbols_str}&crumb={crumb}'
+    # V22.94: Request explicit fields including Overnight (BOATS) data
+    fields = "regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketVolume,averageDailyVolume10Day,marketState,preMarketPrice,preMarketChange,preMarketChangePercent,postMarketPrice,postMarketChange,postMarketChangePercent,overnightMarketPrice,overnightMarketChange,overnightMarketChangePercent,bid,ask,fullExchangeName,exchangeName,exchange"
+    url = f'https://query1.finance.yahoo.com/v7/finance/quote?symbols={symbols_str}&fields={fields}&overnightPrice=true&crumb={crumb}'
     
     log.debug(f"Fetching {len(all_symbols)} tickers from Yahoo...")
     try:
@@ -137,14 +133,54 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
             ext_price = None
             ext_pct = None
             ext_type = None
-            if market_st in ('PRE', 'PREPRE'):
+            
+            if market_st == 'OVERNIGHT':
+                # V22.94: High-fidelity BOATS (Blue Ocean ATS) overnight data
+                ext_price = item.get('overnightMarketPrice')
+                ext_pct   = item.get('overnightMarketChangePercent')
+                ext_type  = 'OVN'
+            elif market_st in ('PRE', 'PREPRE'):
                 ext_price = item.get('preMarketPrice')
                 ext_pct   = item.get('preMarketChangePercent')
                 ext_type  = 'PRE'
             elif market_st in ('POST', 'POSTPOST', 'CLOSED'):
-                ext_price = item.get('postMarketPrice')
-                ext_pct   = item.get('postMarketChangePercent')
-                ext_type  = 'POST'
+                # V22.93: Smart cascade — prefer PRE over POST when CLOSED
+                # Yahoo sometimes populates preMarketPrice even in CLOSED state
+                pre_p = item.get('preMarketPrice')
+                pre_pct = item.get('preMarketChangePercent')
+                post_p = item.get('postMarketPrice')
+                post_pct = item.get('postMarketChangePercent')
+                
+                if pre_p is not None and pre_pct is not None:
+                    ext_price = pre_p
+                    ext_pct   = pre_pct
+                    ext_type  = 'PRE'
+                elif post_p is not None and post_pct is not None:
+                    ext_price = post_p
+                    ext_pct   = post_pct
+                    ext_type  = 'POST'
+                
+                # Check for explicit overnight data even in CLOSED state
+                ovn_p = item.get('overnightMarketPrice')
+                ovn_pct = item.get('overnightMarketChangePercent')
+                if ovn_p is not None and ovn_pct is not None:
+                    # Prefer Overnight over Post-Market if available
+                    ext_price = ovn_p
+                    ext_pct   = ovn_pct
+                    ext_type  = 'OVN'
+                
+                # V22.93 Fallback: Overnight proxy via bid/ask midpoint if BOATS is missing
+                if ext_price is None:
+                    bid = item.get('bid', 0)
+                    ask = item.get('ask', 0)
+                    if bid and ask and bid > 0 and ask > 0:
+                        mid = round((bid + ask) / 2, 2)
+                        spread_pct = ((ask - bid) / mid) * 100
+                        if spread_pct < 5.0 and price and price > 0:
+                            mid_pct = round(((mid - price) / price) * 100, 2)
+                            ext_price = mid
+                            ext_pct   = mid_pct
+                            ext_type  = 'OVN'
 
             vol_spike = None
             if volume and avg_vol and avg_vol > 0:
@@ -159,6 +195,7 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
                 'vol_spike':  vol_spike,
                 'exchange':   exch_res,
                 'updated':    now.strftime('%Y-%m-%d %H:%M EST'),
+                'timestamp':  time.time(),
                 'ext_price':  ext_price,
                 'ext_pct':    ext_pct,
                 'ext_type':   ext_type,
@@ -217,11 +254,36 @@ def analyze_movers(prices: dict) -> dict:
         'volume_spikes': vol_spikes,
     }
 
-async def async_run_fetch(tickers: list = None, dry_run: bool = False, skip_sync: bool = False) -> dict:
+async def async_run_fetch(tickers: list = None, force: bool = False, dry_run: bool = False, skip_sync: bool = False) -> dict:
     if tickers is None:
         tickers = load_tickers()
 
-    log.info(f'GIGACPO Live Price Fetcher — {len(tickers)} tickers')
+    # Load existing prices for TTL check
+    existing_all = {}
+    if OUT_JSON.exists():
+        try:
+            with open(OUT_JSON, 'r', encoding='utf-8') as f:
+                existing_all = json.load(f)
+        except: pass
+
+    # V22.95: Granular 15-Minute Lock (Per-Ticker TTL)
+    if not force:
+        now_ts = time.time()
+        stale = []
+        for t in tickers:
+            ts = existing_all.get(t, {}).get('timestamp', 0)
+            if (now_ts - ts) >= 900: # 15 minutes
+                stale.append(t)
+        
+        skipped = len(tickers) - len(stale)
+        if skipped > 0:
+            log.info(f"[CACHE] {skipped} tickers are within 15m TTL. Only fetching {len(stale)} stale assets.")
+            if not stale:
+                log.info("All requested tickers are fresh. Run aborted.")
+                return existing_all
+        tickers = stale
+
+    log.info(f'GIGACPO Live Price Fetcher - {len(tickers)} tickers to refresh')
     log.info(f'Output: {OUT_JS}')
     log.info('-' * 50)
     
@@ -232,7 +294,7 @@ async def async_run_fetch(tickers: list = None, dry_run: bool = False, skip_sync
     client.headers.update({'User-Agent': user_agent})
     client.cookies.update(cookie_dict)
 
-    all_prices = {}
+    all_prices = existing_all.copy()
     
     # Randomized Batching (8-13 tickers per burst)
     i = 0
@@ -289,7 +351,7 @@ async def async_run_fetch(tickers: list = None, dry_run: bool = False, skip_sync
 
         # Write JS (for HTML terminal consumption)
         with open(OUT_JS, 'w', encoding='utf-8') as f:
-            f.write('// GIGACPO Live Prices — auto-generated by engine/live_prices.py\n')
+            f.write('// GIGACPO Live Prices - auto-generated by engine/live_prices.py\n')
             f.write('// DO NOT EDIT. Regenerate with: python engine/live_prices.py\n')
             f.write('window.LIVE_PRICES = ')
             json.dump(all_prices, f, separators=(',', ':'))
@@ -310,7 +372,7 @@ async def async_run_fetch(tickers: list = None, dry_run: bool = False, skip_sync
 
     return all_prices
 
-PRICE_TTL_SECONDS = 600
+PRICE_TTL_SECONDS = 900
 
 async def async_main():
     parser = argparse.ArgumentParser(description='GIGACPO Live Price Fetcher')
@@ -320,16 +382,8 @@ async def async_main():
     parser.add_argument('--skip-sync', action='store_true', help='Do not upload to SFTP')
     args = parser.parse_args()
 
-    if not args.force and not args.dry_run and OUT_JSON.exists():
-        try:
-            mtime = OUT_JSON.stat().st_mtime
-            if (time.time() - mtime) < PRICE_TTL_SECONDS:
-                log.info(f"Price cache fresh ({(time.time()-mtime)/60:.1f}m old). Skipping. Use --force to override.")
-                return
-        except: pass
-
-    await async_run_fetch(tickers=args.tickers, dry_run=args.dry_run, skip_sync=args.skip_sync)
+    # V22.95: Global lock removed in favor of granular per-ticker TTL in async_run_fetch
+    await async_run_fetch(tickers=args.tickers, force=args.force, dry_run=args.dry_run, skip_sync=args.skip_sync)
 
 if __name__ == '__main__':
     asyncio.run(async_main())
-

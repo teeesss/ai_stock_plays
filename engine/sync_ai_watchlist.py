@@ -22,7 +22,7 @@ def run_step(name, cmd_args, cwd=PROJECT_ROOT):
 
 def sync():
     log.info("=" * 60)
-    log.info("🤖 AI WATCHLIST INDEPENDENT SYNC INITIATED")
+    log.info("? AI WATCHLIST INDEPENDENT SYNC INITIATED")
     log.info("=" * 60)
 
     # 1. Refresh Live Prices (AI Tickers Only) - Note: Global prices typically fetched but can be isolated
@@ -48,7 +48,7 @@ def sync():
         return
 
     # 5. Deploy to Remote (/stocks/ai/)
-    log.info("\n🚀 INITIATING DEPLOYMENT...")
+    log.info("\n[RUN] INITIATING DEPLOYMENT...")
     npm_cmd = "npm.cmd" if sys.platform == "win32" else "npm"
     try:
         subprocess.run([npm_cmd, "run", "build"], cwd=str(PROJECT_ROOT), check=True)
@@ -58,7 +58,7 @@ def sync():
         log.error(f" [ERR] Deployment failed: {e}")
 
     log.info("\n" + "=" * 60)
-    log.info("⚡ AI SYNC COMPLETE")
+    log.info("[FAST] AI SYNC COMPLETE")
     log.info("=" * 60)
 
 if __name__ == "__main__":

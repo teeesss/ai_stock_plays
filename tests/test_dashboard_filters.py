@@ -19,7 +19,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
-HTML_FILE = ROOT / "cpo_plays.html"
+HTML_FILE = ROOT / "web" / "semi" / "index_template.html"
 
 # ---------------------------------------------------------------------------
 # Helpers — mirror the JS passesFilters logic in Python

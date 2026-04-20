@@ -12,15 +12,33 @@ from deep_translator import GoogleTranslator, MyMemoryTranslator
 # No prefixes. Higher speed. No re-translation.
 # ─────────────────────────────────────────────────────────
 
-# Fix Windows console encoding
 # Robust UTF-8 handling for Windows
-try:
-    if sys.platform == "win32" and sys.stdout.encoding.lower() != 'utf-8':
-        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', line_buffering=True)
-except (AttributeError, ValueError, io.UnsupportedOperation):
-    pass
+import sys
+import io
+import logging
 
-# Expanded CJK regex — covers Korean Hangul, Japanese Hiragana/Katakana, Chinese CJK Unified,
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except AttributeError:
+        # Fallback for old Python versions
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', line_buffering=True)
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', line_buffering=True)
+
+# Configure primary logging to handle Unicode safely
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s | %(levelname)s | %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)],
+    force=True
+)
+
+# Suppress noisy/broken logging from sub-modules that trigger charmap errors
+logging.getLogger("argostranslate").setLevel(logging.WARNING)
+logging.getLogger("stanza").setLevel(logging.WARNING)
+
+# Expanded CJK regex - covers Korean Hangul, Japanese Hiragana/Katakana, Chinese CJK Unified,
 # CJK Compatibility Ideographs, Fullwidth Latin (used in Korean posts), and Korean punctuation.
 FOREIGN_REGEX = re.compile(
     r'[\u4e00-\u9fff'   # CJK Unified Ideographs (Chinese/Japanese Kanji)
@@ -68,7 +86,7 @@ def apply_cache_to_files(cache: dict):
             changed = False
             for item in data:
                 pid = str(item.get("id"))
-                # Use raw_text as detection source — it is never overwritten by translation
+                # Use raw_text as detection source - it is never overwritten by translation
                 source_text = item.get("raw_text") or item.get("text", "")
                 if pid in cache:
                     # Only update text if the raw/original still contains foreign chars

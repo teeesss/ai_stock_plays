@@ -4,7 +4,7 @@ from pathlib import Path
 
 # ─────────────────────────────────────────────────────────────
 # engine/repair_tickers.py
-# V13.1 — Safe Forensic Repair Bridge
+# V13.1 - Safe Forensic Repair Bridge
 # ─────────────────────────────────────────────────────────────
 
 ROOT = Path(__file__).parent.parent

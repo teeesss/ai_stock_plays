@@ -88,10 +88,10 @@ def aggregate_visual_buzz() -> dict:
                 # Source 1: pre-extracted tickers list
                 found = set(finding.get('tickers', []))
 
-                # Source 2: regex on OCR text — cashtag style
+                # Source 2: regex on OCR text - cashtag style
                 found.update(re.findall(r'\$([A-Z]{2,10})', text.upper()))
 
-                # Source 3: whitelist match — bare uppercase words
+                # Source 3: whitelist match - bare uppercase words
                 for word in re.findall(r'\b([A-Z]{2,10})\b', text.upper()):
                     if word in known_tickers:
                         found.add(word)
@@ -140,7 +140,7 @@ def merge_into_master(visual_buzz: dict):
         json.dump(master, f, ensure_ascii=True)
     log.info(f"Saved visual_mentions -> {MASTER_INTEL_PATH}")
 
-    # Rebuild intel.js (dashboard bridge) — strip image arrays to prevent 404 storm
+    # Rebuild intel.js (dashboard bridge) - strip image arrays to prevent 404 storm
     def _strip(p):
         c = p.copy(); c.pop("images", None); c.pop("visual_intel", None); return c
     bridge = {**master, "posts": [_strip(p) for p in master.get("posts", [])]}
@@ -154,14 +154,14 @@ def merge_into_master(visual_buzz: dict):
 
 def run():
     log.info("=" * 50)
-    log.info("VISUAL BUZZ AGGREGATOR — Start")
+    log.info("VISUAL BUZZ AGGREGATOR - Start")
     log.info("=" * 50)
     visual_buzz = aggregate_visual_buzz()
     if not visual_buzz:
         log.warning("No visual buzz data found. Ensure image_analyzer.py has run.")
         return
     merge_into_master(visual_buzz)
-    log.info("VISUAL BUZZ AGGREGATOR — Complete")
+    log.info("VISUAL BUZZ AGGREGATOR - Complete")
     log.info(f"Top visual tickers: {sorted(visual_buzz.items(), key=lambda x: x[1]['count'], reverse=True)[:10]}")
 
 
