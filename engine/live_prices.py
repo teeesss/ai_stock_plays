@@ -149,21 +149,24 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
                 ext_pct   = item.get('overnightMarketChangePercent')
                 ext_type  = 'OVN'
             elif market_st in ('POST', 'POSTPOST', 'CLOSED'):
-                # V22.93: Smart cascade — prefer PRE over POST when CLOSED
-                # Yahoo sometimes populates preMarketPrice even in CLOSED state
-                pre_p = item.get('preMarketPrice')
-                pre_pct = item.get('preMarketChangePercent')
+                # V23.49: Session-aware prioritization. 
+                # After 12 PM EST, we MUST prioritize POST (After-Hours) data over stale morning PRE data.
+                # Before 12 PM EST (while CLOSED), we prioritize PRE (Premarket) data for the upcoming session.
                 post_p = item.get('postMarketPrice')
                 post_pct = item.get('postMarketChangePercent')
+                pre_p = item.get('preMarketPrice')
+                pre_pct = item.get('preMarketChangePercent')
                 
-                if pre_p is not None and pre_pct is not None:
-                    ext_price = pre_p
-                    ext_pct   = pre_pct
-                    ext_type  = 'PRE'
-                elif post_p is not None and post_pct is not None:
-                    ext_price = post_p
-                    ext_pct   = post_pct
-                    ext_type  = 'POST'
+                if now.hour >= 12:
+                    if post_p is not None and post_pct is not None:
+                        ext_price, ext_pct, ext_type = post_p, post_pct, 'POST'
+                    elif pre_p is not None and pre_pct is not None:
+                        ext_price, ext_pct, ext_type = pre_p, pre_pct, 'PRE'
+                else:
+                    if pre_p is not None and pre_pct is not None:
+                        ext_price, ext_pct, ext_type = pre_p, pre_pct, 'PRE'
+                    elif post_p is not None and post_pct is not None:
+                        ext_price, ext_pct, ext_type = post_p, post_pct, 'POST'
                 
                 # Check for explicit overnight data even in CLOSED state
                 ovn_p = item.get('overnightMarketPrice')
