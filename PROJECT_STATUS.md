@@ -1,11 +1,11 @@
 # Project Status — April 20, 2026
-## 🚀 Version: V23.48 (Visual Supercycle)
+## 🚀 Version: V23.49 (Visual Supercycle + Layout Hardening)
 
-Status: **PRODUCTION DEPLOYED — VISUAL SUPERCYCLE**
+Status: **PRODUCTION DEPLOYED — VISUAL SUPERCYCLE V2**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V23.48 (Visual Supercycle) / V23.47 (Session Parity) / V23.01 (Signal Purge)
-- **Critical Progress**: Deployed context-aware news icons mapping headlines to intelligence themes (Shields, Intel, Energy). Integrated `engine/email_spark_fetcher.py` sidecar for high-fidelity 1d regular session sparklines. Hardened watchlist UI with 26% column width for global tickers. Implemented suffix-aware session logic for global exchanges (.DE, .HK, .ST). Optimized email layout to hide stale Futures data during active trading hours.
+- **Current Tier**: V23.49 (Visual Supercycle +) / V23.48 (Visual Supercycle) / V23.47 (Session Parity) 
+- **Critical Progress**: Expanded context-aware news intelligence with 12 distinct iconography themes (Logistics, Wealth, Scams, Geopolitics). Implemented horizontal high-density layout for Sovereign Index Pulse, mirroring crypto-row efficiency for both desktop and mobile views. Standardized email branding to "Market Insights and Sovereign Intel" and removed decorative lightning bolts from header/subject. Hardened news feed by blacklisting "Dave Ramsey" noise.
 - **Next Milestone**: Multi-agent sentiment validation for divergent headlines.
 
 Date: 2026-04-20

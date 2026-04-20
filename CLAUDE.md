@@ -1,16 +1,18 @@
-## 🚀 Active Context: V23.48 (Visual Supercycle)
+## 🚀 Active Context: V23.49 (Visual Supercycle +)
 
 ### 🧩 Logic & Patterns
-0. **Sovereign Intelligence Engine (V23.48)**:
-   - **Context-Aware News Intelligence**: Replaced generic `⚡` with dynamic mapping in `get_context_icon`. Headlines with keywords like [oil, iran, chips, earnings] automatically switch icons (🛡️, 🛢️, 🧠, 📈).
-   - **Isolated Sparkline Sidecar**: Deployed `engine/email_spark_fetcher.py`. MUST be triggered as an isolated sidecar to prevent price engine bloat. Renders 1d regular session chart action as lightweight SVGs.
-   - **Suffix-Aware Session Detection**: `get_market_session` and `get_session_data` are now Suffix-Aware. Tickers ending in `.DE`, `.ST`, `.HK`, etc., are mapped to their local exchange hours in EST for accurate `LIVE` tracking.
-   - **Green `L⚡` Badge Logic**: Specialized `L⚡` badge for active sessions. `LIVE` badges use `rgba(16,185,129,0.12)` background and `#10b981` text.
-   - **Watchlist Column Hardening**: Ticker column `width="26%"` is MANDATORY for international symbols (e.g., `SMHN.DE`) to prevent overflow.
-   - **High-Fidelity Pulse**: Expanded hydration in `gather_all_data` to refresh ALL stale universe assets (113+) during active sessions.
-   - **Session Parity Hardening**: Prioritizes `PRE/POST` fields over `marketState`. Assets like `CIFR` and `WULF` now correctly shift to `PRE` tags.
-   - **Zero-Noise Protocol**: `is_shite_ticker` aggressively neutralizes stablecoins and enforces a >0.1% volatility move for inclusion.
-   - **Centralized Ticker Control**: `email_market_synopsis.py` uses `--tickers tickers.txt` for cross-platform orchestration via CIFS.
+1. **Sovereign Intelligence Engine (V23.49)**:
+   - **Horizontal Pulse Layout**: Sovereign Index Pulse now uses a high-density horizontal row (3-tile) layout when indices are in `LIVE` or `AH` sessions. Desktop/Mobile views mirrored.
+   - **Context-Aware News Icons**: Keywords map headlines to 12 distinct iconography themes (🛡️ Geopol, 🛢️ Energy, ⚖️ Macro, 🧠 AI, 📈 Earnings, 💻 Tech, 📜 Law, 🪙 Crypto, 🕵️ Scam, 💰 Wealth, 🚛 Logistics, 📡 Default).
+   - **News Feed Hardening**: Aggressive blacklist filtering; "Dave Ramsey" and stablecoin noise (USDC/USDT) strictly purged.
+   - **Isolated Sparkline Sidecar**: Deployed `engine/email_spark_fetcher.py`. Renders 1d regular session chart action as lightweight SVGs.
+   - **Suffix-Aware Session Detection**: `get_market_session` and `get_session_data` support global exchange suffixes (.DE, .HK, .ST, .AX).
+   - **Green `L⚡` Badge Logic**: Specialized `L⚡` badge for active sessions.
+   - **Watchlist Column Hardening**: Ticker column `width="26%"` mandatory for international symbol support.
+   - **High-Fidelity Pulse**: Expanded hydration to refresh all 113+ assets during active sessions.
+   - **Branding Update**: Email title standardized to "Market Insights and Sovereign Intel". Decorative lightning bolts removed from header/subject.
+   - **Zero-Noise Protocol**: `is_shite_ticker` neutralizes stablecoins and enforces >0.1% volatility for inclusion.
+   - **Centralized Ticker Control**: Orchestration via CIFS-mounted `tickers.txt`.
 
 1. **Pipeline Orchestration (V21.1)**:
    - **Unified Entry**: `PipelineOrchestrator` (`engine/pipeline_orchestrator.py`) manages full sync lifecycle for ALL endpoints (`/web/semi`, `/web/ai`).

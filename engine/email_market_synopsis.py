@@ -397,14 +397,17 @@ class SovereignIntelligenceEngine:
     def get_context_icon(self, title):
         """V23.48: Context-aware icon selection for news headlines."""
         t = title.lower()
-        if any(w in t for w in ['war', 'iran', 'israel', 'conflict', 'missile', 'attack', 'strike', 'defense']): return "🛡️"
-        if any(w in t for w in ['oil', 'energy', 'fuel', 'shuttering', 'hormuz', 'crude', 'gas']): return "🛢️"
-        if any(w in t for w in ['fed', 'rate', 'powell', 'inflation', 'cpi', 'jobs', 'yield', 'budget']): return "⚖️"
-        if any(w in t for w in ['ai', 'chip', 'nvidia', 'broadcom', 'semiconductor', 'mrvl', 'amd', 'quantum']): return "🧠"
-        if any(w in t for w in ['earnings', 'revenue', 'quarterly', 'profit', 'dividend', 'guidance']): return "📈"
-        if any(w in t for w in ['software', 'cloud', 'saas', 'meta', 'google', 'apple', 'amazon']): return "💻"
-        if any(w in t for w in ['lawsuit', 'sec', 'investigation', 'regulation']): return "📜"
-        if any(w in t for w in ['bitcoin', 'crypto', 'btc', 'eth', 'sol']): return "🪙"
+        if any(w in t for w in ['war', 'iran', 'israel', 'conflict', 'missile', 'attack', 'strike', 'defense', 'military', '1930s']): return "🛡️"
+        if any(w in t for w in ['oil', 'energy', 'fuel', 'shuttering', 'hormuz', 'crude', 'gas', 'gasoline']): return "🛢️"
+        if any(w in t for w in ['fed', 'rate', 'powell', 'inflation', 'cpi', 'jobs', 'yield', 'budget', 'debt', 'economy']): return "⚖️"
+        if any(w in t for w in ['ai', 'chip', 'nvidia', 'broadcom', 'semiconductor', 'mrvl', 'amd', 'quantum', 'robotics']): return "🧠"
+        if any(w in t for w in ['earnings', 'revenue', 'quarterly', 'profit', 'dividend', 'guidance', 'record high', 'market today', 'stocks fall', 'stocks rise']): return "📈"
+        if any(w in t for w in ['software', 'cloud', 'saas', 'meta', 'google', 'apple', 'amazon', 'tech', 'online']): return "💻"
+        if any(w in t for w in ['lawsuit', 'sec', 'investigation', 'regulation', 'agenda', 'trump', 'administration']): return "📜"
+        if any(w in t for w in ['bitcoin', 'crypto', 'btc', 'eth', 'sol', 'coinbase', 'aave']): return "🪙"
+        if any(w in t for w in ['scam', 'fake', 'gold', 'romance', 'pig-butchering', 'theft', 'stole', 'fraud']): return "🕵️"
+        if any(w in t for w in ['millionaire', 'wealth', 'save', 'money', 'investing', 'math']): return "💰"
+        if any(w in t for w in ['export', 'truck', 'logistic', 'border', 'shipping', 'freight']): return "🚛"
         return "📡"
 
     def generate_sparkline_svg(self, points, color="#10b981", width=60, height=20):
@@ -666,11 +669,7 @@ class SovereignIntelligenceEngine:
                 except: continue
         
         # V22.42: News quality blacklist
-        NEWS_BLACKLIST = [
-            'jim cramer', 'cramer says', 'cramer on', 'salary', 'salaries', 'ponzi', 'surprising', 
-            'retirement', 'earnings preview', 'what you need to know', 'got $5,000',
-            'should buy instead', 'middle-class', 'multimillionaire', 'quietly',
-            ' morning update', ' summary', ' what to know', 'preview:'
+            ' morning update', ' summary', ' what to know', 'preview:', 'dave ramsey'
         ]
         def is_blacklisted(title):
             # Aggressive normalization for smart quotes and whitespace
@@ -1062,49 +1061,60 @@ class SovereignIntelligenceEngine:
             except: pass
 
         pulse_rows = []
-        for index in COMPARATIVE_INDICES:
-            c_data = prices.get(index['cash'], {})
-            f_data = prices.get(index['fut'], {})
-            
-            # Cash Close Details (ALWAYS use close data)
-            c_val = c_data.get('price', 0); c_chg = c_data.get('change_pct', 0)
-            c_color = bull if c_chg >= 0 else bear
-            c_arr = '+' if c_chg >= 0 else ''
-            
-            # Futures/Live Details (Use session-aware logic)
-            f_val, f_chg, f_sess = self.get_session_data(f_data, index['fut'])
-            
-            # V23.48: Hide Futures column entirely during Live/AH session
-            fut_col_html = ""
-            if not is_live_main:
+        if is_live_main:
+            # V23.49: Mirror Crypto-style one-line layout for Indices during Live/AH
+            index_tiles = []
+            for index in COMPARATIVE_INDICES:
+                c_data = prices.get(index['cash'], {})
+                c_val = c_data.get('price', 0); c_chg = c_data.get('change_pct', 0)
+                c_color = bull if c_chg >= 0 else bear
+                c_arr = '+' if c_chg >= 0 else ''
+                index_tiles.append(
+                    f'<td width="33%" style="padding:3px;">'
+                    f'<div style="background:{bg_deep}; border-radius:5px; padding:10px 8px; text-align:center;">'
+                    f'<div class="crypto-label" style="color:{text_dim}; font-size:8px; margin-bottom:4px; font-weight:bold; text-transform:uppercase;">{index["name"]}</div>'
+                    f'<div class="crypto-val" style="color:{text_bright}; font-size:12px; font-weight:bold;">{c_val:,.0f}</div>'
+                    f'{get_diff_str(c_val, c_chg, c_color, fs="7px")}'
+                    f'<div class="crypto-chg" style="color:{c_color}; font-size:10px; font-weight:bold;">{c_arr}{c_chg:.2f}%</div>'
+                    f'</div></td>'
+                )
+            pulse_grid_rows = f'<tr><td style="padding:4px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>{" ".join(index_tiles)}</tr></table></td></tr>'
+        else:
+            # Multi-row layout for Futures tracking
+            for index in COMPARATIVE_INDICES:
+                c_data = prices.get(index['cash'], {})
+                f_data = prices.get(index['fut'], {})
+                c_val = c_data.get('price', 0); c_chg = c_data.get('change_pct', 0)
+                c_color = bull if c_chg >= 0 else bear
+                c_arr = '+' if c_chg >= 0 else ''
+                f_val, f_chg, f_sess = self.get_session_data(f_data, index['fut'])
+                
                 f_color = bull if f_chg >= 0 else bear
                 f_arr = '+' if f_chg >= 0 else ''
                 f_bg = 'rgba(16,185,129,0.08)' if f_chg >= 0 else 'rgba(244,63,94,0.08)'
-                fut_col_html = f"""
-                    <td width="52%" style="padding-left:12px; text-align:center;">
-                        <div class="pulse-sub-label" style="color:{label_color}; font-size:7px; font-weight:bold; margin-bottom:2px;">{live_label}</div>
-                        <div class="pulse-val" style="color:{text_bright}; font-size:14px; font-weight:bold;">{f_val:,.0f}</div>
-                        {get_diff_str(f_val, f_chg, f_color)}
-                        <div class="pulse-chg-pill" style="display:inline-block; background:{f_bg}; color:{f_color}; font-size:11px; padding:2px 6px; border-radius:3px; font-weight:bold; margin-top:2px;">{f_arr}{f_chg:.1f}%</div>
-                    </td>
-                """
-            
-            pulse_rows.append(
-                f'<tr>'
-                f'<td style="padding:4px;"><div style="background:{bg_accent}; border-radius:5px; padding:12px 10px;">'
-                f'<div class="pulse-idx-name" style="color:{text_dim}; font-size:9px; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; font-weight:bold; text-align:center;">{index["name"]}</div>'
-                f'<table width="100%" cellpadding="0" cellspacing="0"><tr>'
-                f'<td width="{"48%" if not is_live_main else "100%"}" style="{"border-right:1px solid "+border+"; padding-right:8px;" if not is_live_main else ""} text-align:center;">'
-                f'<div class="pulse-sub-label" style="color:{text_dim}; font-size:7px; margin-bottom:2px;">{prior_close_label}</div>'
-                f'<div class="pulse-val" style="color:{text_bright}; font-size:14px; font-weight:bold;">{c_val:,.0f}</div>'
-                f'{get_diff_str(c_val, c_chg, c_color)}'
-                f'<div class="pulse-chg" style="color:{c_color}; font-size:10px; font-weight:bold;">{c_arr}{c_chg:.1f}%</div>'
-                f'</td>'
-                f'{fut_col_html}'
-                f'</tr></table>'
-                f'</div></td>'
-                f'</tr>'
-            )
+                
+                pulse_rows.append(
+                    f'<tr>'
+                    f'<td style="padding:4px;"><div style="background:{bg_accent}; border-radius:5px; padding:12px 10px;">'
+                    f'<div class="pulse-idx-name" style="color:{text_dim}; font-size:9px; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; font-weight:bold; text-align:center;">{index["name"]}</div>'
+                    f'<table width="100%" cellpadding="0" cellspacing="0"><tr>'
+                    f'<td width="{"48%" if not is_live_main else "100%"}" style="{"border-right:1px solid "+border+"; padding-right:8px;" if not is_live_main else ""} text-align:center;">'
+                    f'<div class="pulse-sub-label" style="color:{text_dim}; font-size:7px; margin-bottom:2px;">{prior_close_label}</div>'
+                    f'<div class="pulse-val" style="color:{text_bright}; font-size:14px; font-weight:bold;">{c_val:,.0f}</div>'
+                    f'{get_diff_str(c_val, c_chg, c_color)}'
+                    f'<div class="pulse-chg" style="color:{c_color}; font-size:10px; font-weight:bold;">{c_arr}{c_chg:.1f}%</div>'
+                    f'</td>'
+                    f'<td width="52%" style="padding-left:12px; text-align:center;">'
+                    f'<div class="pulse-sub-label" style="color:{label_color}; font-size:7px; font-weight:bold; margin-bottom:2px;">{live_label}</div>'
+                    f'<div class="pulse-val" style="color:{text_bright}; font-size:14px; font-weight:bold;">{f_val:,.0f}</div>'
+                    f'{get_diff_str(f_val, f_chg, f_color)}'
+                    f'<div class="pulse-chg-pill" style="display:inline-block; background:{f_bg}; color:{f_color}; font-size:11px; padding:2px 6px; border-radius:3px; font-weight:bold; margin-top:2px;">{f_arr}{f_chg:.1f}%</div>'
+                    f'</td>'
+                    f'</tr></table>'
+                    f'</div></td>'
+                    f'</tr>'
+                )
+            pulse_grid_rows = "\n".join(pulse_rows)
 
         # 2b. Crypto Pulse Row
         crypto_tickers = ['BTC-USD', 'ETH-USD', 'SOL-USD']
@@ -1126,8 +1136,6 @@ class SovereignIntelligenceEngine:
                 f'</div></td>'
             )
         crypto_pulse_row = f'<tr><td style="padding:4px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>{" ".join(crypto_tiles)}</tr></table></td></tr>'
-        pulse_grid_rows = "\n".join(pulse_rows)
-
         # 2b. Global sentinel — 2-per-row tiles
         global_map = [('HSI', '^HSI'), ('NIKKEI', '^N225'), ('DAX', '^GDAXI'), ('FTSE', '^FTSE')]
         global_tiles = []
@@ -1332,8 +1340,8 @@ class SovereignIntelligenceEngine:
             <tr><td style="padding-bottom:24px;">
                 <table width="100%" cellpadding="0" cellspacing="0"><tr>
                     <td class="header-cell">
-                        <div class="header-title hdr-title" style="color:{text_bright}; font-size:16px; font-weight:bold; letter-spacing:1.5px; text-transform:uppercase;">⚡ GIGACPO SOVEREIGN INTEL</div>
-                        <div style="color:{text_dim}; font-size:10px; font-family:monospace; margin-top:3px; letter-spacing:0.5px;">V22.38 // {self.now.strftime('%a %Y-%m-%d %H:%M EST')} // {session}</div>
+                        <div class="header-title hdr-title" style="color:{text_bright}; font-size:16px; font-weight:bold; letter-spacing:1.5px; text-transform:uppercase;">Market Insights and Sovereign Intel</div>
+                        <div style="color:{text_dim}; font-size:10px; font-family:monospace; margin-top:3px; letter-spacing:0.5px;">V23.49 // {self.now.strftime('%a %Y-%m-%d %H:%M EST')} // {session}</div>
                     </td>
                     <td class="badge-cell" style="text-align:right; white-space:nowrap; vertical-align:middle; padding-left:10px;">
                         <span style="background:{accent}; color:#fff; padding:4px 10px; font-size:9px; border-radius:2px; font-weight:bold; letter-spacing:1px;">CONFIDENCE: HIGH</span>
@@ -1390,7 +1398,7 @@ class SovereignIntelligenceEngine:
                 <tr><td style="padding:30px 0; border-top:1px solid #25272d; text-align:center;">
                     <div style="color:{text_dim}; font-size:10px; font-family:monospace;">
                         END OF DOSSIER // TRANSMISSION SECURE // {session}<br>
-                        SOVEREIGN ENGINE HARDENED // AUTO-GENERATED BY GIGACPO V22.31
+                        SOVEREIGN ENGINE HARDENED // AUTO-GENERATED BY GIGACPO V23.49
                     </div>
                 </td></tr>
             </table>
@@ -1409,7 +1417,7 @@ class SovereignIntelligenceEngine:
         msg = MIMEMultipart()
         msg['From'] = f"{display_name} <{u}>"
         msg['To'] = r
-        msg['Subject'] = f"⚡ GIGACPO Intelligence Dossier // {self.now.strftime('%m/%d/%y')} [{salt}]"
+        msg['Subject'] = f"Market Insights and Sovereign Intel // {self.now.strftime('%m/%d/%y')} [{salt}]"
         html_anti_clip = html.replace('</body>', f'<div style="display:none; color:transparent; font-size:0px; height:0px;">Anti-clip UUID: {uuid.uuid4().hex} - Time: {datetime.datetime.now().isoformat()}</div></body>')
         msg.attach(MIMEText(html_anti_clip, 'html'))
         try:
