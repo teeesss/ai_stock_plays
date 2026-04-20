@@ -8,8 +8,20 @@ backup/
 archive/
 gigacpo_llm_handoff.md
 cpo_master_ultimate.csv
-database/live_prices.js
-database/dashboard_data.js
+
+# Ignore contents of database but keep whitelisted files
+database/*
+!database/name_aliases.json
+!database/bridge_dead_tickers.json
+!database/ticker_name_map.json
+!database/monitored_users.json
+!database/CPO_MASTER_DATA.json
+!database/AI_MASTER_DATA.json
+
+# Build artifacts
+dist/
+intel.js
+
 .gemini/
 .agent/
 .agents/
@@ -17,3 +29,10 @@ database/dashboard_data.js
 .cursorrules
 credentials/
 .env
+
+# Temporary / Scratch
+scratch_*.py
+_*.py
+verify_*.py
+HTML-EMAIL-HANDOVER.md
+.vscode/

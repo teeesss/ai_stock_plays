@@ -16,21 +16,42 @@ $trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday -At 9am
 Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "XTweetsRefresh" -Description "Syncs CPO data, audits financials, and exports LLM bundles."
 ```
 
-## 3. Manual Setup (The GUI Way)
+## 2.5 Sovereign Dossier Scheduling (V22.94)
 
+The Sovereign Intelligence Engine is designed for high-frequency market alignment. It is recommended to schedule dispatches at **Market Pre-Open**, **Market Close**, and **Sunday Night / Overnight**.
+
+**PowerShell Automation:**
+```powershell
+# Morning Intelligence (7:30 AM) - PM/Premarket State
+$a1 = New-ScheduledTaskAction -Execute 'python' -Argument 'engine\email_market_synopsis.py' -WorkingDirectory 'z:\COS_Stock_Plays'
+$t1 = New-ScheduledTaskTrigger -Daily -At 7:30am
+Register-ScheduledTask -Action $a1 -Trigger $t1 -TaskName "SIE_Morning_Dispatch"
+
+# Evening Intelligence (4:15 PM) - AH/Afterhours State
+$a2 = New-ScheduledTaskAction -Execute 'python' -Argument 'engine\email_market_synopsis.py' -WorkingDirectory 'z:\COS_Stock_Plays'
+$t2 = New-ScheduledTaskTrigger -Daily -At 4:15pm
+Register-ScheduledTask -Action $a2 -Trigger $t2 -TaskName "SIE_Evening_Dispatch"
+
+# Overnight/Sunday Intelligence (8:01 PM) - OVN/Overnight State (BOATS Data)
+$a3 = New-ScheduledTaskAction -Execute 'python' -Argument 'engine\email_market_synopsis.py' -WorkingDirectory 'z:\COS_Stock_Plays'
+$t3 = New-ScheduledTaskTrigger -Daily -At 8:01pm
+Register-ScheduledTask -Action $a3 -Trigger $t3 -TaskName "SIE_Overnight_Dispatch"
+```
+
+## 3. Manual Setup (The GUI Way)
 1. Open **Task Scheduler**.
 2. Click **Create Basic Task**.
-3. Name: `CPO_Intelligence_Sync`.
-4. Trigger: **Weekly** (e.g., Monday 9 AM).
-5. Action: **Start a Program**.
-6. Program/Script: `z:\COS_Stock_Plays\start.bat`.
-7. Add Arguments: `2` (This tells the batch file to run the Full Refresh).
-8. Start in: `z:\COS_Stock_Plays`.
+3. Name: `SIE_Intelligence_Sync`.
+4. Action: **Start a Program**.
+5. Program/Script: `python.exe`.
+6. Add Arguments: `engine\email_market_synopsis.py`.
+7. Start in: `z:\COS_Stock_Plays`.
 
-## 4. Other Financial "Skills" (Pip Installs)
+## 4. Required Financial "Skills" (V22.44)
 
-To further enhance your scripts, consider installing these via `pip`:
+The Sovereign pipeline requires the following local analytical libraries:
 
-- `pip install alphavantage` (Alternative to yfinance for high-quality fundamental data)
-- `pip install nasdaq-datalink` (For institutional-grade macroeconomic datasets)
-- `pip install beautifulsoup4` (For building custom scrapers in `research/`)
+- `pip install vaderSentiment` (Sentiment Scoring)
+- `pip install sumy nltk` (NLP Summarization)
+- `pip install scikit-learn` (Catalyst Extraction)
+- `pip install curl_cffi` (Stealth Extraction)

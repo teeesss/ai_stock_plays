@@ -1,29 +1,29 @@
-# Quickstart Guide (V18.2 Autonomous Terminal)
+# Quickstart Guide (V22.44 Sovereign Intelligence)
 
 ## 1. Launching the Command Center
-The terminal now operates via a Web Server Bridge for real-time synchronization. To launch:
-1. Double-click **`start.bat`**.
-2. Select **Option 2 (Full Intelligence Refresh & Bridge Start)**.
+The terminal now operates via a unified Pipeline Orchestration sequence for real-time synchronization. To launch:
+1. Initialize the **Web Server Bridge** (server.py) for the API via `start.bat`.
+2. Open **`web/semi/index_template.html`** or **`web/ai/index_template.html`** directly in the browser to view the terminals locally.
 
-This will:
-- Initialize the **Web Server Bridge** (server.py).
-- Refresh real-time market data across the 117-ticker universe.
-- Open **`cpo_plays.html`** via the local server.
+## 1.5 Sovereign Intelligence Engine (SIE)
+To enable high-fidelity email dossiers:
+1. **Dependencies**: `pip install vaderSentiment sumy nltk scikit-learn`
+2. **Authentication**: Add `GMAIL_USER` and `GMAIL_APP_PASS` (16-char code) to your `.env` file.
+3. **Dispatch**: Run `python engine/email_market_synopsis.py` to generate and send the dossier.
 
 ## 2. Automated Synchronization
 The terminal is configured for a **"Set and Forget"** production environment:
 - **Daily Sync**: Automated market-close update at **4:20 PM EST**.
-- **Stealth Extraction**: Uses Ghost-Mode (Playwright) to bypass anti-bot protections.
+- **Dossier Dispatch**: Morning (7:30 AM) and Evening (4:15 PM) automated dispatches.
 
 ## 3. Adding New Research
-1. Add new stocks to **`cpo_master_ultimate.csv`**.
+1. Add new stocks directly to **`database/CPO_MASTER_DATA.json`**.
 2. Update technical deep-dives in **`KNOWLEDGE.md`**.
-3. Run `start.bat` Option 4 to force-refresh market cap and price data.
 
 ## 4. Maintenance & Testing
-- **Audit Logs**: Check `logs/server.txt` for autonomous sync status.
-- **Handoff**: Run `generate_handoff.bat` to prepare context for Gemini/Claude.
-- **Verification**: Run `python tests/verify_stealth.py` to confirm Ghost-Mode integrity.
+- **Test SIE Email**: Run `python engine/email_market_synopsis.py --test-email` to verify SMTP and NLP synthesis.
+- **Pipeline Rebuild**: Run `python engine/pipeline_orchestrator.py` to rebuild local static bindings.
+- **Audit Logs**: Check `logs/` for sector-specific sync status.
 
 ---
-**Troubleshooting**: If the dashboard table appears empty, check `logs/server.txt` for JSON syntax errors or database locks.
+**Troubleshooting**: If the email formatting is off, ensure you have the `v22_email_styles` CSS block active in `email_market_synopsis.py`.

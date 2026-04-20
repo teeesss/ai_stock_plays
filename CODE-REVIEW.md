@@ -1,5 +1,5 @@
-# GIGACPO Technical Manual & Forensic Review
-**Date**: 2026-04-18
+# GIGACPO Technical Manual & Forensic Review (V22.44)
+**Date**: 2026-04-19
 **Purpose**: Living manual to guide de-bloating, performance optimization, and project durability.
 
 ## 🛡️ Defensive Engineering Principles
@@ -10,7 +10,13 @@
 2. **Idempotency (The "No Duplicate" Law)**:
    - *Rule*: Every sync or repair script must be safe to run 100 times.
    - *Implementation*: Use `SHA-256` titles for news or `tweet_id` for posts.
-3. **ASCII-First Data Integrity**:
+3. **Signal Governance (The "Noise Filter" Law)**:
+   - *Rule*: High-volatility news sources (Jim Cramer, etc.) must be gated at the source.
+   - *Implementation*: Maintain a global `NEWS_BLACKLIST` to prevent "Sentiment Garbage-In-Garbage-Out."
+4. **Responsive Parity (The "Dual-Surface" Law)**:
+   - *Rule*: Emails/UI must define independent Desktop (14-24px) vs Mobile (9-12px) scales.
+   - *Implementation*: Use strict `@media` blocks; never rely on single-font auto-scaling.
+5. **ASCII-First Data Integrity**:
    - *Rule*: All JSON outputs MUST use `ensure_ascii=True`.
    - *Reason*: Prevents Windows I/O crashes and VS Code "ambiguous unicode" corruption.
 

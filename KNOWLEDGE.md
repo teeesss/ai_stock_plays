@@ -740,4 +740,30 @@ Contract Mfg ($FN, $CLS)
 - **Momentum Data**: Hardened 7-day trajectory logic now serves as the primary technical sentiment indicator. Green/Red strips provide "Tape Reading" intelligence at a glance.
 - **Architecture**: Transitions from monolithic scripts to a unified `PipelineOrchestrator` brain; ensures data parity between Root and AI/Crypto terminals.
 
+### 2026-04-19 - V20.1 Market Sentiment Endpoints
+- **Stock Market Fear & Greed**: `https://feargreedmeter.com/` and CNN `https://www.cnn.com/markets/fear-and-greed`
+- **Crypto Fear & Greed**: `https://feargreedmeter.com/crypto`
 
+### 2026-04-19 - V22.0 Local Intelligence System
+- **Engine**: `engine/local_nlp.py` (Synthesizer) and `engine/email_market_synopsis.py` (Orchestrator).
+- **Strategy**: Extractive Summarization (LSA) + Word-Cloud (TF-IDF).
+- **Core Principle**: 100% Offline Local Processing using `vaderSentiment`, `sumy`, and `scikit-learn`.
+- **Data Flow**: Yahoo RSS → `macro_headlines` → NLP Output #1. Watchlist Cache → `ticker_news` → NLP Output #2.
+- **Dossier Aesthetics**: Liquid tables, clickable links, colorized ticker badges (`$AVGO 🟢 +2.0%`).
+
+### 2026-04-19 - V22.44 Responsive Parity & Signal Governance
+- **Architecture**: Implemented `@media` independent definitions for Desktop vs Mobile. 
+- **Desktop Strategy**: Upsized typography (Section Headers 14-24px, Tiles 20px) to maximize legibility on 4K monitors vs mobile lock (9-12px) for high-density phone viewing.
+- **Signal Governance**: Engineered `NEWS_BLACKLIST` protocol in the ingestion pipeline to purge low-value sensationalist sources (e.g., Jim Cramer / Mad Money) from the NLP synthesis pool.
+- **Asset Integrity**: Hardened `CRCL` (Circle Internet Financial) entity mapping and deployed a forced-fetch hydrating loop to eliminate price-data voids in the final intelligence dossier.
+
+### 2026-04-20 - V22.94 BOATS Discovery (The "Overnight" Key)
+- **Technical Breakdown**: Yahoo Finance web UI displays "Overnight" prices (Blue Ocean ATS / BOATS) using an `overnightMarketPrice` field that is HIDDEN from the standard v7 API response.
+- **The Protocol**: To retrieve high-fidelity Sunday-night and weekday overnight prices ($16.44 for ALMU vs. stale Friday $16.94), the API URL must explicitly include `&overnightPrice=true` and request the `overnightMarketPrice` fields.
+- **Session Mapping**: MarketState `OVERNIGHT` is now fully recognized. The system prioritizes `overnightMarketPrice` (label: `OVN`) as the highest-fidelity signal when regular/pre/post sessions are inactive.
+- **Significance**: This eliminates the need for bid/ask midpoint proxies and provides institutional-grade trading visibility for the Sovereign Intel dashboard during weekend/overnight gaps.
+
+### 2026-04-20 - V22.96 Granular 15-Minute Protocol
+- **Architecture**: Decoupled the **Static Terminal Universe** (Root/AI hard-coded databases) from the **Dynamic Discovery** world (news-driven ad-hoc tickers).
+- **Hardening**: Implemented a per-ticker TTL lock in `live_prices.py`. Assets are now only re-fetched if their specific `timestamp` in the database is > 900 seconds old, allowing sequential script execution without redundant Yahoo API hits.
+- **Protocol**: Restored the 'Strict 15-Minute Protocol' as a universal gate across both Manual Syncs (`x_intel_instant_sync.py`) and Discovery Hydrations (`email_market_synopsis.py`).

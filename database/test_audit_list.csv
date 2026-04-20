@@ -1,6 +1,0 @@
-Ticker,Company,Country,Status,Bucket,Role,Alpha Score,Risk Adj,Hiddenness,Notes,Monopoly Score,Rev Growth Est,Target Upside
-NVDA,NVIDIA,USA,Public,Core,GPU,6,10,2,Test [ Val: $4584.65B | P/E: 38.5x | Rev: +73.2% @ $188.63 ],Infinite,50%,1x
-ASMPT,ASMPT,Hong Kong,Public,Hidden,Die bonders,9,8,9,Test [ Val: $47.71B | P/E: 43.9x | Rev: N/A @ $114.20 ],90%,20%,3x
-3105.TW,Win Semi,Taiwan,Public,Alpha,Foundry,10,7,9,Test [ Val: $196.71B | P/E: 116.3x | Rev: +29.4% @ $464.00 ],60%,100%,5x
-AIXNY,Aixtron,Germany,Public,Hidden,MOCVD,9,8,8,Test [ Val: $4.31B | P/E: 50.2x | Rev: -17.5% @ $38.17 ],50%,15%,1x
-5713.T,Sumitomo Metal,Japan,Public,Hidden,Indium,9,8,10,Test [ Val: $2701.74B | P/E: 112.4x | Rev: N/A @ $9986.00 ],90%,12%,2x

@@ -1,13 +1,15 @@
 # Gemini Memory Bridge - GIGACPO Terminal
 
-## 🚀 Active Context: V19.5 (AI Terminal Momentum & UX Refinement)
+## 🚀 Active Context: V22.94 (High-Fidelity Overnight)
 
 ### 🧩 Logic & Patterns
-1. **Yahoo Stealth Protocol (V19.5)**:
-   - **Decoupled Auth**: `engine/yahoo_auth.py` maintains a persistent `auth_state.json`.
-   - **Stealth Handshake**: Use `curl_cffi` with `impersonate="chrome146"` (max supported).
-   - **Chrome 147.x Identity**: Rotate through Chrome 147.x User Agents (v7727.101/105/110) in both Playwright and client headers.
-   - **Behavioral Latency**: Randomized 8-13 ticker chunks + 3.3s-10.0s random jitter between bursts.
+1. **Sovereign Intelligence Engine (V22.94)**:
+   - **Global 15-Minute TTL (Strict)**: Hardened 900s cache window enforced across ALL asset classes (Macro, Crypto, News-Discovered). News-discovery hydration is gated by `is_entity_fresh` to prevent redundant fetches.
+   - **High-Fidelity Overnight (BOATS)**: `engine/live_prices.py` uses `overnightPrice=true` to capture Blue Ocean ATS data. Mapping: `overnightMarketPrice` → `OVN` tag.
+   - **Session-Aware Labeling**: Uses `get_market_session()` to tag chips with `PM` (Pre), `AH` (After), or `OVN` (Overnight) for real-time market state confirmation.
+   - **Cross-Section Diversification**: Alpha and Momentum terminal strips MUST be unique. Momentum = Volume Force; Alpha = Top Price Movers (excluding Momentum pool).
+   - **No-URL Protocol**: Terminal strips (Alpha/Momentum) are strictly non-interactive `<span>` labels. Hyperlinks are reserved for Discovery sections.
+   - **Yahoo Stealth Protocol**: `engine/yahoo_auth.py` maintains persistent session; `curl_cffi` uses `chrome146` TLS Handshake (Max Supported).
 
 2. **AI UI Generation (V19.5)**:
    - AI/index.html is a GENERATED artifact. Source of truth is `AI/index_template.html`.
@@ -54,6 +56,8 @@
    - **Fierce Rule**: Modifying root CPO configuration from AI scripts is STRICTLY PROHIBITED.
 
 ### 🏛️ File Roles
+- `engine/email_market_synopsis.py`: SIE Orchestrator. Manages NLP synthesis, price hydration, and responsive email dispatch.
+- `engine/local_nlp.py`: Statistical NLP hub. Implements LSA (Sumy) and VADER for offline extractive summarization.
 - `engine/yahoo_auth.py`: Centralized session/crumb manager with cache validation.
 - `engine/live_prices.py`: High-stealth price extractor (10-ticker chunks).
 - `engine/news_fetcher.py`: Stealth Yahoo News extraction with spam payload filtering.
