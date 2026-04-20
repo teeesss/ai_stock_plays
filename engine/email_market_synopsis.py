@@ -669,6 +669,7 @@ class SovereignIntelligenceEngine:
                 except: continue
         
         # V22.42: News quality blacklist
+        NEWS_BLACKLIST = [
             ' morning update', ' summary', ' what to know', 'preview:', 'dave ramsey'
         ]
         def is_blacklisted(title):
