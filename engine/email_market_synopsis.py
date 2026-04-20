@@ -222,7 +222,7 @@ class SovereignIntelligenceEngine:
         ]
         
         # Blacklist/Multipliers
-        BLACKLIST = ["jim cramer", "mad money", "motley fool", "zacks", "investorplace", "simply wall st", "benzinga"]
+        BLACKLIST = ["jim cramer", "mad money", "motley fool", "zacks", "investorplace", "simply wall st", "benzinga", "david einhorn"]
         # Tier 1 (+50): High-Impact Volatility/Geopolitics
         URGENT = ["war", "iran", "israel", "conflict", "missile", "strike", "emergency", "oil", "crude", "brent", "energy", "geopolitical"]
         # Tier 2 (+40): Macro Indicators
@@ -296,17 +296,7 @@ class SovereignIntelligenceEngine:
 
         # Top 15 Final Ranking
         headlines.sort(key=lambda x: x['score'], reverse=True)
-        top_15 = headlines[:15]
-        
-        # Verbose TDD Output for User
-        print("\n" + "="*60)
-        print("Sovereign Intel: Top 15 Ranked Headlines (V3.1)")
-        print("="*60)
-        for i, h in enumerate(top_15, 1):
-            print(f"{i:2d}. [{h['score']:3d}] {h['title'][:75]}...")
-        print("="*60 + "\n")
-        
-        return top_15
+        return headlines[:15]
 
     def get_market_session(self, symbol=None):
         # V22.93: Precise Session Detection + Overnight Awareness
@@ -408,24 +398,75 @@ class SovereignIntelligenceEngine:
         if any(w in t for w in ['scam', 'fake', 'gold', 'romance', 'pig-butchering', 'theft', 'stole', 'fraud']): return "🕵️"
         if any(w in t for w in ['millionaire', 'wealth', 'save', 'money', 'investing', 'math']): return "💰"
         if any(w in t for w in ['export', 'truck', 'logistic', 'border', 'shipping', 'freight']): return "🚛"
-        return "📡"
+        
+        # V23.50: Icon Rotation for Neutral Headlines (Randomized diversity for unclassified news)
+        return random.choice(["📡", "🛰️", "🔭", "📡"])
 
     def generate_sparkline_svg(self, points, color="#10b981", width=60, height=20):
-        """V23.48: Lightweight SVG polyline generator for 1d-session action."""
-        if not points or len(points) < 2: return ""
-        min_p = min(points); max_p = max(points)
-        rng = max_p - min_p if max_p != min_p else 1
-        
-        coords = []
-        for i, p in enumerate(points):
-            x = (i / (len(points)-1)) * width
-            y = height - ((p - min_p) / rng) * height
-            coords.append(f"{x:.1f},{y:.1f}")
-        
-        polyline = " ".join(coords)
-        return (f'<svg width="{width}" height="{height}" style="vertical-align:middle; margin:0 8px; display:inline-block;">'
-                f'<polyline fill="none" stroke="{color}" stroke-width="1.5" points="{polyline}" />'
-                f'</svg>')
+        """V23.52: PNG sparkline via Pillow -> base64 img tag.
+        SVG is universally stripped by email clients (Gmail/Outlook/Apple Mail).
+        The ONLY email-safe approach is a data-URI embedded PNG.
+        """
+        import base64
+        import io
+        try:
+            from PIL import Image, ImageDraw
+        except ImportError:
+            return ""
+
+        # --- Numeric Guard ---
+        numeric_points = []
+        for p in points:
+            try:
+                if p is not None:
+                    numeric_points.append(float(p))
+            except (TypeError, ValueError):
+                continue
+
+        if not numeric_points or len(numeric_points) < 2:
+            return ""
+
+        # --- Parse hex color to RGB ---
+        try:
+            c = color.lstrip('#')
+            rgb = tuple(int(c[i:i+2], 16) for i in (0, 2, 4))
+        except Exception:
+            rgb = (16, 185, 129)  # fallback green
+
+        # --- Render at 2x for crispness, scale down ---
+        scale = 2
+        W, H = width * scale, height * scale
+        MARGIN = int(1.5 * scale)  # 1.5px padding so stroke isn't clipped
+
+        img = Image.new('RGBA', (W, H), (0, 0, 0, 0))  # transparent background
+        draw = ImageDraw.Draw(img)
+
+        min_p = min(numeric_points)
+        max_p = max(numeric_points)
+        rng = max_p - min_p if max_p != min_p else 1.0
+        n = len(numeric_points) - 1
+
+        pts = []
+        for i, p in enumerate(numeric_points):
+            x = MARGIN + (i / n) * (W - 2 * MARGIN)
+            y = MARGIN + (1 - (p - min_p) / rng) * (H - 2 * MARGIN)
+            pts.append((x, y))
+
+        # Draw anti-aliased polyline (1.5px stroke at 2x = 3px)
+        for i in range(len(pts) - 1):
+            draw.line([pts[i], pts[i + 1]], fill=rgb + (220,), width=3)
+
+        # Downscale to target size with LANCZOS for anti-aliasing
+        img = img.resize((width, height), Image.LANCZOS)
+
+        buf = io.BytesIO()
+        img.save(buf, format='PNG', optimize=True)
+        b64 = base64.b64encode(buf.getvalue()).decode('ascii')
+
+        return (f'<img src="data:image/png;base64,{b64}" '
+                f'width="{width}" height="{height}" '
+                f'style="vertical-align:middle; margin-right:6px; display:inline-block;" '
+                f'alt="spark" />')
 
     def get_ticker_chip(self, symbol, prices, simple=False, link=True):
         if symbol.startswith("$"): symbol = symbol[1:]
@@ -670,7 +711,7 @@ class SovereignIntelligenceEngine:
         
         # V22.42: News quality blacklist
         NEWS_BLACKLIST = [
-            ' morning update', ' summary', ' what to know', 'preview:', 'dave ramsey'
+            ' morning update', ' summary', ' what to know', 'preview:', 'dave ramsey', 'david einhorn'
         ]
         def is_blacklisted(title):
             # Aggressive normalization for smart quotes and whitespace
@@ -716,15 +757,15 @@ class SovereignIntelligenceEngine:
         # V23.01: Aggressive filtering for Headlines first
         unique_h = set()
         used_for_headlines = set()
-        SIGNALS = ["chip", "semi", "ai ", "data center", "nvidia", "intel", "amd", "infrastructure", "optics", "cpo", "lithography"]
+        SIGNALS = ["chip", "semi", "ai ", "data center", "nvidia", "intel", "amd", "infrastructure", "optics", "cpo", "lithography", "tsmc", "asml", "wafer", "foundry", "fab", "hbm", "cowos", "broadcom", "arm", "semiconductor"]
         
         # Sort macro by relevance first
         def get_macro_score(h):
             score = 0
             t = h['title'].lower()
-            if any(s in t for s in SIGNALS): score += 50
+            if any(s in t for s in SIGNALS): score += 75 # V23.49: Boosted Semi weight
             if any(symbol in t.upper() for symbol in master_data.keys()): score += 100
-            if any(x in t for x in ["breakthrough", "monopoly", "subsidy", "choke"]): score += 30
+            if any(x in t for x in ["breakthrough", "monopoly", "subsidy", "choke", "fab ", "foundry"]): score += 40
             return score
             
         if macro_headlines:
@@ -732,20 +773,49 @@ class SovereignIntelligenceEngine:
             
         headline_divs = []
         h_count = 0
-        for h in macro_headlines:
-            if is_blacklisted(h['title']): continue
-            if h['title'] not in unique_h and all(x not in h['title'] for x in ["Yahoo", "Morning Update", "Summary", "What to Know"]):
-                title_low = h['title'].lower()
-                if get_macro_score(h) < 10 and any(noise in title_low for noise in ["preview", "look at", "earn"]): continue
-                
-                unique_h.add(h['title'])
-                flaired_title = self.inject_price_flair(h['title'], prices, master_data)
-                link = h.get('link', '#')
+        last_icon = None
+        
+        # V23.49: Consecutive Icon De-duplication logic
+        available_macro = [h for h in macro_headlines if not is_blacklisted(h['title']) 
+                          and h['title'] not in unique_h 
+                          and all(x not in h['title'] for x in ["Yahoo", "Morning Update", "Summary", "What to Know"])]
+        
+        while h_count < 15 and available_macro:
+            # Find the highest scoring headline with a different icon
+            best_idx = -1
+            for i, h in enumerate(available_macro):
                 icon = self.get_context_icon(h['title'])
-                headline_divs.append(f"<div style='margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.03); padding-bottom:6px;'><span style='color:#0ea5e9; font-size:11px;'>{icon}</span> <a href=\"{link}\" style=\"color:#f8fafc; font-size:13px; font-weight:500; text-decoration:none;\">{flaired_title}</a></div>")
-                used_for_headlines.add(h['title'])
-                h_count += 1
-                if h_count >= 15: break # EXPANDED TO TOP 15 HEADLINES
+                if icon != last_icon:
+                    best_idx = i
+                    break
+            
+            # V23.50: If no different icon exists in the queue, skip the current block 
+            # and take the next highest score regardless of icon after a gap, 
+            # but try to avoid immediate repetition.
+            if best_idx == -1:
+                # If we're stuck, take the top one but force it to be unique-ish
+                best_idx = 0
+            
+            h = available_macro.pop(best_idx)
+            title_low = h['title'].lower()
+            if get_macro_score(h) < 10 and any(noise in title_low for noise in ["preview", "look at", "earn"]): continue
+            
+            # V23.50: Triple-check icons to prevent back-to-back matches
+            icon = self.get_context_icon(h['title'])
+            if icon == last_icon and h_count > 0:
+                # Emergency rotate for unclassified news
+                if icon in ["📡", "🛰️", "🔭"]:
+                    alt_icons = [i for i in ["📡", "🛰️", "🔭"] if i != last_icon]
+                    icon = random.choice(alt_icons)
+            
+            unique_h.add(h['title'])
+            flaired_title = self.inject_price_flair(h['title'], prices, master_data)
+            link = h.get('link', '#')
+            last_icon = icon
+            
+            headline_divs.append(f"<div style='margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.03); padding-bottom:6px;'><span style='color:#0ea5e9; font-size:11px;'>{icon}</span> <a href=\"{link}\" style=\"color:#f8fafc; font-size:13px; font-weight:500; text-decoration:none;\">{flaired_title}</a></div>")
+            used_for_headlines.add(h['title'])
+            h_count += 1
 
         # V23.01: Generate the Comprehensive Narrative BEFORE the headlines
         synthesis_pool = [h for h in macro_headlines if h['title'] not in used_for_headlines and not is_blacklisted(h['title'])] + ticker_news[:30]
@@ -1062,23 +1132,38 @@ class SovereignIntelligenceEngine:
             except: pass
 
         pulse_rows = []
+        def render_tile(symbol, name, val, pct, sess, color, spark_data=None):
+            tag_style = "text-decoration:none;"
+            if sess in ('PRE', 'AH', 'POST'): tag_style = "text-decoration:underline;"
+            val_str = f"{val:,.0f}" if val > 1000 else f"{val:.2f}"
+            
+            spark_html = ""
+            if spark_data:
+                p_pts = spark_data.get(symbol, [])
+                if isinstance(p_pts, dict): p_pts = p_pts.get('points', [])
+                spark_img = self.generate_sparkline_svg(p_pts, color, width=60, height=18)
+                if spark_img:
+                    spark_html = f'<div style="margin-bottom:4px;">{spark_img}</div>'
+
+
+            return (
+                f'<td width="33%" style="padding:3px;">'
+                f'<div style="background:{bg_deep}; border-radius:5px; padding:10px 8px; text-align:center;">'
+                f'<div class="crypto-label" style="color:{text_dim}; font-size:8px; margin-bottom:4px; font-weight:bold; text-transform:uppercase; {tag_style}">{name}</div>'
+                f'{spark_html}'
+                f'<div class="crypto-val" style="color:{text_bright}; font-size:12px; font-weight:bold;">{val_str}</div>'
+                f'{get_diff_str(val, pct, color, fs="7px")}'
+                f'<div class="crypto-chg" style="color:{color}; font-size:10px; font-weight:bold;">{"+" if pct >= 0 else ""}{pct:.1f}%</div>'
+                f'</div></td>'
+            )
+
         if is_live_main:
-            # V23.49: Mirror Crypto-style one-line layout for Indices during Live/AH
             index_tiles = []
             for index in COMPARATIVE_INDICES:
                 c_data = prices.get(index['cash'], {})
-                c_val = c_data.get('price', 0); c_chg = c_data.get('change_pct', 0)
+                c_val, c_chg, _ = self.get_session_data(c_data, index['cash'])
                 c_color = bull if c_chg >= 0 else bear
-                c_arr = '+' if c_chg >= 0 else ''
-                index_tiles.append(
-                    f'<td width="33%" style="padding:3px;">'
-                    f'<div style="background:{bg_deep}; border-radius:5px; padding:10px 8px; text-align:center;">'
-                    f'<div class="crypto-label" style="color:{text_dim}; font-size:8px; margin-bottom:4px; font-weight:bold; text-transform:uppercase;">{index["name"]}</div>'
-                    f'<div class="crypto-val" style="color:{text_bright}; font-size:12px; font-weight:bold;">{c_val:,.0f}</div>'
-                    f'{get_diff_str(c_val, c_chg, c_color, fs="7px")}'
-                    f'<div class="crypto-chg" style="color:{c_color}; font-size:10px; font-weight:bold;">{c_arr}{c_chg:.2f}%</div>'
-                    f'</div></td>'
-                )
+                index_tiles.append(render_tile(index['cash'], index['name'], c_val, c_chg, "LIVE", c_color, spark_data=spark_data))
             pulse_grid_rows = f'<tr><td style="padding:4px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>{" ".join(index_tiles)}</tr></table></td></tr>'
         else:
             # Multi-row layout for Futures tracking
@@ -1123,19 +1208,8 @@ class SovereignIntelligenceEngine:
         for t in crypto_tickers:
             p = prices.get(t, {})
             val, chg, sess = self.get_session_data(p, t)
-            label = t.split('-')[0]
             color = bull if chg >= 0 else bear
-            arrow = '+' if chg >= 0 else ''
-            val_str = f"{val:,.0f}" if val > 1000 else f"{val:.2f}"
-            crypto_tiles.append(
-                f'<td width="33%" style="padding:3px;">'
-                f'<div style="background:{bg_deep}; border-radius:5px; padding:10px 8px; text-align:center;">'
-                f'<div class="crypto-label" style="color:{text_dim}; font-size:8px; margin-bottom:4px; font-weight:bold;">{label}</div>'
-                f'<div class="crypto-val" style="color:{text_bright}; font-size:12px; font-weight:bold;">{val_str}</div>'
-                f'{get_diff_str(val, chg, color, fs="7px")}'
-                f'<div class="crypto-chg" style="color:{color}; font-size:10px; font-weight:bold;">{arrow}{chg:.1f}%</div>'
-                f'</div></td>'
-            )
+            crypto_tiles.append(render_tile(t, t.split('-')[0], val, chg, sess, color, spark_data=spark_data))
         crypto_pulse_row = f'<tr><td style="padding:4px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>{" ".join(crypto_tiles)}</tr></table></td></tr>'
         # 2b. Global sentinel — 2-per-row tiles
         global_map = [('HSI', '^HSI'), ('NIKKEI', '^N225'), ('DAX', '^GDAXI'), ('FTSE', '^FTSE')]
@@ -1170,6 +1244,51 @@ class SovereignIntelligenceEngine:
             if len(pair) == 1: pair.append('<td class="tile-cell" style="width:50%; padding:3px;"></td>')
             global_grid_rows += f'<tr>{"".join(pair)}</tr>'
 
+        # 2c. Session Performance Carve-out — Responsive High-Density Tiles (V23.50)
+        perf_candidates = []
+        for sym, p_data in prices.items():
+            if sym == '_meta' or not self.is_legit_ticker(sym): continue
+            price, pct, sess = self.get_session_data(p_data, sym)
+            if pct is not None and abs(pct) > 0.05: # filter noise
+                perf_candidates.append({'s': sym, 'p': price, 'pct': pct, 'sess': sess})
+        
+        # Gainers: Greatest to Least
+        gainers_top = sorted([p for p in perf_candidates if p['pct'] > 0], key=lambda x: x['pct'], reverse=True)[:10]
+        # Losers: Most Negative to Least Negative
+        losers_top = sorted([p for p in perf_candidates if p['pct'] < 0], key=lambda x: x['pct'])[:10]
+
+        def render_perf_list(items, color, align="left"):
+            rows = []
+            for item in items:
+                sess_tag = self.get_session_tag_html(fs="9px", sess_override=item['sess'])
+                # Premium: Subtle card-like feel with improved density
+                rows.append(
+                    f'<div class="perf-item" style="font-family:monospace; font-size:13px; margin-bottom:4px; line-height:1.2; '
+                    f'background:rgba(255,255,255,0.02); border-radius:3px; padding:8px 12px; display:inline-block; width:100%; box-sizing:border-box; text-align:left;">'
+                    f'<span style="color:{gold}; font-weight:900; display:inline-block; width:85px;">${item["s"]}</span> '
+                    f'<span style="color:{color}; font-weight:900; margin-left:12px; font-size:14px;">{item["pct"]:+.2f}%</span>'
+                    f'<span style="float:right; opacity:0.8;">{sess_tag}</span>'
+                    f'</div>'
+                )
+            return "".join(rows) if rows else '<div style="color:#4a5568; font-size:11px; padding:20px 0; text-align:center;">None identified</div>'
+
+        # V23.50: Centered Overhaul for Desktop Display
+        perf_carveout_html = f"""
+        <tr><td style="padding:30px 0 45px 0;">
+            <div class="section-hdr" style="font-family:monospace; font-size:11px; letter-spacing:5px; text-transform:uppercase; font-weight:bold; margin-bottom:25px; padding-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; color:{text_bright};">Session Performance // Top 10 Movers</div>
+            <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td class="perf-cell" width="50%" style="vertical-align:top; border-right:2px solid rgba(255,255,255,0.08); padding:0 15px; text-align:center;">
+                    <div style="color:{bull}; font-size:13px; font-weight:900; margin-bottom:20px; text-transform:uppercase; letter-spacing:3px;">▲ Top Gainers</div>
+                    <div style="display:inline-block; text-align:left;">{render_perf_list(gainers_top, bull, align="center")}</div>
+                </td>
+                <td class="perf-cell" width="50%" style="vertical-align:top; padding:0 15px; text-align:center;">
+                    <div style="color:{bear}; font-size:13px; font-weight:900; margin-bottom:20px; text-transform:uppercase; letter-spacing:3px;">▼ Top Losers</div>
+                    <div style="display:inline-block; text-align:left;">{render_perf_list(losers_top, bear, align="center")}</div>
+                </td>
+            </tr></table>
+        </td></tr>
+        """
+
         # 3. Narrative Intelligence
         macro_ps, sector_ps, sentiment_label = self.synthesize_dossier(news_db, prices, master, sentiment)
         macro_html = "".join([
@@ -1182,6 +1301,10 @@ class SovereignIntelligenceEngine:
             if not items: return ""
             rows = []
             for t in items:
+                sym = t.get('symbol', '').replace('$', '')
+                p_pts = spark_data.get(sym, [])
+                if isinstance(p_pts, dict):
+                    p_pts = p_pts.get('points', [])
                 p_entry = prices.get(t['symbol'], {})
                 price, pct, sess = self.get_session_data(p_entry, t['symbol'])
                 has_price = price and price > 0
@@ -1198,10 +1321,9 @@ class SovereignIntelligenceEngine:
                 notes = "" if hide_notes else t.get('notes', '').strip()
                 # HARDENED: Inject price flair without clickable blue links for notes
                 flaired_notes = self.inject_price_flair(notes, prices, link=False)
-                # Sparkline Logic
-                p_pts = spark_data.get(t['symbol'], [])
+                # Sparkline Logic - V23.52: PNG base64 img (email-safe)
                 spark_color = self.COLOR_GREEN if pct >= 0 else self.COLOR_DANGER
-                spark_html = self.generate_sparkline_svg(p_pts, spark_color)
+                spark_html = self.generate_sparkline_svg(p_pts, spark_color, width=50, height=16)
 
                 rows.append(f"""
                     <div class="sector-card" style="background:{bg_accent}; border-left:2px solid {clr}; padding:12px 14px; border-radius:4px; margin-bottom:6px;">
@@ -1308,6 +1430,9 @@ class SovereignIntelligenceEngine:
                     .mv-row   {{ font-size:14px !important; padding:14px 20px !important; }}
                     .mv-vol   {{ font-size:13px !important; }}
                     .top-mover-chip {{ font-size:10px !important; padding:10px 14px !important; }}
+                    /* Performance carve-out upsizing */
+                    .perf-item {{ font-size:16px !important; margin-bottom:10px !important; }}
+                    .perf-cell {{ padding:0 40px !important; }}
                     /* Header block */
                     .hdr-title {{ font-size:28px !important; }}
                     .hdr-sub   {{ font-size:14px !important; }}
@@ -1329,6 +1454,8 @@ class SovereignIntelligenceEngine:
                     .crypto-label {{ font-size:10px !important; }}
                     .crypto-val   {{ font-size:14px !important; }}
                     .crypto-chg   {{ font-size:11px !important; }}
+                    .perf-item    {{ font-size:13px !important; }}
+                    .perf-cell    {{ padding:0 8px !important; }}
                 }}
             </style>
         </head>
@@ -1363,6 +1490,8 @@ class SovereignIntelligenceEngine:
                 <!-- Global Markets grid -->
                 <div class="section-hdr" style="font-size:9px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border};">Global Markets</div>
                 <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">{global_grid_rows}</table>
+
+                {perf_carveout_html}
 
                 <!-- Fear & Greed — centered 2-col -->
                 <div class="section-hdr" style="font-size:9px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border};">Sentiment</div>
@@ -1455,11 +1584,36 @@ if __name__ == "__main__":
 
     # V23.48: Trigger Sparkline Sidecar Fetch (Async but isolated)
     try:
-        sidecar_path = Path(__file__).parent / 'email_spark_fetcher.py'
-        if sidecar_path.exists():
-            log.info("Triggering Email Sparkline Sidecar...")
-            t_list = load_tickers() + custom_tickers
-            asyncio.run(run_spark_fetch(t_list))
+        try:
+            from email_spark_fetcher import run_spark_fetch
+        except ImportError:
+            from engine.email_spark_fetcher import run_spark_fetch
+        
+        # Global 15m check before even hitting the sidecar
+        spark_path = Path(__file__).parent.parent / 'database' / 'email_sparklines.json'
+        stale_for_sidecar = []
+        if spark_path.exists():
+            try:
+                import time
+                with open(spark_path, 'r') as f: existing_sparks = json.load(f)
+                now_ts = time.time()
+                # Include Core Indices in the stasis check
+                core_indices = ["^GSPC", "^IXIC", "^DJI", "BTC-USD", "ETH-USD", "SOL-USD"]
+                t_list = list(set(load_tickers() + custom_tickers + core_indices))
+                
+                for t in t_list:
+                    entry = existing_sparks.get(t, {})
+                    ts = entry.get('ts', 0) if isinstance(entry, dict) else 0
+                    if (now_ts - ts) >= 900: stale_for_sidecar.append(t)
+            except: stale_for_sidecar = load_tickers() + custom_tickers
+        else:
+            stale_for_sidecar = load_tickers() + custom_tickers
+
+        if stale_for_sidecar:
+            log.info(f"Triggering Email Sparkline Sidecar for {len(stale_for_sidecar)} assets...")
+            asyncio.run(run_spark_fetch(stale_for_sidecar))
+        else:
+            log.info("Sparkline Stasis: 15m TTL active.")
     except Exception as e:
         log.warning(f"Sparkline sidecar failed: {e}")
 
