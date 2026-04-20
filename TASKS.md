@@ -1,20 +1,21 @@
-### 🚀 Current Status: V22.96 — Granular 15-Minute Protocol
-- [x] **Granular 15-Minute Lock (V22.96)**: Hardened `live_prices.py` to check TTL at the ticker level. Assets are now only re-fetched if their specific timestamp in the price database is > 15m old.
-- [x] **Email Hardening (V22.96)**: Implemented global link neutralization (zero-width spaces) and set sender name to "Market News".
-- [x] **Universe Decoupling (V22.96)**: Reverted global unification. `live_prices.py` now specifically tracks only the **Static Terminal Universe** (Root + AI), while `email_market_synopsis.py` handles its own **Dynamic Discovery** without shared-list bloat.
-- [x] **Unified Monitored Universe (V22.95)**: (Partially Reverted for decoupling) Moved ticker loading to `ticker_utils.py` but maintained terminal-specific entry points.
-- [x] **BOATS Overnight Integration (V22.94)**: Decoupled and fixed the overnight price issue. Now uses `overnightPrice=true` and `overnightMarketPrice` field to capture Blue Ocean ATS data (e.g., $16.44 for ALMU) with 100% fidelity.
+### 🚀 Current Status: V23.48 — Sovereign Intel // Visual Supercycle
+- [x] **Context-Aware News Icons (V23.48)**: Replaced generic `⚡` with dynamic icon mapping (🛡️, 🛢️, ⚖️, 🧠, 📈, 💻, 📜, 🪙, 📡) based on headline keyword analysis.
+- [x] **Isolated Sparkline Engine (V23.48)**: Deployed `engine/email_spark_fetcher.py` sidecar. Fetches 1d regular session chart data (15m intervals) and renders lightweight SVG sparklines for the watchlist.
+- [x] **UI Hardening (V23.48)**: Hardened watchlist layout with 26% ticker column width. Implemented auto-collapse for Futures column during `LIVE/AH` sessions. Purged custom stock notes from CLI watchlist for a clean aesthetic.
+- [x] **Suffix-Aware Session Intelligence (V23.47)**: Refactored `get_market_session` to support global exchanges (.DE, .HK, .ST, .AX) by mapping ticker suffixes to local trading hours.
+- [x] **Green `L⚡` Status Badge (V23.47)**: Introduced specialized high-visibility badge for active market sessions. Resolved `NameError` and `TypeError` in sidecar trigger logic.
+- [x] **High-Fidelity Pulse (V23.46)**: Expanded hydration loop to include ANY stale asset in the universe (113+). Enabled CLI-ticker bypass to ensure `tickers.txt` assets are ALWAYS refreshed during report generation.
 - Date: 2026-04-20
 
 # Project Status — April 20, 2026
-## 🚀 Version: V22.96 (Granular 15-Minute Protocol)
+## 🚀 Version: V23.48 (Visual Supercycle)
 
-Status: **PRODUCTION HARDENED — DECOUPLED & GRANULAR**
+Status: **PRODUCTION DEPLOYED — VISUAL SUPERCYCLE**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V22.96 (Granular Lock + Email Hardened) / V22.94 (High-Fidelity OVN)
-- **Critical Progress**: Decoupled the terminal universe from the dynamic discovery engine. Implemented per-ticker TTL locks (15m) and deployed a multi-layer email link-suppression protocol (zero-width spaces) to kill URL creep. Finalized professional branding with "Market News" sender identity.
-- **Next Milestone**: Deep-intel extraction for M&A targets mentioned in news headlines.
+- **Current Tier**: V23.48 (Visual Supercycle) / V23.47 (Session Parity) / V23.01 (Signal Purge)
+- **Critical Progress**: Deployed context-aware news icons mapping headlines to intelligence themes (Shields, Intel, Energy). Integrated `engine/email_spark_fetcher.py` sidecar for high-fidelity 1d regular session sparklines. Hardened watchlist UI with 26% column width for global tickers. Implemented suffix-aware session logic for global exchanges (.DE, .HK, .ST). Optimized email layout to hide stale Futures data during active trading hours.
+- **Next Milestone**: Multi-agent sentiment validation for divergent headlines.
 - Date: 2026-04-20
 
 ### 🚀 Previous Status: V22.51 — Sovereign Intelligence Hardening (Futures Divergence)

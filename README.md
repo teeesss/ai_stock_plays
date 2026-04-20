@@ -1,10 +1,10 @@
-# GIGACPO Intelligence Terminal (V22.94)
+# GIGACPO Intelligence Terminal (V23.48)
 
 This project tracks the Co-Packaged Optics (CPO) and Silicon Photonics (SiPh) supply chain to identify high-alpha investment opportunities in the AI infrastructure build-out.
 
 ## 🚀 Primary Access
 
-- **Sovereign Intelligence Engine**: [engine/email_market_synopsis.py](engine/email_market_synopsis.py) (V22.94 High-Fidelity OVN)
+- **Sovereign Intelligence Engine**: [engine/email_market_synopsis.py](engine/email_market_synopsis.py) (V23.48 Visual Supercycle)
 - **CPO Intelligence Terminal**: [web/semi/index_template.html](web/semi/index_template.html) (V21.1 Root)
 - **AI/Crypto Infrastructure**: [web/ai/index_template.html](web/ai/index_template.html) (V21.1 AI)
 - **Status Dashboard**: [PROJECT_STATUS.md](PROJECT_STATUS.md)

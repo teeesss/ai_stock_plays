@@ -1,14 +1,16 @@
-## 🚀 Active Context: V22.96 (Granular 15-Minute Protocol)
+## 🚀 Active Context: V23.48 (Visual Supercycle)
 
 ### 🧩 Logic & Patterns
-0. **Sovereign Intelligence Engine (V22.96)**:
-   - **Granular 15-Minute Lock**: Hardened 900s cache window enforced at the **Ticker Level**. Individual assets are skipped if their specific `live_prices.json` timestamp is fresh (< 15m old).
-   - **Universe Decoupling**: Reverted global unification and narrowed `live_prices.py` to only track **Static Terminals** (Root/AI). `email_market_synopsis.py` handles **Dynamic Discovery** independently.
-   - **BOATS Overnight Integration (V22.94)**: Uses `&overnightPrice=true` to capture Blue Ocean ATS data. Mapping: `overnightMarketPrice` → `OVN` tag.
-   - **Session-Aware Labeling**: Integrated `PM` (Pre), `AH` (After), and `OVN` (Overnight). Prioritization: `OVN` > `PRE` > `POST`.
-   - **Cross-Section Diversification**: Alpha and Momentum terminal strips MUST be unique. Momentum = Volume Force; Alpha = Top Price Movers (excluding Momentum pool).
-   - **No-URL Protocol**: Terminal strips (Alpha/Momentum) are strictly non-interactive `<span>` labels. Hyperlinks are reserved for Discovery sections.
-   - **NLP Synthesis**: `engine/local_nlp.py` uses Sumy (LSA) and VADER (Sentiment) for 100% offline extractive summarization.
+0. **Sovereign Intelligence Engine (V23.48)**:
+   - **Context-Aware News Intelligence**: Replaced generic `⚡` with dynamic mapping in `get_context_icon`. Headlines with keywords like [oil, iran, chips, earnings] automatically switch icons (🛡️, 🛢️, 🧠, 📈).
+   - **Isolated Sparkline Sidecar**: Deployed `engine/email_spark_fetcher.py`. MUST be triggered as an isolated sidecar to prevent price engine bloat. Renders 1d regular session chart action as lightweight SVGs.
+   - **Suffix-Aware Session Detection**: `get_market_session` and `get_session_data` are now Suffix-Aware. Tickers ending in `.DE`, `.ST`, `.HK`, etc., are mapped to their local exchange hours in EST for accurate `LIVE` tracking.
+   - **Green `L⚡` Badge Logic**: Specialized `L⚡` badge for active sessions. `LIVE` badges use `rgba(16,185,129,0.12)` background and `#10b981` text.
+   - **Watchlist Column Hardening**: Ticker column `width="26%"` is MANDATORY for international symbols (e.g., `SMHN.DE`) to prevent overflow.
+   - **High-Fidelity Pulse**: Expanded hydration in `gather_all_data` to refresh ALL stale universe assets (113+) during active sessions.
+   - **Session Parity Hardening**: Prioritizes `PRE/POST` fields over `marketState`. Assets like `CIFR` and `WULF` now correctly shift to `PRE` tags.
+   - **Zero-Noise Protocol**: `is_shite_ticker` aggressively neutralizes stablecoins and enforces a >0.1% volatility move for inclusion.
+   - **Centralized Ticker Control**: `email_market_synopsis.py` uses `--tickers tickers.txt` for cross-platform orchestration via CIFS.
 
 1. **Pipeline Orchestration (V21.1)**:
    - **Unified Entry**: `PipelineOrchestrator` (`engine/pipeline_orchestrator.py`) manages full sync lifecycle for ALL endpoints (`/web/semi`, `/web/ai`).

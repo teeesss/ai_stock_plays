@@ -1,15 +1,18 @@
 # Gemini Memory Bridge - GIGACPO Terminal
 
-## 🚀 Active Context: V22.94 (High-Fidelity Overnight)
+## 🚀 Active Context: V23.48 (Visual Supercycle)
 
 ### 🧩 Logic & Patterns
-1. **Sovereign Intelligence Engine (V22.94)**:
-   - **Global 15-Minute TTL (Strict)**: Hardened 900s cache window enforced across ALL asset classes (Macro, Crypto, News-Discovered). News-discovery hydration is gated by `is_entity_fresh` to prevent redundant fetches.
-   - **High-Fidelity Overnight (BOATS)**: `engine/live_prices.py` uses `overnightPrice=true` to capture Blue Ocean ATS data. Mapping: `overnightMarketPrice` → `OVN` tag.
-   - **Session-Aware Labeling**: Uses `get_market_session()` to tag chips with `PM` (Pre), `AH` (After), or `OVN` (Overnight) for real-time market state confirmation.
-   - **Cross-Section Diversification**: Alpha and Momentum terminal strips MUST be unique. Momentum = Volume Force; Alpha = Top Price Movers (excluding Momentum pool).
-   - **No-URL Protocol**: Terminal strips (Alpha/Momentum) are strictly non-interactive `<span>` labels. Hyperlinks are reserved for Discovery sections.
-   - **Yahoo Stealth Protocol**: `engine/yahoo_auth.py` maintains persistent session; `curl_cffi` uses `chrome146` TLS Handshake (Max Supported).
+1. **Sovereign Intelligence Engine (V23.48)**:
+   - **Context-Aware News Intelligence**: Replaced generic `⚡` with dynamic mapping in `get_context_icon`. Headlines with keywords like [oil, iran, chips, earnings] automatically switch icons (🛡️, 🛢️, 🧠, 📈).
+   - **Isolated Sparkline Sidecar**: Deployed `engine/email_spark_fetcher.py`. MUST be triggered as an isolated sidecar to prevent price engine bloat. Renders 1d regular session chart action as lightweight SVGs.
+   - **Suffix-Aware Session Detection**: `get_market_session` and `get_session_data` are now Suffix-Aware. Tickers ending in `.DE`, `.ST`, `.HK`, etc., are mapped to their local exchange hours in EST for accurate `LIVE` tracking.
+   - **Green `L⚡` Badge Logic**: Specialized `L⚡` badge for active sessions. `LIVE` badges use `rgba(16,185,129,0.12)` background and `#10b981` text.
+   - **Watchlist Column Hardening**: Ticker column `width="26%"` is MANDATORY for international symbols (e.g., `SMHN.DE`) to prevent overflow.
+   - **High-Fidelity Pulse**: Expanded hydration in `gather_all_data` to refresh ALL stale universe assets (113+) during active sessions.
+   - **Session Parity Hardening**: Prioritizes `PRE/POST` fields over `marketState`. Assets like `CIFR` and `WULF` now correctly shift to `PRE` tags.
+   - **Zero-Noise Protocol**: `is_shite_ticker` aggressively neutralizes stablecoins and enforces a >0.1% volatility move for inclusion.
+   - **Centralized Ticker Control**: `email_market_synopsis.py` uses `--tickers tickers.txt` for cross-platform orchestration via CIFS.
 
 2. **AI UI Generation (V19.5)**:
    - AI/index.html is a GENERATED artifact. Source of truth is `AI/index_template.html`.
@@ -75,4 +78,4 @@
 - Windows console requires `UTF-8` override to log CJK characters without crashing.
 - `x_intel_master.json` must be rebuilt after every user sync.
 
-[Handover Complete - 2026-04-17]
+[Handover Complete - 2026-04-20]

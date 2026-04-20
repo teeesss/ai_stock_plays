@@ -1,15 +1,41 @@
 # Project Status — April 20, 2026
-## 🚀 Version: V22.96 (Granular 15-Minute Protocol)
+## 🚀 Version: V23.48 (Visual Supercycle)
 
-Status: **PRODUCTION HARDENED — DECOUPLED & GRANULAR**
+Status: **PRODUCTION DEPLOYED — VISUAL SUPERCYCLE**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V22.96 (Granular Lock) / V22.94 (High-Fidelity OVN)
-- **Critical Progress**: Successfully decoupled the static terminal universe from the dynamic news-driven discovery engine. Implemented a per-ticker TTL lock that ensures no asset is re-synced within 15 minutes, regardless of which script (Manual, Sync, or Email) initiates the fetch. Transitioned from a global file-level cache to a high-precision asset-level cache.
-- **Next Milestone**: Automated cron-trigger sequencing for market opens.
+- **Current Tier**: V23.48 (Visual Supercycle) / V23.47 (Session Parity) / V23.01 (Signal Purge)
+- **Critical Progress**: Deployed context-aware news icons mapping headlines to intelligence themes (Shields, Intel, Energy). Integrated `engine/email_spark_fetcher.py` sidecar for high-fidelity 1d regular session sparklines. Hardened watchlist UI with 26% column width for global tickers. Implemented suffix-aware session logic for global exchanges (.DE, .HK, .ST). Optimized email layout to hide stale Futures data during active trading hours.
+- **Next Milestone**: Multi-agent sentiment validation for divergent headlines.
 
 Date: 2026-04-20
 Tests: **55 passing / 0 failing**
+
+---
+
+### V23.48 — Visual Supercycle
+- **Context-Aware News Intelligence**: Replaced generic news markers with a dynamic icon system (📡, 🛡️, ⚖️, 🧠, 📈). Headlines are analyzed for geopolitical, energy, macro, and AI keywords.
+- **Isolated Sparkline Sidecar**: Created `engine/email_spark_fetcher.py`. This sidecar fetches 1-day regular session chart data and renders lightweight SVG sparklines directly in the watchlist.
+- **UI Hardening**: Increased watchlist ticker column width to **26%** to accommodate international suffixes. logic now automatically hides "Futures" during active trading.
+- **Watchlist Cleanliness**: Purged custom stock "Notes" from watchlist items to maintain a high-fidelity look.
+- Date: 2026-04-20
+
+---
+
+### V23.47 — Sovereign Session Intelligence
+- **Suffix-Aware Session Tracking**: Refactored `get_market_session` to support global exchange suffixes (.DE, .HK, .ST, .AX). Mapped international symbols to local trading hours (in EST).
+- **Green `L⚡` Badge**: Deployed a specialized high-visibility badge for active market sessions.
+- **Stability Fixes**: Resolved `NameError` (log) and `TypeError` in sidecar trigger logic.
+- Date: 2026-04-20
+
+---
+
+### V23.45 — Session Parity Hardening
+- **Session Parity Hardening**: Resolved a session stasis defect in `live_prices.py` where assets would remain tagged as `OVN` despite pre-market trading activity. Prioritized `PRE/POST` fields over the Yahoo `marketState` property.
+- **Hybrid Session Locking**: Hardened `get_session_data` fallback. Engine now holds `OVN` price data when entering the `PM` session window if fresh Pre-Market trades are absent, preventing overnight gain erasure.
+- **Badge UI & Price Injection**: Restored current Price ($) and % Change to all Watchlist and Sector Dossier rows. Introduced HSL-colored session badges (OVN/PM/AH).
+- **Ubuntu Pulse Deployment**: Finalized the automated dispatch pipeline. `email.sh` on Ubuntu VM now targets a CIFS-mounted `tickers.txt` on the Windows host for live watchlist updates. 
+- Date: 2026-04-20
 
 ---
 

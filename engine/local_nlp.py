@@ -95,10 +95,33 @@ class LocalIntelligenceSynthesizer:
                 s_list = [s.strip() for s in sentences if len(s.strip()) > 10][:5]
 
             if group_paragraphs:
-                # Group every ~3 sentences into a paragraph
+                # Group every ~3-4 sentences into a structured topic
                 paras = []
-                for i in range(0, len(s_list), 3):
-                    paras.append(" ".join(s_list[i:i+3]))
+                transitions = [
+                    "Intelligence Brief",
+                    "Catalyst Dynamics",
+                    "Structural Shifts",
+                    "Sector Tailwinds"
+                ]
+                for i in range(0, len(s_list), 4):
+                    chunk = s_list[i:i+4]
+                    group = {
+                        "transition": transitions[len(paras) % len(transitions)],
+                        "items": []
+                    }
+                    for s in chunk:
+                        s_str = s.strip()
+                        if not s_str.endswith((".", "!", "?")): s_str += "."
+                        
+                        link = "#"
+                        prefix = s_str[:30].lower()
+                        for a in articles:
+                            if prefix in a.get('title', '').lower() or prefix in a.get('summary', '').lower():
+                                link = a.get('link', '#')
+                                break
+                                
+                        group["items"].append({"text": s_str, "link": link})
+                    paras.append(group)
                 return paras
             
             return s_list

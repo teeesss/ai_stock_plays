@@ -1,4 +1,4 @@
-# GIGACPO Technical Architecture (V22.94)
+# GIGACPO Technical Architecture (V23.44)
 
 ## Overview
 Financial data is adversarial. Standard APIs (Standard & Poor's, FactSet) are expensive or laggy. Public scrapers (YFinance) are frequently blocked. GIGACPO solves this through a decoupled, multi-layered stealth architecture.
@@ -35,9 +35,12 @@ Never hit a target directly.
 - **Workflow**: Load Financials -> Normalize legacy fields -> Calculate dynamic scores -> Generate `dashboard_data.js` -> Deploy via SFTP to mapped nesting.
 
 ### Layer 5: Sovereign Intelligence Engine (`email_market_synopsis.py`)
-- **Extractive NLP**: Uses `local_nlp.py` (LSA + VADER) for offline synthesis of market catalysts.
-- **Signal Governance**: Implements a `NEWS_BLACKLIST` (e.g., Jim Cramer) to sanitize the ingestion pool.
-- **Responsive Parity**: Employs `@media` independent styling definitions for Desktop (14-24px) vs Mobile (9-12px) typography.
+- **Extractive NLP**: Uses `local_nlp.py` (LSA + VADER) for offline synthesis of market catalysts, generating structured bulleted narratives mapped directly to verifiable source URLs.
+- **Zero-Noise Protocol**: Deploys `is_shite_ticker` to aggressively neutralize stablecoins and non-moving assets (<0.1% volatility).
+- **Hybrid Session Locking (V23.44)**: Hardened `get_session_data` logic to prevent "price reversion" during the 4:00 AM CST pre-market lock. Prioritizes `OVN` datasets if Pre-market trades are stale, ensuring the dossier reflects the highest active trading price.
+- **Badge UI Protocol**: Standardized HSL-colored badges (OVN/PM/AH) for all real-time asset rows.
+- **Signal Governance**: Implements a `NEWS_BLACKLIST` (e.g., Jim Cramer) and SHA-256 deduplication to sanitize the ingest pool.
+- **Responsive Parity**: Employs `@media` independent styling definitions for Desktop vs Mobile typography. Desktop upsizes closing prices to 15px/Bold for professional readability.
 
 ---
 
@@ -47,7 +50,9 @@ Never hit a target directly.
 - **P/E Sentinels**: Uses `999` for missing EPS data.
 - **Self-Hydrating Discovery**: The engine scans narratives for tickers and force-hydrates stale/missing prices while strictly honoring the 15-minute global pulse.
 - **Session-Aware Labeling**: Integrated `PM`/`AH` markers and `OVN` (Overnight) session detection. Uses high-fidelity BOATS data via `overnightPrice=true` to capture institutional-standard real-time prices while other sources remain stale.
-- **Extended-Hours Cascade**: Prioritizes `OVN` (BOATS) > `PRE` > `POST`, ensuring the terminal reflects the most active trading state at all times.
+- **Hybrid Extended-Hours Cascade**: Prioritizes `OVN` (BOATS) > `PRE` > `POST`. Logic (V23.44) specifically guards the 4 AM crossover by detecting "Pre-Market Void" and holding the last valid Overnight price.
+- **Ubuntu Pulse Deployment**: Automated dispatch pipeline running on a dedicated VM, fetching watchlists from CIFS-mounted `tickers.txt`. 
+
 
 ---
 

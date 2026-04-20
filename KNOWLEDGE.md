@@ -767,3 +767,7 @@ Contract Mfg ($FN, $CLS)
 - **Architecture**: Decoupled the **Static Terminal Universe** (Root/AI hard-coded databases) from the **Dynamic Discovery** world (news-driven ad-hoc tickers).
 - **Hardening**: Implemented a per-ticker TTL lock in `live_prices.py`. Assets are now only re-fetched if their specific `timestamp` in the database is > 900 seconds old, allowing sequential script execution without redundant Yahoo API hits.
 - **Protocol**: Restored the 'Strict 15-Minute Protocol' as a universal gate across both Manual Syncs (`x_intel_instant_sync.py`) and Discovery Hydrations (`email_market_synopsis.py`).
+### 2026-04-20 - V22.97 High-Fidelity Session Parity
+- **Architecture**: Achieved 100% session-aware parity across the entire email dossier. Every index, crypto asset, momentum chip, and sector card now respects high-fidelity OVN/PRE/POST moves via the unified `get_session_data` protocol.
+- **Logic**: Rankings and sentiment counters now reflect real-time volatility rather than stale close data.
+- **CLI Intelligence**: Deployed `--tickers file.txt` support to `email_market_synopsis.py`, allowing for massive (100+) custom ticker hydration without CLI character limits.

@@ -6,6 +6,8 @@ import re
 import requests
 import sys
 import time
+import argparse
+import asyncio
 from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -14,12 +16,19 @@ import uuid
 import asyncio
 import random
 try:
-    from engine.live_prices import async_run_fetch
-    from engine.local_nlp import LocalIntelligenceSynthesizer
-except ImportError:
-    from live_prices import async_run_fetch
+    from live_prices import async_run_fetch, load_tickers
     from local_nlp import LocalIntelligenceSynthesizer
+    from email_spark_fetcher import run_spark_fetch
+except ImportError:
+    from engine.live_prices import async_run_fetch, load_tickers
+    from engine.local_nlp import LocalIntelligenceSynthesizer
+    from engine.email_spark_fetcher import run_spark_fetch
 from curl_cffi import requests as cffi_requests
+import logging
+
+# V23.47: Logger initialization
+logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
+log = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -75,7 +84,7 @@ class SovereignIntelligenceEngine:
         noise = {
             "AI", "ETF", "US", "EST", "MARKET", "NLP", "DOW", "NASDAQ", "FED", "CPI", "PPI", "GDP",
             "USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CNY", "EPS", "ROE", "ROI", "PE", "YTD", "MTD",
-            "CAGR", "MCAP", "APY", "APR", "SPX", "NDX", "RUT", "NQ", "ES", "YM", "BTC", "ETH", "USDT",
+            "CAGR", "MCAP", "APY", "APR", "SPX", "NDX", "RUT", "NQ", "ES", "YM",
             "Q1", "Q2", "Q3", "Q4", "FY26", "FY27", "IPO", "FDA", "SEC", "NASA", "HELOC", "SWOT", "ASIC",
             "NYSE", "AMEX", "CBOE", "LIQUIDITY", "VOLUME", "TOTAL", "HIGH", "LOW", "OPEN", "CLOSE",
             "AND", "FOR", "THE", "WITH", "FROM", "THIS", "THAT", "THEY", "HAVE", "SOME", "POS", "ITS",
@@ -85,7 +94,10 @@ class SovereignIntelligenceEngine:
             "IN", "OR", "IT", "IS", "AS", "BE", "AN", "SO", "ME", "ON", "AT", "BY", "IF", "NASA",
             "HLSE", "EMS", "OSAT", "ESA", "BLA", "ENXTAM", "DEEPEN", "JVCKENWOOD", "J.P", "RAN",
             "M1", "M2", "M3", "G1", "G3", "G5", "UX111", "PFIC", "EUV", "ITS", "AOI", "MKS", "G3", "G2",
-            "CEO", "IRA", "NV", "SAVE", "LAYER", "USDC", "USDT", "DAI", "BUSD", "PYUSD", "TUSD", "SK", "RAN", "DEEPEN", "SZKMY", "PT", "PTO"
+            "CEO", "IRA", "NV", "SAVE", "LAYER", 
+            "USDC", "USDT", "DAI", "BUSD", "PYUSD", "TUSD", "FDUSD", "FRAX", "LUSD", "USDD", "GUSD", "STETH", "WSTETH",
+            "USDC-USD", "USDT-USD", "DAI-USD", "BUSD-USD", "PYUSD-USD", "TUSD-USD", "FDUSD-USD", "USDC.CX", "USDT.CX",
+            "SK", "RAN", "DEEPEN", "SZKMY", "PT", "PTO"
         }
         if t in noise: return False
         if t.startswith("FY20") or t.startswith("P500"): return False
@@ -184,10 +196,22 @@ class SovereignIntelligenceEngine:
             "YTD", "HELOC", "APY", "APR", "PE", "EPS", "ROE", "ROIC", "EBITDA", "GAAP",
             "CFO", "COO", "CEO", "CTO", "IPO", "LBO", "PFIC", "FATCA", "ETF", "IRA", 
             "HSA", "RAN", "EMS", "LIDE", "HBM", "DRAM", "NAND", "CPO", "GPU", "CPU",
-            "NPU", "LSA", "NLP", "AIAI", "S&P", "DJI", "SNP", "QQQ"
+            "NPU", "LSA", "NLP", "AIAI", "S&P", "DJI", "SNP", "QQQ",
+            # V22.99: Hardened Stablecoin Purge
+            "USDC", "USDT", "DAI", "BUSD", "PYUSD", "TETHER", "STABLECOINS", "FDUSD"
         }
         if sym in FETCH_BLACKLIST: return False
         return True
+
+    def is_shite_ticker(self, sym):
+        """V23.01: Aggressive Stablecoin and Fake-Ticker Purge."""
+        if not sym: return True
+        t_up = sym.upper()
+        # Stablecoin list
+        if any(sc in t_up for sc in ["USDC", "USDT", "TETHER", "STABLECOIN", "DAI", "BUSD", "PYUSD", "CIRCLE", "FDUSD"]): return True
+        # Generic noise
+        if t_up in ["YAHOO", "BREAKING", "NEWS", "STOCK", "MARKET"]: return True
+        return False
 
     def fetch_live_macro(self):
         # V22.96: Prioritized Multi-Stream News Engine (Triple-Feed V3.1)
@@ -284,20 +308,121 @@ class SovereignIntelligenceEngine:
         
         return top_15
 
-    def get_market_session(self):
+    def get_market_session(self, symbol=None):
         # V22.93: Precise Session Detection + Overnight Awareness
+        # V23.47: Suffix-Aware Global Exchange Logic
         hr = self.now.hour; mn = self.now.minute
         tm = hr * 60 + mn
         day = self.now.weekday()
-        # Sunday Night Futures (6 PM+)
+        
+        # 1. Crypto & Sunday Futures Override
+        if symbol and symbol.endswith("-USD"): return "LIVE"
         if day == 6 and hr >= 18: return "OVN"
-        # Mon-Fri logic
+        if day >= 5: return "" # Weekend Stasis
+        
+        # 2. Exchange Hour Mapping (Normalization to EST)
+        # Default: US (09:30 - 16:00)
+        open_m, close_m = 570, 960
+        
+        if symbol:
+            s_up = symbol.upper()
+            # Europe (DE/ST/L/PA/MI/MC/AS): ~03:00 - 11:30 EST
+            if any(s_up.endswith(s) for s in [".DE", ".ST", ".L", ".PA", ".MI", ".MC", ".AS"]):
+                open_m, close_m = 180, 690 
+            # Asia (HK/N225): ~21:30 - 04:00 EST
+            elif any(s_up.endswith(s) for s in [".HK", ".N225", ".TW", ".KS"]):
+                open_m, close_m = 1290, 240 # Spans midnight
+            # Australia (AX/CX): ~19:00 - 01:00 EST
+            elif any(s_up.endswith(s) for s in [".AX", ".CX"]):
+                open_m, close_m = 1140, 60  # Spans midnight
+
+        # 3. Session Classification
+        is_live = False
+        if open_m < close_m:
+            is_live = (open_m <= tm < close_m)
+        else: # Overnight markets (Asia/Australia)
+            is_live = (tm >= open_m or tm < close_m)
+            
+        if is_live: return "LIVE"
+        
+        # US-Centric Extended Hours (Kept for PM/AH simplicity)
         if day < 5:
-            if 240 <= tm < 570: return "PM"   # 4:00 - 9:30
-            if 570 <= tm < 960: return ""      # Regular hours — no tag
-            if 960 <= tm < 1200: return "AH"   # 16:00 - 20:00
-            if tm >= 1200 or tm < 240: return "OVN"  # 20:00 - 4:00 overnight
+            # Shift US pre/post to match US hours mostly
+            if 240 <= tm < open_m: return "PM"
+            if close_m <= tm < 1200: return "AH"
+            if tm >= 1200 or tm < 240: return "OVN"
         return ""
+
+    def get_session_data(self, p_data, symbol=None):
+        """Unified session logic: extract correct price/pct from live_prices schema."""
+        sess = self.get_market_session(symbol)
+        price = p_data.get("price", 0)
+        pct = p_data.get("change_pct", 0)
+        
+        ext_type = p_data.get("ext_type")
+        # High-Fidelity: Link data to session
+        if ext_type and ext_type in ["OVN", "PRE", "POST"]:
+            # Prioritize matching session
+            match = (ext_type == sess)
+            # Aliases for same session (POST == AH, PRE == PM)
+            if not match:
+                match = (sess == "AH" and ext_type == "POST") or (sess == "PM" and ext_type == "PRE")
+            
+            # V23.01e: OVN Fallback — If we just entered PM (4AM-5AM) but only have OVN data, use OVN
+            if not match and sess == "PM" and ext_type == "OVN":
+                match = True
+
+            # V23.47: LIVE status takes precedence for Regular Hours data
+            if match or sess == "LIVE":
+                price = p_data.get("ext_price") or price
+                pct = p_data.get("ext_pct") or pct
+                # Return the effective session for the UI tag
+                if match: sess = ext_type
+        
+        return price, pct, sess
+
+    def get_session_tag_html(self, fs="9px", color="#94a3b8", sess_override=None):
+        sess = sess_override if sess_override is not None else self.get_market_session()
+        if not sess: return ""
+        # V23.44: Hardened Badge UI
+        # V23.47: Specialized Green L⚡ Badge for LIVE
+        bg = "rgba(14,165,233,0.15)" # Blue (PRE/PM/AH/POST)
+        if sess == "OVN": bg = "rgba(245,158,11,0.15)" # Amber (OVN)
+        elif sess == "LIVE": 
+            bg = "rgba(16,185,129,0.12)" # Green
+            return f'<span class="sess-badge sess-live" style="font-size:{fs}; color:#10b981; background:{bg}; padding:1px 3px; border-radius:3px; font-weight:bold; margin-left:4px; vertical-align:baseline; border:1px solid rgba(16,185,129,0.2);">L<span style="color:#10b981;">⚡</span></span>'
+        
+        return f'<span class="sess-badge sess-{sess.lower()}" style="font-size:{fs}; color:{color}; background:{bg}; padding:1px 3px; border-radius:3px; font-weight:bold; margin-left:4px; vertical-align:middle; border:1px solid rgba(255,255,255,0.05);">{sess}</span>'
+
+    def get_context_icon(self, title):
+        """V23.48: Context-aware icon selection for news headlines."""
+        t = title.lower()
+        if any(w in t for w in ['war', 'iran', 'israel', 'conflict', 'missile', 'attack', 'strike', 'defense']): return "🛡️"
+        if any(w in t for w in ['oil', 'energy', 'fuel', 'shuttering', 'hormuz', 'crude', 'gas']): return "🛢️"
+        if any(w in t for w in ['fed', 'rate', 'powell', 'inflation', 'cpi', 'jobs', 'yield', 'budget']): return "⚖️"
+        if any(w in t for w in ['ai', 'chip', 'nvidia', 'broadcom', 'semiconductor', 'mrvl', 'amd', 'quantum']): return "🧠"
+        if any(w in t for w in ['earnings', 'revenue', 'quarterly', 'profit', 'dividend', 'guidance']): return "📈"
+        if any(w in t for w in ['software', 'cloud', 'saas', 'meta', 'google', 'apple', 'amazon']): return "💻"
+        if any(w in t for w in ['lawsuit', 'sec', 'investigation', 'regulation']): return "📜"
+        if any(w in t for w in ['bitcoin', 'crypto', 'btc', 'eth', 'sol']): return "🪙"
+        return "📡"
+
+    def generate_sparkline_svg(self, points, color="#10b981", width=60, height=20):
+        """V23.48: Lightweight SVG polyline generator for 1d-session action."""
+        if not points or len(points) < 2: return ""
+        min_p = min(points); max_p = max(points)
+        rng = max_p - min_p if max_p != min_p else 1
+        
+        coords = []
+        for i, p in enumerate(points):
+            x = (i / (len(points)-1)) * width
+            y = height - ((p - min_p) / rng) * height
+            coords.append(f"{x:.1f},{y:.1f}")
+        
+        polyline = " ".join(coords)
+        return (f'<svg width="{width}" height="{height}" style="vertical-align:middle; margin:0 8px; display:inline-block;">'
+                f'<polyline fill="none" stroke="{color}" stroke-width="1.5" points="{polyline}" />'
+                f'</svg>')
 
     def get_ticker_chip(self, symbol, prices, simple=False, link=True):
         if symbol.startswith("$"): symbol = symbol[1:]
@@ -309,26 +434,24 @@ class SovereignIntelligenceEngine:
         if not link and "." in display_sym:
             display_sym = display_sym.replace(".", ".&#8203;")
 
-        if not p or p.get('price') is None: 
+        if not p or (p.get('price') is None and p.get('ext_price') is None): 
             style = f'color:{gold}; font-weight:bold; text-decoration:none;'
             if simple:
                 return f'<span style="{style}">{display_sym}</span>'
             return f'<span style="{style}">${display_sym}</span>'
             
-        pct = p.get('change_pct', 0)
+        price, pct, sess = self.get_session_data(p, symbol)
         color = self.COLOR_GREEN if pct >= 0 else self.COLOR_DANGER
         emoji = "🟢" if pct >= 0 else "🔴"
         
-        # V22.96: Session Tagging (OVN, PM, AH) next to %
-        sess = self.get_market_session()
-        s_tag = f' <span style="font-size:8px; color:#94a3b8; font-weight:normal;">{sess}</span>' if sess else ""
+        sess_tag = self.get_session_tag_html(sess_override=sess)
         
         style = f'color:{gold}; font-weight:bold; text-decoration:none;'
         pct_style = f'color:{color}; font-weight:800; text-decoration:none;'
 
         if simple:
-            return f'<span style="{style}">{display_sym}</span> <span style="{pct_style}">{pct:+.2f}%{s_tag}</span>'
-        return f'<span style="{style}">${display_sym}</span> <span style="{pct_style}">{emoji} {pct:+.2f}%{s_tag}</span>'
+            return f'<span style="{style}">{display_sym}</span> <span style="color:#cbd5e1; font-size:11px;">${price:.2f}</span> <span style="{pct_style}">{pct:+.2f}%{sess_tag}</span>'
+        return f'<span style="{style}">${display_sym}</span> <span style="color:#cbd5e1; font-size:12px;">${price:.2f}</span> <span style="{pct_style}">{emoji} {pct:+.2f}%{sess_tag}</span>'
 
     def _fetch_ancillary_prices(self, tickers, prices):
         """V22.9: Hardened discovery hydration with 15m Global TTL bypass."""
@@ -544,118 +667,163 @@ class SovereignIntelligenceEngine:
         
         # V22.42: News quality blacklist
         NEWS_BLACKLIST = [
-            'jim cramer', 'cramer says', 'cramer on', 'cramer suggests',
-            'cramer notes', 'cramer thinks', 'cramer explains',
-            'cramer recommends', 'cramer warns', 'cramer calls',
+            'jim cramer', 'cramer says', 'cramer on', 'salary', 'salaries', 'ponzi', 'surprising', 
+            'retirement', 'earnings preview', 'what you need to know', 'got $5,000',
+            'should buy instead', 'middle-class', 'multimillionaire', 'quietly',
+            ' morning update', ' summary', ' what to know', 'preview:'
         ]
         def is_blacklisted(title):
-            t_low = title.lower()
+            # Aggressive normalization for smart quotes and whitespace
+            t_low = title.lower().replace('’', "'").replace('‘', "'")
+            # V22.99: Strict Stablecoin news purge
+            if any(sc.lower() in t_low for sc in ["usdc", "usdt", "tether", "stablecoin", "circle"]): return True
             return any(bl in t_low for bl in NEWS_BLACKLIST)
 
         # Sort by Alpha/Hiddenness Priority instead of just Date
+        # V22.99: Use Rating Scale (Alpha) as primary weight
         ticker_news.sort(key=lambda x: (x['priority'], x['date']), reverse=True)
         # Apply blacklist filter to ticker-level news too
         ticker_news = [n for n in ticker_news if not is_blacklisted(n['title'])]
 
-        up_count = sum(1 for p in prices.values() if p.get('change_pct', 0) > 0)
-        risk_on = (up_count / len(prices)) > 0.5 if len(prices) > 0 else False
+        # V22.95: Session-aware sentiment tracking
+        total_p = 0; up_count = 0
+        for sym, p in prices.items():
+            _, pct, _ = self.get_session_data(p, sym)
+            total_p += 1
+            if pct > 0: up_count += 1
+            
+        risk_on = (up_count / total_p) > 0.5 if total_p > 0 else False
         sentiment_label = "RISK-ON // ACCUMULATING" if risk_on else "RISK-OFF // PROTECTING"
 
+        gold = "#f59e0b"
+        text_dim = "#8f9bb3"
+
         macro_ps = []
-        if macro_headlines:
-            unique_h = set()
-            for h in macro_headlines:
-                if is_blacklisted(h['title']): continue
-                if h['title'] not in unique_h and all(x not in h['title'] for x in ["Yahoo", "Story", "Update", "Summary"]):
-                    unique_h.add(h['title'])
-                    flaired_title = self.inject_price_flair(h['title'], prices, master_data)
-                    macro_ps.append(f"<span style='color:#0ea5e9; font-size:11px;'>⚡</span> <span style=\"color:#f8fafc;\">{flaired_title}</span>")
-                    if len(macro_ps) == 15: break
-                
-        # V22.2.3: Detailed 4-7 Paragraph Macro Synthesis + Price Flair
-        nlp_summary = nlp.synthesize_macro_overview(macro_headlines, sentences_count=18, group_paragraphs=True)
-        processed_macro = []
-        for p in nlp_summary:
-            processed_macro.append(self.inject_price_flair(p, prices, master_data))
-            
-        if processed_macro:
-            macro_ps.append(f'<div class="section-hdr" style="color:#0ea5e9; font-family:sans-serif; font-size:10px; letter-spacing:2px; font-weight:bold; margin-top:20px; padding-bottom:5px; border-bottom:1px solid rgba(14,165,233,0.2);">SOVEREIGN MACRO DOSSIER</div>')
-            
-            # Diversification: Ensure Alpha Strip doesn't duplicate Momentum Strip
-            momentum_tickers = {v['ticker'] for v in prices.get("_meta", {}).get("volume_spikes", [])[:6]}
-            
-            # Alpha Velocity Strip: Top 5 movers NOT in the volume spike list
-            top_candidates = []
-            for k, v in prices.items():
-                base_k = k.split('.')[0]
-                if k == "_meta" or any(base_k in s.split('.')[0] for s in momentum_tickers): continue
-                
-                p = v.get("change_pct")
-                if p is not None:
-                    top_candidates.append({"s": k, "p": p})
-            
-            top_movers = sorted(top_candidates, key=lambda x: abs(x['p']), reverse=True)[:5]
-            if top_movers:
-                m_cells = []
-                for m in top_movers:
-                    color = self.COLOR_GREEN if m['p'] >= 0 else self.COLOR_DANGER
-                    # HARDENED: NO URLS IN TERMINAL STRIPS (link=False + zero-width neutralization)
-                    p_chip = self.get_ticker_chip(m['s'], prices, simple=True, link=False)
-                    m_cells.append(
-                        f'<div class="top-mover-chip" style="display:inline-block; border:1px solid #1e293b; border-radius:4px; '
-                        f'padding:6px 10px; margin-right:8px; margin-bottom:8px; background:rgba(30,41,59,0.8); '
-                        f'font-size:11px; font-family:sans-serif;">{p_chip}</div>'
-                    )
-                macro_ps.append(f'<div style="margin:16px 0; line-height:1.4;">{" ".join(m_cells)}</div>')
-
-            # Momentum Velocity row construction (link=False)
-            stablecoins = {"USDC", "USDT", "DAI", "BUSD", "TUSD", "PYUSD", "USDC.CX", "USDT.CX"}
-            m_candidates = []
-            for k, v in prices.items():
-                if k in stablecoins: continue
-                pct = v.get("change_pct")
-                vol = v.get("vol_spike") if v.get("vol_spike") is not None else 1.0
-                if pct is not None and abs(pct) > 0.05:
-                    m_candidates.append({"s": k, "v": abs(pct) * vol, "pct": pct, "vol": vol})
-
-            momentum_top = sorted(m_candidates, key=lambda x: x['v'], reverse=True)[:5]
-            if momentum_top:
-                mv_rows = []
-                for m in momentum_top:
-                    pct = m['pct']
-                    vol = m['vol']
-                    clr = self.COLOR_GREEN if pct >= 0 else self.COLOR_DANGER
-                    arr = '▲' if pct >= 0 else '▼'
-                    bars_filled = min(5, int(vol))
-                    bars = '■' * bars_filled + '□' * (5 - bars_filled)
-                    # HARDENED: No links in velocity list
-                    flaired = self.get_ticker_chip(m['s'], prices, simple=True, link=False)
-                    mv_rows.append(
-                        f'<div class="mv-row" style="background:rgba(14,165,233,0.06); border-left:3px solid #0ea5e9; '
-                        f'border-radius:3px; padding:10px 14px; margin-bottom:6px; '
-                        f'font-family:sans-serif; font-size:12px; white-space:nowrap; overflow:hidden;">'
-                        f'{flaired} '
-                        f'<span class="mv-vol" style="color:#38bdf8; font-size:10px; margin-left:8px; font-family:monospace;">[{bars} ×{vol:.1f}]</span>'
-                        f'</div>'
-                    )
-                macro_ps.append(
-                    f'<div style="margin:20px 0;">'
-                    f'<div class="section-hdr" style="color:#0ea5e9; font-family:sans-serif; font-size:10px; letter-spacing:2px; '
-                    f'text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:5px; '
-                    f'border-bottom:1px solid rgba(14,165,233,0.2);">Momentum Velocity</div>'
-                    f'{chr(10).join(mv_rows)}</div>'
-                )
-
-            
-            for p in processed_macro:
-                # V22.53: Explicit wrap-safe paragraph rendering to prevent Global Pulse clipping
-                macro_ps.append(f"<p style='color:#cbd5e1; margin-top:12px; line-height:1.7; font-size:14px; white-space:normal !important; overflow:visible !important; display:block;'>{p}</p>")
+        # V22.98: Data-Driven Market Pulse Narrative
+        m_fg = int(sentiment.get('market', {}).get('value', 50))
+        c_fg = int(sentiment.get('crypto', {}).get('value', 50))        # Determine Market Session Sentiment in words
+        spx = prices.get('ES=F', prices.get('^GSPC', {}))
+        _, spx_chg, _ = self.get_session_data(spx, "ES=F")
         
-        if not macro_ps or len(macro_ps) < 2:
-            macro_ps = [
-                "<b>Status:</b> RSS Feed latency detected. Primary macro narrative is accumulating.",
-                "<div style='color:#cbd5e1; margin-top:10px;'>Liquidity cycles are entering a seasonal pivot point. Market breadth remains concentrated in semi/AI infrastructure while defensive rotations are surfacing in late-session tape.</div>"
-            ]
+        vibe = "BULLISH" if spx_chg > 0.5 else "BEARISH" if spx_chg < -0.5 else "NEUTRAL / CHOPPY"
+        # V23.01: Comprehensive Macro Intelligence Briefing
+        pulse_text = (
+            f"The session is carving out a <b>{vibe}</b> posture (F&G: {m_fg}). "
+            f"Overall market sentiment is <b>{sentiment_label}</b> as liquidity shifts between defensive rotations and high-alpha sector accumulation. "
+        )
+        
+        # Prepare Newsletter Synthesis (Top of Report)
+        # V23.01: Aggressive filtering for Headlines first
+        unique_h = set()
+        used_for_headlines = set()
+        SIGNALS = ["chip", "semi", "ai ", "data center", "nvidia", "intel", "amd", "infrastructure", "optics", "cpo", "lithography"]
+        
+        # Sort macro by relevance first
+        def get_macro_score(h):
+            score = 0
+            t = h['title'].lower()
+            if any(s in t for s in SIGNALS): score += 50
+            if any(symbol in t.upper() for symbol in master_data.keys()): score += 100
+            if any(x in t for x in ["breakthrough", "monopoly", "subsidy", "choke"]): score += 30
+            return score
+            
+        if macro_headlines:
+            macro_headlines.sort(key=lambda x: (get_macro_score(x), x.get('date', 0)), reverse=True)
+            
+        headline_divs = []
+        h_count = 0
+        for h in macro_headlines:
+            if is_blacklisted(h['title']): continue
+            if h['title'] not in unique_h and all(x not in h['title'] for x in ["Yahoo", "Morning Update", "Summary", "What to Know"]):
+                title_low = h['title'].lower()
+                if get_macro_score(h) < 10 and any(noise in title_low for noise in ["preview", "look at", "earn"]): continue
+                
+                unique_h.add(h['title'])
+                flaired_title = self.inject_price_flair(h['title'], prices, master_data)
+                link = h.get('link', '#')
+                icon = self.get_context_icon(h['title'])
+                headline_divs.append(f"<div style='margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.03); padding-bottom:6px;'><span style='color:#0ea5e9; font-size:11px;'>{icon}</span> <a href=\"{link}\" style=\"color:#f8fafc; font-size:13px; font-weight:500; text-decoration:none;\">{flaired_title}</a></div>")
+                used_for_headlines.add(h['title'])
+                h_count += 1
+                if h_count >= 15: break # EXPANDED TO TOP 15 HEADLINES
+
+        # V23.01: Generate the Comprehensive Narrative BEFORE the headlines
+        synthesis_pool = [h for h in macro_headlines if h['title'] not in used_for_headlines and not is_blacklisted(h['title'])] + ticker_news[:30]
+        # Request a deeper synthesis (20 sentences across paragraphs for higher fidelity)
+        nlp_summary = nlp.synthesize_macro_overview(synthesis_pool, sentences_count=20, group_paragraphs=True)
+        
+        comp_narrative = []
+        for p in nlp_summary:
+            if isinstance(p, dict):
+                html_items = []
+                for item in p['items']:
+                    flaired = self.inject_price_flair(item['text'], prices, master_data)
+                    html_items.append(f"<li style='margin-bottom:8px;'><a href=\"{item['link']}\" style='color:#cbd5e1; text-decoration:none;'>{flaired}</a></li>")
+                group_html = f"<div style='margin-bottom:24px;'><div style='color:#0ea5e9; font-weight:bold; font-size:12px; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;'>{p['transition']}</div><ul style='margin-top:0; padding-left:20px; font-size:14px; line-height:1.6;'>{''.join(html_items)}</ul></div>"
+                comp_narrative.append(group_html)
+            else:
+                comp_narrative.append(self.inject_price_flair(p, prices, master_data))
+        
+        # Build the Macro HTML block
+        report_blocks = []
+        # Block 1: Executive Summary
+        summary_html = f"<div style='background:rgba(21,128,61,0.05) if risk_on else rgba(245,158,11,0.05); padding:18px; border-radius:5px; border-left:4px solid {gold if not risk_on else '#10b981'}; margin-bottom:24px; color:#cbd5e1; font-size:15px; line-height:1.7;'><b>Executive Summary:</b> {pulse_text}</div>"
+        report_blocks.append(summary_html)
+        
+        # Block 2: Comprehensive Intelligence Briefing (The Narrative)
+        for p in comp_narrative:
+            if p.startswith("<div"):
+                report_blocks.append(p)
+            else:
+                report_blocks.append(f"<p style='color:#cbd5e1; line-height:1.8; font-size:14px; margin-bottom:20px;'>{p}</p>")
+            
+        # Block 3: Institutional Pulse (Top 15 Headlines)
+        if headline_divs:
+            report_blocks.append(f'<div class="section-hdr" style="color:{text_dim}; font-family:monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-top:30px; margin-bottom:15px;">Institutional Pulse // Headlines (Top 15)</div>')
+            report_blocks.extend(headline_divs)
+        
+        macro_ps = report_blocks
+        
+        # V23.01d: Velocity Override construction
+        m_candidates = []
+        for k, v in prices.items():
+            if not self.is_legit_ticker(k) or self.is_shite_ticker(k): continue
+            
+            p_val, p_pct, p_sess = self.get_session_data(v, k)
+            # V23.01d: Aggressive Zero-Change Purge
+            if p_pct is None or abs(p_pct) < 0.1: continue 
+            
+            vol = v.get("vol_spike") if v.get("vol_spike") is not None else 1.0
+            if vol < 1.2: continue # 20% vol surge minimum
+            
+            m_candidates.append({"s": k, "v": abs(p_pct) * vol, "pct": p_pct, "vol": vol})
+
+        momentum_top = sorted(m_candidates, key=lambda x: x['v'], reverse=True)[:6]
+        if momentum_top:
+            mv_rows = []
+            for m in momentum_top:
+                pct = m['pct']
+                vol = m['vol']
+                bars_filled = min(5, int(vol))
+                bars = '■' * bars_filled + '□' * (5 - bars_filled)
+                flaired = self.get_ticker_chip(m['s'], prices, simple=True, link=False)
+                mv_rows.append(
+                    f'<div class="mv-row" style="background:rgba(14,165,233,0.06); border-left:3px solid #0ea5e9; '
+                    f'border-radius:3px; padding:10px 14px; margin-bottom:6px; '
+                    f'font-family:monospace; font-size:12px; white-space:nowrap; overflow:hidden;">'
+                    f'{flaired} '
+                    f'<span class="mv-vol" style="color:#38bdf8; font-size:10px; margin-left:8px;">[×{vol:.1f} {bars}]</span>'
+                    f'</div>'
+                )
+            report_blocks.append(
+                f'<div style="margin:25px 0;">'
+                f'<div class="section-hdr" style="color:#0ea5e9; font-family:sans-serif; font-size:10px; letter-spacing:2px; '
+                f'text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:5px; '
+                f'border-bottom:1px solid rgba(14,165,233,0.2);">Velocity Override // Vol Spikes</div>'
+                f'{"".join(mv_rows)}</div>'
+            )
+
+        macro_ps = report_blocks
 
         sector_ps = []
         seen_titles = set()
@@ -681,12 +849,20 @@ class SovereignIntelligenceEngine:
         nlp_sector_summary = nlp.synthesize_macro_overview(ticker_news[:15], sentences_count=12, group_paragraphs=True)
         if nlp_sector_summary:
             for p in nlp_sector_summary:
-                fr_p = self.inject_price_flair(p, prices, master_data)
-                sector_ps.append(f"<div style='color:#cbd5e1; margin-top:10px; line-height:1.6;'>{fr_p}</div>")
+                if isinstance(p, dict):
+                    html_items = []
+                    for item in p['items']:
+                        flaired = self.inject_price_flair(item['text'], prices, master_data)
+                        html_items.append(f"<li style='margin-bottom:8px;'><a href=\"{item['link']}\" style='color:#cbd5e1; text-decoration:none;'>{flaired}</a></li>")
+                    group_html = f"<div style='margin-top:16px;'><div style='color:#0ea5e9; font-weight:bold; font-size:11px; margin-bottom:6px;'>{p['transition']}</div><ul style='margin-top:0; padding-left:20px; font-size:13px; line-height:1.6;'>{''.join(html_items)}</ul></div>"
+                    sector_ps.append(group_html)
+                else:
+                    fr_p = self.inject_price_flair(p, prices, master_data)
+                    sector_ps.append(f"<div style='color:#cbd5e1; margin-top:10px; line-height:1.6;'>{fr_p}</div>")
 
         return macro_ps, sector_ps, sentiment_label
 
-    def gather_all_data(self):
+    def gather_all_data(self, custom_tickers=None):
         master = self._load_json("CPO_MASTER_DATA.json")
         prices = self._load_json("live_prices.json")
         
@@ -704,7 +880,9 @@ class SovereignIntelligenceEngine:
         # V22.33: Apply universal freshness pulse allowing missing prices to bypass stasis
         missing = []
         ts_map = prices.get("_meta", {}).get("timestamps", {})
-        for t in macro_tickers:
+        # V23.46: Merge custom CLI tickers into the high-frequency pulse loop
+        high_priority = macro_tickers + (custom_tickers or [])
+        for t in high_priority:
             is_stale = not self.is_entity_fresh(t, prices)
             ts = ts_map.get(t) or prices.get(t, {}).get('timestamp', 0)
             age = int(time.time() - ts) // 60 if ts > 0 else 0
@@ -749,6 +927,9 @@ class SovereignIntelligenceEngine:
         sentiment = self.fetch_sentiment()
         tradeable = {"semi": [], "ai": []}; strategic = []
         universe = set(master.keys())
+        custom_set = set([t.upper() for t in custom_tickers]) if custom_tickers else set()
+        universe.update(custom_set)
+
         if self.web_root.exists():
             for d in self.web_root.iterdir():
                 if d.is_dir() and (d / "dashboard_data.js").exists():
@@ -769,7 +950,11 @@ class SovereignIntelligenceEngine:
             if "acquired" in entry.get("Notes", "").lower(): continue
             if not self.is_legit_ticker(sym): continue
             
-            if sym not in prices or prices[sym].get('price') is None:
+            # V23.46: Hydrate if missing OR stale (STALE ONLY IF MARKET ACTIVE/CRYPTO)
+            is_stale = not self.is_entity_fresh(sym, prices)
+            has_no_price = sym not in prices or prices[sym].get('price') is None
+            
+            if has_no_price or is_stale:
                 sector_void.append(sym)
         if sector_void:
             print(f"[INTEL] Sector Data-Void: {len(sector_void)} assets need hydration. Fetching...")
@@ -785,15 +970,36 @@ class SovereignIntelligenceEngine:
             except Exception as e:
                 print(f"[WARN] Sector hydration partial: {e}")
 
+        tradeable = {"semi": [], "ai": [], "watchlist": []}; strategic = []
         for sym in universe:
             entry = master.get(sym, {"human_research": {"Ticker": sym, "Company": sym}})
             res = entry.get("human_research", {}); p_data = prices.get(sym, {}); notes = res.get("Notes", "")
-            item = {"symbol": sym, "name": res.get("Company") or sym, "pct": p_data.get("change_pct", 0) or 0, "notes": notes, "alpha": float(res.get("Alpha Score", 0) or 0), "role": (res.get("Role") or "").lower()}
+            
+            # V22.95: High-Fidelity Session Awareness
+            price, pct, sess = self.get_session_data(p_data, sym)
+            
+            item = {
+                "symbol": sym, 
+                "name": res.get("Company") or sym, 
+                "pct": pct, 
+                "notes": notes, 
+                "alpha": float(res.get("Alpha Score", 0) or 0), 
+                "role": (res.get("Role") or "").lower(),
+                "priority": 100 if sym in custom_set else 0
+            }
             if res.get("Bucket") in ["Private", "Pre-IPO"] or "acquired" in notes.lower():
                 strategic.append(item); continue
-            if "semi" in item["role"] or "chip" in item["role"]: tradeable["semi"].append(item)
-            else: tradeable["ai"].append(item)
+            
+            if sym in custom_set:
+                tradeable["watchlist"].append(item)
+            elif "semi" in item["role"] or "chip" in item["role"]: 
+                tradeable["semi"].append(item)
+            else: 
+                tradeable["ai"].append(item)
+
+        tradeable["watchlist"].sort(key=lambda x: x['pct'], reverse=True)
         tradeable["ai"].sort(key=lambda x: (x['alpha'], abs(x['pct'])), reverse=True)
+        tradeable["semi"].sort(key=lambda x: (x['alpha'], abs(x['pct'])), reverse=True)
         tradeable["semi"] = tradeable["semi"][:15]; tradeable["ai"] = tradeable["ai"][:15]
         return tradeable, strategic, prices, news_db, sentiment, master
 
@@ -826,25 +1032,6 @@ class SovereignIntelligenceEngine:
         m_color = get_fg_color(market_fg)
         c_color = get_fg_color(crypto_fg)
 
-        # 1. Momentum Strip (Velocity Override) — one chip per line, blue vol text
-        vol_spikes = prices.get("_meta", {}).get("volume_spikes", [])[:6]
-        momentum_chips = []
-        for v in vol_spikes:
-            t = v['ticker']
-            chg = v.get('change_pct', 0)
-            clr = bull if chg >= 0 else bear
-            arr = '▲' if chg >= 0 else '▼'
-            # HARDENED: No links in velocity strips
-            p_chip = self.get_ticker_chip(t, prices, simple=True, link=False)
-            momentum_chips.append(
-                f'<div class="vel-chip" style="background:{bg_accent}; border-left:3px solid {clr}; '
-                f'padding:8px 12px; margin-bottom:5px; border-radius:3px; '
-                f'font-family:monospace; font-size:12px; white-space:nowrap; overflow:hidden;">'
-                f'{p_chip} '
-                f'<span class="vel-vol" style="color:#0ea5e9; font-size:10px;">vol ×{v["vol_spike"]:.1f}</span>'
-                f'</div>'
-            )
-
         # 2. Market Pulse — Comparative Divergence Section (Cash vs Futures)
         def get_diff_str(price, pct, clr, fs="8px"):
             if not price or pct is None: return ""
@@ -859,46 +1046,61 @@ class SovereignIntelligenceEngine:
         ]
         
         # Dynamic Market Labels
-        is_weekend = self.now.weekday() >= 5
+        is_live_main = self.get_market_session() in ("LIVE", "AH")
         is_futures_active = (self.now.weekday() == 6 and self.now.hour >= 18) or (self.now.weekday() < 5)
         
         prior_close_label = "FRIDAY CLOSE" if self.now.weekday() in [0, 5, 6] else "PRIOR CLOSE"
         live_label = "SUNDAY FUTURES" if self.now.weekday() == 6 and is_futures_active else "PREMARKET" if (7 <= self.now.hour < 9) else "LIVE FUTURES" if is_futures_active else "WEEKEND STASIS"
         label_color = gold if is_futures_active else text_dim
+        
+        # Load spark data if available
+        spark_data = {}
+        spark_path = Path(__file__).parent.parent / 'database' / 'email_sparklines.json'
+        if spark_path.exists():
+            try:
+                with open(spark_path, 'r') as f: spark_data = json.load(f)
+            except: pass
 
         pulse_rows = []
         for index in COMPARATIVE_INDICES:
             c_data = prices.get(index['cash'], {})
             f_data = prices.get(index['fut'], {})
             
-            # Cash Close Details
+            # Cash Close Details (ALWAYS use close data)
             c_val = c_data.get('price', 0); c_chg = c_data.get('change_pct', 0)
             c_color = bull if c_chg >= 0 else bear
             c_arr = '+' if c_chg >= 0 else ''
             
-            # Futures Details
-            f_val = f_data.get('price', 0); f_chg = f_data.get('change_pct', 0)
-            f_color = bull if f_chg >= 0 else bear
-            f_arr = '+' if f_chg >= 0 else ''
-            f_bg = 'rgba(16,185,129,0.08)' if f_chg >= 0 else 'rgba(244,63,94,0.08)'
-
+            # Futures/Live Details (Use session-aware logic)
+            f_val, f_chg, f_sess = self.get_session_data(f_data, index['fut'])
+            
+            # V23.48: Hide Futures column entirely during Live/AH session
+            fut_col_html = ""
+            if not is_live_main:
+                f_color = bull if f_chg >= 0 else bear
+                f_arr = '+' if f_chg >= 0 else ''
+                f_bg = 'rgba(16,185,129,0.08)' if f_chg >= 0 else 'rgba(244,63,94,0.08)'
+                fut_col_html = f"""
+                    <td width="52%" style="padding-left:12px; text-align:center;">
+                        <div class="pulse-sub-label" style="color:{label_color}; font-size:7px; font-weight:bold; margin-bottom:2px;">{live_label}</div>
+                        <div class="pulse-val" style="color:{text_bright}; font-size:14px; font-weight:bold;">{f_val:,.0f}</div>
+                        {get_diff_str(f_val, f_chg, f_color)}
+                        <div class="pulse-chg-pill" style="display:inline-block; background:{f_bg}; color:{f_color}; font-size:11px; padding:2px 6px; border-radius:3px; font-weight:bold; margin-top:2px;">{f_arr}{f_chg:.1f}%</div>
+                    </td>
+                """
+            
             pulse_rows.append(
                 f'<tr>'
                 f'<td style="padding:4px;"><div style="background:{bg_accent}; border-radius:5px; padding:12px 10px;">'
                 f'<div class="pulse-idx-name" style="color:{text_dim}; font-size:9px; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; font-weight:bold; text-align:center;">{index["name"]}</div>'
                 f'<table width="100%" cellpadding="0" cellspacing="0"><tr>'
-                f'<td width="48%" style="border-right:1px solid {border}; padding-right:8px; text-align:center;">'
+                f'<td width="{"48%" if not is_live_main else "100%"}" style="{"border-right:1px solid "+border+"; padding-right:8px;" if not is_live_main else ""} text-align:center;">'
                 f'<div class="pulse-sub-label" style="color:{text_dim}; font-size:7px; margin-bottom:2px;">{prior_close_label}</div>'
                 f'<div class="pulse-val" style="color:{text_bright}; font-size:14px; font-weight:bold;">{c_val:,.0f}</div>'
                 f'{get_diff_str(c_val, c_chg, c_color)}'
                 f'<div class="pulse-chg" style="color:{c_color}; font-size:10px; font-weight:bold;">{c_arr}{c_chg:.1f}%</div>'
                 f'</td>'
-                f'<td width="52%" style="padding-left:12px; text-align:center;">'
-                f'<div class="pulse-sub-label" style="color:{label_color}; font-size:7px; font-weight:bold; margin-bottom:2px;">{live_label}</div>'
-                f'<div class="pulse-val" style="color:{text_bright}; font-size:14px; font-weight:bold;">{f_val:,.0f}</div>'
-                f'{get_diff_str(f_val, f_chg, f_color)}'
-                f'<div class="pulse-chg-pill" style="display:inline-block; background:{f_bg}; color:{f_color}; font-size:11px; padding:2px 6px; border-radius:3px; font-weight:bold; margin-top:2px;">{f_arr}{f_chg:.1f}%</div>'
-                f'</td>'
+                f'{fut_col_html}'
                 f'</tr></table>'
                 f'</div></td>'
                 f'</tr>'
@@ -909,7 +1111,7 @@ class SovereignIntelligenceEngine:
         crypto_tiles = []
         for t in crypto_tickers:
             p = prices.get(t, {})
-            val = p.get('price', 0); chg = p.get('change_pct', 0)
+            val, chg, sess = self.get_session_data(p, t)
             label = t.split('-')[0]
             color = bull if chg >= 0 else bear
             arrow = '+' if chg >= 0 else ''
@@ -932,7 +1134,7 @@ class SovereignIntelligenceEngine:
         hr = self.now.hour
         for name, ticker in global_map:
             p = prices.get(ticker, {})
-            chg = p.get('change_pct', 0)
+            val, chg, sess = self.get_session_data(p, ticker)
             color = bull if chg >= 0 else bear
             arrow = '▲' if chg >= 0 else '▼'
             is_open = (
@@ -967,30 +1169,37 @@ class SovereignIntelligenceEngine:
         ])
 
         # 4. Sector Dossier Cards — N/A guard for missing prices
-        def render_bucket(title, items):
+        def render_bucket(title, items, hide_notes=False):
             if not items: return ""
             rows = []
             for t in items:
-                raw_pct = t.get('pct') or 0
-                # Treat exactly-zero as missing if no price in live DB
                 p_entry = prices.get(t['symbol'], {})
-                has_price = p_entry.get('price') and p_entry['price'] > 0
+                price, pct, sess = self.get_session_data(p_entry, t['symbol'])
+                has_price = price and price > 0
+                
                 if not has_price:
                     pct_display = '<span style="color:#4a5568; font-size:10px;">N/A</span>'
                     clr = text_dim
                 else:
-                    clr = bull if raw_pct >= 0 else bear
-                    pct_display = f'<span style="color:{clr}; font-weight:bold;">{raw_pct:+.2f}%</span>'
+                    clr = bull if pct >= 0 else bear
+                    sess_tag = self.get_session_tag_html(fs="9px", sess_override=sess)
+                    price_str = f'<span class="sec-price" style="color:#cbd5e1; font-size:10px; margin-right:8px;">${price:,.2f}</span>'
+                    pct_display = f'{price_str}<span class="sec-pct-val" style="color:{clr}; font-weight:bold;">{pct:+.2f}%{sess_tag}</span>'
 
-                notes = t.get('notes', '').strip()
+                notes = "" if hide_notes else t.get('notes', '').strip()
                 # HARDENED: Inject price flair without clickable blue links for notes
                 flaired_notes = self.inject_price_flair(notes, prices, link=False)
+                # Sparkline Logic
+                p_pts = spark_data.get(t['symbol'], [])
+                spark_color = self.COLOR_GREEN if pct >= 0 else self.COLOR_DANGER
+                spark_html = self.generate_sparkline_svg(p_pts, spark_color)
+
                 rows.append(f"""
                     <div class="sector-card" style="background:{bg_accent}; border-left:2px solid {clr}; padding:12px 14px; border-radius:4px; margin-bottom:6px;">
                         <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                            <td class="sec-ticker" width="22%" style="font-family:monospace; font-weight:bold; font-size:13px; white-space:nowrap;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none !important;">${t['symbol']}</a></td>
-                            <td class="sec-name" width="48%" style="font-size:11px; color:{text_dim}; padding:0 8px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">{t['name']}</td>
-                            <td class="sec-pct" width="30%" style="text-align:right; font-family:monospace; font-size:13px;">{pct_display}</td>
+                            <td class="sec-ticker" width="26%" style="font-family:monospace; font-weight:bold; font-size:13px; white-space:nowrap;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none !important;">${t['symbol']}</a></td>
+                            <td class="sec-name" width="31%" style="font-size:11px; color:{text_dim}; padding:0 8px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">{spark_html}{t['name']}</td>
+                            <td class="sec-pct" width="43%" style="text-align:right; font-family:monospace; font-size:13px;">{pct_display}</td>
                         </tr></table>
                         {f'<div class="sec-notes" style="font-size:10px; color:#8f9bb3; margin-top:6px; line-height:1.5; border-top:1px solid rgba(255,255,255,0.04); padding-top:6px; white-space:normal !important; word-wrap:break-word; overflow:visible !important; display:block;">{flaired_notes[:800]}</div>' if flaired_notes else ''}
                     </div>
@@ -1002,6 +1211,7 @@ class SovereignIntelligenceEngine:
                 f'</div>'
             )
 
+        watchlist_html = render_bucket("Real-time Watchlist // CLI Intel", tradeable.get("watchlist", []), hide_notes=True)
         semi_html = render_bucket("Sector Sentiment", tradeable.get("semi", []))
         ai_html = render_bucket("Algorithmic Intelligence", tradeable.get("ai", []))
 
@@ -1079,12 +1289,16 @@ class SovereignIntelligenceEngine:
                     .sec-name   {{ font-size:16px !important; }}
                     .sec-pct    {{ font-size:18px !important; }}
                     .sec-notes  {{ font-size:13px !important; line-height:1.6 !important; color:#8f9bb3 !important; }}
+                    
+                    /* TARGETED: CLOSING PRICES */
+                    .sec-price {{ font-size:15px !important; font-weight:bold !important; color:{text_bright} !important; }}
+                    
                     /* Velocity chips */
                     .vel-chip {{ font-size:15px !important; padding:12px 16px !important; }}
                     .vel-vol  {{ font-size:13px !important; }}
-                    .mv-row   {{ font-size:16px !important; padding:14px 20px !important; }}
+                    .mv-row   {{ font-size:14px !important; padding:14px 20px !important; }}
                     .mv-vol   {{ font-size:13px !important; }}
-                    .top-mover-chip {{ font-size:14px !important; padding:10px 14px !important; }}
+                    .top-mover-chip {{ font-size:10px !important; padding:10px 14px !important; }}
                     /* Header block */
                     .hdr-title {{ font-size:28px !important; }}
                     .hdr-sub   {{ font-size:14px !important; }}
@@ -1161,18 +1375,13 @@ class SovereignIntelligenceEngine:
                 </tr></table>
             </td></tr>
 
-                <!-- Velocity Strip — one stock per row -->
-                <tr><td style="padding:20px 0 24px 0;">
-                    <div class="section-hdr" style="font-size:9px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border};">Velocity Override // Vol Spikes</div>
-                    {chr(10).join(momentum_chips) if momentum_chips else '<div style="color:{text_dim}; font-size:11px;">No vol spikes detected</div>'}
-                </td></tr>
-
                 <!-- Narrative Intel -->
                 <tr><td style="padding-bottom:30px;">
                     <div style="border-left:3px solid {gold}; padding-left:20px; margin-bottom:30px;">
                         <div class="section-hdr macro-hdr" style="color:{gold}; font-family:sans-serif; font-size:12px; font-weight:bold; margin-bottom:15px;">I. MACRO // GLOBAL PULSE</div>
                         {macro_html}
                     </div>
+                    {watchlist_html}
                     {semi_html}
                     {ai_html}
                 </td></tr>
@@ -1209,11 +1418,57 @@ class SovereignIntelligenceEngine:
         except Exception as e: print(f"[FAIL] {e}"); return False
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="GIGACPO Intelligence Dossier Engine")
+    parser.add_argument("--test-email", action="store_true", help="Send a test email")
+    parser.add_argument("--tickers", type=str, help="Comma-separated list of custom tickers")
+    args, unknown = parser.parse_known_args()
+
+    custom_tickers = []
+    if args.tickers:
+        if args.tickers.endswith(".txt") and os.path.exists(args.tickers):
+            with open(args.tickers, "r") as f:
+                content = f.read()
+                # Support newlines, spaces, and commas
+                raw = content.replace('\n', ',').replace(' ', ',')
+                custom_tickers.extend([t.strip().upper() for t in raw.split(',') if t.strip()])
+        else:
+            custom_tickers.extend([t.strip().upper() for t in args.tickers.split(',') if t.strip()])
+    
+    # Also support free-floating flags like --NVDA or trailing lists
+    for u in unknown:
+        if u.startswith("--") and len(u) > 2:
+            t = u[2:].upper().replace(',', ' ').split()[0]
+            custom_tickers.append(t)
+        elif not u.startswith("-"):
+            for t in u.split(','):
+                t = t.strip().upper()
+                if t: custom_tickers.append(t)
+
+    # V23.48: Trigger Sparkline Sidecar Fetch (Async but isolated)
+    try:
+        sidecar_path = Path(__file__).parent / 'email_spark_fetcher.py'
+        if sidecar_path.exists():
+            log.info("Triggering Email Sparkline Sidecar...")
+            t_list = load_tickers() + custom_tickers
+            asyncio.run(run_spark_fetch(t_list))
+    except Exception as e:
+        log.warning(f"Sparkline sidecar failed: {e}")
+
     engine = SovereignIntelligenceEngine()
-    tradeable, strategic, prices, news_db, sentiment, entries = engine.gather_all_data()
+    
+    # Filter custom tickers to legit ones
+    valid_custom = [t for t in custom_tickers if engine.is_legit_ticker(t)]
+    if valid_custom:
+        print(f"[CLI] Custom Watchlist: {', '.join(valid_custom)}")
+
+    tradeable, strategic, prices, news_db, sentiment, entries = engine.gather_all_data(custom_tickers=valid_custom)
     html = engine.compose_html(tradeable, strategic, prices, news_db, sentiment, entries)
-    with open(engine.db_path / "synopsis_preview.html", "w", encoding="utf-8") as f: f.write(html)
-    if "--test-email" in sys.argv:
+    
+    preview_path = engine.db_path / "synopsis_preview.html"
+    with open(preview_path, "w", encoding="utf-8") as f: 
+        f.write(html)
+    
+    if args.test_email:
         engine.send_email(html)
     else:
-        print(f"Dossier generated: {engine.db_path / 'synopsis_preview.html'}")
+        print(f"Dossier generated: {preview_path}")

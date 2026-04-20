@@ -134,15 +134,20 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
             ext_pct = None
             ext_type = None
             
-            if market_st == 'OVERNIGHT':
+            # V23.44: High-Fidelity Session Prioritization
+            # Priority: PRE/POST > OVERNIGHT
+            pre_p = item.get('preMarketPrice')
+            post_p = item.get('postMarketPrice')
+            
+            if market_st in ('PRE', 'PREPRE') or (pre_p is not None and market_st == 'OVERNIGHT'):
+                ext_price = pre_p
+                ext_pct   = item.get('preMarketChangePercent')
+                ext_type  = 'PRE'
+            elif market_st == 'OVERNIGHT':
                 # V22.94: High-fidelity BOATS (Blue Ocean ATS) overnight data
                 ext_price = item.get('overnightMarketPrice')
                 ext_pct   = item.get('overnightMarketChangePercent')
                 ext_type  = 'OVN'
-            elif market_st in ('PRE', 'PREPRE'):
-                ext_price = item.get('preMarketPrice')
-                ext_pct   = item.get('preMarketChangePercent')
-                ext_type  = 'PRE'
             elif market_st in ('POST', 'POSTPOST', 'CLOSED'):
                 # V22.93: Smart cascade — prefer PRE over POST when CLOSED
                 # Yahoo sometimes populates preMarketPrice even in CLOSED state

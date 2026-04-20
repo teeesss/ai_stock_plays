@@ -1,4 +1,4 @@
-# Quickstart Guide (V22.44 Sovereign Intelligence)
+# Quickstart Guide (V22.97 Sovereign Intelligence)
 
 ## 1. Launching the Command Center
 The terminal now operates via a unified Pipeline Orchestration sequence for real-time synchronization. To launch:
@@ -21,7 +21,7 @@ The terminal is configured for a **"Set and Forget"** production environment:
 2. Update technical deep-dives in **`KNOWLEDGE.md`**.
 
 ## 4. Maintenance & Testing
-- **Test SIE Email**: Run `python engine/email_market_synopsis.py --test-email` to verify SMTP and NLP synthesis.
+- **Test SIE Email**: Run `python engine/email_market_synopsis.py --test-email --tickers tickers.txt` to verify SMTP and file-based batch loading.
 - **Pipeline Rebuild**: Run `python engine/pipeline_orchestrator.py` to rebuild local static bindings.
 - **Audit Logs**: Check `logs/` for sector-specific sync status.
 
