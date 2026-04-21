@@ -1,4 +1,4 @@
-## 🚀 Active Context: V23.77 (Price Integration & Institutional Hardening)
+## 🚀 Active Context: V23.78 (Movers Hardening & Institutional Spacing)
 
 ### 🧩 Logic & Patterns
 1. **Sovereign Intelligence Engine (V23.60/61)**:
