@@ -910,40 +910,32 @@ class SovereignIntelligenceEngine:
             used_for_headlines.add(h['title'])
             h_count += 1
 
-        # V23.01: Generate the Comprehensive Narrative BEFORE the headlines
-        synthesis_pool = [h for h in macro_headlines if h['title'] not in used_for_headlines and not is_blacklisted(h['title'])] + ticker_news[:30]
-        # Request a deeper synthesis (20 sentences across paragraphs for higher fidelity)
-        nlp_summary = nlp.synthesize_macro_overview(synthesis_pool, sentences_count=20, group_paragraphs=True)
-        
-        comp_narrative = []
-        for p in nlp_summary:
-            if isinstance(p, dict):
-                html_items = []
-                for item in p['items']:
-                    flaired = self.inject_price_flair(item['text'], prices, master_data)
-                    html_items.append(f"<li style='margin-bottom:8px;'><a href=\"{item['link']}\" style='color:#cbd5e1; text-decoration:none;\">{flaired}</a></li>")
-                group_html = f"<div style='margin-bottom:24px;'><div style='color:#0ea5e9; font-weight:bold; font-size:12px; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;'>{p['transition']}</div><ul style='margin-top:0; padding-left:20px; font-size:14px; line-height:1.6;'>{''.join(html_items)}</ul></div>"
-                comp_narrative.append(group_html)
-            else:
-                comp_narrative.append(self.inject_price_flair(p, prices, master_data))
-        
-        # Build the Macro HTML block
+        # Block 1: Executive Summary & Pulse
         report_blocks = []
-        # Block 1: Executive Summary
-        summary_html = f"<div style='background:rgba(21,128,61,0.05) if risk_on else rgba(245,158,11,0.05); padding:18px; border-radius:5px; border-left:4px solid {gold if not risk_on else '#10b981'}; margin-bottom:24px; color:#cbd5e1; font-size:15px; line-height:1.7;'><b>Executive Summary:</b> {pulse_text}</div>"
+        summary_html = f"<div style='background:rgba(255,255,255,0.03); padding:10px 0; margin-bottom:20px; color:#cbd5e1; font-size:15px; line-height:1.6;'><b>Executive Summary:</b> {pulse_text}</div>"
         report_blocks.append(summary_html)
         
         # Block 2: Comprehensive Intelligence Briefing (The Narrative)
-        for p in comp_narrative:
-            if p.startswith("<div"):
-                report_blocks.append(p)
+        # Filter synthesis pool to EXCLUDE stock-specific stories for Macro
+        macro_pool = [h for h in macro_headlines if get_macro_score(h) < 100 and not is_blacklisted(h['title'])]
+        nlp_summary = nlp.synthesize_macro_overview(macro_pool, sentences_count=12, group_paragraphs=True)
+        
+        for p in nlp_summary:
+            if isinstance(p, dict):
+                # User wants to remove "Intelligence Brief" etc. headers
+                html_items = []
+                for item in p['items']:
+                    flaired = self.inject_price_flair(item['text'], prices, master_data)
+                    html_items.append(f"<li style='margin-bottom:8px;'><a href=\"{item['link']}\" style='color:#cbd5e1; text-decoration:none;'>{flaired}</a></li>")
+                group_html = f"<ul style='margin-top:0; padding-left:20px; font-size:14px; line-height:1.6;'>{''.join(html_items)}</ul>"
+                report_blocks.append(group_html)
             else:
-                report_blocks.append(f"<p style='color:#cbd5e1; line-height:1.8; font-size:14px; margin-bottom:20px;'>{p}</p>")
+                report_blocks.append(f"<p style='color:#cbd5e1; line-height:1.8; font-size:14px; margin-bottom:15px;'>{self.inject_price_flair(p, prices, master_data)}</p>")
             
-        # Block 3: Institutional Pulse (Top 15 Headlines)
+        # Block 3: Institutional Pulse (Top 12 Headlines)
         if headline_divs:
-            report_blocks.append(f'<div class="section-hdr" style="color:{text_dim}; font-family:monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-top:30px; margin-bottom:15px;">Institutional Pulse // Headlines (Top 15)</div>')
-            report_blocks.extend(headline_divs)
+            report_blocks.append(f'<div class="section-hdr" style="color:{text_dim}; font-family:monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-top:20px; margin-bottom:10px;">Institutional Pulse // Headlines</div>')
+            report_blocks.extend(headline_divs[:12])
         
         macro_ps = report_blocks
         
@@ -951,43 +943,43 @@ class SovereignIntelligenceEngine:
         m_candidates = []
         for k, v in prices.items():
             if not self.is_legit_ticker(k) or self.is_shite_ticker(k): continue
-            
             p_val, p_pct, p_sess = self.get_session_data(v, k)
             if p_pct is None or abs(p_pct) < 0.1: continue 
-            
             vol = v.get("vol_spike") if v.get("vol_spike") is not None else 1.0
-            if vol < 1.2: continue # 20% vol surge minimum
-            
+            if vol < 1.1: continue # 10% vol surge minimum
             m_candidates.append({"s": k, "v": abs(p_pct) * vol, "pct": p_pct, "vol": vol})
 
-        momentum_top = sorted(m_candidates, key=lambda x: x['v'], reverse=True)[:6]
+        momentum_top = sorted(m_candidates, key=lambda x: x['v'], reverse=True)[:10]
         if momentum_top:
-            mv_rows = []
-            for m in momentum_top:
-                pct = m['pct']
-                vol = m['vol']
-                # CSS Bar for Email: Faked with non-breaking spaces and background color
-                # vol_scaled = min(100, int((vol/5)*100))
-                # using a table-based visual bar for higher compatibility
-                bar_width = min(60, int(vol * 15))
-                bar_html = f'<span style="display:inline-block; background:#0ea5e9; height:2px; width:{bar_width}px; vertical-align:middle; margin-left:10px; border-radius:1px;"></span>'
-                
-                flaired = self.get_ticker_chip(m['s'], prices, simple=True, link=False)
-                mv_rows.append(
-                    f'<div class="mv-row" style="background:rgba(14,165,233,0.08); border-left:4px solid #0ea5e9; '
-                    f'border-radius:4px; padding:10px 16px; margin-bottom:5px; '
-                    f'font-family:monospace; font-size:13px; white-space:nowrap; overflow:hidden;">'
-                    f'<span style="display:inline-block; min-width:130px;">{flaired}</span>'
-                    f'<span class="mv-vol" style="color:#38bdf8; font-size:11px; margin-left:12px; font-weight:bold;">VOL ×{vol:.1f}</span>'
-                    f'{bar_html}'
-                    f'</div>'
-                )
+            # 2nd Column split
+            half = (len(momentum_top) + 1) // 2
+            cols = [momentum_top[:half], momentum_top[half:]]
+            col_htmls = []
+            
+            for col_items in cols:
+                mv_rows = []
+                for m in col_items:
+                    vol = m['vol']
+                    bar_width = min(40, int(vol * 10))
+                    bar_html = f'<span style="display:inline-block; background:#0ea5e9; height:2px; width:{bar_width}px; vertical-align:middle; margin-left:6px; border-radius:1px;"></span>'
+                    flaired = self.get_ticker_chip(m['s'], prices, simple=True, link=False)
+                    mv_rows.append(
+                        f'<div class="mv-row" style="background:rgba(14,165,233,0.06); border-left:3px solid #0ea5e9; '
+                        f'border-radius:3px; padding:6px 10px; margin-bottom:3px; font-family:monospace; font-size:12px; white-space:nowrap;">'
+                        f'<span style="display:inline-block; min-width:90px;">{flaired}</span>'
+                        f'<span style="color:#38bdf8; font-size:10px; font-weight:bold;">×{vol:.1f}</span>'
+                        f'{bar_html}</div>'
+                    )
+                col_htmls.append(f'<td width="50%" style="vertical-align:top; {"padding-right:5px" if len(col_htmls)==0 else "padding-left:5px"}">{"".join(mv_rows)}</td>')
+
             report_blocks.append(
-                f'<div style="margin:20px 0 30px 0;">'
+                f'<div style="margin:15px 0 25px 0;">'
                 f'<div class="section-hdr" style="color:#0ea5e9; font-family:sans-serif; font-size:10px; letter-spacing:3px; '
-                f'text-transform:uppercase; font-weight:900; margin-bottom:12px; padding-bottom:6px; '
-                f'border-bottom:2px solid rgba(14,165,233,0.3);">Velocity Override // Vol Spikes</div>'
-                f'{"".join(mv_rows)}</div>'
+                f'text-transform:uppercase; font-weight:900; margin-bottom:10px; padding-bottom:5px; '
+                f'border-bottom:1px solid rgba(14,165,233,0.3);">Velocity Override // Vol Spikes</div>'
+                f'<table width="100%" cellpadding="0" cellspacing="0"><tr>'
+                f'{"".join(col_htmls)}'
+                f'</tr></table></div>'
             )
 
         macro_ps = report_blocks
@@ -1358,42 +1350,61 @@ class SovereignIntelligenceEngine:
             if sym == '_meta' or not self.is_legit_ticker(sym): continue
             price, pct, sess = self.get_session_data(p_data, sym)
             if pct is not None and abs(pct) > 0.05: # filter noise
-                perf_candidates.append({'s': sym, 'p': price, 'pct': pct, 'sess': sess})
+                perf_candidates.append({'symbol': sym, 'price': price, 'change_pct': pct, 'session': sess})
         
         # Gainers: Greatest to Least
-        gainers_top = sorted([p for p in perf_candidates if p['pct'] > 0], key=lambda x: x['pct'], reverse=True)[:10]
+        gainers_top = sorted([p for p in perf_candidates if p['change_pct'] > 0], key=lambda x: x['change_pct'], reverse=True)[:10]
         # Losers: Most Negative to Least Negative
-        losers_top = sorted([p for p in perf_candidates if p['pct'] < 0], key=lambda x: x['pct'])[:10]
+        losers_top = sorted([p for p in perf_candidates if p['change_pct'] < 0], key=lambda x: x['change_pct'])[:10]
 
-        def render_perf_list(items, color, align="center"):
-            rows = []
-            for item in items:
-                sess_tag = self.get_session_tag_html(fs="9px", sess_override=item['sess'])
-                # High-fidelity: reduced padding, improved font weight, absolute-minimum margins
-                rows.append(
-                    f'<div class="perf-item" style="font-family:monospace; font-size:12px; margin-bottom:1px; line-height:1; '
-                    f'background:rgba(255,255,255,0.03); border-radius:2px; padding:5px 8px; display:inline-block; width:100%; box-sizing:border-box; text-align:left; border-bottom:1px solid rgba(255,255,255,0.02);">'
-                    f'<span style="color:{gold}; font-weight:bold; display:inline-block; width:70px;">${item["s"]}</span> '
-                    f'<span style="color:{color}; font-weight:900; margin-left:6px; font-size:13px;">{item["pct"]:+.2f}%</span>'
-                    f'<span style="float:right; margin-top:0px;">{sess_tag}</span>'
-                    f'</div>'
-                )
-            return "".join(rows) if rows else '<div style="color:#4a5568; font-size:11px; padding:15px 0; text-align:center;">None identified</div>'
+        def render_perf_list(movers, title, color):
+            """Renders Movers with centered-block but left-aligned symbols."""
+            results = []
+            # Split into two columns for top 10
+            mid = (len(movers) + 1) // 2
+            col1 = movers[:mid]
+            col2 = movers[mid:]
+            
+            for sub_movers in [col1, col2]:
+                if not sub_movers: 
+                    results.append('<td width="50%"></td>')
+                    continue
 
-        # V23.60: Tightened Centered Overhaul for Desktop Display
+                items_html = []
+                for s in sub_movers:
+                    pct_val = s.get('change_pct', 0)
+                    color_movers = "#10b981" if pct_val >= 0 else "#f43f5e"
+                    pct_str = f"{'+' if pct_val >= 0 else ''}{pct_val:.2f}%"
+                    badge = self.get_session_tag_html(fs="8px", sess_override=s.get('session', 'LIVE'))
+                    symbol_link = f'<a href="https://finance.yahoo.com/quote/{s["symbol"]}" style="color:#f59e0b; text-decoration:none;">${s["symbol"]}</a>'
+                    
+                    # Centered inline-block container with left-aligned content
+                    items_html.append(f'''
+                        <div style="margin-bottom:2px; text-align:center;">
+                            <div style="display:inline-block; width:150px; background:rgba(255,255,255,0.02); padding:4px 8px; border-radius:2px; font-family:monospace; font-size:12px; text-align:left;">
+                                <span style="display:inline-block; min-width:65px; color:#f59e0b; font-weight:bold;">{symbol_link}</span>
+                                <span style="color:{color_movers}; font-weight:900; float:right;">{pct_str} {badge}</span>
+                            </div>
+                        </div>''')
+
+                results.append(f"""
+                    <td class="perf-cell" width="50%" style="vertical-align:top; padding:0 4px; text-align:center;">
+                        <div class="perf-hdr" style="color:{color}; font-size:10px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">{title}</div>
+                        {''.join(items_html)}
+                    </td>
+                """)
+            return "".join(results)
+
+        # V23.60: High-Density Gainer/Loser Grid
         perf_carveout_html = f"""
         <tr><td style="padding:15px 0 25px 0;">
-            <div class="section-hdr" style="font-family:monospace; font-size:11px; letter-spacing:5px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; color:{text_bright};">Session Performance // Top 10 Movers</div>
-            <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                <td class="perf-cell" width="50%" style="vertical-align:top; border-right:1px solid rgba(255,255,255,0.08); padding:0 8px; text-align:center;">
-                    <div class="perf-hdr" style="color:{bull}; font-size:11px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:2px;">▲ Top Gainers</div>
-                    <div style="display:inline-block; text-align:left; width:100%;">{render_perf_list(gainers_top, bull, align="center")}</div>
-                </td>
-                <td class="perf-cell" width="50%" style="vertical-align:top; padding:0 8px; text-align:center;">
-                    <div class="perf-hdr" style="color:{bear}; font-size:11px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:2px;">▼ Top Losers</div>
-                    <div style="display:inline-block; text-align:left; width:100%;">{render_perf_list(losers_top, bear, align="center")}</div>
-                </td>
-            </tr></table>
+            <div class="section-hdr" style="font-family:monospace; font-size:11px; letter-spacing:5px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; color:{text_bright};">Session Performance Movers</div>
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <tr><td colspan="2" style="font-size:10px; color:{bull}; font-weight:900; text-align:center; padding-bottom:8px; text-transform:uppercase; letter-spacing:1px;">▲ Top Gainers</td></tr>
+                <tr>{render_perf_list(gainers_top, "", bull)}</tr>
+                <tr><td colspan="2" style="padding-top:20px; font-size:10px; color:{bear}; font-weight:900; text-align:center; padding-bottom:8px; text-transform:uppercase; letter-spacing:1px;">▼ Top Losers</td></tr>
+                <tr>{render_perf_list(losers_top, "", bear)}</tr>
+            </table>
         </td></tr>
         """
 
@@ -1404,8 +1415,7 @@ class SovereignIntelligenceEngine:
             f'{p}</div>' for p in macro_ps
         ])
 
-        # V23.60: Sector Dossier Cards — N/A guard for missing prices
-        def render_bucket(title, items, hide_notes=False):
+        def render_bucket(title, items, hide_notes=False, columns=1):
             if not items: return ""
             rows = []
             for t in items:
@@ -1415,46 +1425,47 @@ class SovereignIntelligenceEngine:
                 has_price = price and price > 0
                 
                 if not has_price:
-                    pct_display = '<span style="color:#4a5568; font-size:10px;">N/A</span>'
+                    pct_display = '<span style="color:#4a5568; font-size:9px;">N/A</span>'
                     clr = text_dim
                 else:
                     clr = bull if pct >= 0 else bear
-                    sess_tag = self.get_session_tag_html(fs="9px", sess_override=sess)
-                    price_str = f'<span class="sec-price" style="color:#cbd5e1; font-size:10px; margin-right:8px;">${price:,.2f}</span>'
-                    pct_display = f'{price_str}<span class="sec-pct-val" style="color:{clr}; font-weight:bold;">{pct:+.2f}%{sess_tag}</span>'
+                    sess_tag = self.get_session_tag_html(fs="8px", sess_override=sess)
+                    price_str = f'<span style="color:#cbd5e1; font-size:9px; margin-right:5px;">${price:,.2f}</span>'
+                    pct_display = f'{price_str}<span style="color:{clr}; font-weight:bold; font-size:10px;">{pct:+.2f}%{sess_tag}</span>'
 
                 notes = "" if hide_notes else t.get('notes', '').strip()
-                # HARDENED: Inject price flair without clickable blue links for notes
                 flaired_notes = self.inject_price_flair(notes, prices, link=False)
-                
-                # Check if name is redundant with symbol
-                display_name = t['name']
-                if display_name.upper() == sym.upper():
-                    # If name is same as ticker, try to fetch from name map or just hide it
-                    display_name = self.ticker_name_map.get(sym, "")
-                    if not display_name or display_name.upper() == sym.upper():
-                        display_name = ""
+                display_name = t['name'] if t['name'].upper() != sym.upper() else self.ticker_name_map.get(sym, "")
 
                 rows.append(f"""
-                    <div class="sector-card" style="background:{bg_accent}; border-left:2px solid {clr}; padding:8px 12px; border-radius:4px; margin-bottom:2px;">
+                    <div style="background:rgba(255,255,255,0.03); border-left:2px solid {clr}; padding:6px 10px; border-radius:3px; margin-bottom:2px;">
                         <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                            <td class="sec-ticker" width="28%" style="font-family:monospace; font-weight:bold; font-size:13px; white-space:nowrap;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none !important;">${t['symbol']}</a></td>
-                            <td class="sec-name" width="30%" style="font-size:11px; color:{text_dim}; padding:0 8px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">{display_name}</td>
-                            <td class="sec-pct" width="42%" style="text-align:right; font-family:monospace; font-size:13px;">{pct_display}</td>
+                            <td width="30%" style="font-family:monospace; font-weight:bold; font-size:12px;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none;">${sym}</a></td>
+                            <td width="70%" style="text-align:right; font-family:monospace;">{pct_display}</td>
                         </tr></table>
-                        {f'<div class="sec-notes" style="font-size:10px; color:#8f9bb3; margin-top:4px; line-height:1.4; border-top:1px solid rgba(255,255,255,0.04); padding-top:4px; white-space:normal !important; word-wrap:break-word; overflow:visible !important; display:block;">{flaired_notes[:800]}</div>' if flaired_notes else ''}
+                        {f'<div style="font-size:9px; color:#8f9bb3; margin-top:3px; line-height:1.3; overflow:hidden; max-height:35px;">{flaired_notes}</div>' if flaired_notes else ''}
                     </div>
                 """)
+            
+            # If 2 cols, shard the rows
+            if columns == 2:
+                half = (len(rows) + 1) // 2
+                col1 = "".join(rows[:half])
+                col2 = "".join(rows[half:])
+                content = f'<table width="100%" cellpadding="0" cellspacing="0"><tr><td width="50%" style="vertical-align:top; padding-right:4px;">{col1}</td><td width="50%" style="vertical-align:top; padding-left:4px;">{col2}</td></tr></table>'
+            else:
+                content = "".join(rows)
+
             return (
-                f'<div style="margin-top:12px;">'
-                f'<div class="section-hdr" style="color:{text_dim}; font-family:monospace; font-size:9px; letter-spacing:3px; text-transform:uppercase; font-weight:bold; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #1e2130;">— {title} —</div>'
-                f'{"".join(rows)}'
-                f'</div>'
+                f'<div style="margin-top:20px;">'
+                f'<div class="section-hdr" style="color:{text_dim}; font-family:monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #1e2130;">— {title} —</div>'
+                f'{content}</div>'
             )
 
-        watchlist_html = render_bucket("Real-time Watchlist // CLI Intel", tradeable.get("watchlist", []), hide_notes=True)
-        semi_html = render_bucket("Sector Sentiment", tradeable.get("semi", []))
-        ai_html = render_bucket("Algorithmic Intelligence", tradeable.get("ai", []))
+        watchlist_html = render_bucket("Real-time Watchlist", tradeable.get("watchlist", []), hide_notes=True, columns=2)
+        # Merge Semi and AI
+        merged_intel = tradeable.get("semi", []) + tradeable.get("ai", [])
+        intelligence_html = render_bucket("Sovereign Intelligence Dashboard", merged_intel, columns=2)
 
         # Master Template Assembly — Responsive Dual-Surface Design
         html = f"""
@@ -1607,6 +1618,26 @@ class SovereignIntelligenceEngine:
                 <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">
                     {pulse_grid_rows}
                     {crypto_pulse_row}
+                    
+                    <!-- Fear & Greed — centered 2-col -->
+                    <tr><td style="padding:10px 0 15px 0;">
+                        <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                            <td width="50%" style="padding:3px; vertical-align:top;">
+                                <div style="background:#0a0f1e; border-radius:5px; padding:12px 8px; text-align:center;">
+                                    <div class="fg-label" style="font-size:8px; font-family:monospace; color:#8f9bb3; letter-spacing:1px; margin-bottom:3px;">MARKET F&G</div>
+                                    <div class="fg-val" style="font-size:32px; font-weight:900; color:{fg_color_total}; line-height:1;">{sentiment}</div>
+                                    <div style="font-size:7px; color:#8f9bb3; margin-top:2px;">FEAR & GREED</div>
+                                </div>
+                            </td>
+                            <td width="50%" style="padding:3px; vertical-align:top;">
+                                <div style="background:#0a0f1e; border-radius:5px; padding:12px 8px; text-align:center;">
+                                    <div class="fg-label" style="font-size:8px; font-family:monospace; color:#8f9bb3; letter-spacing:1px; margin-bottom:3px;">CRYPTO F&G</div>
+                                    <div class="fg-val" style="font-size:32px; font-weight:900; color:{fg_color_crypto}; line-height:1;">{crypto_fg}</div>
+                                    <div style="font-size:7px; color:#8f9bb3; margin-top:2px;">COIN GLASS</div>
+                                </div>
+                            </td>
+                        </tr></table>
+                    </td></tr>
                 </table>
 
                 <!-- Global Markets grid -->
@@ -1615,38 +1646,21 @@ class SovereignIntelligenceEngine:
 
                 {perf_carveout_html}
                 
-                <!-- WATCHLIST INTEL -->
-                {watchlist_intel_html}
+                <!-- Macro Intelligence leads the news flow -->
+                <div style="border-left:3px solid {gold}; padding-left:20px; margin:20px 0;">
+                    <div class="section-hdr macro-hdr" style="color:{gold}; font-family:sans-serif; font-size:12px; font-weight:bold; margin-bottom:10px;">I. MACRO // GLOBAL PULSE</div>
+                    {macro_html}
+                </div>
 
-                <!-- Fear & Greed — centered 2-col -->
-                <div class="section-hdr" style="font-size:9px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border};">Sentiment</div>
-                <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                    <td width="50%" style="padding:3px; vertical-align:top;">
-                        <div style="background:{bg_deep}; border-radius:5px; padding:12px 8px; text-align:center;">
-                            <div class="fg-label" style="font-size:8px; font-family:monospace; color:{text_dim}; letter-spacing:1px; margin-bottom:4px;">MARKET F&amp;G</div>
-                            <div class="fg-val" style="font-size:22px; font-weight:bold; color:{m_color}; line-height:1;">{market_fg}</div>
-                            <div style="font-size:7px; color:{text_dim}; margin-top:3px;">FEAR &amp; GREED</div>
-                        </div>
-                    </td>
-                    <td width="50%" style="padding:3px; vertical-align:top;">
-                        <div style="background:{bg_deep}; border-radius:5px; padding:12px 8px; text-align:center;">
-                            <div class="fg-label" style="font-size:8px; font-family:monospace; color:{text_dim}; letter-spacing:1px; margin-bottom:4px;">CRYPTO F&amp;G</div>
-                            <div class="fg-val" style="font-size:22px; font-weight:bold; color:{c_color}; line-height:1;">{crypto_fg}</div>
-                            <div style="font-size:7px; color:{text_dim}; margin-top:3px;">COIN GLASS</div>
-                        </div>
-                    </td>
-                </tr></table>
+                <!-- WATCHLIST NEWS -->
+                {watchlist_intel_html}
             </td></tr>
 
                 <!-- Narrative Intel -->
                 <tr><td style="padding-bottom:30px;">
-                    <div style="border-left:3px solid {gold}; padding-left:20px; margin-bottom:30px;">
-                        <div class="section-hdr macro-hdr" style="color:{gold}; font-family:sans-serif; font-size:12px; font-weight:bold; margin-bottom:15px;">I. MACRO // GLOBAL PULSE</div>
-                        {macro_html}
-                    </div>
+                    {watchlist_intel_html}
                     {watchlist_html}
-                    {semi_html}
-                    {ai_html}
+                    {intelligence_html}
                 </td></tr>
 
                 <!-- Footer -->
