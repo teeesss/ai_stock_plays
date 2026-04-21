@@ -36,7 +36,7 @@ ROOT = Path(__file__).parent.parent
 OUT_JS  = ROOT / 'database' / 'live_prices.js'
 OUT_JSON = ROOT / 'database' / 'live_prices.json'
 
-BATCH_SIZE = 10
+BATCH_SIZE = 25
 
 def load_tickers() -> list[str]:
     """Load only the static terminal tickers (Root + AI)."""
@@ -315,7 +315,8 @@ async def async_run_fetch(tickers: list = None, force: bool = False, dry_run: bo
         
         i += len(batch)
         if i < len(tickers):
-            delay = random.uniform(3.3, 10.0)
+            # V23.60: Tightened delay for faster hydration (was 3.3-10s)
+            delay = random.uniform(1.5, 3.0)
             log.info(f"Sleeping for {delay:.2f}s before next price batch...")
             await asyncio.sleep(delay)
 

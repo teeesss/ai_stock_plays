@@ -16,7 +16,7 @@ $trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday -At 9am
 Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "XTweetsRefresh" -Description "Syncs CPO data, audits financials, and exports LLM bundles."
 ```
 
-## 2.5 Sovereign Dossier Scheduling (V22.94)
+## 2.5 Sovereign Dossier Scheduling (V23.76)
 
 The Sovereign Intelligence Engine is designed for high-frequency market alignment. It is recommended to schedule dispatches at **Market Pre-Open**, **Market Close**, and **Sunday Night / Overnight**.
 
@@ -47,14 +47,14 @@ Register-ScheduledTask -Action $a3 -Trigger $t3 -TaskName "SIE_Overnight_Dispatc
 6. Add Arguments: `engine\email_market_synopsis.py`.
 7. Start in: `z:\COS_Stock_Plays`.
 
-## 4. Automated Environment Hardening (V23.59)
+## 4. Automated Environment Hardening (V23.76)
 
-The Sovereign pipeline now includes the **Auto-Dependency Guardian**. You no longer need to manually install dependencies. 
+The Sovereign pipeline now includes the **Auto-Dependency Guardian** utilizing `os.execv` to restart seamlessly on dependency resolution.
 
 Simply run the script:
 ```bash
 python engine/email_market_synopsis.py
 ```
-If any libraries (vaderSentiment, sumy, curl_cffi, etc.) are missing, the script will **automatically prompt you to install them** before proceeding. 
+If any libraries (vaderSentiment, sumy, curl_cffi, etc.) are missing, the script will **automatically install them** and inject them seamlessly without failing out of the schedule.
 
 For a detailed breakdown of CLI flags and logic, see the [Email Synopsis Guide](file:///x:/COS_Stock_Plays/docs/EMAIL_SYNOPSIS_GUIDE.md).

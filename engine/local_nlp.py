@@ -129,6 +129,45 @@ class LocalIntelligenceSynthesizer:
             print(f"[NLP ERR] {e}")
             return []
 
+    def synthesize_market_narrative(self, articles: list, vibe: str) -> str:
+        """Constructs a dense, 3-sentence institutional paragraph from summary data."""
+        if not articles: return f"The market maintains a {vibe} posture. No primary catalysts identified."
+        
+        # 1. Extract Top Themes
+        themes = self.get_top_themes(articles, top_n=2)
+        top_theme = themes[0] if themes else "Sector Rotation"
+        
+        # 2. Extract Lead Anchor (Overview)
+        anchor = articles[0]
+        lead_para = anchor.get('summary', anchor.get('raw_title', '')).strip()
+        if not lead_para.endswith((".", "!", "?")): lead_para += "."
+        
+        # 3. Use LSA on the corpus for a dense 2nd/3rd sentence
+        # Filter out the lead anchor's text from the dense pool to avoid stutter
+        dense_points = self.synthesize_macro_overview(articles[1:10], sentences_count=2, group_paragraphs=False)
+        
+        # Deduplicate sentences logically
+        unique_points = []
+        lead_lower = lead_para.lower()
+        for p in dense_points:
+            pt = p.strip()
+            if not pt: continue
+            if pt.lower() in lead_lower: continue
+            if any(pt.lower() in up.lower() for up in unique_points): continue
+            unique_points.append(pt)
+
+        dense_text = " ".join(unique_points[:2])
+        
+        # 4. Final Institutional Construction
+        narrative = f"{lead_para}"
+        if dense_text:
+            if not dense_text.endswith((".", "!", "?")): dense_text += "."
+            narrative += f" {dense_text}"
+            
+        narrative += f" This reinforces <strong>{top_theme}</strong> as the primary focal point during this {vibe} cycle."
+
+        return narrative
+
     def get_top_themes(self, articles: list, top_n=5) -> list:
         if not self.is_active or not articles:
             return []
@@ -172,3 +211,31 @@ class LocalIntelligenceSynthesizer:
         except Exception as e:
             print(f"[THEME ERR] {e}")
             return []
+
+    def rank_news_relevance(self, articles: list, top_n=15) -> list:
+        """Score and rank headlines by information density and relevance."""
+        if not self.is_active or not articles: return articles[:top_n]
+        
+        try:
+            # Informational Density Score (Length + Punctuation + Keywords)
+            scored = []
+            for a in articles:
+                text = (a.get('title', '') + " " + a.get('summary', '')).lower()
+                length_score = min(len(text) / 200.0, 1.0)
+                
+                # Check for "High Alpha" keywords
+                alpha_words = ['breakthrough', 'record', 'surge', 'monopoly', 'pivot', 'exclusive', 'bottleneck', 'monopoly', 'bottleneck', 'acceleration']
+                alpha_score = sum(1.5 for w in alpha_words if w in text)
+                
+                # VADER Sentiment Intensity (Stronger usually means more 'newsy')
+                sentiment = self.analyzer.polarity_scores(text)
+                tone_score = abs(sentiment['compound']) * 2.0
+                
+                final_score = length_score + alpha_score + tone_score
+                scored.append((a, final_score))
+            
+            # Sort by score descending
+            ranked = [s[0] for s in sorted(scored, key=lambda x: x[1], reverse=True)]
+            return ranked[:top_n]
+        except:
+            return articles[:top_n]

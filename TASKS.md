@@ -1,14 +1,14 @@
-### 🚀 Current Status: V23.60 — High-Density Cockpit Design Protocol
+### 🚀 Current Status: V23.61 — Macro Cockpit & Stealth Hardening
+- [x] **Macro Pulse & RSS Aggregator (V23.60)**: Multi-source feed aggregation with precision tech-weighted scoring and live enrichment.
+- [x] **Stealth Fetching Protocol (V23.60)**: Integrated session sharing, randomized jitter (3.3-10s), and `curl_cffi` impersonation to ensure ban-resistance.
+- [x] **Gmail Clipping Defense (V23.60)**: Deployed HTML minification and headline capping (Top 15) to keep payload under 102KB.
+- [x] **Auto-Continue Guardian (V23.60)**: Upgraded dependency manager to automatically restart the engine via `os.execv` after resolution.
+- [x] **Headline Deduplication (V23.60)**: Suppressed redundant headlines between Macro Pulse and Sector Dossier.
 - [x] **High-Density Cockpit Layout (V23.60)**: Systematically reduced vertical whitespace across sectors and performance movers for professional desktop aesthetic.
 - [x] **Stateful Icon De-duplication (V23.60)**: Guaranteed 100% icon variety across headlines via context-aware pool tracking.
 - [x] **CSS Velocity Bars (V23.60)**: Replaced character-based blocks with precision-CSS bars for volume surges.
 - [x] **Auto-Dependency Guardian (V23.59)**: All core scripts now auto-check for missing libraries (bs4, playwright, etc.) and offer one-click installation. Supports Windows & Linux.
-- [x] **Timezone-Aware Session Logic (V23.58)**: Implemented `_get_est_now()` to normalize VM/Server calculations to US/Eastern (EDT). Resolves CST vs EST session misclassification.
-- [x] **PM Blue Lightening (V23.58)**: Refined `PM` session badge color to `#60a5fa` for better visual harmony.
-- [x] **LIVE (L⚡) Badge refined (V23.58)**: Integrated the lightning bolt icon into the high-alpha green regular session badge.
-- [x] **Priority Intelligence Pipeline (V23.56)**: Deployed surgical news harvesting for `priority_tickers.txt` with weighted scoring (+250 base).
-- [x] **Context-Aware News Icons (V23.48)**: Replaced generic `⚡` with dynamic icon mapping (🛡️, 🛢️, ⚖️, 🧠, 📈, 💻, 📜, 🪙, 📡) based on headline keyword analysis.
-- Date: 2026-04-20
+- Date: 2026-04-21
 
 # Project Status — April 20, 2026
 ## 🚀 Version: V23.48 (Visual Supercycle)

@@ -80,7 +80,17 @@ class RemoteSync:
                         except FileNotFoundError:
                             sftp.mkdir(curr_rem)
 
-                log.info(f"Uploading {local_rel} -> {remote_rel}...")
+                # V23.60: Delta Sync Optimization (Skip if size matches)
+                local_size = local_path.stat().st_size
+                try:
+                    remote_stat = sftp.stat(remote_rel)
+                    if remote_stat.st_size == local_size:
+                        log.info(f"Skipping {local_rel} (Size match: {local_size}b)")
+                        continue
+                except FileNotFoundError:
+                    pass # Upload as new
+
+                log.info(f"Uploading {local_rel} -> {remote_rel} ({local_size}b)...")
                 sftp.put(str(local_path), remote_rel)
                 sftp.chmod(remote_rel, 0o644)
 

@@ -57,8 +57,9 @@ def ensure_dependencies():
                         print("[*] Installing Playwright Chromium...")
                         subprocess.check_call([sys.executable, "-m", "playwright", "install", "chromium"])
                     
-                    print("[+] All dependencies resolved. Please restart the script.\n")
-                    sys.exit(0)
+                    print("[+] All dependencies resolved. Auto-restarting engine...\n")
+                    # V23.60: Auto-restart the process to pick up new packages
+                    os.execv(sys.executable, [sys.executable] + sys.argv)
                 except Exception as e:
                     print(f"[-] Installation failed: {e}")
                     sys.exit(1)

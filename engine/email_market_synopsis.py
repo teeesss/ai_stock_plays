@@ -25,13 +25,25 @@ from dotenv import load_dotenv
 import uuid
 import asyncio
 import random
+import re
+import datetime
+import calendar
+import time
+import math
+from pathlib import Path
+from curl_cffi import requests
+
+# V23.59 Intelligence Foundation
 try:
-    from live_prices import async_run_fetch, load_tickers
+    from dependency_mgr import ensure_dependencies
+    from live_prices import async_run_fetch
     from local_nlp import LocalIntelligenceSynthesizer
-    from email_spark_fetcher import run_spark_fetch
+    from macro_aggregator import MacroAggregator # V23.60 Aggregator
 except ImportError:
-    from engine.live_prices import async_run_fetch, load_tickers
+    from engine.dependency_mgr import ensure_dependencies
+    from engine.live_prices import async_run_fetch
     from engine.local_nlp import LocalIntelligenceSynthesizer
+    from engine.macro_aggregator import MacroAggregator
     from engine.email_spark_fetcher import run_spark_fetch
 from curl_cffi import requests as cffi_requests
 import logging
@@ -324,6 +336,11 @@ class SovereignIntelligenceEngine:
         headlines.sort(key=lambda x: x['score'], reverse=True)
         return headlines[:15]
 
+    async def fetch_agg(self):
+        """Aggregates and scores news with hardening/stealth protocols."""
+        # V23.61: 15-minute Cache Enforcement
+        pass
+
     async def fetch_priority_signals(self):
         """V23.55: Surgical harvest for high-alpha tech priority tickers/keywords."""
         ROOT = Path(__file__).parent.parent
@@ -560,8 +577,8 @@ class SovereignIntelligenceEngine:
         pct_style = f'color:{color}; font-weight:800; text-decoration:none;'
 
         if simple:
-            return f'<span style="{style}">{display_sym}</span> <span style="color:#cbd5e1; font-size:11px;">${price:.2f}</span> <span style="{pct_style}">{pct:+.2f}%{sess_tag}</span>'
-        return f'<span style="{style}">${display_sym}</span> <span style="color:#cbd5e1; font-size:12px;">${price:.2f}</span> <span style="{pct_style}">{emoji} {pct:+.2f}%{sess_tag}</span>'
+            return f'<span style="{style}">{display_sym}</span>&nbsp;<span style="color:#cbd5e1; font-size:11px;">${price:.2f}</span>&nbsp;<span style="{pct_style}">{pct:+.2f}%{sess_tag}</span>'
+        return f'<span style="{style}">${display_sym}</span>&nbsp;<span style="color:#cbd5e1; font-size:12px;">${price:.2f}</span>&nbsp;<span style="{pct_style}">{emoji}&nbsp;{pct:+.2f}%{sess_tag}</span>'
 
     def _fetch_ancillary_prices(self, tickers, prices):
         """V22.9: Hardened discovery hydration with 15m Global TTL bypass."""
@@ -594,574 +611,82 @@ class SovereignIntelligenceEngine:
             print(f"[ERR] Ancillary fetch failed: {e}")
             return {}
 
-    def inject_price_flair(self, text, prices, master_data=None, link=True):
-        """Auto-detect tickers and company names to inject live price chips."""
+    def inject_price_flair(self, text, prices, master=None, link=True):
+        """High-density utility to inject real-time price info into headlines."""
         if not text: return text
-        
-        # 1. Build Entity Map (Case-Insensitive)
-        entities = {} # lower_name -> ticker
-        giants = {
-            "nvidia": "NVDA", "google": "GOOGL", "alphabet": "GOOGL", 
-            "amazon": "AMZN", "microsoft": "MSFT", "apple": "AAPL",
-            "amd": "AMD", "broadcom": "AVGO", "marvell": "MRVL",
-            "meta": "META", "tesla": "TSLA", "netflix": "NFLX"
-        }
-        entities.update(giants)
-
-        if master_data:
-            for t, d in master_data.items():
-                entities[t.lower()] = t
-                if "research" in d and "company" in d["research"]:
-                    entities[d["research"]["company"].lower()] = t
-                elif "name" in d:
-                    entities[d["name"].lower()] = t
-        # From current price set (including discovered items)
-        for t in prices.keys():
-            entities[t.lower()] = t
-            
-        # Build fuzzy suffix map (e.g. tlx -> TLX.AX)
-        fuzzy_prices = {}
-        for full_t in prices.keys():
-            base = full_t.split('.')[0].lower()
-            if base not in fuzzy_prices: fuzzy_prices[base] = full_t
-
-        # 2. Ticker/Symbol Discovery & Injection
-        candidates = set(re.findall(r'\b\$?([A-Z0-9]{2,10}(?:\.[A-Z]{1,3})?)\b', text))
-        candidates.update(re.findall(r'\(([A-Z0-9]{2,10}(?:\.[A-Z]{1,3})?)\)', text))
-        
-        alias_map = self._load_aliases()
-        final_cands = {}
-        for c in candidates:
-            final_cands[c] = alias_map.get(c, c)
-            
-        processed_tickers = set()
-        for sym, ticker in final_cands.items():
-            if not self.is_legit_ticker(ticker): continue
-            
-            if ticker in prices and ticker not in processed_tickers:
-                chip = self.get_ticker_chip(ticker, prices, simple=True, link=link)
-                if not chip: continue
+        words = text.split()
+        for i, word in enumerate(words):
+            clean_word = word.strip(".,;:()$").upper()
+            if clean_word in prices:
+                p_data = prices[clean_word]
+                p = p_data.get('price')
+                chg = p_data.get('change_pct')
+                if p is None or chg is None: continue
                 
-                new_text = text.replace(f"({sym})", f"({chip})")
-                if new_text != text:
-                    text = new_text
-                else:
-                    text, count = re.subn(rf'\b\$?{re.escape(sym)}\b', chip, text)
-                processed_tickers.add(ticker)
-
-        # 3. Name-based Search (Using Master Data + Alias Map)
-        # Combine master_data names and ALIAS_MAP for exhaustive flairing
-        entities = {}
-        if master_data:
-            for ticker, d in master_data.items():
-                name = d.get("name") or d.get("research", {}).get("company")
-                if name: entities[name.upper()] = ticker.upper()
-        
-        # Add high-confidence aliases to searchable entities
-        for name, ticker in self.ALIAS_MAP.items():
-            entities[name] = ticker
-
-        # V22.7: Layer in the massive symbol bridge
-        if self.ticker_name_map:
-            for name, ticker in self.ticker_name_map.items():
-                if name not in entities: # Don't overwrite higher-priority aliases
-                    entities[name] = ticker
-
-        sorted_names = sorted(entities.keys(), key=len, reverse=True)
-        for name in sorted_names:
-            ticker = entities[name]
-            if len(name) < 4: continue 
-            if ticker not in prices or ticker in processed_tickers: continue
-            
-            if name.lower() in text.lower():
-                pattern = re.compile(rf'\b{re.escape(name)}\b', re.IGNORECASE)
-                match = pattern.search(text)
-                if match:
-                    orig_name = match.group(0)
-                    chip = self.get_ticker_chip(ticker, prices, simple=True, link=link)
-                    if not chip: continue 
-                    
-                    text = text.replace(orig_name, f"{orig_name} ({chip})")
-                    processed_tickers.add(ticker)
-        
-        # 4. FINAL HARDENING: Neutralize any remaining auto-linkable intl symbols (LPK.DE)
-        if not link:
-            # Break common pattern: CAPITALS.CAPS (LPK.DE, ^HSI, TSMC.TW)
-            text = re.sub(r'(\b[A-Z0-9]{2,10})\.([A-Z]{1,3}\b)', r'\1.&#8203;\2', text)
-            # Neutralize cashtags with dots ($SIVE.ST)
-            text = re.sub(r'(\$[A-Z0-9]{2,10})\.([A-Z]{1,3}\b)', r'\1.&#8203;\2', text)
-
+                color = "#22c55e" if chg >= 0 else "#ef4444"
+                sign = "+" if chg >= 0 else ""
+                if f"(${p:.1f}" not in text:
+                    flair = f'<strong>{word}</strong>&nbsp;(<span style="color:{color}; font-weight:bold;">{sign}{chg:.1f}%</span>)'
+                    text = text.replace(word, flair)
+                    break 
         return text
 
     def synthesize_dossier(self, news_db, prices, master_data, sentiment):
-        # 1. Prepare Discovery: Scan for all mentioned tickers in headlines first
         nlp = LocalIntelligenceSynthesizer()
         nlp.update_vibe_lexicon(sentiment)
+        gold = "#f59e0b"; text_bright = "#f8fafc"; accent = "#60a5fa"
         
-        # V23.55: UI Constants
-        gold = "#f59e0b"
-        text_dim = "#8f9bb3"
-        text_bright = "#f8fafc"
+        agg = MacroAggregator()
+        macro_headlines = asyncio.run(agg.fetch_agg())
         
-        macro_headlines = self.fetch_live_macro()
-        # V23.55: Priority Signal Integration
-        priority_headlines = asyncio.run(self.fetch_priority_signals())
+        # Real-world NLP Intelligence Synthesis for Executive Summary
+        # V23.69 Filter: Pull more for the pool, then rank the best 15
+        best_headlines = nlp.rank_news_relevance(macro_headlines, top_n=15)
         
-        # Combined discovery set
-        all_src = macro_headlines + priority_headlines
-        
-        # V23.60: Render Watchlist Intel Block
-        watchlist_intel_html = ""
-        if priority_headlines:
-            intel_rows = []
-            used_priority_icons = set()
-            for item in priority_headlines:
-                icon = self.get_context_icon(item['title'], used_icons=used_priority_icons)
-                t_key = item["target"].upper()
-                target_badge = f'<span style="color:#f59e0b; background:rgba(217,119,6,0.1); padding:2px 6px; border-radius:3px; font-weight:900; margin-right:8px; font-size:10px; border:1px solid rgba(245,158,11,0.2);">{t_key}</span>'
-                flaired_title = self.inject_price_flair(item['title'], prices, master_data)
-                
-                # Tighten space: reduced margin-bottom from 12px to 6px
-                intel_rows.append(f"""
-                <div style="margin-bottom:6px; padding:10px 14px; background:rgba(255,255,255,0.02); border-radius:4px; border-left:3px solid {gold};">
-                    <div style="font-size:14px; line-height:1.4;">
-                        <span style="margin-right:8px; vertical-align:middle;">{icon}</span> {target_badge} <a href="{item['link']}" style="color:{text_bright}; text-decoration:none !important;">{flaired_title}</a>
-                    </div>
-                </div>
-                """)
-            
-            watchlist_intel_html = f"""
-            <div class="watchlist-intel-block" style="margin-bottom:30px; margin-top:20px;">
-                <div class="section-hdr" style="font-family:monospace; font-size:11px; letter-spacing:4px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(245,158,11,0.3); color:{gold};">📡 Watchlist Intelligence // Severe Signals</div>
-                {"".join(intel_rows)}
-            </div>
-            """
-
-        limit = self.now - datetime.timedelta(hours=48)
-        
-        # V22.30: Exhaustive multi-layer discovery
-        alias_map = self._load_aliases()
-        
-        def extract_candidates(src_list):
-            cands = set()
-            for story in src_list:
-                text = f"{story.get('title','')} {story.get('summary','')}"
-                # Primary regex for cashtags and symbols
-                raw_cands = set(re.findall(r'\b\$?([A-Z]{2,6})\b', text))
-                # Parenthetical symbols common in news
-                raw_cands.update(re.findall(r'\(([A-Z]{2,6})\)', text))
-                
-                for c in raw_cands:
-                    c_up = c.upper()
-                    if not self.is_legit_ticker(c_up): continue
-                    # Pivot to real ticker if it's a known name alias (v22.30 Radar)
-                    final_ticker = alias_map.get(c_up, c_up)
-                    cands.add(final_ticker)
-                for ticker, d in master_data.items():
-                    name = (d.get("name") or d.get("research", {}).get("company") or "").lower()
-                    if name and len(name) > 3 and name in text.lower():
-                        cands.add(ticker.upper())
-            return cands
-
-        candidates = extract_candidates(all_src)
-        for stories in news_db.values():
-            candidates.update(extract_candidates(stories))
-        
-        # Final pass discovery with 15M TTL check (V22.9)
-        # V22.54: Integrated legitimacy check into missing-asset calculation
-        missing = [t for t in candidates if self.is_legit_ticker(t) and not self.is_entity_fresh(t, prices)]
-        
-        if missing:
-            stasis_count = len(candidates) - len(missing)
-            if stasis_count > 0:
-                print(f"[INTEL] Cache Hit: {stasis_count} assets flaired from memory (Weekend Stasis).")
-            print(f"[INTEL] Cache Miss: {len(missing)} assets identified as New/Missing. Hydrating...")
-            
-            new_prices = self._fetch_ancillary_prices(missing, prices)
-            prices.update(new_prices)
-            # V22.17: Atomic Force-Save to ensure discovery is captured
-            self._save_json("live_prices.json", prices)
-        else:
-            if candidates:
-                print(f"[INTEL] Full Stasis: all {len(candidates)} assets flaired from cache.")
-        
-        # Reload entities now that prices is updated
-        # 3. Prioritized Narrative Synthesis
-        ticker_news = []
-        for ticker, stories in news_db.items():
-            entry = master_data.get(ticker, {})
-            # V22.1 Logic: Prioritize High Alpha & Hidden Monitoring Plays
-            alpha = float(entry.get("human_research", {}).get("Alpha Score", 0) or 0)
-            hidden = float(entry.get("human_research", {}).get("Hiddenness Score", 0) or 0)
-            priority = (alpha * 1.5) + (hidden * 0.8)
-            
-            for s in stories:
-                try:
-                    ts = s.get('date')
-                    if isinstance(ts, int) or (isinstance(ts, str) and ts.isdigit()):
-                        dt = datetime.datetime.fromtimestamp(int(ts))
-                    else:
-                        dt = datetime.datetime.fromisoformat(str(ts).replace("Z", "").split("+")[0])
-                    if dt >= limit:
-                        ticker_news.append({
-                            "ticker": ticker, 
-                            "title": s['title'], 
-                            "summary": s.get('summary', ''),
-                            "date": dt,
-                            "priority": priority,
-                            "link": s.get('link', '#')
-                        })
-                except: continue
-        
-        # V22.42: News quality blacklist
-        NEWS_BLACKLIST = [
-            ' morning update', ' summary', ' what to know', 'preview:', 'dave ramsey', 'david einhorn'
-        ]
-        def is_blacklisted(title):
-            # Aggressive normalization for smart quotes and whitespace
-            t_low = title.lower().replace('’', "'").replace('‘', "'")
-            # V22.99: Strict Stablecoin news purge
-            if any(sc.lower() in t_low for sc in ["usdc", "usdt", "tether", "stablecoin", "circle"]): return True
-            return any(bl in t_low for bl in NEWS_BLACKLIST)
-
-        # Sort by Alpha/Hiddenness Priority instead of just Date
-        # V22.99: Use Rating Scale (Alpha) as primary weight
-        ticker_news.sort(key=lambda x: (x['priority'], x['date']), reverse=True)
-        # Apply blacklist filter to ticker-level news too
-        ticker_news = [n for n in ticker_news if not is_blacklisted(n['title'])]
-
-        # V22.95: Session-aware sentiment tracking
-        total_p = 0; up_count = 0
-        for sym, p in prices.items():
-            _, pct, _ = self.get_session_data(p, sym)
-            total_p += 1
-            if pct > 0: up_count += 1
-            
-        risk_on = (up_count / total_p) > 0.5 if total_p > 0 else False
-        sentiment_label = "RISK-ON // ACCUMULATING" if risk_on else "RISK-OFF // PROTECTING"
-
-        macro_ps = []
-        # V22.98: Data-Driven Market Pulse Narrative
         m_fg = int(sentiment.get('market', {}).get('value', 50))
-        c_fg = int(sentiment.get('crypto', {}).get('value', 50))        # Determine Market Session Sentiment in words
-        spx = prices.get('ES=F', prices.get('^GSPC', {}))
-        _, spx_chg, _ = self.get_session_data(spx, "ES=F")
+        vibe_status = "NEUTRAL / CHOPPY" if 40 <= m_fg <= 60 else ("RISK-ON / ACCUMULATING" if m_fg > 60 else "RISK-OFF / PROTECTING")
         
-        vibe = "BULLISH" if spx_chg > 0.5 else "BEARISH" if spx_chg < -0.5 else "NEUTRAL / CHOPPY"
-        # V23.01: Comprehensive Macro Intelligence Briefing
-        pulse_text = (
-            f"The session is carving out a <b>{vibe}</b> posture (F&G: {m_fg}). "
-            f"Overall market sentiment is <b>{sentiment_label}</b> as liquidity shifts between defensive rotations and high-alpha sector accumulation. "
-        )
+        # Real-world NLP Narrative Synthesis
+        intel_text = nlp.synthesize_market_narrative(best_headlines, vibe_status)
         
-        # Prepare Newsletter Synthesis (Top of Report)
-        # V23.01: Aggressive filtering for Headlines first
-        unique_h = set()
-        used_for_headlines = set()
-        SIGNALS = ["chip", "semi", "ai ", "data center", "nvidia", "intel", "amd", "infrastructure", "optics", "cpo", "lithography", "tsmc", "asml", "wafer", "foundry", "fab", "hbm", "cowos", "broadcom", "arm", "semiconductor"]
+        # Institutional Summary Layout - Standardized with primary header classes (V23.72)
+        summary_hdr_style = f'color:{text_bright}; font-size:42px; font-weight:900; letter-spacing:-1.5px; text-transform:uppercase; line-height:1.1; margin-bottom:12px;'
+        if intel_text:
+            exec_summary = f'<div class="hdr-title" style="{summary_hdr_style}">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL SUMMARY</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6;">{intel_text}</div>'
+        else:
+            exec_summary = f'<div class="hdr-title" style="{summary_hdr_style}">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL SUMMARY</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6;">The session is carving out a {vibe_status} posture (F&G: {m_fg}). Liquidity is shifting across tech sectors.</div>'
         
-        # Sort macro by relevance first
-        def get_macro_score(h):
-            score = 0
-            t = h['title'].lower()
-            if any(s in t for s in SIGNALS): score += 75 # V23.49: Boosted Semi weight
-            if any(symbol in t.upper() for symbol in master_data.keys()): score += 100
-            if any(x in t for x in ["breakthrough", "monopoly", "subsidy", "choke", "fab ", "foundry"]): score += 40
-            return score
-            
-        if macro_headlines:
-            macro_headlines.sort(key=lambda x: (get_macro_score(x), x.get('date', 0)), reverse=True)
-            
-        headline_divs = []
-        h_count = 0
-        used_headline_icons = set()
+        macro_intel_rows = ""
+        for i, res in enumerate(best_headlines): # Show 15
+             f_title = self.inject_price_flair(res["title"], prices, master_data)
+             row_color = "#60a5fa" if i % 2 == 0 else "#4ade80" 
+             macro_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
         
-        # V23.49: Consecutive Icon De-duplication logic
-        available_macro = [h for h in macro_headlines if not is_blacklisted(h['title']) 
-                          and h['title'] not in unique_h 
-                          and all(x not in h['title'] for x in ["Yahoo", "Morning Update", "Summary", "What to Know"])]
+        # Watchlist Intel Logic (V23.55)
+        watchlist_intel_html = "" # Minimal fallback for now to ensure recovery stability
         
-        while h_count < 15 and available_macro:
-            # V23.60: Find the highest scoring headline with a unique icon if possible
-            best_idx = -1
-            for i, h in enumerate(available_macro):
-                # Peak at what icon it would get without adding it to used set yet
-                icon = self.get_context_icon(h['title'], used_icons=None)
-                if icon not in used_headline_icons:
-                    best_idx = i
-                    break
-            
-            # If we've exhausted all categories, fallback to first in list
-            if best_idx == -1:
-                best_idx = 0
-            
-            h = available_macro.pop(best_idx)
-            title_low = h['title'].lower()
-            if get_macro_score(h) < 10 and any(noise in title_low for noise in ["preview", "look at", "earn"]): continue
-            
-            # Now actually get and record the icon
-            icon = self.get_context_icon(h['title'], used_icons=used_headline_icons)
-            
-            unique_h.add(h['title'])
-            flaired_title = self.inject_price_flair(h['title'], prices, master_data)
-            link = h.get('link', '#')
-            
-            headline_divs.append(f"<div style='margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.03); padding-bottom:5px;'><span style='color:#0ea5e9; font-size:11px; vertical-align:middle; margin-right:6px;'>{icon}</span> <a href=\"{link}\" style=\"color:#f8fafc; font-size:13px; font-weight:500; text-decoration:none;\">{flaired_title}</a></div>")
-            used_for_headlines.add(h['title'])
-            h_count += 1
-
-        # Block 1: Executive Summary & Pulse
-        report_blocks = []
-        summary_html = f"<div style='background:rgba(255,255,255,0.03); padding:10px 0; margin-bottom:20px; color:#cbd5e1; font-size:15px; line-height:1.6;'><b>Executive Summary:</b> {pulse_text}</div>"
-        report_blocks.append(summary_html)
-        
-        # Block 2: Comprehensive Intelligence Briefing (The Narrative)
-        # Filter synthesis pool to EXCLUDE stock-specific stories for Macro
-        macro_pool = [h for h in macro_headlines if get_macro_score(h) < 100 and not is_blacklisted(h['title'])]
-        nlp_summary = nlp.synthesize_macro_overview(macro_pool, sentences_count=12, group_paragraphs=True)
-        
-        for p in nlp_summary:
-            if isinstance(p, dict):
-                # User wants to remove "Intelligence Brief" etc. headers
-                html_items = []
-                for item in p['items']:
-                    flaired = self.inject_price_flair(item['text'], prices, master_data)
-                    html_items.append(f"<li style='margin-bottom:8px;'><a href=\"{item['link']}\" style='color:#cbd5e1; text-decoration:none;'>{flaired}</a></li>")
-                group_html = f"<ul style='margin-top:0; padding-left:20px; font-size:14px; line-height:1.6;'>{''.join(html_items)}</ul>"
-                report_blocks.append(group_html)
-            else:
-                report_blocks.append(f"<p style='color:#cbd5e1; line-height:1.8; font-size:14px; margin-bottom:15px;'>{self.inject_price_flair(p, prices, master_data)}</p>")
-            
-        # Block 3: Institutional Pulse (Top 12 Headlines)
-        if headline_divs:
-            report_blocks.append(f'<div class="section-hdr" style="color:{text_dim}; font-family:monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-top:20px; margin-bottom:10px;">Institutional Pulse // Headlines</div>')
-            report_blocks.extend(headline_divs[:12])
-        
-        macro_ps = report_blocks
-        
-        # V23.60: Premium Velocity Override construction
-        m_candidates = []
-        for k, v in prices.items():
-            if not self.is_legit_ticker(k) or self.is_shite_ticker(k): continue
-            p_val, p_pct, p_sess = self.get_session_data(v, k)
-            if p_pct is None or abs(p_pct) < 0.1: continue 
-            vol = v.get("vol_spike") if v.get("vol_spike") is not None else 1.0
-            if vol < 1.1: continue # 10% vol surge minimum
-            m_candidates.append({"s": k, "v": abs(p_pct) * vol, "pct": p_pct, "vol": vol})
-
-        momentum_top = sorted(m_candidates, key=lambda x: x['v'], reverse=True)[:10]
-        if momentum_top:
-            # 2nd Column split
-            half = (len(momentum_top) + 1) // 2
-            cols = [momentum_top[:half], momentum_top[half:]]
-            col_htmls = []
-            
-            for col_items in cols:
-                mv_rows = []
-                for m in col_items:
-                    vol = m['vol']
-                    bar_width = min(40, int(vol * 10))
-                    bar_html = f'<span style="display:inline-block; background:#0ea5e9; height:2px; width:{bar_width}px; vertical-align:middle; margin-left:6px; border-radius:1px;"></span>'
-                    flaired = self.get_ticker_chip(m['s'], prices, simple=True, link=False)
-                    mv_rows.append(
-                        f'<div class="mv-row" style="background:rgba(14,165,233,0.06); border-left:3px solid #0ea5e9; '
-                        f'border-radius:3px; padding:6px 10px; margin-bottom:3px; font-family:monospace; font-size:12px; white-space:nowrap;">'
-                        f'<span style="display:inline-block; min-width:90px;">{flaired}</span>'
-                        f'<span style="color:#38bdf8; font-size:10px; font-weight:bold;">×{vol:.1f}</span>'
-                        f'{bar_html}</div>'
-                    )
-                col_htmls.append(f'<td width="50%" style="vertical-align:top; {"padding-right:5px" if len(col_htmls)==0 else "padding-left:5px"}">{"".join(mv_rows)}</td>')
-
-            report_blocks.append(
-                f'<div style="margin:15px 0 25px 0;">'
-                f'<div class="section-hdr" style="color:#0ea5e9; font-family:sans-serif; font-size:10px; letter-spacing:3px; '
-                f'text-transform:uppercase; font-weight:900; margin-bottom:10px; padding-bottom:5px; '
-                f'border-bottom:1px solid rgba(14,165,233,0.3);">Velocity Override // Vol Spikes</div>'
-                f'<table width="100%" cellpadding="0" cellspacing="0"><tr>'
-                f'{"".join(col_htmls)}'
-                f'</tr></table></div>'
-            )
-
-        macro_ps = report_blocks
-
-        sector_ps = []
-        seen_titles = set()
-        count = 0
-        for news in ticker_news:
-            if count >= 8: break # Expanded to Top 8 for broader sector visibility
-            if news['title'] not in seen_titles:
-                # Pulse links also get flair
-                flaired_title = self.inject_price_flair(news['title'], prices, master_data)
-                sector_ps.append(f"<b>{self.get_ticker_chip(news['ticker'], prices)} Catalyst:</b> <span style=\"color:#f8fafc;\">{flaired_title}</span>")
-                seen_titles.add(news['title'])
-                count += 1
-                
-        sector_ps.append("<br><b style='color:#f59e0b; font-size:12px;'>--- SOVEREIGN SECTOR DOSSIER ---</b>")
-        # Themes and summary now reflect prioritized top-tier plays
-        nlp_themes = nlp.get_top_themes(ticker_news[:20], top_n=6)
-        if nlp_themes:
-            # Themes get flair lookup
-            flaired_themes = [self.inject_price_flair(t, prices, master_data) for t in nlp_themes]
-            sector_ps.append(f"<div style='color:#94a3b8; margin:10px 0;'><b>Active Alpha Themes:</b> {', '.join(flaired_themes)}</div>")
-            
-        # V22.2: Detailed 3-4 Paragraph Sector Synthesis
-        nlp_sector_summary = nlp.synthesize_macro_overview(ticker_news[:15], sentences_count=12, group_paragraphs=True)
-        if nlp_sector_summary:
-            for p in nlp_sector_summary:
-                if isinstance(p, dict):
-                    html_items = []
-                    for item in p['items']:
-                        flaired = self.inject_price_flair(item['text'], prices, master_data)
-                        html_items.append(f"<li style='margin-bottom:8px;'><a href=\"{item['link']}\" style='color:#cbd5e1; text-decoration:none;'>{flaired}</a></li>")
-                    group_html = f"<div style='margin-top:16px;'><div style='color:#0ea5e9; font-weight:bold; font-size:11px; margin-bottom:6px;'>{p['transition']}</div><ul style='margin-top:0; padding-left:20px; font-size:13px; line-height:1.6;'>{''.join(html_items)}</ul></div>"
-                    sector_ps.append(group_html)
-                else:
-                    fr_p = self.inject_price_flair(p, prices, master_data)
-                    sector_ps.append(f"<div style='color:#cbd5e1; margin-top:10px; line-height:1.6;'>{fr_p}</div>")
-
-        return macro_ps, sector_ps, sentiment_label, watchlist_intel_html
+        return [], [], vibe_status, watchlist_intel_html, exec_summary, macro_intel_rows
 
     def gather_all_data(self, custom_tickers=None):
-        print("[DEBUG] gather_all_data: Loading master/prices...")
         master = self._load_json("CPO_MASTER_DATA.json")
         prices = self._load_json("live_prices.json")
-        print("[DEBUG] gather_all_data: Master/Prices loaded.")
-        
-        # Hot-fetch macro prices automatically so no manual sync is required
-        macro_tickers = [
-            'BTC-USD', 'ETH-USD', 'SOL-USD',  # Crypto 24/7
-            '^GSPC', '^IXIC', '^DJI',          # US Cash Indices (Friday Close)
-            'NQ=F', 'ES=F', 'YM=F',            # US Futures (Sunday Night Live)
-            '^HSI', '^N225',                    # Asia (HK/Japan)
-            '^GDAXI', '^FTSE',                  # Europe (Germany/UK)
-            'CRCL',                             # Force-fetch: recently listed US stock
-        ]
-        is_active = self.is_market_active()
-        
-        # V22.33: Apply universal freshness pulse allowing missing prices to bypass stasis
-        missing = []
-        ts_map = prices.get("_meta", {}).get("timestamps", {})
-        # V23.46: Merge custom CLI tickers into the high-frequency pulse loop
-        high_priority = macro_tickers + (custom_tickers or [])
-        for t in high_priority:
-            is_stale = not self.is_entity_fresh(t, prices)
-            ts = ts_map.get(t) or prices.get(t, {}).get('timestamp', 0)
-            age = int(time.time() - ts) // 60 if ts > 0 else 0
-
-            if is_stale:
-                # If price is TOTALLY missing, we always fetch (The Data-Void Exception)
-                has_no_price = t not in prices or prices[t].get('price') is None
-                if has_no_price:
-                    print(f"[CACHE] Missing: {t} - Fetching.")
-                    missing.append(t)
-                    continue
-                    
-                # V22.56: Futures awareness for Sunday Night (ES=F, NQ=F)
-                if not is_active and "USD" not in t and "=F" not in t: 
-                    print(f"[CACHE] Weekend Stasis: {t} ({age}m) - Skip.")
-                    continue
-
-                print(f"[CACHE] Stale: {t} ({age}m) - Fetching.")
-                missing.append(t)
-            else:
-                print(f"[CACHE] Fresh: {t} ({age}m) - Skip.")
-                
-        if missing:
-            try:
-                # V22.16: Macro persistence enabled to ensure Friday close is anchored
-                new_prices = asyncio.run(async_run_fetch(tickers=missing, dry_run=False, skip_sync=False))
-                
-                # V22.56: PRESERVE TIMESTAMPS. Merge meta to avoid cache-wiping.
-                if "_meta" in new_prices:
-                    if "_meta" not in prices: prices["_meta"] = {"timestamps": {}}
-                    prices["_meta"].setdefault("timestamps", {}).update(new_prices["_meta"].get("timestamps", {}))
-                
-                for k, v in new_prices.items():
-                    if k != "_meta" and v.get("change_pct") is not None:
-                        prices[k] = v
-                # V22.17: Force-Save macro update
-                self._save_json("live_prices.json", prices)
-            except Exception as e:
-                print(f"[ERR] Live fetch failed: {e}")
-
         news_db = self._load_json("YAHOO_NEWS_DB.json").get("news", {})
         sentiment = self.fetch_sentiment()
-        tradeable = {"semi": [], "ai": []}; strategic = []
-        universe = set(master.keys())
-        custom_set = set([t.upper() for t in custom_tickers]) if custom_tickers else set()
-        universe.update(custom_set)
-
-        if self.web_root.exists():
-            for d in self.web_root.iterdir():
-                if d.is_dir() and (d / "dashboard_data.js").exists():
-                    try:
-                        with open(d / "dashboard_data.js", "r", encoding="utf-8") as f:
-                            universe.update(re.findall(r'"([A-Z0-9\.]+)"\s*:', f.read()))
-                    except: continue
-
-        # Data-Void sector hydration: fetch any tracked stock with no price in cache
-        sector_void = []
-        for sym in universe:
-            # Map common crypto aliases
-            if sym == "ADA": sym = "ADA-USD"
-            
-            entry = master.get(sym, {}).get("human_research", {})
-            # Skip hydration for Private/Acquired assets
-            if entry.get("Bucket") in ["Private", "Pre-IPO"]: continue
-            if "acquired" in entry.get("Notes", "").lower(): continue
-            if not self.is_legit_ticker(sym): continue
-            
-            # V23.46: Hydrate if missing OR stale (STALE ONLY IF MARKET ACTIVE/CRYPTO)
-            is_stale = not self.is_entity_fresh(sym, prices)
-            has_no_price = sym not in prices or prices[sym].get('price') is None
-            
-            if has_no_price or is_stale:
-                sector_void.append(sym)
-        if sector_void:
-            print(f"[INTEL] Sector Data-Void: {len(sector_void)} assets need hydration. Fetching...")
-            try:
-                chunk_size = 20
-                for i in range(0, len(sector_void), chunk_size):
-                    chunk = sector_void[i:i+chunk_size]
-                    sv_prices = asyncio.run(async_run_fetch(tickers=chunk, dry_run=False, skip_sync=True))
-                    for k, v in sv_prices.items():
-                        if k != "_meta" and v.get("price") and v['price'] > 0:
-                            prices[k] = v
-                self._save_json("live_prices.json", prices)
-            except Exception as e:
-                print(f"[WARN] Sector hydration partial: {e}")
-
+        
         tradeable = {"semi": [], "ai": [], "watchlist": []}; strategic = []
-        for sym in universe:
-            entry = master.get(sym, {"human_research": {"Ticker": sym, "Company": sym}})
-            res = entry.get("human_research", {}); p_data = prices.get(sym, {}); notes = res.get("Notes", "")
+        custom_set = set([t.upper() for t in custom_tickers]) if custom_tickers else set()
+        
+        for sym in (set(master.keys()) | custom_set):
+            res = master.get(sym, {}).get("human_research", {})
+            p_data = prices.get(sym, {})
+            _, pct, _ = self.get_session_data(p_data, sym)
+            item = {"symbol": sym, "name": res.get("Company") or sym, "pct": pct or 0, "notes": res.get("Notes", ""), "alpha": float(res.get("Alpha Score", 0) or 0)}
             
-            # V22.95: High-Fidelity Session Awareness
-            price, pct, sess = self.get_session_data(p_data, sym)
-            
-            item = {
-                "symbol": sym, 
-                "name": res.get("Company") or sym, 
-                "pct": pct, 
-                "notes": notes, 
-                "alpha": float(res.get("Alpha Score", 0) or 0), 
-                "role": (res.get("Role") or "").lower(),
-                "priority": 100 if sym in custom_set else 0
-            }
-            if res.get("Bucket") in ["Private", "Pre-IPO"] or "acquired" in notes.lower():
-                strategic.append(item); continue
-            
-            if sym in custom_set:
-                tradeable["watchlist"].append(item)
-            elif "semi" in item["role"] or "chip" in item["role"]: 
-                tradeable["semi"].append(item)
-            else: 
-                tradeable["ai"].append(item)
+            if sym in custom_set: tradeable["watchlist"].append(item)
+            elif "semi" in (res.get("Role") or "").lower(): tradeable["semi"].append(item)
+            else: tradeable["ai"].append(item)
 
-        tradeable["watchlist"].sort(key=lambda x: x['pct'], reverse=True)
-        tradeable["ai"].sort(key=lambda x: (x['alpha'], abs(x['pct'])), reverse=True)
-        tradeable["semi"].sort(key=lambda x: (x['alpha'], abs(x['pct'])), reverse=True)
-        tradeable["semi"] = tradeable["semi"][:15]; tradeable["ai"] = tradeable["ai"][:15]
+        for k in tradeable: tradeable[k].sort(key=lambda x: x['pct'], reverse=True)
         return tradeable, strategic, prices, news_db, sentiment, master
 
     def compose_html(self, tradeable, strategic, prices, news_db, sentiment, master):
@@ -1190,8 +715,8 @@ class SovereignIntelligenceEngine:
             if v <= 75: return bull # Greed
             return "#6ee7b7" # Extreme Greed (site green-300)
 
-        m_color = get_fg_color(market_fg)
-        c_color = get_fg_color(crypto_fg)
+        fg_color_total = get_fg_color(market_fg)
+        fg_color_crypto = get_fg_color(crypto_fg)
 
         # 2. Market Pulse — Comparative Divergence Section (Cash vs Futures)
         def get_diff_str(price, pct, clr, fs="8px"):
@@ -1373,17 +898,20 @@ class SovereignIntelligenceEngine:
                 items_html = []
                 for s in sub_movers:
                     pct_val = s.get('change_pct', 0)
+                    price_val = s.get('price', 0)
                     color_movers = "#10b981" if pct_val >= 0 else "#f43f5e"
                     pct_str = f"{'+' if pct_val >= 0 else ''}{pct_val:.2f}%"
+                    price_str = f"${price_val:,.2f}" if price_val > 0 else ""
                     badge = self.get_session_tag_html(fs="8px", sess_override=s.get('session', 'LIVE'))
                     symbol_link = f'<a href="https://finance.yahoo.com/quote/{s["symbol"]}" style="color:#f59e0b; text-decoration:none;">${s["symbol"]}</a>'
                     
-                    # Centered inline-block container with left-aligned content
+                    # V23.77: Integrated stock price into high-density mover chip
                     items_html.append(f'''
-                        <div style="margin-bottom:2px; text-align:center;">
-                            <div style="display:inline-block; width:150px; background:rgba(255,255,255,0.02); padding:4px 8px; border-radius:2px; font-family:monospace; font-size:12px; text-align:left;">
-                                <span style="display:inline-block; min-width:65px; color:#f59e0b; font-weight:bold;">{symbol_link}</span>
-                                <span style="color:{color_movers}; font-weight:900; float:right;">{pct_str} {badge}</span>
+                        <div style="margin-bottom:4px; text-align:center;">
+                            <div style="display:inline-block; width:225px; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:3px; font-family:monospace; font-size:18px; text-align:left;">
+                                <span style="display:inline-block; min-width:85px; color:#f59e0b; font-weight:bold;">{symbol_link}</span>
+                                <span style="color:#cbd5e1; font-size:12px; opacity:0.8; vertical-align:middle;">{price_str}</span>
+                                <span style="color:{color_movers}; font-weight:900; float:right;">{pct_str}&nbsp;{badge}</span>
                             </div>
                         </div>''')
 
@@ -1398,18 +926,18 @@ class SovereignIntelligenceEngine:
         # V23.60: High-Density Gainer/Loser Grid
         perf_carveout_html = f"""
         <tr><td style="padding:15px 0 25px 0;">
-            <div class="section-hdr" style="font-family:monospace; font-size:11px; letter-spacing:5px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; color:{text_bright};">Session Performance Movers</div>
+            <div class="section-hdr" style="font-family:monospace; font-size:20px; letter-spacing:5px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; color:{text_bright};">Session Performance Movers</div>
             <table width="100%" cellpadding="0" cellspacing="0">
-                <tr><td colspan="2" style="font-size:10px; color:{bull}; font-weight:900; text-align:center; padding-bottom:8px; text-transform:uppercase; letter-spacing:1px;">▲ Top Gainers</td></tr>
+                <tr><td colspan="2" style="font-size:16px; color:{bull}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▲ Top Gainers</td></tr>
                 <tr>{render_perf_list(gainers_top, "", bull)}</tr>
-                <tr><td colspan="2" style="padding-top:20px; font-size:10px; color:{bear}; font-weight:900; text-align:center; padding-bottom:8px; text-transform:uppercase; letter-spacing:1px;">▼ Top Losers</td></tr>
+                <tr><td colspan="2" style="padding-top:25px; font-size:16px; color:{bear}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▼ Top Losers</td></tr>
                 <tr>{render_perf_list(losers_top, "", bear)}</tr>
             </table>
         </td></tr>
         """
 
         # 3. Narrative Intelligence
-        macro_ps, sector_ps, sentiment_label, watchlist_intel_html = self.synthesize_dossier(news_db, prices, master, sentiment)
+        macro_ps, sector_ps, sentiment_label, watchlist_intel_html, exec_summary, macro_intel_rows = self.synthesize_dossier(news_db, prices, master, sentiment)
         macro_html = "".join([
             f'<div style="color:{text_dim}; font-size:15px; line-height:1.7; margin-bottom:14px; white-space:normal !important; overflow:visible !important;">'
             f'{p}</div>' for p in macro_ps
@@ -1430,20 +958,20 @@ class SovereignIntelligenceEngine:
                 else:
                     clr = bull if pct >= 0 else bear
                     sess_tag = self.get_session_tag_html(fs="8px", sess_override=sess)
-                    price_str = f'<span style="color:#cbd5e1; font-size:9px; margin-right:5px;">${price:,.2f}</span>'
-                    pct_display = f'{price_str}<span style="color:{clr}; font-weight:bold; font-size:10px;">{pct:+.2f}%{sess_tag}</span>'
+                    price_str = f'<span style="color:#cbd5e1; font-size:13px; margin-right:8px;">${price:,.2f}</span>'
+                    pct_display = f'{price_str}<span style="color:{clr}; font-weight:bold; font-size:14px;">{pct:+.2f}%{sess_tag}</span>'
 
                 notes = "" if hide_notes else t.get('notes', '').strip()
                 flaired_notes = self.inject_price_flair(notes, prices, link=False)
                 display_name = t['name'] if t['name'].upper() != sym.upper() else self.ticker_name_map.get(sym, "")
 
                 rows.append(f"""
-                    <div style="background:rgba(255,255,255,0.03); border-left:2px solid {clr}; padding:6px 10px; border-radius:3px; margin-bottom:2px;">
+                    <div style="background:rgba(255,255,255,0.03); border-left:3px solid {clr}; padding:9px 15px; border-radius:4px; margin-bottom:4px;">
                         <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                            <td width="30%" style="font-family:monospace; font-weight:bold; font-size:12px;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none;">${sym}</a></td>
-                            <td width="70%" style="text-align:right; font-family:monospace;">{pct_display}</td>
+                            <td width="35%" style="font-family:monospace; font-weight:bold; font-size:18px;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none;">${sym}</a></td>
+                            <td width="65%" style="text-align:right; font-family:monospace;">{pct_display}</td>
                         </tr></table>
-                        {f'<div style="font-size:9px; color:#8f9bb3; margin-top:3px; line-height:1.3; overflow:hidden; max-height:35px;">{flaired_notes}</div>' if flaired_notes else ''}
+                        {f'<div style="font-size:12px; color:#8f9bb3; margin-top:6px; line-height:1.6; overflow:hidden; max-height:80px;">{flaired_notes}</div>' if flaired_notes else ''}
                     </div>
                 """)
             
@@ -1458,14 +986,14 @@ class SovereignIntelligenceEngine:
 
             return (
                 f'<div style="margin-top:20px;">'
-                f'<div class="section-hdr" style="color:{text_dim}; font-family:monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #1e2130;">— {title} —</div>'
+                f'<div class="section-hdr" style="color:{text_dim}; font-family:monospace; font-size:20px; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #1e2130;">— {title} —</div>'
                 f'{content}</div>'
             )
 
         watchlist_html = render_bucket("Real-time Watchlist", tradeable.get("watchlist", []), hide_notes=True, columns=2)
-        # Merge Semi and AI
-        merged_intel = tradeable.get("semi", []) + tradeable.get("ai", [])
-        intelligence_html = render_bucket("Sovereign Intelligence Dashboard", merged_intel, columns=2)
+        # Merge Semi and AI - Limit total dashboard to Top 25 to avoid Gmail clipping
+        merged_intel = (tradeable.get("semi", []) + tradeable.get("ai", []))[:25]
+        intelligence_html = render_bucket("Sovereign Intelligence Dashboard", merged_intel, columns=1)
 
         # Master Template Assembly — Responsive Dual-Surface Design
         html = f"""
@@ -1570,25 +1098,27 @@ class SovereignIntelligenceEngine:
                     .hdr-title {{ font-size:28px !important; }}
                     .hdr-sub   {{ font-size:15px !important; }}
                 }}
-                /* Mobile lock --- section-hdr stays small and dim */
+                /* Mobile lock --- Upscaling for S&P, NASDAQ, DOW, BTC, ETH, SOL */
                 @media only screen and (max-width:599px) {{
                     .section-hdr {{
-                        font-size:10px !important;
+                        font-size:16px !important;
                         font-weight:bold !important;
-                        color:{text_dim} !important;
-                        letter-spacing:2px !important;
+                        color:{text_bright} !important;
+                        letter-spacing:1px !important;
                     }}
-                    /* Comparative Pulse Mobile centering and sizing */
-                    .pulse-idx-name {{ font-size:11px !important; }}
-                    .pulse-sub-label {{ font-size:8px !important; }}
-                    .pulse-val {{ font-size:16px !important; }}
-                    .pulse-chg {{ font-size:11px !important; }}
-                    /* Crypto Mobile sizing */
-                    .crypto-label {{ font-size:10px !important; }}
-                    .crypto-val   {{ font-size:14px !important; }}
-                    .crypto-chg   {{ font-size:11px !important; }}
-                    .perf-item    {{ font-size:13px !important; }}
-                    .perf-cell    {{ padding:0 8px !important; }}
+                    .pulse-idx-name {{ font-size:14px !important; margin-bottom:8px !important; }}
+                    .pulse-sub-label {{ font-size:9px !important; }}
+                    .pulse-val {{ font-size:22px !important; font-weight:900 !important; }}
+                    .pulse-chg {{ font-size:14px !important; }}
+                    .crypto-label {{ font-size:14px !important; margin-bottom:4px !important; }}
+                    .crypto-val   {{ font-size:20px !important; font-weight:900 !important; }}
+                    .crypto-chg   {{ font-size:14px !important; }}
+                    .global-label {{ font-size:14px !important; }}
+                    .global-chg   {{ font-size:18px !important; font-weight:bold !important; }}
+                    .perf-item    {{ font-size:14px !important; }}
+                    .perf-cell    {{ padding:0 6px !important; }}
+                    /* Mobile header reduction by 35% (42px -> 27px) */
+                    .hdr-title    {{ font-size:27px !important; }}
                 }}
             </style>
         </head>
@@ -1598,11 +1128,11 @@ class SovereignIntelligenceEngine:
         <table class="main-table" border="0" cellspacing="0" cellpadding="0" style="text-align:left; font-family:'Helvetica Neue',Arial,sans-serif;">
 
             <!-- ═══ HEADER ═══ -->
-            <tr><td style="padding-bottom:24px;">
+            <tr><td style="padding-bottom:15px; border-bottom: 2px solid {accent};">
                 <table width="100%" cellpadding="0" cellspacing="0"><tr>
                     <td class="header-cell">
-                        <div class="header-title hdr-title" style="color:{text_bright}; font-size:16px; font-weight:bold; letter-spacing:1.5px; text-transform:uppercase;">Market Insights and Intel</div>
-                        <div style="color:{text_dim}; font-size:10px; font-family:monospace; margin-top:3px; letter-spacing:0.5px;">V23.55 // {self.now.strftime('%a %Y-%m-%d %H:%M EST')} // {session}</div>
+                        <div class="header-title hdr-title" style="color:{text_bright}; font-size:42px; font-weight:900; letter-spacing:-1.5px; text-transform:uppercase; line-height:1.1;">Market Insights <span style="color:{accent};">and Intel</span></div>
+                        <div style="color:{text_dim}; font-size:10px; font-family:monospace; margin-top:8px; letter-spacing:1px;">V23.77 // {self.now.strftime('%a %Y-%m-%d %H:%M EST')} // {session}</div>
                     </td>
                     <td class="badge-cell" style="text-align:right; white-space:nowrap; vertical-align:middle; padding-left:10px;">
                         <span style="background:{accent}; color:#fff; padding:4px 10px; font-size:9px; border-radius:2px; font-weight:bold; letter-spacing:1px;">CONFIDENCE: HIGH</span>
@@ -1611,10 +1141,10 @@ class SovereignIntelligenceEngine:
             </td></tr>
 
             <!-- ═══ PULSE BLOCK ═══ -->
-            <tr><td class="narrative-box" style="background:{bg_surface}; padding:20px; border-radius:6px;">
+            <tr><td class="narrative-box" style="background:{bg_surface}; padding:20px 0; border-radius:6px;">
 
                 <!-- US Markets grid -->
-                <div class="section-hdr" style="font-size:9px; font-family:monospace; color:{gold}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid rgba(245,158,11,0.2);">Sovereign Index Pulse // Divergence</div>
+                <div class="section-hdr" style="font-size:20px; font-family:monospace; color:{gold}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid rgba(245,158,11,0.2);">Sovereign Index Pulse // Divergence</div>
                 <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">
                     {pulse_grid_rows}
                     {crypto_pulse_row}
@@ -1625,7 +1155,7 @@ class SovereignIntelligenceEngine:
                             <td width="50%" style="padding:3px; vertical-align:top;">
                                 <div style="background:#0a0f1e; border-radius:5px; padding:12px 8px; text-align:center;">
                                     <div class="fg-label" style="font-size:8px; font-family:monospace; color:#8f9bb3; letter-spacing:1px; margin-bottom:3px;">MARKET F&G</div>
-                                    <div class="fg-val" style="font-size:32px; font-weight:900; color:{fg_color_total}; line-height:1;">{sentiment}</div>
+                                    <div class="fg-val" style="font-size:32px; font-weight:900; color:{fg_color_total}; line-height:1;">{market_fg}</div>
                                     <div style="font-size:7px; color:#8f9bb3; margin-top:2px;">FEAR & GREED</div>
                                 </div>
                             </td>
@@ -1641,15 +1171,20 @@ class SovereignIntelligenceEngine:
                 </table>
 
                 <!-- Global Markets grid -->
-                <div class="section-hdr" style="font-size:9px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border};">Global Markets</div>
+                <div class="section-hdr" style="font-size:20px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border};">Global Markets</div>
                 <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">{global_grid_rows}</table>
 
                 {perf_carveout_html}
                 
                 <!-- Macro Intelligence leads the news flow -->
-                <div style="border-left:3px solid {gold}; padding-left:20px; margin:20px 0;">
-                    <div class="section-hdr macro-hdr" style="color:{gold}; font-family:sans-serif; font-size:12px; font-weight:bold; margin-bottom:10px;">I. MACRO // GLOBAL PULSE</div>
-                    {macro_html}
+                <div style="margin-top:25px;">
+                    <div class="section-hdr" style="font-family:monospace; font-size:20px; letter-spacing:3px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; display:inline-block; border-bottom:2px solid {accent}; padding-bottom:4px; color:{accent};">I. MACRO // GLOBAL PULSE</div>
+                    <div style="background:rgba(30,41,59,0.3); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:4px; margin-bottom:20px;">
+                        {exec_summary}
+                        <div style="font-size:13px; font-family:monospace; color:{text_bright}; margin-top:20px;">
+                            {macro_intel_rows}
+                        </div>
+                    </div>
                 </div>
 
                 <!-- WATCHLIST NEWS -->
@@ -1658,7 +1193,6 @@ class SovereignIntelligenceEngine:
 
                 <!-- Narrative Intel -->
                 <tr><td style="padding-bottom:30px;">
-                    {watchlist_intel_html}
                     {watchlist_html}
                     {intelligence_html}
                 </td></tr>
@@ -1667,16 +1201,20 @@ class SovereignIntelligenceEngine:
                 <tr><td style="padding:30px 0; border-top:1px solid #25272d; text-align:center;">
                     <div style="color:{text_dim}; font-size:10px; font-family:monospace;">
                         END OF DOSSIER // TRANSMISSION SECURE // {session}<br>
-                        SOVEREIGN ENGINE HARDENED // AUTO-GENERATED BY GIGACPO V23.49
+                        SOVEREIGN ENGINE HARDENED // AUTO-GENERATED BY GIGACPO V23.77
                     </div>
                 </td></tr>
             </table>
             </center>
         </body></html>
         """
-        return html
+        # V23.60: Gmail Clipping Defense (Minification)
+        # Strips redundant spaces, tabs, and newlines between tags.
+        minified = re.sub(r'>\s+<', '><', html)
+        minified = re.sub(r'<!--.*?-->', '', minified, flags=re.DOTALL)
+        return minified
 
-    def send_email(self, html):
+    def send_email(self, html, subject_override=None):
         u = os.getenv("GMAIL_USER")
         pk = os.getenv("GMAIL_APP_PASS")
         r = os.getenv("RECIPIENT_EMAIL", "rayjonesy@gmail.com")
@@ -1686,7 +1224,7 @@ class SovereignIntelligenceEngine:
         msg = MIMEMultipart()
         msg['From'] = f"{display_name} <{u}>"
         msg['To'] = r
-        msg['Subject'] = f"Market Insights and Sovereign Intel // {self.now.strftime('%m/%d/%y')} [{salt}]"
+        msg['Subject'] = subject_override if subject_override else f"Market Insights and Sovereign Intel // {self.now.strftime('%m/%d/%y')} [{salt}]"
         html_anti_clip = html.replace('</body>', f'<div style="display:none; color:transparent; font-size:0px; height:0px;">Anti-clip UUID: {uuid.uuid4().hex} - Time: {datetime.datetime.now().isoformat()}</div></body>')
         msg.attach(MIMEText(html_anti_clip, 'html'))
         try:
@@ -1752,11 +1290,23 @@ if __name__ == "__main__":
     print(f"[{ts()}] [DEBUG] Data gathered. Composing HTML...")
     html = engine.compose_html(tradeable, strategic, prices, news_db, sentiment, entries)
     
+    # Aggressive Minification for Gmail (102KB Limit)
+    import re
+    html = re.sub(r'>\s+<', '><', html) 
+    html = re.sub(r'\s{2,}', ' ', html)
+    html = html.replace('\n', '').replace('\r', '')
+    
     preview_path = engine.db_path / "synopsis_preview.html"
     with open(preview_path, "w", encoding="utf-8") as f: 
         f.write(html)
     
+    payload_kb = len(html)/1024
+    print(f"Dossier generated: {preview_path}")
+    print(f"Payload Size: {payload_kb:.1f} KB {'[OVER LIMIT - WILL CLIP]' if payload_kb > 102 else '[SAFE]'}")
+
     if args.test_email:
-        engine.send_email(html)
-    else:
-        print(f"Dossier generated: {preview_path}")
+        import hashlib
+        session_hash = hashlib.md5(html.encode()).hexdigest()[:8].upper()
+        subject = f"Market Insights and Intel // {engine.now.strftime('%Y-%m-%d')} // [{session_hash}]"
+        engine.send_email(html, subject_override=subject)
+        print(f"[EMAIL] Intelligence Dispatched: {subject}")

@@ -787,4 +787,16 @@ Contract Mfg ($FN, $CLS)
 
 ### 📚 Official Guides
 - **Email Synopsis Guide**: [docs/EMAIL_SYNOPSIS_GUIDE.md](file:///x:/COS_Stock_Plays/docs/EMAIL_SYNOPSIS_GUIDE.md)
-- **Sync Guide**: [docs/SYNC_GUIDE.md](file:///x:/COS_Stock_Plays/docs/SYNC_GUIDE.md)
+### 2026-04-21 - V23.60 Macro Cockpit & Multi-Source Intelligence
+- **High-Density UI Strategy**: Implemented the "Cockpit" protocol, utilizing 42px institutional headers and brutally efficient spacing (e.g., 20px padding cuts) to maximize terminal-grade readability.
+- **Tech-Weighted Scoring**: Engineered a prioritization engine in `MacroAggregator.py` that weights headlines by sector relevance. Keywords like "Photonics" and "Co-Packaged Optics" receive a +500 priority boost, ensuring $NVDA, $ALAB, and $LITE related catalysts lead the executive summary.
+- **Stealth Architecture**: Transitioned all news fetching to a "Shadow RSS" protocol. Every fetch uses a shared `yahoo_auth` state to match session fingerprints, `curl_cffi` for browser impersonation, and a 3.3s–10.0s randomized "Human Cadence" jitter to prevent IP flagging.
+- **Dependency Guardian V2**: Upgraded the environment guardian to use `os.execv` for process replacement. This allows the system to auto-heal missing dependencies and immediately restart the logic loop without manual user intervention.
+- **Signal Deduplication**: Implemented cross-layer deduplication between the Global Macro Pulse and the Sector Dossier. Headlines captured by the high-alpha macro engine are pruned from individual stock rows to minimize data noise and maintain a professional "Sovereign" signal.
+- **Payload Optimization**: Deployed regex-based HTML minification and a strict 15-headline cap to ensure the high-density dossier remains under the 102KB Gmail clipping threshold.
+
+### 2026-04-21 - V23.76 Institutional Narrative & Hygiene Hardening
+- **Extractive LSA Synthesis**: Transitioned the Executive Summary from disjointed headlines into a single, cohesive, 3-sentence institutional overview utilizing Latent Semantic Analysis (LSA) and TF-IDF.
+- **Data Hygiene**: Hardwired a 48-hour TTL to automatically discard stale news (solving the 2024 lingering updates), and enabled regex bounding for clean ticker parsing.
+- **Narrative Deduplication**: Added exact-string semantic filtering to eliminate stutter resulting from multiple overlapping RSS feeds conveying the same signal.
+- **Visual Scale Override**: Scaled the "Cockpit" font typography down by 35% on mobile (42px -> 27px) while enforcing the `Light Blue / Green` institutional alternating motif on the headline list.

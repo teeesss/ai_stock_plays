@@ -1,71 +1,26 @@
-# GIGACPO Technical Architecture (V23.44)
+# Engine Architecture
 
-## Overview
-Financial data is adversarial. Standard APIs (Standard & Poor's, FactSet) are expensive or laggy. Public scrapers (YFinance) are frequently blocked. GIGACPO solves this through a decoupled, multi-layered stealth architecture.
+## The GIGACPO Intelligence Ecosystem
 
----
+The intelligence architecture is split into synchronized sub-engines that handle isolation, ingestion, analysis, and dispatch. By decoupling these elements, the pipeline achieves resilience and stateless processing.
 
-## 1. Core Principles (Bottom-Up)
+### 1. `dependency_mgr.py` (The Guardian)
+* **Goal**: Guarantee zero-friction deployment.
+* **Architecture**: Uses `importlib.util` and `os.execv` to dynamically intercept missing libraries, spawn `pip` processes bound to the exact calling Python interpreter, and automatically restart the script seamlessly.
 
-### Indirection as a Feature
-Never hit a target directly.
-- **Yahoo Stealth Protocol**: Authentication and session crumbs are managed by `engine/yahoo_auth.py` using Playwright (Chromium). Static sessions are cached. Consumer fetchers (`live_prices.py`, `news_fetcher.py`) use these crumbs with `curl_cffi` to impersonate standard browser TLS fingerprints.
-- **Static Artifacts**: The UI (JS/HTML) never queries a live database. All data is pre-baked into static `.js` files via the `PipelineOrchestrator`. This ensures 100% availability and sub-100ms load times.
+### 2. `live_prices.py` (The Pulse)
+* **Goal**: Provide low-latency, session-aware pricing across multi-market assets without hitting API limits.
+* **Architecture**: Intercepts Yahoo Finance v7 endpoints using HTTP requests (`cffi_requests`).
+* **Protocol**: Enforces a strict 15-minute global TTL bypass. If an asset is younger than 15 minutes, the cache handles the request unless manually forced. Normalizes `PRE`, `LIVE`, `AH`, and `OVN` sessions.
 
----
+### 3. `macro_aggregator.py`
+* **Goal**: Harvest global headlines, filter out sensationalist noise, and rank by alpha-generating priorities.
+* **Architecture**: Pulls multi-feed RSS data, assigns Base Impact scores (+50 for UI/Geopolitics, +20 for Corporate), and boosts AI/SiPh-specific keywords (e.g. Photonics +50). Prunes data > 48 hours old.
 
-## 2. Component Layers
+### 4. `local_nlp.py` (The Synthesizer)
+* **Goal**: Turn raw text extraction into cohesive institutional narratives.
+* **Architecture**: Fully offline. Utilizes NLTK, VADER Sentiment, and LSA algorithms. Deduplicates intersecting stories and produces density-first overviews mimicking tier-1 intelligence desks.
 
-### Layer 1: Stealth Authentication (`yahoo_auth.py`)
-- **Mechanism**: Navigates to Yahoo Finance, solves basic consent popups, and extracts `cookies` and `crumb`.
-- **Output**: `database/stealth_session.json`.
-- **Reason**: Decouples the "heavy" browser requirement from "light" extraction workers.
-
-### Layer 2: Modular Fetchers
-- **`live_prices.py`**: Fetches real-time quotes in batches of 10. Handles ADRs ($ASMVY) and extended hours (AH/PM).
-- **`news_fetcher.py`**: Pulls ticker-specific news. Implements SHA-256 deduplication and strict anti-spam regex.
-- **`openbb_fetcher.py`**: Hydrates secondary metrics: Analyst upside, institutional ownership, short interest.
-
-### Layer 3: Intelligence Engine (`intelligence_engine.py`)
-- **Formula**: Bayesian-style percentile normalization.
-- **Scoring**: `Alpha` (High growth/upside/buzz), `Risk` (High P/E/short interest), `Hidden` (Low MCAP/Analyst count + High Growth).
-
-### Layer 4: Pipeline Orchestrator (`pipeline_orchestrator.py`)
-- **Role**: The centralized state-machine conductor.
-- **Workflow**: Load Financials -> Normalize legacy fields -> Calculate dynamic scores -> Generate `dashboard_data.js` -> Deploy via SFTP to mapped nesting.
-
-### Layer 5: Sovereign Intelligence Engine (`email_market_synopsis.py`)
-- **Extractive NLP**: Uses `local_nlp.py` (LSA + VADER) for offline synthesis of market catalysts, generating structured bulleted narratives mapped directly to verifiable source URLs.
-- **Zero-Noise Protocol**: Deploys `is_shite_ticker` to aggressively neutralize stablecoins and non-moving assets (<0.1% volatility).
-- **Hybrid Session Locking (V23.44)**: Hardened `get_session_data` logic to prevent "price reversion" during the 4:00 AM CST pre-market lock. Prioritizes `OVN` datasets if Pre-market trades are stale, ensuring the dossier reflects the highest active trading price.
-- **Badge UI Protocol**: Standardized HSL-colored badges (OVN/PM/AH) for all real-time asset rows.
-- **Signal Governance**: Implements a `NEWS_BLACKLIST` (e.g., Jim Cramer) and SHA-256 deduplication to sanitize the ingest pool.
-- **Responsive Parity**: Employs `@media` independent styling definitions for Desktop vs Mobile typography. Desktop upsizes closing prices to 15px/Bold for professional readability.
-
----
-
-## 3. Data Integrity & QA
-- **Strict 15-Minute Protocol**: Verified by the `is_entity_fresh` helper. Ensures a 900s global TTL for all asset classes (Indices, Crypto, and news-discovered tickers), preventing Yahoo Finance rate-limiting and redundant fetching.
-- **Surgical Regex**: `engine/forensic_repair.py` ensures tickers like $N V D A$ are collapsed to $NVDA.
-- **P/E Sentinels**: Uses `999` for missing EPS data.
-- **Self-Hydrating Discovery**: The engine scans narratives for tickers and force-hydrates stale/missing prices while strictly honoring the 15-minute global pulse.
-- **Session-Aware Labeling**: Integrated `PM`/`AH` markers and `OVN` (Overnight) session detection. Uses high-fidelity BOATS data via `overnightPrice=true` to capture institutional-standard real-time prices while other sources remain stale.
-- **Hybrid Extended-Hours Cascade**: Prioritizes `OVN` (BOATS) > `PRE` > `POST`. Logic (V23.44) specifically guards the 4 AM crossover by detecting "Pre-Market Void" and holding the last valid Overnight price.
-- **Ubuntu Pulse Deployment**: Automated dispatch pipeline running on a dedicated VM, fetching watchlists from CIFS-mounted `tickers.txt`. 
-
-
----
-
-## 4. UI Rendering System
-- **Template-Driven**: Root and AI terminals use isolated `index_template.html` structures.
-- **Dual-Surface Emails**: Liquid-table layouts with independent Desktop/Mobile scale definitions via CSS Media Queries.
-- **High-Density Output**: Terminals use strict tables (13px); dossiers use scaled block-level tiles for multi-device readability.
-
----
-
-## Technical Summary
-- **Primary Languages**: Python 3.12+ / Vanilla JS / CSS3 (Grid/Flexbox/@media).
-- **Extraction Engine**: `curl_cffi` (Chrome 146 Impersonation) + Playwright Stealth.
-- **NLP Suite**: `sumy` (LSA), `vaderSentiment`, `scikit-learn` (TF-IDF).
-- **Delivery**: SMTP (TLS 1.2) via Gmail App Passwords.
-- **Data Model**: JSON persistence (UTF-8) with atomic transactional writes.
+### 5. `email_market_synopsis.py` (The Orchestrator)
+* **Goal**: Render the final payload.
+* **Architecture**: Merges sentiment metrics, live prices, macro text, and watchlist tracking into a single HTML stream. Injects structural CSS and minifies the final document to safely traverse Gmail's 102KB clipping limits before autonomous dispatch.

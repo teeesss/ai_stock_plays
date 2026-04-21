@@ -1,39 +1,26 @@
-# Design Spec: Multi-Market Session Intelligence & Green Live Badges
+# Market Session Design (2026-04-20)
 
-## 1. Objective
-Stabilize the market session detection to support international exchanges and introduce a "Green Bolt" `L⚡` status for active sessions. Fix layout alignment issues for international tickers in the watchlist.
+## V23.58 Architecture: US/Eastern Normalization
 
-## 2. Market Detection Logic (Suffix-Aware)
-The `get_market_session` function will be upgraded to detect state based on ticker suffixes.
+The market session detection logic has been completely overhauled to eliminate timezone drift across different environments (local VM, GitHub Actions, cloud servers).
 
-| Suffix | Region | Regular Hours (EST) |
-| :--- | :--- | :--- |
-| **None / .US** | USA | 09:30 - 16:00 |
-| **.DE / .ST / .L / .PA** | Europe | 03:00 - 11:30 |
-| **.HK / .N225** | Asia | 21:30 - 04:00 |
-| **.AX** | Australia | 19:00 - 01:00 |
-| **-USD** | Crypto | 24/7 |
+### 1. Normalization Protocol
+All time calculations within the Sovereign Intelligence Engine now normalize explicitly to US/Eastern (EDT/EST) via `_get_est_now()`. This ensures that session boundaries are identical regardless of the host machine's local timezone.
 
-**Session Mapping:**
-- **Regular Hours:** `LIVE` (Badge: `L<span style="color:#10b981">⚡</span>`)
-- **Before Open:** `PM` (Premarket / 4 hours before)
-- **After Close:** `AH` (After Hours / 4 hours after)
-- **Other:** `OVN` (Overnight) or `""` (Weekend/Stasis)
+### 2. High-Fidelity Session Boundaries
+The system tracks the exact minute of the trading day and categorizes sessions:
+* `PRE`: Morning Session (4 AM - 9:30 AM EST)
+* `LIVE`: Regular Market Hours (9:30 AM - 4:00 PM EST). Also handles international overlap based on `.DE`, `.HK`, `.AX` suffixes.
+* `AH`: Evening Session (4:00 PM - 8:00 PM EST)
+* `OVN`: Overnight / Sunday Futures (8:00 PM - 4:00 AM EST)
 
-## 3. UI Components
+### 3. BOATS (Blue Ocean ATS) Discovery
+Overnight pricing is now harvested using the hidden `overnightMarketPrice` field by appending `&overnightPrice=true` to the Yahoo Finance API v7 calls. This eliminates the "frozen Friday" problem and provides high-fidelity institutional OVN tracking.
 
-### 3.1 The `L⚡` Badge
-A specialized high-visibility badge for the regular session.
-- **HTML:** `L<span style="color:#10b981">⚡</span>`
-- **Background:** `rgba(16,185,129,0.12)`
-- **Border:** `1px solid rgba(16,185,129,0.2)`
-
-### 3.2 Watchlist Hardening
-- **Width Shift:** Increase ticker column width from **22%** to **26%** to prevent suffix overflow.
-- **Sanitization:** Apply `text-overflow: clip` to ensure suffix dots don't trigger layout shifts.
-
-## 4. Implementation Steps
-1.  **Refactor `get_market_session`** in `email_market_synopsis.py` to handle suffixes.
-2.  **Update `get_session_tag_html`** to support the `LIVE` type with the green bolt.
-3.  **Modify `render_bucket`** layout to accommodate wider international labels.
-4.  **Harden `get_session_data`** to prioritize `LIVE` flags when technically within open hours.
+### 4. UI Rendering standard
+Badges have strict color coordination to assist visual scanning:
+* `PRE` = Orange (`#f59e0b`)
+* `LIVE` = Green (`#10b981`)
+* `AH` / `POST` = Red (`#ef4444`)
+* `OVN` = Amber (`#f59e0b`)
+* `PM` = Light Blue (`#60a5fa`)
