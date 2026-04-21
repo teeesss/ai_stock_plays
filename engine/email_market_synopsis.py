@@ -487,23 +487,48 @@ class SovereignIntelligenceEngine:
         
         return f'<span class="sess-badge sess-{sess.lower()}" style="font-size:{fs}; color:{text_color}; background:{bg}; padding:1px 3px; border-radius:3px; font-weight:bold; margin-left:4px; vertical-align:middle; border:1px solid rgba(255,255,255,0.05);">{sess}</span>'
 
-    def get_context_icon(self, title):
-        """V23.48: Context-aware icon selection for news headlines."""
+    def get_context_icon(self, title, used_icons=None):
+        """V23.60: Context-aware icon selection with deep rotation and de-duplication."""
         t = title.lower()
-        if any(w in t for w in ['war', 'iran', 'israel', 'conflict', 'missile', 'attack', 'strike', 'defense', 'military', '1930s']): return "🛡️"
-        if any(w in t for w in ['oil', 'energy', 'fuel', 'shuttering', 'hormuz', 'crude', 'gas', 'gasoline']): return "🛢️"
-        if any(w in t for w in ['fed', 'rate', 'powell', 'inflation', 'cpi', 'jobs', 'yield', 'budget', 'debt', 'economy']): return "⚖️"
-        if any(w in t for w in ['ai', 'chip', 'nvidia', 'broadcom', 'semiconductor', 'mrvl', 'amd', 'quantum', 'robotics']): return "🧠"
-        if any(w in t for w in ['earnings', 'revenue', 'quarterly', 'profit', 'dividend', 'guidance', 'record high', 'market today', 'stocks fall', 'stocks rise']): return "📈"
-        if any(w in t for w in ['software', 'cloud', 'saas', 'meta', 'google', 'apple', 'amazon', 'tech', 'online']): return "💻"
-        if any(w in t for w in ['lawsuit', 'sec', 'investigation', 'regulation', 'agenda', 'trump', 'administration']): return "📜"
-        if any(w in t for w in ['bitcoin', 'crypto', 'btc', 'eth', 'sol', 'coinbase', 'aave']): return "🪙"
-        if any(w in t for w in ['scam', 'fake', 'gold', 'romance', 'pig-butchering', 'theft', 'stole', 'fraud']): return "🕵️"
-        if any(w in t for w in ['millionaire', 'wealth', 'save', 'money', 'investing', 'math']): return "💰"
-        if any(w in t for w in ['export', 'truck', 'logistic', 'border', 'shipping', 'freight']): return "🚛"
         
-        # V23.50: Icon Rotation for Neutral Headlines (Randomized diversity for unclassified news)
-        return random.choice(["📡", "🛰️", "🔭", "📡"])
+        # Priority mapping: Keyword -> Icon Pool (Expanded for 100% variety)
+        mapping = [
+            (['war', 'iran', 'israel', 'conflict', 'missile', 'attack', 'strike', 'defense', 'military', '1930s', 'pentagon', 'strike'], ["🛡️", "⚔️", "🛰️", "🪖", "🎯", "⚓"]),
+            (['oil', 'energy', 'fuel', 'shuttering', 'hormuz', 'crude', 'gas', 'gasoline', 'power grid', 'nuclear'], ["🛢️", "⚡", "🔥", "☢️", "🔌", "🌋"]),
+            (['fed', 'rate', 'powell', 'inflation', 'cpi', 'jobs', 'yield', 'budget', 'debt', 'economy', 'recession', 'unemployment'], ["⚖️", "📉", "🏛️", "📋", "🏢", "🏘️", "🕰️"]),
+            (['ai ', 'chip', 'nvidia', 'broadcom', 'semiconductor', 'mrvl', 'amd', 'quantum', 'robotics', 'hbm', 'foundry', 'gpu'], ["🧠", "🤖", "📟", "💾", "🔌", "⚙️", "🔬"]),
+            (['earnings', 'revenue', 'quarterly', 'profit', 'dividend', 'guidance', 'record high', 'market today', 'stocks fall', 'stocks rise', 'shares leap', 'beat'], ["📈", "📊", "🎯", "💎", "💰", "🏆", "🌟"]),
+            (['software', 'cloud', 'saas', 'meta', 'google', 'apple', 'amazon', 'tech', 'online', 'data center', 'network'], ["💻", "🌐", "☁️", "📱", "📡", "🖱️", "🖲️"]),
+            (['lawsuit', 'sec', 'investigation', 'regulation', 'agenda', 'trump', 'administration', 'policy', 'doj', 'court'], ["📜", "🔨", "🗳️", "⚖️", "📢", "🖋️"]),
+            (['bitcoin', 'crypto', 'btc', 'eth', 'sol', 'coinbase', 'aave', 'ledger', 'stablecoin', 'defi'], ["🪙", "🔗", "💎", "👾", "🕸️", "🗝️"]),
+            (['scam', 'fake', 'gold', 'romance', 'pig-butchering', 'theft', 'stole', 'fraud', 'hacking', 'cyber'], ["🕵️", "🔐", "🚨", "🚫", "👺", "👤"]),
+            (['millionaire', 'wealth', 'save', 'money', 'investing', 'math', 'portfolio', 'fund'], ["💰", "💵", "🏦", "💳", "🛒", "🛍️"]),
+            (['export', 'truck', 'logistic', 'border', 'shipping', 'freight', 'supply chain', 'cargo'], ["🚛", "📦", "🚢", "🛫", "🚆", "⚓"]),
+            (['photonics', 'cpo', 'fiber', 'laser', 'connectivity', 'optical', 'bandwidth'], ["📡", "✨", "📶", "⚡", "🌈", "📽️"])
+        ]
+        
+        selected_icon = None
+        for keywords, pool in mapping:
+            if any(w in t for w in keywords):
+                if used_icons is not None:
+                    unused = [i for i in pool if i not in used_icons]
+                    selected_icon = random.choice(unused) if unused else random.choice(pool)
+                else:
+                    selected_icon = random.choice(pool)
+                break
+        
+        if not selected_icon:
+            # Neutral rotation pool (Massively expanded)
+            pool = ["📡", "🛰️", "🔭", "🔬", "🪐", "🌠", "🔮", "🧬", "🧪", "⚙️", "🛠️", "📡", "🛰️"]
+            if used_icons is not None:
+                unused = [i for i in pool if i not in used_icons]
+                selected_icon = random.choice(unused) if unused else random.choice(pool)
+            else:
+                selected_icon = random.choice(pool)
+        
+        if used_icons is not None:
+            used_icons.add(selected_icon)
+        return selected_icon
 
     def generate_sparkline_svg(self, points, color="#10b981", width=60, height=20):
         """DEPRECATED: Removed per user request."""
@@ -685,26 +710,29 @@ class SovereignIntelligenceEngine:
         # Combined discovery set
         all_src = macro_headlines + priority_headlines
         
-        # V23.55: Render Watchlist Intel Block
+        # V23.60: Render Watchlist Intel Block
         watchlist_intel_html = ""
         if priority_headlines:
             intel_rows = []
+            used_priority_icons = set()
             for item in priority_headlines:
-                icon = self.get_context_icon(item['title'])
+                icon = self.get_context_icon(item['title'], used_icons=used_priority_icons)
                 t_key = item["target"].upper()
-                target_badge = f'<span style="color:#f59e0b; background:rgba(217,119,6,0.1); padding:2px 6px; border-radius:3px; font-weight:900; margin-right:8px; font-size:10px;">{t_key}</span>'
+                target_badge = f'<span style="color:#f59e0b; background:rgba(217,119,6,0.1); padding:2px 6px; border-radius:3px; font-weight:900; margin-right:8px; font-size:10px; border:1px solid rgba(245,158,11,0.2);">{t_key}</span>'
                 flaired_title = self.inject_price_flair(item['title'], prices, master_data)
+                
+                # Tighten space: reduced margin-bottom from 12px to 6px
                 intel_rows.append(f"""
-                <div style="margin-bottom:12px; padding:10px; background:rgba(255,255,255,0.02); border-radius:4px; border-left:2px solid {gold};">
-                    <div style="font-size:14px; line-height:1.5;">
-                        <span style="margin-right:8px;">{icon}</span> {target_badge} <a href="{item['link']}" style="color:{text_bright}; text-decoration:none !important;">{flaired_title}</a>
+                <div style="margin-bottom:6px; padding:10px 14px; background:rgba(255,255,255,0.02); border-radius:4px; border-left:3px solid {gold};">
+                    <div style="font-size:14px; line-height:1.4;">
+                        <span style="margin-right:8px; vertical-align:middle;">{icon}</span> {target_badge} <a href="{item['link']}" style="color:{text_bright}; text-decoration:none !important;">{flaired_title}</a>
                     </div>
                 </div>
                 """)
             
             watchlist_intel_html = f"""
-            <div class="watchlist-intel-block" style="margin-bottom:35px;">
-                <div class="section-hdr" style="font-family:monospace; font-size:11px; letter-spacing:4px; text-transform:uppercase; font-weight:bold; margin-bottom:15px; padding-bottom:8px; border-bottom:1px solid rgba(245,158,11,0.3); color:{gold};">📡 Watchlist Intelligence // Severe Signals</div>
+            <div class="watchlist-intel-block" style="margin-bottom:30px; margin-top:20px;">
+                <div class="section-hdr" style="font-family:monospace; font-size:11px; letter-spacing:4px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(245,158,11,0.3); color:{gold};">📡 Watchlist Intelligence // Severe Signals</div>
                 {"".join(intel_rows)}
             </div>
             """
@@ -846,7 +874,7 @@ class SovereignIntelligenceEngine:
             
         headline_divs = []
         h_count = 0
-        last_icon = None
+        used_headline_icons = set()
         
         # V23.49: Consecutive Icon De-duplication logic
         available_macro = [h for h in macro_headlines if not is_blacklisted(h['title']) 
@@ -854,39 +882,31 @@ class SovereignIntelligenceEngine:
                           and all(x not in h['title'] for x in ["Yahoo", "Morning Update", "Summary", "What to Know"])]
         
         while h_count < 15 and available_macro:
-            # Find the highest scoring headline with a different icon
+            # V23.60: Find the highest scoring headline with a unique icon if possible
             best_idx = -1
             for i, h in enumerate(available_macro):
-                icon = self.get_context_icon(h['title'])
-                if icon != last_icon:
+                # Peak at what icon it would get without adding it to used set yet
+                icon = self.get_context_icon(h['title'], used_icons=None)
+                if icon not in used_headline_icons:
                     best_idx = i
                     break
             
-            # V23.50: If no different icon exists in the queue, skip the current block 
-            # and take the next highest score regardless of icon after a gap, 
-            # but try to avoid immediate repetition.
+            # If we've exhausted all categories, fallback to first in list
             if best_idx == -1:
-                # If we're stuck, take the top one but force it to be unique-ish
                 best_idx = 0
             
             h = available_macro.pop(best_idx)
             title_low = h['title'].lower()
             if get_macro_score(h) < 10 and any(noise in title_low for noise in ["preview", "look at", "earn"]): continue
             
-            # V23.50: Triple-check icons to prevent back-to-back matches
-            icon = self.get_context_icon(h['title'])
-            if icon == last_icon and h_count > 0:
-                # Emergency rotate for unclassified news
-                if icon in ["📡", "🛰️", "🔭"]:
-                    alt_icons = [i for i in ["📡", "🛰️", "🔭"] if i != last_icon]
-                    icon = random.choice(alt_icons)
+            # Now actually get and record the icon
+            icon = self.get_context_icon(h['title'], used_icons=used_headline_icons)
             
             unique_h.add(h['title'])
             flaired_title = self.inject_price_flair(h['title'], prices, master_data)
             link = h.get('link', '#')
-            last_icon = icon
             
-            headline_divs.append(f"<div style='margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.03); padding-bottom:6px;'><span style='color:#0ea5e9; font-size:11px;'>{icon}</span> <a href=\"{link}\" style=\"color:#f8fafc; font-size:13px; font-weight:500; text-decoration:none;\">{flaired_title}</a></div>")
+            headline_divs.append(f"<div style='margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.03); padding-bottom:5px;'><span style='color:#0ea5e9; font-size:11px; vertical-align:middle; margin-right:6px;'>{icon}</span> <a href=\"{link}\" style=\"color:#f8fafc; font-size:13px; font-weight:500; text-decoration:none;\">{flaired_title}</a></div>")
             used_for_headlines.add(h['title'])
             h_count += 1
 
@@ -927,13 +947,12 @@ class SovereignIntelligenceEngine:
         
         macro_ps = report_blocks
         
-        # V23.01d: Velocity Override construction
+        # V23.60: Premium Velocity Override construction
         m_candidates = []
         for k, v in prices.items():
             if not self.is_legit_ticker(k) or self.is_shite_ticker(k): continue
             
             p_val, p_pct, p_sess = self.get_session_data(v, k)
-            # V23.01d: Aggressive Zero-Change Purge
             if p_pct is None or abs(p_pct) < 0.1: continue 
             
             vol = v.get("vol_spike") if v.get("vol_spike") is not None else 1.0
@@ -947,22 +966,27 @@ class SovereignIntelligenceEngine:
             for m in momentum_top:
                 pct = m['pct']
                 vol = m['vol']
-                bars_filled = min(5, int(vol))
-                bars = '■' * bars_filled + '□' * (5 - bars_filled)
+                # CSS Bar for Email: Faked with non-breaking spaces and background color
+                # vol_scaled = min(100, int((vol/5)*100))
+                # using a table-based visual bar for higher compatibility
+                bar_width = min(60, int(vol * 15))
+                bar_html = f'<span style="display:inline-block; background:#0ea5e9; height:2px; width:{bar_width}px; vertical-align:middle; margin-left:10px; border-radius:1px;"></span>'
+                
                 flaired = self.get_ticker_chip(m['s'], prices, simple=True, link=False)
                 mv_rows.append(
-                    f'<div class="mv-row" style="background:rgba(14,165,233,0.06); border-left:3px solid #0ea5e9; '
-                    f'border-radius:3px; padding:10px 14px; margin-bottom:6px; '
-                    f'font-family:monospace; font-size:12px; white-space:nowrap; overflow:hidden;">'
-                    f'{flaired} '
-                    f'<span class="mv-vol" style="color:#38bdf8; font-size:10px; margin-left:8px;">[×{vol:.1f} {bars}]</span>'
+                    f'<div class="mv-row" style="background:rgba(14,165,233,0.08); border-left:4px solid #0ea5e9; '
+                    f'border-radius:4px; padding:10px 16px; margin-bottom:5px; '
+                    f'font-family:monospace; font-size:13px; white-space:nowrap; overflow:hidden;">'
+                    f'<span style="display:inline-block; min-width:130px;">{flaired}</span>'
+                    f'<span class="mv-vol" style="color:#38bdf8; font-size:11px; margin-left:12px; font-weight:bold;">VOL ×{vol:.1f}</span>'
+                    f'{bar_html}'
                     f'</div>'
                 )
             report_blocks.append(
-                f'<div style="margin:25px 0;">'
-                f'<div class="section-hdr" style="color:#0ea5e9; font-family:sans-serif; font-size:10px; letter-spacing:2px; '
-                f'text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:5px; '
-                f'border-bottom:1px solid rgba(14,165,233,0.2);">Velocity Override // Vol Spikes</div>'
+                f'<div style="margin:20px 0 30px 0;">'
+                f'<div class="section-hdr" style="color:#0ea5e9; font-family:sans-serif; font-size:10px; letter-spacing:3px; '
+                f'text-transform:uppercase; font-weight:900; margin-bottom:12px; padding-bottom:6px; '
+                f'border-bottom:2px solid rgba(14,165,233,0.3);">Velocity Override // Vol Spikes</div>'
                 f'{"".join(mv_rows)}</div>'
             )
 
@@ -1345,28 +1369,28 @@ class SovereignIntelligenceEngine:
             rows = []
             for item in items:
                 sess_tag = self.get_session_tag_html(fs="9px", sess_override=item['sess'])
-                # Premium: Subtle card-like feel with improved density
+                # High-fidelity: reduced padding, improved font weight, absolute-minimum margins
                 rows.append(
-                    f'<div class="perf-item" style="font-family:monospace; font-size:13px; margin-bottom:4px; line-height:1.2; '
-                    f'background:rgba(255,255,255,0.02); border-radius:3px; padding:8px 12px; display:inline-block; width:100%; box-sizing:border-box; text-align:left;">'
-                    f'<span style="color:{gold}; font-weight:900; display:inline-block; width:85px;">${item["s"]}</span> '
-                    f'<span style="color:{color}; font-weight:900; margin-left:12px; font-size:14px;">{item["pct"]:+.2f}%</span>'
-                    f'<span style="float:right; opacity:0.8;">{sess_tag}</span>'
+                    f'<div class="perf-item" style="font-family:monospace; font-size:12px; margin-bottom:1px; line-height:1; '
+                    f'background:rgba(255,255,255,0.03); border-radius:2px; padding:5px 8px; display:inline-block; width:100%; box-sizing:border-box; text-align:left; border-bottom:1px solid rgba(255,255,255,0.02);">'
+                    f'<span style="color:{gold}; font-weight:bold; display:inline-block; width:70px;">${item["s"]}</span> '
+                    f'<span style="color:{color}; font-weight:900; margin-left:6px; font-size:13px;">{item["pct"]:+.2f}%</span>'
+                    f'<span style="float:right; margin-top:0px;">{sess_tag}</span>'
                     f'</div>'
                 )
-            return "".join(rows) if rows else '<div style="color:#4a5568; font-size:11px; padding:20px 0; text-align:center;">None identified</div>'
+            return "".join(rows) if rows else '<div style="color:#4a5568; font-size:11px; padding:15px 0; text-align:center;">None identified</div>'
 
-        # V23.50: Centered Overhaul for Desktop Display
+        # V23.60: Tightened Centered Overhaul for Desktop Display
         perf_carveout_html = f"""
-        <tr><td style="padding:30px 0 45px 0;">
-            <div class="section-hdr" style="font-family:monospace; font-size:11px; letter-spacing:5px; text-transform:uppercase; font-weight:bold; margin-bottom:25px; padding-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; color:{text_bright};">Session Performance // Top 10 Movers</div>
+        <tr><td style="padding:15px 0 25px 0;">
+            <div class="section-hdr" style="font-family:monospace; font-size:11px; letter-spacing:5px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; color:{text_bright};">Session Performance // Top 10 Movers</div>
             <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                <td class="perf-cell" width="50%" style="vertical-align:top; border-right:1px solid rgba(255,255,255,0.08); padding:0 10px; text-align:center;">
-                    <div class="perf-hdr" style="color:{bull}; font-size:12px; font-weight:900; margin-bottom:15px; text-transform:uppercase; letter-spacing:2px;">▲ Top Gainers</div>
+                <td class="perf-cell" width="50%" style="vertical-align:top; border-right:1px solid rgba(255,255,255,0.08); padding:0 8px; text-align:center;">
+                    <div class="perf-hdr" style="color:{bull}; font-size:11px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:2px;">▲ Top Gainers</div>
                     <div style="display:inline-block; text-align:left; width:100%;">{render_perf_list(gainers_top, bull, align="center")}</div>
                 </td>
-                <td class="perf-cell" width="50%" style="vertical-align:top; padding:0 10px; text-align:center;">
-                    <div class="perf-hdr" style="color:{bear}; font-size:12px; font-weight:900; margin-bottom:15px; text-transform:uppercase; letter-spacing:2px;">▼ Top Losers</div>
+                <td class="perf-cell" width="50%" style="vertical-align:top; padding:0 8px; text-align:center;">
+                    <div class="perf-hdr" style="color:{bear}; font-size:11px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:2px;">▼ Top Losers</div>
                     <div style="display:inline-block; text-align:left; width:100%;">{render_perf_list(losers_top, bear, align="center")}</div>
                 </td>
             </tr></table>
@@ -1380,7 +1404,7 @@ class SovereignIntelligenceEngine:
             f'{p}</div>' for p in macro_ps
         ])
 
-        # 4. Sector Dossier Cards — N/A guard for missing prices
+        # V23.60: Sector Dossier Cards — N/A guard for missing prices
         def render_bucket(title, items, hide_notes=False):
             if not items: return ""
             rows = []
@@ -1402,19 +1426,28 @@ class SovereignIntelligenceEngine:
                 notes = "" if hide_notes else t.get('notes', '').strip()
                 # HARDENED: Inject price flair without clickable blue links for notes
                 flaired_notes = self.inject_price_flair(notes, prices, link=False)
+                
+                # Check if name is redundant with symbol
+                display_name = t['name']
+                if display_name.upper() == sym.upper():
+                    # If name is same as ticker, try to fetch from name map or just hide it
+                    display_name = self.ticker_name_map.get(sym, "")
+                    if not display_name or display_name.upper() == sym.upper():
+                        display_name = ""
+
                 rows.append(f"""
-                    <div class="sector-card" style="background:{bg_accent}; border-left:2px solid {clr}; padding:12px 14px; border-radius:4px; margin-bottom:6px;">
+                    <div class="sector-card" style="background:{bg_accent}; border-left:2px solid {clr}; padding:8px 12px; border-radius:4px; margin-bottom:2px;">
                         <table width="100%" cellpadding="0" cellspacing="0"><tr>
                             <td class="sec-ticker" width="28%" style="font-family:monospace; font-weight:bold; font-size:13px; white-space:nowrap;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none !important;">${t['symbol']}</a></td>
-                            <td class="sec-name" width="30%" style="font-size:11px; color:{text_dim}; padding:0 8px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">{t['name']}</td>
+                            <td class="sec-name" width="30%" style="font-size:11px; color:{text_dim}; padding:0 8px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">{display_name}</td>
                             <td class="sec-pct" width="42%" style="text-align:right; font-family:monospace; font-size:13px;">{pct_display}</td>
                         </tr></table>
-                        {f'<div class="sec-notes" style="font-size:10px; color:#8f9bb3; margin-top:6px; line-height:1.5; border-top:1px solid rgba(255,255,255,0.04); padding-top:6px; white-space:normal !important; word-wrap:break-word; overflow:visible !important; display:block;">{flaired_notes[:800]}</div>' if flaired_notes else ''}
+                        {f'<div class="sec-notes" style="font-size:10px; color:#8f9bb3; margin-top:4px; line-height:1.4; border-top:1px solid rgba(255,255,255,0.04); padding-top:4px; white-space:normal !important; word-wrap:break-word; overflow:visible !important; display:block;">{flaired_notes[:800]}</div>' if flaired_notes else ''}
                     </div>
                 """)
             return (
-                f'<div style="margin-top:28px;">'
-                f'<div class="section-hdr" style="color:{text_dim}; font-family:monospace; font-size:9px; letter-spacing:3px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid #1e2130;">— {title} —</div>'
+                f'<div style="margin-top:12px;">'
+                f'<div class="section-hdr" style="color:{text_dim}; font-family:monospace; font-size:9px; letter-spacing:3px; text-transform:uppercase; font-weight:bold; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #1e2130;">— {title} —</div>'
                 f'{"".join(rows)}'
                 f'</div>'
             )
