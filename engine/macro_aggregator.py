@@ -7,9 +7,12 @@ import random
 from pathlib import Path
 from curl_cffi import requests
 from datetime import datetime, timezone, timedelta
+import re
 
 # V23.60: Macro Aggregator for GIGACPO Cockpit
 # High-density filtration of tech/semi/photonics intelligence.
+import urllib.parse
+from curl_cffi.requests import AsyncSession
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
 log = logging.getLogger(__name__)
@@ -111,60 +114,72 @@ class MacroAggregator:
         except:
             user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
 
-        client = requests.Session(impersonate='chrome146')
-        client.headers.update({
-            'User-Agent': user_agent,
-            'Accept': 'application/rss+xml, application/xml, text/xml, */*'
-        })
+        async with AsyncSession(impersonate='chrome146') as client:
+            client.headers.update({
+                'User-Agent': user_agent,
+                'Accept': 'application/rss+xml, application/xml, text/xml, */*'
+            })
 
-        for i, (name, url) in enumerate(self.feeds.items()):
-            try:
-                # Surgical Stealth Jitter (3.3 - 10s)
-                if i > 0:
-                    delay = random.uniform(3.3, 10.0)
-                    log.info(f"  [STEALTH] Mimicking human cadence: Sleeping {delay:.2f}s...")
-                    await asyncio.sleep(delay)
+            # V23.79: Parallelize across domains, sequential jitter within domains
+            domain_queues = {}
+            for name, url in self.feeds.items():
+                domain = urllib.parse.urlparse(url).netloc
+                if domain not in domain_queues:
+                    domain_queues[domain] = []
+                domain_queues[domain].append((name, url))
 
-                log.info(f"  [STEALTH] Fetching {name} Pulse...")
-                res = client.get(url, timeout=15)
-                if res.status_code != 200:
-                    log.error(f"  [!] Blocked or Error {name}: HTTP {res.status_code}")
-                    continue
+            async def process_queue(domain, queue):
+                queue_items = []
+                for i, (name, url) in enumerate(queue):
+                    try:
+                        # Jitter ONLY within the same domain (V23.79 Optimization)
+                        if i > 0:
+                            delay = random.uniform(3.3, 10.0)
+                            log.info(f"  [STEALTH] Cadence Match ({domain}): Sleeping {delay:.2f}s...")
+                            await asyncio.sleep(delay)
 
-                feed = feedparser.parse(res.content)
-                now_ts = time.time()
-                for entry in feed.entries:
-                    title = entry.get('title', 'No Title')
-                    link = entry.get('link', '')
-                    pub_date = entry.get('published', '')
-                    
-                    # Recency Validation: Must be within last 48 hours for institutional relevance
-                    # We use entry.published_parsed if available for robust epoch comparison
-                    if hasattr(entry, 'published_parsed') and entry.published_parsed:
-                        entry_ts = time.mktime(entry.published_parsed)
-                        if (now_ts - entry_ts) > (48 * 3600): # 48 hours
+                        log.info(f"  [STEALTH] Fetching {name} Pulse...")
+                        res = await client.get(url, timeout=15)
+                        if res.status_code != 200:
+                            log.error(f"  [!] Blocked or Error {name}: HTTP {res.status_code}")
                             continue
-                    
-                    score = self.score_headline(title)
-                    enriched_title = self.enrich_headline(title, prices)
-                    
-                    # Capture summary/description for real narrative synthesis
-                    summary = entry.get('summary', entry.get('description', ''))
-                    # Clean HTML tags if present in summary
-                    import re
-                    summary = re.sub(r'<[^>]+>', '', summary).strip()
-                    
-                    all_items.append({
-                        "title": enriched_title,
-                        "raw_title": title,
-                        "summary": summary,
-                        "link": link,
-                        "source": name,
-                        "score": score,
-                        "date": pub_date
-                    })
-            except Exception as e:
-                log.error(f"  [ERR] Failed {name}: {e}")
+
+                        feed = feedparser.parse(res.content)
+                        now_ts = time.time()
+                        for entry in feed.entries:
+                            title = entry.get('title', 'No Title')
+                            link = entry.get('link', '')
+                            pub_date = entry.get('published', '')
+                            
+                            if hasattr(entry, 'published_parsed') and entry.published_parsed:
+                                entry_ts = time.mktime(entry.published_parsed)
+                                if (now_ts - entry_ts) > (48 * 3600):
+                                    continue
+                            
+                            score = self.score_headline(title)
+                            enriched_title = self.enrich_headline(title, prices)
+                            
+                            summary = entry.get('summary', entry.get('description', ''))
+                            summary = re.sub(r'<[^>]+>', '', summary).strip()
+                            
+                            queue_items.append({
+                                "title": enriched_title,
+                                "raw_title": title,
+                                "summary": summary,
+                                "link": link,
+                                "source": name,
+                                "score": score,
+                                "date": pub_date
+                            })
+                    except Exception as e:
+                        log.error(f"  [ERR] Failed {name}: {e}")
+                return queue_items
+
+            # Execute all domain groups in parallel
+            tasks = [process_queue(domain, q) for domain, q in domain_queues.items()]
+            results_batches = await asyncio.gather(*tasks)
+            for batch in results_batches:
+                all_items.extend(batch)
 
         # Sort by score (descending) and take top 15
         top_15 = sorted(all_items, key=lambda x: x['score'], reverse=True)[:15]

@@ -1,4 +1,4 @@
-## 🚀 Active Context: V23.78 (Movers Hardening & Institutional Spacing)
+## 🚀 Active Context: V23.79 (Parallel Stealth Aggregation & Domain Jitter)
 
 ### 🧩 Logic & Patterns
 1. **Sovereign Intelligence Engine (V23.60/61)**:
