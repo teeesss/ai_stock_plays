@@ -11,6 +11,7 @@ def ensure_dependencies():
     # Map of module name to pip package name
     deps = {
         "bs4": "beautifulsoup4",
+        "feedparser": "feedparser",
         "playwright": "playwright",
         "dotenv": "python-dotenv",
         "vaderSentiment": "vaderSentiment",
