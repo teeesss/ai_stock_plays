@@ -1,13 +1,19 @@
-## 🚀 Active Context: V23.49 (Visual Supercycle +)
+## 🚀 Active Context: V23.58 (Timezone-Aware Session Protocol)
 
 ### 🧩 Logic & Patterns
-1. **Sovereign Intelligence Engine (V23.49)**:
+1. **Sovereign Intelligence Engine (V23.58)**:
+   - **Timezone Normalization**: All market session detection logic in `email_market_synopsis.py` is normalized to **US/Eastern** time (standardizing VM/Server vs Local display).
+   - **Session Tagging standards**:
+     - `PRE`: Morning Market (4 AM - 9:30 AM EST) -> **Orange** (`#f59e0b`).
+     - `LIVE`: Regular Market (9:30 AM - 4 PM EST) -> **Green** (`#10b981`) with specialized `L⚡` badge.
+     - `AH`: After-Hours (4 PM - 8 PM EST) -> **Red** (`#ef4444`).
+     - `PM`: Post-Market (Secondary Label) -> **Light Blue** (`#60a5fa`).
    - **Horizontal Pulse Layout**: Sovereign Index Pulse now uses a high-density horizontal row (3-tile) layout when indices are in `LIVE` or `AH` sessions. Desktop/Mobile views mirrored.
    - **Context-Aware News Icons**: Keywords map headlines to 12 distinct iconography themes (🛡️ Geopol, 🛢️ Energy, ⚖️ Macro, 🧠 AI, 📈 Earnings, 💻 Tech, 📜 Law, 🪙 Crypto, 🕵️ Scam, 💰 Wealth, 🚛 Logistics, 📡 Default).
-   - **News Feed Hardening**: Aggressive blacklist filtering; "Dave Ramsey" and stablecoin noise (USDC/USDT) strictly purged.
-   - **Isolated Sparkline Sidecar**: Deployed `engine/email_spark_fetcher.py`. Renders 1d regular session chart action as lightweight SVGs.
+   - **Intelligence Hardening**: Blacklisted `$CD` and "Dave Ramsey".
+   - **Sparkline Decommissioning**: Removed sparkline rendering logic from all email components per user request.
    - **Suffix-Aware Session Detection**: `get_market_session` and `get_session_data` support global exchange suffixes (.DE, .HK, .ST, .AX).
-   - **Green `L⚡` Badge Logic**: Specialized `L⚡` badge for active sessions.
+   - **Mobile Optimization**: Centered Top Gainers/Losers via `display:block` stacking in `@media` CSS.
    - **Watchlist Column Hardening**: Ticker column `width="26%"` mandatory for international symbol support.
    - **High-Fidelity Pulse**: Expanded hydration to refresh all 113+ assets during active sessions.
    - **Branding Update**: Email title standardized to "Market Insights and Sovereign Intel". Decorative lightning bolts removed from header/subject.

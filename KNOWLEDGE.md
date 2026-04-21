@@ -771,3 +771,20 @@ Contract Mfg ($FN, $CLS)
 - **Architecture**: Achieved 100% session-aware parity across the entire email dossier. Every index, crypto asset, momentum chip, and sector card now respects high-fidelity OVN/PRE/POST moves via the unified `get_session_data` protocol.
 - **Logic**: Rankings and sentiment counters now reflect real-time volatility rather than stale close data.
 - **CLI Intelligence**: Deployed `--tickers file.txt` support to `email_market_synopsis.py`, allowing for massive (100+) custom ticker hydration without CLI character limits.
+
+### 2026-04-21 - V23.58 Session Detection Timezone Protocol
+- **Architecture**: Implemented `_get_est_now()` to normalize all internal time calculations to **US/Eastern (EDT/EST)**. 
+- **The Problem**: Servers in CST (e.g., user VMs) or UTC (e.g., GitHub Actions) would misclassify sessions (e.g., seeing PRE-market at 10 AM EST because local time was 9 AM CST).
+- **The Protocol**: All market session classification must normalize to US/Eastern before comparing against market open/close constants (`open_m = 570`).
+- **UI Refinement**: Standardized badges: `PRE` (Orange), `AH` (Red), `PM` (Light Blue #60a5fa), and `LIVE` (Green #10b981 with `L⚡` badge).
+
+### 2026-04-21 - V23.59 Auto-Dependency Guardian
+- **Architecture**: Centralized in `engine/dependency_mgr.py`.
+- **Injection Style**: Injected at the top of all major entry points. Uses a double-nested `try-except` to handle local and relative imports.
+- **Logic**: Uses `importlib.util.find_spec` for stealthy dependency checking. Offers `input()` based installation in TTY environments; fails gracefully in automated environments to prevent hanging.
+- **Platform Parity**: Uses `sys.executable` to ensure `pip` installs to the same environment running the script (critical for Windows CMD vs PowerShell vs WSL).
+- **Playwright Support**: Automatically triggers `playwright install chromium` if the package is new or missing binaries.
+
+### 📚 Official Guides
+- **Email Synopsis Guide**: [docs/EMAIL_SYNOPSIS_GUIDE.md](file:///x:/COS_Stock_Plays/docs/EMAIL_SYNOPSIS_GUIDE.md)
+- **Sync Guide**: [docs/SYNC_GUIDE.md](file:///x:/COS_Stock_Plays/docs/SYNC_GUIDE.md)

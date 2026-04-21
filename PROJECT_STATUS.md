@@ -1,15 +1,41 @@
 # Project Status — April 20, 2026
-## 🚀 Version: V23.49 (Visual Supercycle + Layout Hardening)
+## 🚀 Version: V23.59 (Auto-Dependency Guardian)
 
 Status: **PRODUCTION DEPLOYED — VISUAL SUPERCYCLE V2**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V23.49 (Visual Supercycle +) / V23.48 (Visual Supercycle) / V23.47 (Session Parity) 
+- **Current Tier**: V23.59 (Auto-Dependency Guardian) / V23.49 (Visual Supercycle +) / V23.48 (Visual Supercycle)
 - **Critical Progress**: Expanded context-aware news intelligence with 12 distinct iconography themes (Logistics, Wealth, Scams, Geopolitics). Implemented horizontal high-density layout for Sovereign Index Pulse, mirroring crypto-row efficiency for both desktop and mobile views. Standardized email branding to "Market Insights and Sovereign Intel" and removed decorative lightning bolts from header/subject. Hardened news feed by blacklisting "Dave Ramsey" noise.
+- **UI Refinement**: Standardized badges: `PRE` (Orange), `AH` (Red), `PM` (Light Blue #60a5fa), and `LIVE` (Green #10b981 with `L⚡` badge).
 - **Next Milestone**: Multi-agent sentiment validation for divergent headlines.
 
-Date: 2026-04-20
+### 2026-04-21 - V23.59 Auto-Dependency Guardian
+- **Architecture**: Centralized in `engine/dependency_mgr.py`.
+- **Injection Style**: Injected at the top of all major entry points. Uses a double-nested `try-except` to handle local and relative imports.
+- **Logic**: Uses `importlib.util.find_spec` for stealthy dependency checking. Offers `input()` based installation in TTY environments; fails gracefully in automated environments to prevent hanging.
+- **Platform Parity**: Uses `sys.executable` to ensure `pip` installs to the same environment running the script (critical for Windows CMD vs PowerShell vs WSL).
+- **Playwright Support**: Automatically triggers `playwright install chromium` if the package is new or missing binaries.
+
+Date: 2026-04-21
 Tests: **55 passing / 0 failing**
+
+---
+
+### 🚀 Current Status: V23.59 — Environment Hardening // Auto-Guardian
+- [x] **Auto-Dependency Guardian (V23.59)**: All core scripts now auto-check for missing libraries (bs4, playwright, etc.) and offer one-click installation. Supports Windows & Linux.
+- [x] **Timezone-Aware Session Logic (V23.58)**: Implemented `_get_est_now()` to normalize VM/Server calculations to US/Eastern (EDT). Resolves CST vs EST session misclassification.
+- [x] **PM Blue Lightening (V23.58)**: Refined `PM` session badge color to `#60a5fa` for better visual harmony.
+- [x] **LIVE (L⚡) Badge refined (V23.58)**: Integrated the lightning bolt icon into the high-alpha green regular session badge.
+- **Stability Fixes**: Resolved `NameError` (log) and `TypeError` in sidecar trigger logic.
+- Date: 2026-04-20
+
+---
+
+### [V23.59] — 2026-04-21: Environment Hardening (Auto-Guardian)
+- [x] **Auto-Dependency Guardian**: Integrated `dependency_mgr.py` into all core scripts. Detects missing libs (bs4, playwright, curl-cffi, etc.) and offers interactive installation.
+- [x] **Cross-Platform Compatibility**: Guardian supports both Windows and Linux, utilizing `sys.executable` for precision pip targeting.
+- [x] **Timezone Parity (V23.58)**: Normalized market session detection to US/Eastern (EST).
+- [x] **UI Polish**: Lightened PM Blue (#60a5fa) and added `L⚡` badge to LIVE sessions.
 
 ---
 

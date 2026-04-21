@@ -1,0 +1,45 @@
+<h2>Where should the priority news live?</h2>
+<p class="subtitle">You mentioned ranking these stories "on top", but we have two main ways to integrate them into the email structure.</p>
+
+<div class="options">
+  <div class="option" data-choice="integrated" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Integrated Priority</h3>
+      <p>Inject stories from AMD, NVDA, etc. into the existing "Macro Intel" list, but give them a weighted score (+200) so they always appear as the first 5-10 items.</p>
+      <div class="mockup" style="margin-top:10px; font-size:12px;">
+        <div class="mockup-header">Macro Intel // Headlines</div>
+        <div class="mockup-body">
+          <div style="background:rgba(255,165,0,0.1); border-left:3px solid orange; padding:5px; margin-bottom:5px;">🧠 $NVDA: Blackwell demand exceeds supply...</div>
+          <div style="background:rgba(255,165,0,0.1); border-left:3px solid orange; padding:5px; margin-bottom:5px;">🧠 $AMD: New MI300 variants targeting AI factories...</div>
+          <div style="padding:5px;">⚖️ The Fed alters inflation forecast...</div>
+          <div style="padding:5px;">🛡️ Oil stocks brutal message...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="standalone" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Dedicated "Focus Sector" Block</h3>
+      <p>Create a separate, high-fidelity section at the absolute top (above Macro Intel) specifically for these key ticker news items.</p>
+      <div class="mockup" style="margin-top:10px; font-size:12px;">
+        <div class="mockup-header">WATCHLIST INTEL // SEVERE SIGNALS</div>
+        <div class="mockup-body" style="background:rgba(0,255,255,0.05);">
+          <div style="padding:5px; border-bottom:1px solid #333;"><b>$NVDA</b>: Blackwell chips sold out for 12 months</div>
+          <div style="padding:5px; border-bottom:1px solid #333;"><b>$AVGO</b>: Custom AI silicon deal with hyper-scalers</div>
+        </div>
+        <div class="mockup-header" style="margin-top:10px;">Macro Intel // General News</div>
+        <div class="mockup-body">
+          <div style="padding:5px;">⚖️ The Fed alters inflation forecast...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Technical Approach</h3>
+  <p>I can modify <code>news_fetcher.py</code> to perform a targeted Yahoo search (<code>yahoo/news/AMD</code> etc.) for each of your key tickers, then rank the best 1-2 stories from each alongside the general RSS feed.</p>
+</div>

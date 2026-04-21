@@ -1,0 +1,63 @@
+<h2>Ticker Focus & Density</h2>
+<p class="subtitle">Since we identified a list of about 7-10 "Priority Alpha" tickers, how should we prioritize their stories in this new section?</p>
+
+<div class="options">
+  <div class="option" data-choice="top-global" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>The "Best of the Best" (Top 5-8 Total)</h3>
+      <p>I fetch the top stories for all focus tickers, score them, and only show the <b>top 5-8 most impactful stories</b> across the whole sector in one block.</p>
+      <div class="mockup" style="margin-top:10px; font-size:12px;">
+        <div class="mockup-header">PRIORITY INTEL // Top Signals</div>
+        <div class="mockup-body">
+          <div style="padding:5px;">🧠 $NVDA: Major Blackwell order from Meta...</div>
+          <div style="padding:5px;">🧠 $ALAB: Astera Labs revenue beat...</div>
+          <div style="padding:5px;">🧠 $AVGO: VMware integration complete...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="by-ticker" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>"Ticker-Locked" Grid</h3>
+      <p>Every focus ticker gets at least one slot. If there's news, it shows up under its own badge. More detailed but takes more vertical space.</p>
+      <div class="split">
+        <div class="mockup" style="font-size:10px;">
+          <div class="mockup-header">$NVDA</div>
+          <div class="mockup-body">1. Blackwell Demand...</div>
+          <div class="mockup-header">$AMD</div>
+          <div class="mockup-body">1. CPU share gain...</div>
+        </div>
+        <div class="mockup" style="font-size:10px;">
+          <div class="mockup-header">$AVGO</div>
+          <div class="mockup-body">1. Networking chip...</div>
+          <div class="mockup-header">$ALAB</div>
+          <div class="mockup-body">1. CXL controllers...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Clarification on Ticker List</h3>
+  <p>Should I pull this "Focus List" from a new file (e.g., <code>priority_tickers.txt</code>) so it's separate from your main watchlist, or should I just hardcode it into the script logic for now?</p>
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>Separate File</h4>
+      <ul>
+        <li>Easily update without touching code</li>
+        <li>Clean isolation</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>Hardcoded</h4>
+      <ul>
+        <li>Slightly faster execution</li>
+        <li>One less file to manage</li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -47,11 +47,14 @@ Register-ScheduledTask -Action $a3 -Trigger $t3 -TaskName "SIE_Overnight_Dispatc
 6. Add Arguments: `engine\email_market_synopsis.py`.
 7. Start in: `z:\COS_Stock_Plays`.
 
-## 4. Required Financial "Skills" (V22.44)
+## 4. Automated Environment Hardening (V23.59)
 
-The Sovereign pipeline requires the following local analytical libraries:
+The Sovereign pipeline now includes the **Auto-Dependency Guardian**. You no longer need to manually install dependencies. 
 
-- `pip install vaderSentiment` (Sentiment Scoring)
-- `pip install sumy nltk` (NLP Summarization)
-- `pip install scikit-learn` (Catalyst Extraction)
-- `pip install curl_cffi` (Stealth Extraction)
+Simply run the script:
+```bash
+python engine/email_market_synopsis.py
+```
+If any libraries (vaderSentiment, sumy, curl_cffi, etc.) are missing, the script will **automatically prompt you to install them** before proceeding. 
+
+For a detailed breakdown of CLI flags and logic, see the [Email Synopsis Guide](file:///x:/COS_Stock_Plays/docs/EMAIL_SYNOPSIS_GUIDE.md).

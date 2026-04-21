@@ -1,10 +1,10 @@
-### 🚀 Current Status: V23.48 — Sovereign Intel // Visual Supercycle
+### 🚀 Current Status: V23.59 — Environment Hardening // Auto-Guardian
+- [x] **Auto-Dependency Guardian (V23.59)**: All core scripts now auto-check for missing libraries (bs4, playwright, etc.) and offer one-click installation. Supports Windows & Linux.
+- [x] **Timezone-Aware Session Logic (V23.58)**: Implemented `_get_est_now()` to normalize VM/Server calculations to US/Eastern (EDT). Resolves CST vs EST session misclassification.
+- [x] **PM Blue Lightening (V23.58)**: Refined `PM` session badge color to `#60a5fa` for better visual harmony.
+- [x] **LIVE (L⚡) Badge refined (V23.58)**: Integrated the lightning bolt icon into the high-alpha green regular session badge.
+- [x] **Priority Intelligence Pipeline (V23.56)**: Deployed surgical news harvesting for `priority_tickers.txt` with weighted scoring (+250 base).
 - [x] **Context-Aware News Icons (V23.48)**: Replaced generic `⚡` with dynamic icon mapping (🛡️, 🛢️, ⚖️, 🧠, 📈, 💻, 📜, 🪙, 📡) based on headline keyword analysis.
-- [x] **Isolated Sparkline Engine (V23.48)**: Deployed `engine/email_spark_fetcher.py` sidecar. Fetches 1d regular session chart data (15m intervals) and renders lightweight SVG sparklines for the watchlist.
-- [x] **UI Hardening (V23.48)**: Hardened watchlist layout with 26% ticker column width. Implemented auto-collapse for Futures column during `LIVE/AH` sessions. Purged custom stock notes from CLI watchlist for a clean aesthetic.
-- [x] **Suffix-Aware Session Intelligence (V23.47)**: Refactored `get_market_session` to support global exchanges (.DE, .HK, .ST, .AX) by mapping ticker suffixes to local trading hours.
-- [x] **Green `L⚡` Status Badge (V23.47)**: Introduced specialized high-visibility badge for active market sessions. Resolved `NameError` and `TypeError` in sidecar trigger logic.
-- [x] **High-Fidelity Pulse (V23.46)**: Expanded hydration loop to include ANY stale asset in the universe (113+). Enabled CLI-ticker bypass to ensure `tickers.txt` assets are ALWAYS refreshed during report generation.
 - Date: 2026-04-20
 
 # Project Status — April 20, 2026

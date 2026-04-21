@@ -1,3 +1,13 @@
+# V23.59: Auto-Dependency Guardian
+try:
+    try:
+        from dependency_mgr import ensure_dependencies
+    except ImportError:
+        from engine.dependency_mgr import ensure_dependencies
+    ensure_dependencies()
+except ImportError:
+    pass
+
 import os
 import json
 import datetime
@@ -27,7 +37,7 @@ from curl_cffi import requests as cffi_requests
 import logging
 
 # V23.47: Logger initialization
-logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 log = logging.getLogger(__name__)
 
 load_dotenv()
@@ -39,10 +49,16 @@ class SovereignIntelligenceEngine:
     Logic: Global Macro Synthesis + Ticker Injection
     """
     def __init__(self):
+        def ts(): return datetime.datetime.now().strftime("%H:%M:%S")
+
+        print(f"[{ts()}] [DEBUG] Constructor: Setting paths...")
         self.root = Path(__file__).parent.parent
         self.db_path = self.root / "database"
         self.web_root = self.root / "web"
-        self.now = datetime.datetime.now()
+        
+        # V23.58: Timezone-Aware Pulse
+        # Normalizing to US/Eastern for consistent session tagging across VM/Server/Desktop
+        self.now = self._get_est_now()
         
         # Design Tokens
         self.COLOR_BG = "#020617"; self.COLOR_CARD = "#0f172a"
@@ -51,7 +67,17 @@ class SovereignIntelligenceEngine:
         self.COLOR_TEXT = "#f8fafc"; self.COLOR_DIM = "#64748b"
         
         # V22.7: Load massive symbol bridge
+        print(f"[{ts()}] [DEBUG] Constructor: Loading ticker_name_map.json...")
+        start = time.time()
         self.ticker_name_map = self._load_json("ticker_name_map.json")
+        elapsed = time.time() - start
+        print(f"[{ts()}] [DEBUG] Constructor: Map loaded ({len(self.ticker_name_map)} entries) in {elapsed:.2f}s.")
+
+    def _get_est_now(self):
+        """Returns the current time normalized to US/Eastern (EDT/EST)."""
+        now_utc = datetime.datetime.now(datetime.timezone.utc)
+        # Simplified 2026 DST Hack: April is EDT (UTC-4)
+        return now_utc - datetime.timedelta(hours=4)
 
 
     # V22.5: Centralized High-Confidence Aliases (Names to Tickers)
@@ -182,7 +208,7 @@ class SovereignIntelligenceEngine:
         # 1. Mandatory 2-Letter Whitelist (Filters out IN, OF, TO, BY, etc.)
         if len(sym) == 2:
             WHITELIST_2 = {
-                "BA", "GM", "GE", "MU", "FN", "CD", "V", "MA", "T", "F", "KO", "VZ", "PYPL", 
+                "BA", "GM", "GE", "MU", "FN", "V", "MA", "T", "F", "KO", "VZ", "PYPL", 
                 "UBER", "LYFT" # Some 4-char are fine, but 2-char are risky
             }
             # Only allow common 2-letter stocks or if they are in master_data
@@ -196,7 +222,7 @@ class SovereignIntelligenceEngine:
             "YTD", "HELOC", "APY", "APR", "PE", "EPS", "ROE", "ROIC", "EBITDA", "GAAP",
             "CFO", "COO", "CEO", "CTO", "IPO", "LBO", "PFIC", "FATCA", "ETF", "IRA", 
             "HSA", "RAN", "EMS", "LIDE", "HBM", "DRAM", "NAND", "CPO", "GPU", "CPU",
-            "NPU", "LSA", "NLP", "AIAI", "S&P", "DJI", "SNP", "QQQ",
+            "NPU", "LSA", "NLP", "AIAI", "S&P", "DJI", "SNP", "QQQ", "CD",
             # V22.99: Hardened Stablecoin Purge
             "USDC", "USDT", "DAI", "BUSD", "PYUSD", "TETHER", "STABLECOINS", "FDUSD"
         }
@@ -298,6 +324,66 @@ class SovereignIntelligenceEngine:
         headlines.sort(key=lambda x: x['score'], reverse=True)
         return headlines[:15]
 
+    async def fetch_priority_signals(self):
+        """V23.55: Surgical harvest for high-alpha tech priority tickers/keywords."""
+        ROOT = Path(__file__).parent.parent
+        PATH = ROOT / "priority_tickers.txt"
+        if not PATH.exists(): return []
+
+        tickers = []
+        with open(PATH, 'r') as f:
+            for line in f:
+                t = line.strip()
+                if t: tickers.append(t)
+        
+        if not tickers: return []
+
+        print(f"[INTEL] Starting Priority Harvest for {len(tickers)} targets...")
+        try:
+            from engine.news_fetcher import YahooNewsFetcher
+        except ImportError:
+            from news_fetcher import YahooNewsFetcher
+            
+        fetcher = YahooNewsFetcher()
+        # Days=2 for extreme freshness in priority block
+        raw_results = await fetcher.fetch_batch(tickers, days=2)
+        
+        priority_headlines = []
+        seen_urls = set()
+        
+        # Scoring logic for priority section
+        for target, stories in raw_results.items():
+            for s in stories:
+                url = s.get('link') or s.get('url')
+                if not url or url in seen_urls: continue
+                
+                title = s.get('title', '')
+                # Base Priority Score
+                score = 250 
+                
+                # Cross-Ticker Match Discovery (+100)
+                # If target is MRVL, and title mentions GOOGL/GOOGLE
+                t_lower = title.lower()
+                matches = re.findall(r'\b[A-Z]{2,6}\b', title)
+                if len(set(matches)) > 1: score += 100
+                
+                # Keyword Boost (+50)
+                if any(k in t_lower for k in ["photonics", "cpo", "co-packaged", "interconnect", "chiplet"]):
+                    score += 50
+                
+                priority_headlines.append({
+                    'title': title,
+                    'link': url,
+                    'summary': s.get('summary', ''),
+                    'score': score,
+                    'is_priority': True,
+                    'target': target
+                })
+                seen_urls.add(url)
+
+        priority_headlines.sort(key=lambda x: x['score'], reverse=True)
+        return priority_headlines[:10]
+
     def get_market_session(self, symbol=None):
         # V22.93: Precise Session Detection + Overnight Awareness
         # V23.47: Suffix-Aware Global Exchange Logic
@@ -335,11 +421,13 @@ class SovereignIntelligenceEngine:
             
         if is_live: return "LIVE"
         
-        # US-Centric Extended Hours (Kept for PM/AH simplicity)
+        # US-Centric Extended Hours (V23.58 Labels: PRE/AH)
         if day < 5:
-            # Shift US pre/post to match US hours mostly
-            if 240 <= tm < open_m: return "PM"
+            # Morning Session: 4AM - 9:30AM EST
+            if 240 <= tm < open_m: return "PRE"
+            # Evening Session: 4PM - 8PM EST
             if close_m <= tm < 1200: return "AH"
+            # Overnight / Late Night
             if tm >= 1200 or tm < 240: return "OVN"
         return ""
 
@@ -371,18 +459,33 @@ class SovereignIntelligenceEngine:
         
         return price, pct, sess
 
-    def get_session_tag_html(self, fs="9px", color="#94a3b8", sess_override=None):
+    def get_session_tag_html(self, fs="9px", color=None, sess_override=None):
         sess = sess_override if sess_override is not None else self.get_market_session()
         if not sess: return ""
-        # V23.44: Hardened Badge UI
-        # V23.47: Specialized Green L⚡ Badge for LIVE
-        bg = "rgba(14,165,233,0.15)" # Blue (PRE/PM/AH/POST)
-        if sess == "OVN": bg = "rgba(245,158,11,0.15)" # Amber (OVN)
+        
+        # V23.55: User-defined session colors
+        # PRE = Orange, PM = Blue, AH = Red, OVN = Amber, LIVE = Green
+        bg = "rgba(148,163,184,0.1)" # Default dim
+        text_color = color if color else "#94a3b8"
+        
+        if sess == "PRE":
+            text_color = "#f59e0b" # Orange
+            bg = "rgba(245,158,11,0.1)"
+        elif sess == "PM":
+            text_color = "#60a5fa" # Lightened Blue (V23.58)
+            bg = "rgba(96,165,250,0.1)"
+        elif sess == "AH" or sess == "POST":
+            sess = "AH" # Standardize
+            text_color = "#ef4444" # Red
+            bg = "rgba(239,68,68,0.1)"
+        elif sess == "OVN":
+            text_color = "#f59e0b" # Amber
+            bg = "rgba(245,158,11,0.1)"
         elif sess == "LIVE": 
             bg = "rgba(16,185,129,0.12)" # Green
             return f'<span class="sess-badge sess-live" style="font-size:{fs}; color:#10b981; background:{bg}; padding:1px 3px; border-radius:3px; font-weight:bold; margin-left:4px; vertical-align:baseline; border:1px solid rgba(16,185,129,0.2);">L<span style="color:#10b981;">⚡</span></span>'
         
-        return f'<span class="sess-badge sess-{sess.lower()}" style="font-size:{fs}; color:{color}; background:{bg}; padding:1px 3px; border-radius:3px; font-weight:bold; margin-left:4px; vertical-align:middle; border:1px solid rgba(255,255,255,0.05);">{sess}</span>'
+        return f'<span class="sess-badge sess-{sess.lower()}" style="font-size:{fs}; color:{text_color}; background:{bg}; padding:1px 3px; border-radius:3px; font-weight:bold; margin-left:4px; vertical-align:middle; border:1px solid rgba(255,255,255,0.05);">{sess}</span>'
 
     def get_context_icon(self, title):
         """V23.48: Context-aware icon selection for news headlines."""
@@ -403,70 +506,8 @@ class SovereignIntelligenceEngine:
         return random.choice(["📡", "🛰️", "🔭", "📡"])
 
     def generate_sparkline_svg(self, points, color="#10b981", width=60, height=20):
-        """V23.52: PNG sparkline via Pillow -> base64 img tag.
-        SVG is universally stripped by email clients (Gmail/Outlook/Apple Mail).
-        The ONLY email-safe approach is a data-URI embedded PNG.
-        """
-        import base64
-        import io
-        try:
-            from PIL import Image, ImageDraw
-        except ImportError:
-            return ""
-
-        # --- Numeric Guard ---
-        numeric_points = []
-        for p in points:
-            try:
-                if p is not None:
-                    numeric_points.append(float(p))
-            except (TypeError, ValueError):
-                continue
-
-        if not numeric_points or len(numeric_points) < 2:
-            return ""
-
-        # --- Parse hex color to RGB ---
-        try:
-            c = color.lstrip('#')
-            rgb = tuple(int(c[i:i+2], 16) for i in (0, 2, 4))
-        except Exception:
-            rgb = (16, 185, 129)  # fallback green
-
-        # --- Render at 2x for crispness, scale down ---
-        scale = 2
-        W, H = width * scale, height * scale
-        MARGIN = int(1.5 * scale)  # 1.5px padding so stroke isn't clipped
-
-        img = Image.new('RGBA', (W, H), (0, 0, 0, 0))  # transparent background
-        draw = ImageDraw.Draw(img)
-
-        min_p = min(numeric_points)
-        max_p = max(numeric_points)
-        rng = max_p - min_p if max_p != min_p else 1.0
-        n = len(numeric_points) - 1
-
-        pts = []
-        for i, p in enumerate(numeric_points):
-            x = MARGIN + (i / n) * (W - 2 * MARGIN)
-            y = MARGIN + (1 - (p - min_p) / rng) * (H - 2 * MARGIN)
-            pts.append((x, y))
-
-        # Draw anti-aliased polyline (1.5px stroke at 2x = 3px)
-        for i in range(len(pts) - 1):
-            draw.line([pts[i], pts[i + 1]], fill=rgb + (220,), width=3)
-
-        # Downscale to target size with LANCZOS for anti-aliasing
-        img = img.resize((width, height), Image.LANCZOS)
-
-        buf = io.BytesIO()
-        img.save(buf, format='PNG', optimize=True)
-        b64 = base64.b64encode(buf.getvalue()).decode('ascii')
-
-        return (f'<img src="data:image/png;base64,{b64}" '
-                f'width="{width}" height="{height}" '
-                f'style="vertical-align:middle; margin-right:6px; display:inline-block;" '
-                f'alt="spark" />')
+        """DEPRECATED: Removed per user request."""
+        return ""
 
     def get_ticker_chip(self, symbol, prices, simple=False, link=True):
         if symbol.startswith("$"): symbol = symbol[1:]
@@ -632,7 +673,42 @@ class SovereignIntelligenceEngine:
         nlp = LocalIntelligenceSynthesizer()
         nlp.update_vibe_lexicon(sentiment)
         
+        # V23.55: UI Constants
+        gold = "#f59e0b"
+        text_dim = "#8f9bb3"
+        text_bright = "#f8fafc"
+        
         macro_headlines = self.fetch_live_macro()
+        # V23.55: Priority Signal Integration
+        priority_headlines = asyncio.run(self.fetch_priority_signals())
+        
+        # Combined discovery set
+        all_src = macro_headlines + priority_headlines
+        
+        # V23.55: Render Watchlist Intel Block
+        watchlist_intel_html = ""
+        if priority_headlines:
+            intel_rows = []
+            for item in priority_headlines:
+                icon = self.get_context_icon(item['title'])
+                t_key = item["target"].upper()
+                target_badge = f'<span style="color:#f59e0b; background:rgba(217,119,6,0.1); padding:2px 6px; border-radius:3px; font-weight:900; margin-right:8px; font-size:10px;">{t_key}</span>'
+                flaired_title = self.inject_price_flair(item['title'], prices, master_data)
+                intel_rows.append(f"""
+                <div style="margin-bottom:12px; padding:10px; background:rgba(255,255,255,0.02); border-radius:4px; border-left:2px solid {gold};">
+                    <div style="font-size:14px; line-height:1.5;">
+                        <span style="margin-right:8px;">{icon}</span> {target_badge} <a href="{item['link']}" style="color:{text_bright}; text-decoration:none !important;">{flaired_title}</a>
+                    </div>
+                </div>
+                """)
+            
+            watchlist_intel_html = f"""
+            <div class="watchlist-intel-block" style="margin-bottom:35px;">
+                <div class="section-hdr" style="font-family:monospace; font-size:11px; letter-spacing:4px; text-transform:uppercase; font-weight:bold; margin-bottom:15px; padding-bottom:8px; border-bottom:1px solid rgba(245,158,11,0.3); color:{gold};">📡 Watchlist Intelligence // Severe Signals</div>
+                {"".join(intel_rows)}
+            </div>
+            """
+
         limit = self.now - datetime.timedelta(hours=48)
         
         # V22.30: Exhaustive multi-layer discovery
@@ -659,7 +735,7 @@ class SovereignIntelligenceEngine:
                         cands.add(ticker.upper())
             return cands
 
-        candidates = extract_candidates(macro_headlines)
+        candidates = extract_candidates(all_src)
         for stories in news_db.values():
             candidates.update(extract_candidates(stories))
         
@@ -735,9 +811,6 @@ class SovereignIntelligenceEngine:
             
         risk_on = (up_count / total_p) > 0.5 if total_p > 0 else False
         sentiment_label = "RISK-ON // ACCUMULATING" if risk_on else "RISK-OFF // PROTECTING"
-
-        gold = "#f59e0b"
-        text_dim = "#8f9bb3"
 
         macro_ps = []
         # V22.98: Data-Driven Market Pulse Narrative
@@ -828,7 +901,7 @@ class SovereignIntelligenceEngine:
                 html_items = []
                 for item in p['items']:
                     flaired = self.inject_price_flair(item['text'], prices, master_data)
-                    html_items.append(f"<li style='margin-bottom:8px;'><a href=\"{item['link']}\" style='color:#cbd5e1; text-decoration:none;'>{flaired}</a></li>")
+                    html_items.append(f"<li style='margin-bottom:8px;'><a href=\"{item['link']}\" style='color:#cbd5e1; text-decoration:none;\">{flaired}</a></li>")
                 group_html = f"<div style='margin-bottom:24px;'><div style='color:#0ea5e9; font-weight:bold; font-size:12px; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;'>{p['transition']}</div><ul style='margin-top:0; padding-left:20px; font-size:14px; line-height:1.6;'>{''.join(html_items)}</ul></div>"
                 comp_narrative.append(group_html)
             else:
@@ -930,11 +1003,13 @@ class SovereignIntelligenceEngine:
                     fr_p = self.inject_price_flair(p, prices, master_data)
                     sector_ps.append(f"<div style='color:#cbd5e1; margin-top:10px; line-height:1.6;'>{fr_p}</div>")
 
-        return macro_ps, sector_ps, sentiment_label
+        return macro_ps, sector_ps, sentiment_label, watchlist_intel_html
 
     def gather_all_data(self, custom_tickers=None):
+        print("[DEBUG] gather_all_data: Loading master/prices...")
         master = self._load_json("CPO_MASTER_DATA.json")
         prices = self._load_json("live_prices.json")
+        print("[DEBUG] gather_all_data: Master/Prices loaded.")
         
         # Hot-fetch macro prices automatically so no manual sync is required
         macro_tickers = [
@@ -1123,34 +1198,16 @@ class SovereignIntelligenceEngine:
         live_label = "SUNDAY FUTURES" if self.now.weekday() == 6 and is_futures_active else "PREMARKET" if (7 <= self.now.hour < 9) else "LIVE FUTURES" if is_futures_active else "WEEKEND STASIS"
         label_color = gold if is_futures_active else text_dim
         
-        # Load spark data if available
-        spark_data = {}
-        spark_path = Path(__file__).parent.parent / 'database' / 'email_sparklines.json'
-        if spark_path.exists():
-            try:
-                with open(spark_path, 'r') as f: spark_data = json.load(f)
-            except: pass
-
         pulse_rows = []
-        def render_tile(symbol, name, val, pct, sess, color, spark_data=None):
+        def render_tile(symbol, name, val, pct, sess, color):
             tag_style = "text-decoration:none;"
             if sess in ('PRE', 'AH', 'POST'): tag_style = "text-decoration:underline;"
             val_str = f"{val:,.0f}" if val > 1000 else f"{val:.2f}"
             
-            spark_html = ""
-            if spark_data:
-                p_pts = spark_data.get(symbol, [])
-                if isinstance(p_pts, dict): p_pts = p_pts.get('points', [])
-                spark_img = self.generate_sparkline_svg(p_pts, color, width=60, height=18)
-                if spark_img:
-                    spark_html = f'<div style="margin-bottom:4px;">{spark_img}</div>'
-
-
             return (
                 f'<td width="33%" style="padding:3px;">'
                 f'<div style="background:{bg_deep}; border-radius:5px; padding:10px 8px; text-align:center;">'
                 f'<div class="crypto-label" style="color:{text_dim}; font-size:8px; margin-bottom:4px; font-weight:bold; text-transform:uppercase; {tag_style}">{name}</div>'
-                f'{spark_html}'
                 f'<div class="crypto-val" style="color:{text_bright}; font-size:12px; font-weight:bold;">{val_str}</div>'
                 f'{get_diff_str(val, pct, color, fs="7px")}'
                 f'<div class="crypto-chg" style="color:{color}; font-size:10px; font-weight:bold;">{"+" if pct >= 0 else ""}{pct:.1f}%</div>'
@@ -1163,7 +1220,7 @@ class SovereignIntelligenceEngine:
                 c_data = prices.get(index['cash'], {})
                 c_val, c_chg, _ = self.get_session_data(c_data, index['cash'])
                 c_color = bull if c_chg >= 0 else bear
-                index_tiles.append(render_tile(index['cash'], index['name'], c_val, c_chg, "LIVE", c_color, spark_data=spark_data))
+                index_tiles.append(render_tile(index['cash'], index['name'], c_val, c_chg, "LIVE", c_color))
             pulse_grid_rows = f'<tr><td style="padding:4px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>{" ".join(index_tiles)}</tr></table></td></tr>'
         else:
             # Multi-row layout for Futures tracking
@@ -1202,6 +1259,33 @@ class SovereignIntelligenceEngine:
                 )
             pulse_grid_rows = "\n".join(pulse_rows)
 
+        pulse_rows = []
+        def render_tile(symbol, name, val, pct, sess, color):
+            tag_style = "text-decoration:none;"
+            if sess in ('PRE', 'AH', 'POST'): tag_style = "text-decoration:underline;"
+            val_str = f"{val:,.0f}" if val > 1000 else f"{val:.2f}"
+            
+            return (
+                f'<td width="33%" style="padding:3px;">'
+                f'<div style="background:{bg_deep}; border-radius:5px; padding:10px 8px; text-align:center;">'
+                f'<div class="crypto-label" style="color:{text_dim}; font-size:8px; margin-bottom:4px; font-weight:bold; text-transform:uppercase; {tag_style}">{name}</div>'
+                f'<div class="crypto-val" style="color:{text_bright}; font-size:12px; font-weight:bold;">{val_str}</div>'
+                f'{get_diff_str(val, pct, color, fs="7px")}'
+                f'<div class="crypto-chg" style="color:{color}; font-size:10px; font-weight:bold;">{"+" if pct >= 0 else ""}{pct:.1f}%</div>'
+                f'</div></td>'
+            )
+
+        if is_live_main:
+            index_tiles = []
+            for index in COMPARATIVE_INDICES:
+                c_data = prices.get(index['cash'], {})
+                c_val, c_chg, _ = self.get_session_data(c_data, index['cash'])
+                c_color = bull if c_chg >= 0 else bear
+                index_tiles.append(render_tile(index['cash'], index['name'], c_val, c_chg, "LIVE", c_color))
+            pulse_grid_rows = f'<tr><td style="padding:4px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>{" ".join(index_tiles)}</tr></table></td></tr>'
+        else:
+            pulse_grid_rows = "\n".join(pulse_rows)
+
         # 2b. Crypto Pulse Row
         crypto_tickers = ['BTC-USD', 'ETH-USD', 'SOL-USD']
         crypto_tiles = []
@@ -1209,7 +1293,7 @@ class SovereignIntelligenceEngine:
             p = prices.get(t, {})
             val, chg, sess = self.get_session_data(p, t)
             color = bull if chg >= 0 else bear
-            crypto_tiles.append(render_tile(t, t.split('-')[0], val, chg, sess, color, spark_data=spark_data))
+            crypto_tiles.append(render_tile(t, t.split('-')[0], val, chg, sess, color))
         crypto_pulse_row = f'<tr><td style="padding:4px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>{" ".join(crypto_tiles)}</tr></table></td></tr>'
         # 2b. Global sentinel — 2-per-row tiles
         global_map = [('HSI', '^HSI'), ('NIKKEI', '^N225'), ('DAX', '^GDAXI'), ('FTSE', '^FTSE')]
@@ -1257,7 +1341,7 @@ class SovereignIntelligenceEngine:
         # Losers: Most Negative to Least Negative
         losers_top = sorted([p for p in perf_candidates if p['pct'] < 0], key=lambda x: x['pct'])[:10]
 
-        def render_perf_list(items, color, align="left"):
+        def render_perf_list(items, color, align="center"):
             rows = []
             for item in items:
                 sess_tag = self.get_session_tag_html(fs="9px", sess_override=item['sess'])
@@ -1277,20 +1361,20 @@ class SovereignIntelligenceEngine:
         <tr><td style="padding:30px 0 45px 0;">
             <div class="section-hdr" style="font-family:monospace; font-size:11px; letter-spacing:5px; text-transform:uppercase; font-weight:bold; margin-bottom:25px; padding-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; color:{text_bright};">Session Performance // Top 10 Movers</div>
             <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                <td class="perf-cell" width="50%" style="vertical-align:top; border-right:2px solid rgba(255,255,255,0.08); padding:0 15px; text-align:center;">
-                    <div style="color:{bull}; font-size:13px; font-weight:900; margin-bottom:20px; text-transform:uppercase; letter-spacing:3px;">▲ Top Gainers</div>
-                    <div style="display:inline-block; text-align:left;">{render_perf_list(gainers_top, bull, align="center")}</div>
+                <td class="perf-cell" width="50%" style="vertical-align:top; border-right:1px solid rgba(255,255,255,0.08); padding:0 10px; text-align:center;">
+                    <div class="perf-hdr" style="color:{bull}; font-size:12px; font-weight:900; margin-bottom:15px; text-transform:uppercase; letter-spacing:2px;">▲ Top Gainers</div>
+                    <div style="display:inline-block; text-align:left; width:100%;">{render_perf_list(gainers_top, bull, align="center")}</div>
                 </td>
-                <td class="perf-cell" width="50%" style="vertical-align:top; padding:0 15px; text-align:center;">
-                    <div style="color:{bear}; font-size:13px; font-weight:900; margin-bottom:20px; text-transform:uppercase; letter-spacing:3px;">▼ Top Losers</div>
-                    <div style="display:inline-block; text-align:left;">{render_perf_list(losers_top, bear, align="center")}</div>
+                <td class="perf-cell" width="50%" style="vertical-align:top; padding:0 10px; text-align:center;">
+                    <div class="perf-hdr" style="color:{bear}; font-size:12px; font-weight:900; margin-bottom:15px; text-transform:uppercase; letter-spacing:2px;">▼ Top Losers</div>
+                    <div style="display:inline-block; text-align:left; width:100%;">{render_perf_list(losers_top, bear, align="center")}</div>
                 </td>
             </tr></table>
         </td></tr>
         """
 
         # 3. Narrative Intelligence
-        macro_ps, sector_ps, sentiment_label = self.synthesize_dossier(news_db, prices, master, sentiment)
+        macro_ps, sector_ps, sentiment_label, watchlist_intel_html = self.synthesize_dossier(news_db, prices, master, sentiment)
         macro_html = "".join([
             f'<div style="color:{text_dim}; font-size:15px; line-height:1.7; margin-bottom:14px; white-space:normal !important; overflow:visible !important;">'
             f'{p}</div>' for p in macro_ps
@@ -1302,9 +1386,6 @@ class SovereignIntelligenceEngine:
             rows = []
             for t in items:
                 sym = t.get('symbol', '').replace('$', '')
-                p_pts = spark_data.get(sym, [])
-                if isinstance(p_pts, dict):
-                    p_pts = p_pts.get('points', [])
                 p_entry = prices.get(t['symbol'], {})
                 price, pct, sess = self.get_session_data(p_entry, t['symbol'])
                 has_price = price and price > 0
@@ -1321,16 +1402,12 @@ class SovereignIntelligenceEngine:
                 notes = "" if hide_notes else t.get('notes', '').strip()
                 # HARDENED: Inject price flair without clickable blue links for notes
                 flaired_notes = self.inject_price_flair(notes, prices, link=False)
-                # Sparkline Logic - V23.52: PNG base64 img (email-safe)
-                spark_color = self.COLOR_GREEN if pct >= 0 else self.COLOR_DANGER
-                spark_html = self.generate_sparkline_svg(p_pts, spark_color, width=50, height=16)
-
                 rows.append(f"""
                     <div class="sector-card" style="background:{bg_accent}; border-left:2px solid {clr}; padding:12px 14px; border-radius:4px; margin-bottom:6px;">
                         <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                            <td class="sec-ticker" width="26%" style="font-family:monospace; font-weight:bold; font-size:13px; white-space:nowrap;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none !important;">${t['symbol']}</a></td>
-                            <td class="sec-name" width="31%" style="font-size:11px; color:{text_dim}; padding:0 8px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">{spark_html}{t['name']}</td>
-                            <td class="sec-pct" width="43%" style="text-align:right; font-family:monospace; font-size:13px;">{pct_display}</td>
+                            <td class="sec-ticker" width="28%" style="font-family:monospace; font-weight:bold; font-size:13px; white-space:nowrap;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none !important;">${t['symbol']}</a></td>
+                            <td class="sec-name" width="30%" style="font-size:11px; color:{text_dim}; padding:0 8px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">{t['name']}</td>
+                            <td class="sec-pct" width="42%" style="text-align:right; font-family:monospace; font-size:13px;">{pct_display}</td>
                         </tr></table>
                         {f'<div class="sec-notes" style="font-size:10px; color:#8f9bb3; margin-top:6px; line-height:1.5; border-top:1px solid rgba(255,255,255,0.04); padding-top:6px; white-space:normal !important; word-wrap:break-word; overflow:visible !important; display:block;">{flaired_notes[:800]}</div>' if flaired_notes else ''}
                     </div>
@@ -1382,11 +1459,15 @@ class SovereignIntelligenceEngine:
                     .sector-card {{ padding:10px !important; }}
                     .global-chip {{ display:block !important; width:100% !important; margin-bottom:10px; }}
                     .fg-left, .fg-right {{ width:50% !important; }}
+                    /* MOBILE: 6-column side-by-side Movers */
+                    .perf-cell {{ display:table-cell !important; width:50% !important; padding:4px !important; text-align:center !important; }}
+                    .perf-hdr {{ font-size:11px !important; margin-bottom:10px !important; }}
+                    .perf-item {{ font-size:11px !important; padding:6px 8px !important; }}
                 }}
 
                 /* Desktop / large screen upsizing */
                 @media only screen and (min-width:600px) {{
-                    .main-table {{ max-width:700px !important; }}
+                    .main-table {{ max-width:850px !important; }}
                     /* Section headers --- bold, large, prominent */
                     .section-hdr {{
                         font-size:16px !important;
@@ -1424,18 +1505,26 @@ class SovereignIntelligenceEngine:
                     /* TARGETED: CLOSING PRICES */
                     .sec-price {{ font-size:15px !important; font-weight:bold !important; color:{text_bright} !important; }}
                     
-                    /* Velocity chips */
-                    .vel-chip {{ font-size:15px !important; padding:12px 16px !important; }}
-                    .vel-vol  {{ font-size:13px !important; }}
-                    .mv-row   {{ font-size:14px !important; padding:14px 20px !important; }}
-                    .mv-vol   {{ font-size:13px !important; }}
-                    .top-mover-chip {{ font-size:10px !important; padding:10px 14px !important; }}
-                    /* Performance carve-out upsizing */
-                    .perf-item {{ font-size:16px !important; margin-bottom:10px !important; }}
-                    .perf-cell {{ padding:0 40px !important; }}
+                    /* Velocity Override: Tighter Padding, Larger Font */
+                    .vel-chip {{ font-size:16px !important; padding:8px 12px !important; }}
+                    .vel-vol  {{ font-size:14px !important; }}
+                    .mv-row   {{ font-size:16px !important; padding:10px 16px !important; }}
+                    .mv-vol   {{ font-size:14px !important; }}
+                    .top-mover-chip {{ font-size:11px !important; padding:8px 12px !important; }}
+                    /* Movers: Larger Font */
+                    .perf-item {{ font-size:18px !important; margin-bottom:6px !important; }}
+                    .perf-hdr {{ font-size:18px !important; margin-bottom:15px !important; letter-spacing:3px !important; }}
+                    .perf-cell {{ padding:0 20px !important; }}
+                    /* Watchlist: Larger Font */
+                    .sector-card {{ padding:14px 18px !important; }}
+                    .sec-ticker {{ font-size:16px !important; }}
+                    .sec-name   {{ font-size:13px !important; }}
+                    .sec-pct    {{ font-size:16px !important; }}
+                    .sec-notes  {{ font-size:14px !important; line-height:1.6 !important; color:#8f9bb3 !important; }}
+                    
                     /* Header block */
                     .hdr-title {{ font-size:28px !important; }}
-                    .hdr-sub   {{ font-size:14px !important; }}
+                    .hdr-sub   {{ font-size:15px !important; }}
                 }}
                 /* Mobile lock --- section-hdr stays small and dim */
                 @media only screen and (max-width:599px) {{
@@ -1468,8 +1557,8 @@ class SovereignIntelligenceEngine:
             <tr><td style="padding-bottom:24px;">
                 <table width="100%" cellpadding="0" cellspacing="0"><tr>
                     <td class="header-cell">
-                        <div class="header-title hdr-title" style="color:{text_bright}; font-size:16px; font-weight:bold; letter-spacing:1.5px; text-transform:uppercase;">Market Insights and Sovereign Intel</div>
-                        <div style="color:{text_dim}; font-size:10px; font-family:monospace; margin-top:3px; letter-spacing:0.5px;">V23.49 // {self.now.strftime('%a %Y-%m-%d %H:%M EST')} // {session}</div>
+                        <div class="header-title hdr-title" style="color:{text_bright}; font-size:16px; font-weight:bold; letter-spacing:1.5px; text-transform:uppercase;">Market Insights and Intel</div>
+                        <div style="color:{text_dim}; font-size:10px; font-family:monospace; margin-top:3px; letter-spacing:0.5px;">V23.55 // {self.now.strftime('%a %Y-%m-%d %H:%M EST')} // {session}</div>
                     </td>
                     <td class="badge-cell" style="text-align:right; white-space:nowrap; vertical-align:middle; padding-left:10px;">
                         <span style="background:{accent}; color:#fff; padding:4px 10px; font-size:9px; border-radius:2px; font-weight:bold; letter-spacing:1px;">CONFIDENCE: HIGH</span>
@@ -1492,6 +1581,9 @@ class SovereignIntelligenceEngine:
                 <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">{global_grid_rows}</table>
 
                 {perf_carveout_html}
+                
+                <!-- WATCHLIST INTEL -->
+                {watchlist_intel_html}
 
                 <!-- Fear & Greed — centered 2-col -->
                 <div class="section-hdr" style="font-size:9px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border};">Sentiment</div>
@@ -1592,39 +1684,25 @@ if __name__ == "__main__":
         # Global 15m check before even hitting the sidecar
         spark_path = Path(__file__).parent.parent / 'database' / 'email_sparklines.json'
         stale_for_sidecar = []
-        if spark_path.exists():
-            try:
-                import time
-                with open(spark_path, 'r') as f: existing_sparks = json.load(f)
-                now_ts = time.time()
-                # Include Core Indices in the stasis check
-                core_indices = ["^GSPC", "^IXIC", "^DJI", "BTC-USD", "ETH-USD", "SOL-USD"]
-                t_list = list(set(load_tickers() + custom_tickers + core_indices))
-                
-                for t in t_list:
-                    entry = existing_sparks.get(t, {})
-                    ts = entry.get('ts', 0) if isinstance(entry, dict) else 0
-                    if (now_ts - ts) >= 900: stale_for_sidecar.append(t)
-            except: stale_for_sidecar = load_tickers() + custom_tickers
-        else:
-            stale_for_sidecar = load_tickers() + custom_tickers
-
-        if stale_for_sidecar:
-            log.info(f"Triggering Email Sparkline Sidecar for {len(stale_for_sidecar)} assets...")
-            asyncio.run(run_spark_fetch(stale_for_sidecar))
-        else:
-            log.info("Sparkline Stasis: 15m TTL active.")
+        log.info("Skipping Email Sparkline Sidecar (Disabled)")
     except Exception as e:
         log.warning(f"Sparkline sidecar failed: {e}")
 
+    def ts(): return datetime.datetime.now().strftime("%H:%M:%S")
+
+    print(f"[{ts()}] [DEBUG] Initializing SovereignIntelligenceEngine...")
     engine = SovereignIntelligenceEngine()
+    print(f"[{ts()}] [DEBUG] Engine initialized.")
     
     # Filter custom tickers to legit ones
+    print(f"[{ts()}] [DEBUG] Filtering custom tickers...")
     valid_custom = [t for t in custom_tickers if engine.is_legit_ticker(t)]
     if valid_custom:
-        print(f"[CLI] Custom Watchlist: {', '.join(valid_custom)}")
+        print(f"[{ts()}] [CLI] Custom Watchlist: {', '.join(valid_custom)}")
 
+    print(f"[{ts()}] [DEBUG] Gathering all data...")
     tradeable, strategic, prices, news_db, sentiment, entries = engine.gather_all_data(custom_tickers=valid_custom)
+    print(f"[{ts()}] [DEBUG] Data gathered. Composing HTML...")
     html = engine.compose_html(tradeable, strategic, prices, news_db, sentiment, entries)
     
     preview_path = engine.db_path / "synopsis_preview.html"

@@ -1,16 +1,23 @@
 # Gemini Memory Bridge - GIGACPO Terminal
 
-## 🚀 Active Context: V23.49 (Visual Supercycle +)
+## 🚀 Active Context: V23.58 (Timezone-Aware Session Protocol)
 
 ### 🧩 Logic & Patterns
-1. **Sovereign Intelligence Engine (V23.49)**:
+1. **Sovereign Intelligence Engine (V23.58)**:
+   - **Timezone Normalization**: Market session detection is normalized to **US/Eastern** time (standardizing VM/Server vs Local display discrepancy).
+   - **Session Tagging Standards**:
+     - `PRE`: Morning Market -> **Orange** (`#f59e0b`).
+     - `LIVE`: Regular Market -> **Green** (`#10b981`) with specialized `L⚡` badge.
+     - `AH`: After-Hours -> **Red** (`#ef4444`).
+     - `PM`: Post-Market (Secondary) -> **Light Blue** (`#60a5fa`).
    - **Horizontal Pulse Layout**: Sovereign Index Pulse now uses a high-density horizontal row (3-tile) layout when indices are in `LIVE` or `AH` sessions. Desktop/Mobile views mirrored.
-   - **Context-Aware News Icons**: Keywords map headlines to 12 distinct iconography themes (🛡️ Geopol, 🛢️ Energy, ⚖️ Macro, 🧠 AI, 📈 Earnings, 💻 Tech, 📜 Law, 🪙 Crypto, 🕵️ Scam, 💰 Wealth, 🚛 Logistics, 📡 Default).
-   - **News Feed Hardening**: Aggressive blacklist filtering; "Dave Ramsey" and stablecoin noise (USDC/USDT) strictly purged.
-   - **Isolated Sparkline Sidecar**: Deployed `engine/email_spark_fetcher.py`. Renders 1d regular session chart action as lightweight SVGs.
+   - **Session Performance Carve-out**: New Top 10 Gainers and Losers section. V23.53: Enhanced mobile centering via `display:block` stacking.
+   - **Context-Aware News Icons**: Keywords map headlines to 12 distinct iconography themes. **Consecutive icon de-duplication** enforced in V23.53.
+   - **Semiconductor Priority**: Expanded `SIGNALS` list and weighted scoring (+75) to prioritize chip-sector articles (TSMC, ASML, HBM, Foundry) in the main pulse.
+   - **Intelligence Hardening**: Blacklisted `$CD` and "Dave Ramsey".
+   - **Sparkline Decommissioning**: Sparklines removed from email synopsis per user request for simplicity.
    - **Suffix-Aware Session Detection**: `get_market_session` and `get_session_data` support global exchange suffixes (.DE, .HK, .ST, .AX).
-   - **Green `L⚡` Badge Logic**: Specialized `L⚡` badge for active sessions.
-   - **Watchlist Column Hardening**: Ticker column `width="26%"` mandatory for international symbol support.
+   - **Watchlist Column Hardening**: Ticker column `width="28%"` mandatory for international symbol support.
    - **High-Fidelity Pulse**: Expanded hydration to refresh all 113+ assets during active sessions.
    - **Branding Update**: Email title standardized to "Market Insights and Sovereign Intel". Decorative lightning bolts removed from header/subject.
    - **Zero-Noise Protocol**: `is_shite_ticker` neutralizes stablecoins and enforces >0.1% volatility for inclusion.
@@ -80,4 +87,4 @@
 - Windows console requires `UTF-8` override to log CJK characters without crashing.
 - `x_intel_master.json` must be rebuilt after every user sync.
 
-[Handover Complete - 2026-04-20]
+[Handover Complete - 2026-04-21]

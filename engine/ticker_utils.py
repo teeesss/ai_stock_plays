@@ -5,6 +5,16 @@ The Single Source of Truth for ticker discovery across the GIGACPO ecosystem.
 Unifies Root, AI, and Macro indices into a single monitored universe.
 """
 
+# V23.59: Auto-Dependency Guardian
+try:
+    try:
+        from dependency_mgr import ensure_dependencies
+    except ImportError:
+        from engine.dependency_mgr import ensure_dependencies
+    ensure_dependencies()
+except ImportError:
+    pass
+
 import json
 from pathlib import Path
 
@@ -13,7 +23,7 @@ CPO_DB = ROOT / 'database' / 'CPO_MASTER_DATA.json'
 AI_DB = ROOT / 'database' / 'AI_MASTER_DATA.json'
 
 # Global Skip List: Private or non-tradable entities
-SKIP_TICKERS = {'AYAR', 'RANV', 'CelestialAI', 'SCINTIL', 'PHOTONIC_COMPUTING', 'OPTICAL_INTERCONNECT'}
+SKIP_TICKERS = {'CD', 'AYAR', 'RANV', 'CelestialAI', 'SCINTIL', 'PHOTONIC_COMPUTING', 'OPTICAL_INTERCONNECT'}
 
 # Global Macro Indices & Crypto
 GLOBAL_INDICES = ['BTC-USD', 'ETH-USD', 'NQ=F', 'ES=F', 'YM=F']

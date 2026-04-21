@@ -33,23 +33,28 @@ import threading
 from datetime import datetime, timezone
 from pathlib import Path
 
-# ── FastAPI ────────────────────────────────────────────────────────────────────
+# ── Dependencies ─────────────────────────────────────────────────────────────
 try:
-    import uvicorn
-    from fastapi import FastAPI
-    from fastapi.responses import FileResponse, JSONResponse
-    from fastapi.staticfiles import StaticFiles
+    from engine.dependency_mgr import ensure_dependencies
+    ensure_dependencies()
 except ImportError:
-    print("[FATAL] FastAPI/uvicorn not installed. Run: pip install fastapi uvicorn")
-    sys.exit(1)
+    pass
 
-# ── APScheduler ───────────────────────────────────────────────────────────────
-try:
-    from apscheduler.schedulers.background import BackgroundScheduler
-    from apscheduler.triggers.cron import CronTrigger
-except ImportError:
-    print("[FATAL] APScheduler not installed. Run: pip install apscheduler")
-    sys.exit(1)
+import json
+import logging
+import subprocess
+import sys
+import threading
+from datetime import datetime, timezone
+from pathlib import Path
+
+# ── FastAPI / APScheduler (Protected by ensure_dependencies) ──────────────────
+import uvicorn
+from fastapi import FastAPI
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 # ── Setup ─────────────────────────────────────────────────────────────────────
 logging.basicConfig(

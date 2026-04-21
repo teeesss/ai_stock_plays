@@ -1,0 +1,47 @@
+<h2>Intelligence Pipeline: Priority Harvest</h2>
+<p class="subtitle">Here is how I plan to re-wire the news engine to support your Focus Sector request.</p>
+
+<div class="mockup">
+  <div class="mockup-header">New Intelligence Pipeline</div>
+  <div class="mockup-body">
+    <ol style="line-height:2.0;">
+      <li><b>Load Focus List</b>: Read <code>priority_tickers.txt</code> (AMD, NVDA, photonics, etc.)</li>
+      <li><b>Surgical Fetch</b>: Call Yahoo Search API for <i>each</i> item (Top 5 stories each).</li>
+      <li><b>Scoring</b>:
+        <ul style="line-height:1.2; margin-top:5px;">
+          <li>Direct Ticker Result: <span style="color:#10b981; font-weight:bold;">+200 pts</span></li>
+          <li>Keywords Match (Photonics/CPO): <span style="color:#10b981; font-weight:bold;">+100 pts</span></li>
+          <li>General RSS Feed: <span style="color:#666;">Baseline pts</span></li>
+        </ul>
+      </li>
+      <li><b>Block Split</b>:
+        <ul style="line-height:1.2; margin-top:5px;">
+          <li>Items &gt; 250 pts &rarr; <b>Top "Severe Signals" Block</b></li>
+          <li>Items &lt; 250 pts &rarr; <b>Macro Intel Section</b></li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Question on Keyword Search</h3>
+  <p>For items like "photonics" or "Co-Packaged Optics", should I search for them as general keywords, or only if they appear in news about your specific focus tickers (AMD, NVDA, etc.)?</p>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="global-search" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Global Keyword Search</h3>
+      <p>I'll search for "photonics" as its own entity and pull the top news from across the web, even if it's not about the main tickers.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="ticker-filtered" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Priority Ticker Only</h3>
+      <p>Only prioritize photonics/CPO news if it specifically mentions your focus list (NVDA, etc.). Keeps things very targeted.</p>
+    </div>
+  </div>
+</div>

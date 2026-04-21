@@ -1,3 +1,12 @@
+# V23.59: Auto-Dependency Guardian
+try:
+    try:
+        from dependency_mgr import ensure_dependencies
+    except ImportError:
+        from engine.dependency_mgr import ensure_dependencies
+    ensure_dependencies()
+except ImportError:
+    pass
 
 import asyncio
 import random
