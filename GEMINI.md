@@ -1,27 +1,18 @@
 # Gemini Memory Bridge - GIGACPO Terminal
 
-## 🚀 Active Context: V23.58 (Timezone-Aware Session Protocol)
+## 🚀 Active Context: V23.60 (High-Density Cockpit Design Protocol)
 
 ### 🧩 Logic & Patterns
-1. **Sovereign Intelligence Engine (V23.58)**:
-   - **Timezone Normalization**: Market session detection is normalized to **US/Eastern** time (standardizing VM/Server vs Local display discrepancy).
-   - **Session Tagging Standards**:
-     - `PRE`: Morning Market -> **Orange** (`#f59e0b`).
-     - `LIVE`: Regular Market -> **Green** (`#10b981`) with specialized `L⚡` badge.
-     - `AH`: After-Hours -> **Red** (`#ef4444`).
-     - `PM`: Post-Market (Secondary) -> **Light Blue** (`#60a5fa`).
-   - **Horizontal Pulse Layout**: Sovereign Index Pulse now uses a high-density horizontal row (3-tile) layout when indices are in `LIVE` or `AH` sessions. Desktop/Mobile views mirrored.
-   - **Session Performance Carve-out**: New Top 10 Gainers and Losers section. V23.53: Enhanced mobile centering via `display:block` stacking.
-   - **Context-Aware News Icons**: Keywords map headlines to 12 distinct iconography themes. **Consecutive icon de-duplication** enforced in V23.53.
-   - **Semiconductor Priority**: Expanded `SIGNALS` list and weighted scoring (+75) to prioritize chip-sector articles (TSMC, ASML, HBM, Foundry) in the main pulse.
-   - **Intelligence Hardening**: Blacklisted `$CD` and "Dave Ramsey".
-   - **Sparkline Decommissioning**: Sparklines removed from email synopsis per user request for simplicity.
-   - **Suffix-Aware Session Detection**: `get_market_session` and `get_session_data` support global exchange suffixes (.DE, .HK, .ST, .AX).
-   - **Watchlist Column Hardening**: Ticker column `width="28%"` mandatory for international symbol support.
-   - **High-Fidelity Pulse**: Expanded hydration to refresh all 113+ assets during active sessions.
-   - **Branding Update**: Email title standardized to "Market Insights and Sovereign Intel". Decorative lightning bolts removed from header/subject.
-   - **Zero-Noise Protocol**: `is_shite_ticker` neutralizes stablecoins and enforces >0.1% volatility for inclusion.
-   - **Centralized Ticker Control**: Orchestration via CIFS-mounted `tickers.txt`.
+1. **Sovereign Intelligence Engine (V23.60)**:
+   - **High-Density Cockpit Layout**: Drastically reduced whitespace across all section headers, performance movers, and sector dossiers for a professional desktop aesthetic.
+   - **Velocity Override (CSS Redesign)**: Character-based blocks replaced with a precision-CSS blue bar system (`#0ea5e9`).
+   - **Strict Icon De-duplication**: `get_context_icon` now uses stateful pool tracking to ensure 100% variety across headlines and intelligence blocks.
+   - **Redundant Label Filtering**: Automatic suppression of company names that are identical to their ticker symbols.
+   - **Timezone Normalization**: Market session detection is normalized to **US/Eastern** time.
+   - **Session Tagging Standards**: `PRE` (Orange), `LIVE` (Green + `L⚡`), `AH` (Red), `PM` (Light Blue).
+   - **Horizontal Pulse Layout**: Sovereign Index Pulse uses a high-density 3-tile row layout for active sessions.
+   - **Semiconductor Priority**: Weighted scoring (+75) for chip sector articles.
+   - **Zero-Noise Protocol**: Enforced >0.1% volatility for inclusion; blacklisted "Dave Ramsey".
 
 2. **AI UI Generation (V19.5)**:
    - AI/index.html is a GENERATED artifact. Source of truth is `AI/index_template.html`.
