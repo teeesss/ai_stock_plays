@@ -1038,15 +1038,15 @@ class SovereignIntelligenceEngine:
                     
                     items_html.append(f'''
                         <div style="margin-bottom:2px; text-align:center;">
-                            <div class="perf-item" style="display:inline-block; width:280px; background:rgba(255,255,255,0.02); padding:4px 10px; border-radius:3px; font-family:monospace; font-size:18px; text-align:left; vertical-align:top;">
-                                <span style="display:inline-block; min-width:90px; color:#f59e0b; font-weight:bold;">{symbol_link}</span>
-                                <span style="display:inline-block; min-width:80px; color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; margin-right:10px; vertical-align:middle;">{price_str}</span>
-                                <span style="color:{color_movers}; font-weight:900; float:right; font-size:{pct_fs};">{pct_str}&nbsp;{badge}{anchor}</span>
+                            <div class="perf-item" style="display:inline-block; width:98%; max-width:380px; background:rgba(255,255,255,0.02); padding:4px 12px; border-radius:3px; font-family:monospace; font-size:18px; text-align:left; vertical-align:middle; white-space:nowrap; overflow:hidden;">
+                                <span style="display:inline-block; min-width:80px; color:#f59e0b; font-weight:bold;">{symbol_link}</span>
+                                <span style="display:inline-block; min-width:85px; color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; margin-right:15px; vertical-align:middle;">{price_str}</span>
+                                <span style="display:inline-block; color:{color_movers}; font-weight:900; font-size:{pct_fs}; vertical-align:middle;">{pct_str}&nbsp;{badge}{anchor}</span>
                             </div>
                         </div>''')
 
                 results.append(f"""
-                    <td class="perf-cell" width="50%" style="vertical-align:top; padding:0 4px; text-align:center;">
+                    <td class="perf-cell" width="50%" style="vertical-align:top; padding:0 2px; text-align:center;">
                         <div class="perf-hdr" style="color:{color}; font-size:10px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">{title}</div>
                         {''.join(items_html)}
                     </td>
