@@ -245,9 +245,13 @@ def analyze_movers(prices: dict) -> dict:
     Returns top gainers, top losers, and volume spikes.
     This powers the CPO PULSE strip in the terminal.
     """
-    with_change = [(t, d) for t, d in prices.items()
-                   if 'change_pct' in d and d['change_pct'] is not None
-                   and t != '_meta']
+    # V24.6: Data Hygiene - Only consider movers updated in the last 6 hours
+    now_ts = time.time()
+    fresh_prices = {t: d for t, d in prices.items() 
+                    if t != '_meta' and (now_ts - d.get('timestamp', 0)) < 21600}
+
+    with_change = [(t, d) for t, d in fresh_prices.items()
+                   if 'change_pct' in d and d['change_pct'] is not None]
 
     sorted_by_change = sorted(with_change, key=lambda x: x[1]['change_pct'], reverse=True)
 
@@ -260,8 +264,7 @@ def analyze_movers(prices: dict) -> dict:
     # Volume spikes: vol_spike > 2x average = something is happening
     vol_spikes  = sorted(
         [{'ticker': t, 'vol_spike': d['vol_spike'], 'change_pct': d.get('change_pct')}
-         for t, d in prices.items() if d.get('vol_spike', 0) and d.get('vol_spike', 0) >= 2.0
-         and t != '_meta'],
+         for t, d in fresh_prices.items() if d.get('vol_spike', 0) and d.get('vol_spike', 0) >= 2.0],
         key=lambda x: x['vol_spike'], reverse=True
     )[:5]
 
@@ -361,10 +364,15 @@ async def async_run_fetch(tickers: list = None, force: bool = False, dry_run: bo
         log.info(f'Top loser:  {movers["top_losers"][0]["ticker"]} {movers["top_losers"][0]["change_pct"]:.1f}%')
 
     if not dry_run:
+        # V24.6: Database Hygiene - Purge any entries older than 24 hours before saving
+        now_ts = time.time()
+        purged_prices = {t: d for t, d in all_prices.items() 
+                         if t == '_meta' or (now_ts - d.get('timestamp', 0)) < 86400}
+        
         # Write JSON (for audit/debugging)
         with open(OUT_JSON, 'w', encoding='utf-8') as f:
-            json.dump(all_prices, f, indent=2)
-        log.info(f'Saved {OUT_JSON}')
+            json.dump(purged_prices, f, indent=2)
+        log.info(f'Saved {OUT_JSON} (Purged {len(all_prices) - len(purged_prices)} stale entries)')
 
         # Write JS (for HTML terminal consumption)
         with open(OUT_JS, 'w', encoding='utf-8') as f:

@@ -997,8 +997,13 @@ class SovereignIntelligenceEngine:
 
         # 2c. Session Performance Carve-out — Responsive High-Density Tiles (V23.50)
         perf_candidates = []
+        now_ts = time.time()
         for sym, p_data in prices.items():
             if sym == '_meta' or not self.is_legit_ticker(sym): continue
+            
+            # V24.6: Freshness Guard - Only consider data from the last 6 hours
+            last_ts = p_data.get('timestamp', 0)
+            if (now_ts - last_ts) > 21600: continue
             price, pct, sess = self.get_session_data(p_data, sym)
             if pct is not None and abs(pct) > 0.05: # filter noise
                 perf_candidates.append({'symbol': sym, 'price': price, 'change_pct': pct, 'session': sess})
