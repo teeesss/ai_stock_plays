@@ -35,7 +35,12 @@ async def scrape_yahoo_movers_html(mover_type="gainers"):
     unique_tickers = []
     seen = set()
     for t in tickers:
-        if t not in seen and t.isupper() and len(t) < 10:
+        # V24.8: Hardened Equity Filter - No Crypto, No Indices, No Futures
+        # Skip BTC-USD, ETH-USD, etc.
+        if '-' in t or t.endswith('=F') or t.startswith('^'): 
+            continue
+            
+        if t not in seen and t.isupper() and len(t) < 8:
             unique_tickers.append(t)
             seen.add(t)
             
