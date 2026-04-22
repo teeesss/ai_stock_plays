@@ -27,22 +27,32 @@ class MacroAggregator:
             "PHOTONICS", "SEMI", "CXL", "BLACKWELL", "NVIDIA", "SUPPLY CHAIN", 
             "CHIP", "AI REVENUE", "WAFER", "HBM", "CPO", "SILICON",
             "MARKET OVERVIEW", "WALL ST", "CLOSING BELL", "OPENING BELL", "RECAP", "STOCKS FALL", "STOCKS RISE",
-            "CRUDE", "OIL", "CEASEFIRE", "GEOPOLITICAL", "DEFENSE", "ENERGY", "HORMUZ", "OPEC", "BRENT"
+            "CRUDE", "OIL", "CEASEFIRE", "GEOPOLITICAL", "DEFENSE", "ENERGY", "HORMUZ", "OPEC", "BRENT",
+            "EARNINGS", "PROFIT", "QUARTERLY", "REVENUE", "GUIDANCE"
         ]
         self.priority_tickers = [
             "NVDA", "AMD", "AVGO", "ALAB", "ARM", "MRVL", "LITE", "FN", 
             "COHR", "LUNA", "PII", "RMBS", "INTC", "TSM", "HIVE"
         ]
+        # V24.1: Hardened 15 High-Fidelity Sources (Updated with working URLs)
         self.feeds = {
-            "CNBC Top News": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
-            "MarketWatch Pulse": "https://feeds.content.dowjones.io/public/rss/mw_marketpulse",
-            "Investing Tech": "https://www.investing.com/rss/news_25.rss",
-            "Investing World": "https://www.investing.com/rss/news_301.rss",
-            "CNBC Tech": "https://www.cnbc.com/id/19854910/device/rss/rss.html",
-            "OilPrice Macro": "https://oilprice.com/rss/main_feed.rss",
-            "Reuters Energy": "https://www.reuters.com/business/energy/rss",
-            "Reuters World": "https://www.reuters.com/world/rss"
+            "WSJ Markets": {"url": "https://feeds.content.dowjones.io/public/rss/RSSMarketsMain", "type": "rss", "weight": 150},
+            "CNBC Top News": {"url": "https://www.cnbc.com/id/100003114/device/rss/rss.html", "type": "rss", "weight": 140},
+            "CNBC World": {"url": "https://www.cnbc.com/id/100727362/device/rss/rss.html", "type": "rss", "weight": 130},
+            "IBD Market News": {"url": "https://www.investors.com/rss.axd?path=InvestingRSS.xml", "type": "rss", "weight": 120},
+            "CNBC Markets": {"url": "https://www.cnbc.com/id/10000664/device/rss/rss.html", "type": "rss", "weight": 110},
+            "MarketWatch Pulse": {"url": "https://feeds.content.dowjones.io/public/rss/mw_marketpulse", "type": "rss", "weight": 100},
+            "Seeking Alpha": {"url": "https://seekingalpha.com/feed.xml", "type": "rss", "weight": 90},
+            "Business Insider": {"url": "https://markets.businessinsider.com/rss/news", "type": "rss", "weight": 80},
+            "CNBC Earnings": {"url": "https://www.cnbc.com/id/15839135/device/rss/rss.html", "type": "rss", "weight": 170},
+            "Yahoo Finance Tech": {"url": "https://finance.yahoo.com/topic/tech/", "type": "scrape", "weight": 60},
+            "CNBC Tech": {"url": "https://www.cnbc.com/id/19854910/device/rss/rss.html", "type": "rss", "weight": 50},
+            "OilPrice Macro": {"url": "https://oilprice.com/feed/rss.html", "type": "rss", "weight": 115},
+            "CNBC Energy": {"url": "https://www.cnbc.com/id/19836768/device/rss/rss.html", "type": "rss", "weight": 35},
+            "ZeroHedge": {"url": "http://feeds.feedburner.com/zerohedge/feed", "type": "rss", "weight": 20},
+            "Investing Tech": {"url": "https://www.investing.com/rss/news_25.rss", "type": "rss", "weight": 10}
         }
+        self.blacklist = ["DAVE RAMSEY", "PR NEWSWIRE", "BUSINESS WIRE", "GLOBE NEWSWIRE"]
 
     def _load_prices(self):
         if not LIVE_PRICES_JSON.exists():
@@ -53,10 +63,17 @@ class MacroAggregator:
         except:
             return {}
 
-    def score_headline(self, title):
-        """Calculates 'Intel Significance' based on tech/semi focus."""
-        score = 10
+    def score_headline(self, title, source_name):
+        """Calculates 'Intel Significance' based on tech/semi focus and source weight."""
         t_upper = title.upper()
+        
+        # Blacklist enforcement
+        for bl in self.blacklist:
+            if bl in t_upper:
+                return -1000
+        
+        # Base weight from source
+        score = self.feeds.get(source_name, {}).get("weight", 10)
         
         # Keyword bonuses
         for kw in self.priority_keywords:
@@ -64,7 +81,7 @@ class MacroAggregator:
                 score += 50
         
         # Market Overview / Macro Anchor bonuses
-        anchor_words = ["MARKET OVERVIEW", "WALL ST", "CLOSING BELL", "OPENING BELL", "RECAP"]
+        anchor_words = ["MARKET OVERVIEW", "WALL ST", "CLOSING BELL", "OPENING BELL", "RECAP", "STOCKS FALL", "STOCKS RISE", "STOCK MARKET TODAY"]
         for aw in anchor_words:
             if aw in t_upper:
                 score += 200
@@ -134,19 +151,22 @@ class MacroAggregator:
 
             # V23.79: Parallelize across domains, sequential jitter within domains
             domain_queues = {}
-            for name, url in self.feeds.items():
+            for name, cfg in self.feeds.items():
+                url = cfg["url"]
                 domain = urllib.parse.urlparse(url).netloc
                 if domain not in domain_queues:
                     domain_queues[domain] = []
-                domain_queues[domain].append((name, url))
+                domain_queues[domain].append((name, cfg))
 
             async def process_queue(domain, queue):
                 queue_items = []
-                for i, (name, url) in enumerate(queue):
+                for i, (name, cfg) in enumerate(queue):
+                    url = cfg["url"]
+                    f_type = cfg["type"]
                     try:
                         # Jitter ONLY within the same domain (V23.79 Optimization)
                         if i > 0:
-                            delay = random.uniform(3.3, 10.0)
+                            delay = random.uniform(2.5, 7.0)
                             log.info(f"  [STEALTH] Cadence Match ({domain}): Sleeping {delay:.2f}s...")
                             await asyncio.sleep(delay)
 
@@ -156,39 +176,106 @@ class MacroAggregator:
                             log.error(f"  [!] Blocked or Error {name}: HTTP {res.status_code}")
                             continue
 
-                        feed = feedparser.parse(res.content)
                         now_ts = time.time()
-                        for entry in feed.entries:
-                            title = entry.get('title', 'No Title').strip()
-                            
-                            # Deduplication Logic
-                            norm_title = re.sub(r'[^a-z0-9]', '', title.lower())
-                            if norm_title in seen_titles: continue
-                            seen_titles.add(norm_title)
+                        
+                        if f_type == "rss":
+                            feed = feedparser.parse(res.content)
+                            for entry in feed.entries:
+                                title = entry.get('title', 'No Title').strip()
+                                
+                                # V24.1: Hardened Deduplication (Jaccard-lite)
+                                tokens = frozenset(re.findall(r'\b\w{4,}\b', title.lower()))
+                                is_dup = False
+                                for st in seen_titles:
+                                    overlap = len(tokens & st) / (len(tokens | st) + 1)
+                                    if overlap > 0.4: is_dup = True; break
+                                if is_dup: continue
+                                seen_titles.add(tokens)
 
-                            link = entry.get('link', '')
-                            pub_date = entry.get('published', '')
+                                link = entry.get('link', '')
+                                pub_date = entry.get('published', '')
+                                
+                                if hasattr(entry, 'published_parsed') and entry.published_parsed:
+                                    entry_ts = time.mktime(entry.published_parsed)
+                                    if (now_ts - entry_ts) > (48 * 3600):
+                                        continue
+                                
+                                score = self.score_headline(title, name)
+                                if score < 0: continue
+                                
+                                # Flag Earnings (V24.1)
+                                is_earnings = "EARNINGS" in title.upper() or name == "CNBC Earnings"
+                                if is_earnings: score += 100 # Boost earnings
+                                
+                                enriched_title = self.enrich_headline(title, prices)
+                                
+                                summary = entry.get('summary', entry.get('description', ''))
+                                summary = re.sub(r'<[^>]+>', '', summary).strip()
+                                
+                                queue_items.append({
+                                    "title": enriched_title,
+                                    "raw_title": title,
+                                    "summary": summary,
+                                    "link": link,
+                                    "source": name,
+                                    "score": score,
+                                    "date": pub_date,
+                                    "is_earnings": is_earnings
+                                })
+                        else:
+                            # Scrape Type
+                            from bs4 import BeautifulSoup
+                            soup = BeautifulSoup(res.content, 'html.parser')
                             
-                            if hasattr(entry, 'published_parsed') and entry.published_parsed:
-                                entry_ts = time.mktime(entry.published_parsed)
-                                if (now_ts - entry_ts) > (48 * 3600):
-                                    continue
-                            
-                            score = self.score_headline(title)
-                            enriched_title = self.enrich_headline(title, prices)
-                            
-                            summary = entry.get('summary', entry.get('description', ''))
-                            summary = re.sub(r'<[^>]+>', '', summary).strip()
-                            
-                            queue_items.append({
-                                "title": enriched_title,
-                                "raw_title": title,
-                                "summary": summary,
-                                "link": link,
-                                "source": name,
-                                "score": score,
-                                "date": pub_date
-                            })
+                            items = []
+                            if "bloomberg" in url:
+                                # Target major headlines on Bloomberg
+                                links = soup.find_all('a', href=re.compile(r'/news/articles/|/news/features/'))
+                                for l in links[:10]:
+                                    title = l.get_text().strip()
+                                    if len(title) < 20: continue
+                                    items.append({"title": title, "link": "https://www.bloomberg.com" + l['href'] if l['href'].startswith('/') else l['href']})
+                            elif "thefly" in url:
+                                links = soup.find_all('a', class_='newsTitleLink')
+                                for l in links[:10]:
+                                    title = l.get_text().strip()
+                                    items.append({"title": title, "link": "https://thefly.com" + l['href'] if l['href'].startswith('/') else l['href']})
+                            elif "yahoo" in url:
+                                links = soup.find_all('a', class_='subLink') or soup.find_all('h3')
+                                for l in links[:10]:
+                                    title = l.get_text().strip()
+                                    a_tag = l if l.name == 'a' else l.find('a')
+                                    if a_tag and a_tag.get('href'):
+                                        items.append({"title": title, "link": a_tag['href']})
+
+                            for it in items:
+                                title = it['title']
+                                tokens = frozenset(re.findall(r'\b\w{4,}\b', title.lower()))
+                                is_dup = False
+                                for st in seen_titles:
+                                    overlap = len(tokens & st) / (len(tokens | st) + 1)
+                                    if overlap > 0.4: is_dup = True; break
+                                if is_dup: continue
+                                seen_titles.add(tokens)
+                                
+                                score = self.score_headline(title, name)
+                                if score < 0: continue
+                                
+                                # Flag Earnings (V24.1)
+                                is_earnings = "EARNINGS" in title.upper() or name == "CNBC Earnings"
+                                if is_earnings: score += 100 # Boost earnings
+
+                                enriched_title = self.enrich_headline(title, prices)
+                                queue_items.append({
+                                    "title": enriched_title,
+                                    "raw_title": title,
+                                    "summary": "",
+                                    "link": it['link'],
+                                    "source": name,
+                                    "score": score,
+                                    "date": "Just now",
+                                    "is_earnings": is_earnings
+                                })
                     except Exception as e:
                         log.error(f"  [ERR] Failed {name}: {e}")
                 return queue_items
@@ -199,17 +286,21 @@ class MacroAggregator:
             for batch in results_batches:
                 all_items.extend(batch)
 
-        # Sort by score (descending) and take top 15
-        top_15 = sorted(all_items, key=lambda x: x['score'], reverse=True)[:15]
+        # V24.1: Dynamic List Extension for Earnings News
+        has_earnings = any(it.get('is_earnings') for it in all_items)
+        limit = 20 if has_earnings else 15
+        
+        # Sort by score (descending) and take top limit
+        top_ranked = sorted(all_items, key=lambda x: x['score'], reverse=True)[:limit]
         
         # Save to Cache
         try:
             with open(MACRO_NEWS_CACHE, 'w', encoding='utf-8') as f:
-                json.dump({"timestamp": time.time(), "headlines": top_15}, f, indent=4)
+                json.dump({"timestamp": time.time(), "headlines": top_ranked}, f, indent=4)
         except: pass
 
-        log.info(f"[MACRO] Aggregation complete. {len(top_15)} high-alpha headlines identified.")
-        return top_15
+        log.info(f"[MACRO] Aggregation complete. {len(top_ranked)} high-alpha headlines identified (Earnings Boost: {has_earnings}).")
+        return top_ranked
 
 if __name__ == "__main__":
     async def test():

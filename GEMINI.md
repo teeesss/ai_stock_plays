@@ -1,14 +1,13 @@
-## 🚀 Active Context: V23.95 (Sovereign Narrative & Macro Hardening)
+## 🚀 Active Context: V24.1 (Earnings Intelligence & News Hardening)
 
 ### 🧩 Logic & Patterns
-1. **Sovereign Intelligence Engine (V23.95)**:
-   - **JIT Narrative Synthesis**: Scrapes real-time institutional recaps (Edward Jones, CNBC Live) to anchor the executive summary.
-   - **Triple-Layer Deduplication**: normalized set (ingestion) + fuzzy Jaccard-token match (ranking) + link-based cross-section filter (email render).
-   - **Cohesive Narrative Synthesis**: Prioritizes scraped institutional leads as the "Sovereign Anchor" in `LocalIntelligenceSynthesizer`.
-   - **Expanded Macro Aggregator**: Integrated high-alpha feeds for energy, oil, and geopolitics (OilPrice, Reuters Energy).
-   - **Semantic Stutter Defense**: Automated word-overlap filtering (Jaccard > 0.5) to prevent redundant sentence stitching.
-   - **High-Density Brutalist UI**: Watchlist padding reduced to 5px 12px; Movers cards compacted to 280px width for extreme desktop density.
+1. **Sovereign Intelligence Engine (V24.1)**:
+   - **Working Macro Pulse**: Migrated from failing Reuters/Bloomberg RSS to high-fidelity CNBC/OilPrice streams.
+   - **Dynamic Earnings Expansion**: Automatically increases intelligence list to 20 items and separates "Earnings Intelligence" into a dedicated dashboard area.
+   - **Triple-Layer Deduplication**: Hardened with token-based Jaccard-lite overlap check (threshold: 0.35 in NLP, 0.40 in Aggregator) to eliminate similar headlines.
    - **Institutional Data Formatting**: Mandatory price injection into high-alpha news headlines via `inject_price_flair`.
+   - **JIT Narrative Synthesis**: Scrapes real-time institutional recaps to anchor the executive summary.
+   - **Stealth Fetching Protocol**: `curl_cffi` (Chrome146) + randomized jitter (3.3s-10s) + sequential domain queuing.
    - **Automated Verification**: `tests/test_temporal_integrity.py` ensures 100% accuracy in EST/Session detection.
    - **Sovereign Clock Architecture**: Anchors session classification (PRE/AH/OVN) to US/Eastern temporal ground truth.
    - **Gmail Clipping Defense**: Automated HTML minification ensuring payloads remain < 102KB.

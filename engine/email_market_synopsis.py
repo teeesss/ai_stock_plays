@@ -685,18 +685,35 @@ class SovereignIntelligenceEngine:
                 if art.get('link') == lead_url:
                     used_links.add(lead_url)
 
-        pruned_news = [art for art in best_headlines if art.get('link') not in used_links][:15]
+        pruned_news = [art for art in best_headlines if art.get('link') not in used_links][:20]
 
         macro_intel_rows = ""
+        earnings_intel_rows = ""
         row_count = 0
-        for i, res in enumerate(pruned_news):
-             
-             f_title = self.inject_price_flair(res["title"], prices, master_data)
-             row_color = "#60a5fa" if row_count % 2 == 0 else "#4ade80" 
-             macro_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
-             row_count += 1
-             if row_count >= 15: break
+        earn_count = 0
         
+        for i, res in enumerate(pruned_news):
+             f_title = self.inject_price_flair(res["title"], prices, master_data)
+             
+             # V24.1: Separate Earnings Area Logic
+             is_earn = res.get('is_earnings') or "EARNINGS" in res.get('raw_title', '').upper() or res.get('source') == "CNBC Earnings"
+             
+             if is_earn and earn_count < 8:
+                 row_color = gold
+                 earnings_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color}; font-weight:600;"><span style="font-size:14px;">📊</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
+                 earn_count += 1
+             else:
+                 row_color = "#60a5fa" if row_count % 2 == 0 else "#4ade80" 
+                 macro_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
+                 row_count += 1
+             
+             if (row_count + earn_count) >= 20: break
+             
+        # Wrap earnings in a dedicated area if present
+        if earnings_intel_rows:
+            earnings_area = f'<div style="margin-bottom:20px; padding:12px; background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:8px;"><div style="color:{gold}; font-size:18px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">🚨 Earnings Intelligence</div>{earnings_intel_rows}</div>'
+            macro_intel_rows = earnings_area + macro_intel_rows
+
         # Watchlist Intel Logic (V23.55)
         watchlist_intel_html = "" # Minimal fallback for now to ensure recovery stability
         

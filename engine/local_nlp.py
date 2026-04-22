@@ -264,7 +264,7 @@ class LocalIntelligenceSynthesizer:
                 tokens = set(re.findall(r'\b\w{4,}\b', text.lower()))
                 for st in seen_tokens:
                     overlap = len(tokens & st) / (len(tokens | st) + 1)
-                    if overlap > 0.6: return True
+                    if overlap > 0.35: return True
                 seen_tokens.append(tokens)
                 return False
 
