@@ -136,8 +136,8 @@ class PipelineOrchestrator:
             growth_str = r_info.get("Rev Growth Est")
             
             # 2. Fallback to root financial master research
-            if not growth_str and symbol in financial_master:
-                growth_str = financial_master[symbol].get("human_research", {}).get("Rev Growth Est", "")
+            if not growth_str and symbol in research_raw:
+                growth_str = research_raw[symbol].get("human_research", {}).get("Rev Growth Est", "")
 
             # 3. Fallback to automated financialData metrics (Live Yahoo extraction)
             rev_num = 0

@@ -533,7 +533,7 @@ function render() {
         const pe27f = e.pe27 < 999 ? e.pe27.toFixed(1) : '--';
         const todayStr = e.todayPct !== null ? (e.todayPct > 0 ? '+'+e.todayPct.toFixed(2)+'%' : e.todayPct.toFixed(2)+'%') : '--';
         const todayCls = (e.todayPct||0) >= 0 ? 'up' : 'down';
-        const extStr   = e.extPrice !== null ? (e.extPct > 0 ? '+'+e.extPct.toFixed(2)+'%' : e.extPct.toFixed(2)+'%') : null;
+        const extStr = (e.extPrice !== null && e.extPct !== null) ? (e.extPct > 0 ? '+' + e.extPct.toFixed(2) + '%' : e.extPct.toFixed(2) + '%') : null;
         const extCls   = (e.extPct||0) >= 0 ? 'up' : 'down';
         
         let obbHtml = '';
@@ -963,14 +963,14 @@ function initPulse() {
     
     let html = `<div class="pulse-bar"><div class="pulse-label">CPO PULSE</div>`;
     
-    // Top Gainers
     meta.top_gainers.slice(0,3).forEach(g => {
-        html += `<div class="pulse-item"><span style="color:var(--text-dim)">$</span>${g.ticker} <span class="up">+${g.change_pct.toFixed(1)}%</span></div><div class="pulse-sep">|</div>`;
+        const chg = (g.change_pct != null) ? g.change_pct.toFixed(1) : '0.0';
+        html += `<div class="pulse-item"><span style="color:var(--text-dim)">$</span>${g.ticker} <span class="up">+${chg}%</span></div><div class="pulse-sep">|</div>`;
     });
     
-    // Top Losers
     meta.top_losers.slice(0,2).forEach(l => {
-        html += `<div class="pulse-item"><span style="color:var(--text-dim)">$</span>${l.ticker} <span class="down">${l.change_pct.toFixed(1)}%</span></div><div class="pulse-sep">|</div>`;
+        const chg = (l.change_pct != null) ? l.change_pct.toFixed(1) : '0.0';
+        html += `<div class="pulse-item"><span style="color:var(--text-dim)">$</span>${l.ticker} <span class="down">${chg}%</span></div><div class="pulse-sep">|</div>`;
     });
     
     // Volume Spikes
