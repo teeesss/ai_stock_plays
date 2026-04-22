@@ -760,7 +760,8 @@ class SovereignIntelligenceEngine:
                     try:
                         from live_prices import async_run_fetch
                         all_to_fetch = list(set(master.keys()) | set([t.upper() for t in (custom_tickers or [])]))
-                        prices = asyncio.run(async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True))
+                        # V24.4: Force Freshness for Email Dossier (Ignore 15m Cache)
+                        prices = asyncio.run(async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True, force=True))
                         print(f"[INFO] [LIVE] JIT Refresh Complete: {len(prices)} tickers.")
                     except Exception as e:
                         print(f"[WARN] Price refresh failed: {e}. Falling back to disk.")

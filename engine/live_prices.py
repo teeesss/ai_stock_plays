@@ -184,7 +184,7 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
             if price is None: price = item.get('previousClose')
             
             price_chg  = item.get('regularMarketChange') if item.get('regularMarketChange') is not None else (item.get('postMarketChange') if item.get('postMarketChange') is not None else 0)
-            change_pct = item.get('regularMarketChangePercent') if (m_state.startswith("REGULAR") or 930 <= tm < 1600) else 0
+            change_pct = item.get('regularMarketChangePercent') or 0
             volume     = item.get('regularMarketVolume') if item.get('regularMarketVolume') is not None else 0
             avg_vol    = item.get('averageDailyVolume10Day') if item.get('averageDailyVolume10Day') is not None else 0
             bid        = item.get('bid')
