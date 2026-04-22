@@ -20,7 +20,7 @@ import time
 import logging
 import argparse
 import asyncio
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 from curl_cffi import requests
@@ -45,6 +45,62 @@ def load_tickers() -> list[str]:
 def clean_ticker(ticker: str) -> str:
     """Extract primary ticker from compound 'A.XX / B' format."""
     return ticker.split(' / ')[0].strip()
+
+def calculate_session_data(item: dict, tm: int) -> tuple:
+    """
+    V23.90: Decoupled Session Extraction Logic
+    Analyzes Yahoo fields based on current EST time (tm = HHMM).
+    Returns (ext_price, ext_pct, ext_type)
+    """
+    price   = item.get('regularMarketPrice')
+    bid     = item.get('bid')
+    ask     = item.get('ask')
+    m_state = item.get('marketState', 'REGULAR')
+    
+    ext_price, ext_pct, ext_type = None, None, "REG"
+    
+    p_p = item.get("preMarketPrice")
+    p_pct = item.get("preMarketChangePercent")
+    a_p = item.get("postMarketPrice")
+    a_pct = item.get("postMarketChangePercent")
+    o_p = item.get("overnightMarketPrice")
+    o_pct = item.get("overnightMarketChangePercent")
+
+    if 400 <= tm < 930: # 4:00 AM - 9:30 AM (PREMARKET)
+        if p_p is not None: 
+            ext_price, ext_pct, ext_type = p_p, p_pct, "PRE"
+            if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
+        elif o_p is not None: 
+            ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
+            if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
+        # Midpoint Fallback for PRE
+        if ext_price is None and bid and ask:
+            ext_price = (bid + ask) / 2
+            ext_pct = ((ext_price / price) - 1) * 100 if price else 0
+            ext_type = "PRE"
+    
+    elif 1600 <= tm < 2000: # 4:00 PM - 8:00 PM (AFTER-HOURS)
+        if a_p is not None: 
+            ext_price, ext_pct, ext_type = a_p, a_pct, "POST"
+            if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
+        elif o_p is not None: 
+            ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
+            if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
+    
+    elif tm >= 2000 or tm < 400: # 8:00 PM - 4:00 AM (OVERNIGHT)
+        if o_p is not None: 
+            ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
+            if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
+        elif a_p is not None: 
+            ext_price, ext_pct, ext_type = a_p, a_pct, "POST"
+            if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
+
+    # V23.87 Guard: Only override to LIVE if we are actually in US regular hours (9:30-16:00)
+    if m_state.startswith("REGULAR") and (930 <= tm < 1600):
+        ext_type = "LIVE"
+        
+    return ext_price, ext_pct, ext_type
+
 
 def get_exchange_abbr(exchange: str) -> str:
     """Standardizes exchange names into clean abbreviations."""
@@ -117,6 +173,10 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
 
             original_ticker = primary_map.get(symbol) or primary_map.get(symbol.upper())
             
+            tm = now.hour * 100 + now.minute
+            exch_res   = item.get('fullExchangeName') or item.get('exchangeName') or item.get('exchange') or '???'
+            m_state    = item.get('marketState', 'REGULAR')
+            
             # Triple-fallback for prices (Critical for ADRs/OTC)
             price      = item.get('regularMarketPrice')
             if price is None: price = item.get('postMarketPrice')
@@ -124,60 +184,14 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
             if price is None: price = item.get('previousClose')
             
             price_chg  = item.get('regularMarketChange') if item.get('regularMarketChange') is not None else (item.get('postMarketChange') if item.get('postMarketChange') is not None else 0)
-            change_pct = item.get('regularMarketChangePercent') if item.get('regularMarketChangePercent') is not None else (item.get('postMarketChangePercent') if item.get('postMarketChangePercent') is not None else 0)
+            change_pct = item.get('regularMarketChangePercent') if (m_state.startswith("REGULAR") or 930 <= tm < 1600) else 0
             volume     = item.get('regularMarketVolume') if item.get('regularMarketVolume') is not None else 0
             avg_vol    = item.get('averageDailyVolume10Day') if item.get('averageDailyVolume10Day') is not None else 0
-            exch_res   = item.get('fullExchangeName') or item.get('exchangeName') or item.get('exchange') or '???'
-            m_state    = item.get('marketState', 'REGULAR')
             bid        = item.get('bid')
             ask        = item.get('ask')
 
-            # V23.84: Time-Anchored Session Extraction
-            # Prioritizes the most active field based on current US/Eastern time
-            ext_price, ext_pct, ext_type = None, None, "REG"
-            
-            p_p = item.get("preMarketPrice")
-            p_pct = item.get("preMarketChangePercent")
-            a_p = item.get("postMarketPrice")
-            a_pct = item.get("postMarketChangePercent")
-            o_p = item.get("overnightMarketPrice")
-            o_pct = item.get("overnightMarketChangePercent")
-
-            tm = now.hour * 100 + now.minute
-
-            if 400 <= tm < 930: # 4:00 AM - 9:30 AM (PREMARKET)
-                if p_p is not None: 
-                    ext_price, ext_pct, ext_type = p_p, p_pct, "PRE"
-                    if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
-                elif o_p is not None: 
-                    ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
-                    if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
-                # Midpoint Fallback for PRE
-                if ext_price is None and bid and ask:
-                    ext_price = (bid + ask) / 2
-                    ext_pct = ((ext_price / price) - 1) * 100 if price else 0
-                    ext_type = "PRE"
-            
-            elif 1600 <= tm < 2000: # 4:00 PM - 8:00 PM (AFTER-HOURS)
-                if a_p is not None: 
-                    ext_price, ext_pct, ext_type = a_p, a_pct, "POST"
-                    if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
-                elif o_p is not None: 
-                    ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
-                    if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
-            
-            elif tm >= 2000 or tm < 400: # 8:00 PM - 4:00 AM (OVERNIGHT)
-                if o_p is not None: 
-                    ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
-                    if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
-                elif a_p is not None: 
-                    ext_price, ext_pct, ext_type = a_p, a_pct, "POST"
-                    if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
-
-            # V23.87: Only override to LIVE if we are actually in US regular hours (9:30-16:00)
-            # This prevents Yahoo's stale 'REGULAR' state from killing PRE data at 4:01 AM.
-            if m_state.startswith("REGULAR") and (930 <= tm < 1600):
-                ext_type = "LIVE"
+            # V23.90: Centralized Session Extraction
+            ext_price, ext_pct, ext_type = calculate_session_data(item, tm)
 
             vol_spike = round(volume / avg_vol, 2) if avg_vol and avg_vol > 0 else 0
             

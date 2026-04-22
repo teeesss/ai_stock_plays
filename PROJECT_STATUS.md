@@ -1,21 +1,23 @@
 # Project Status — April 22, 2026
-## 🚀 Version: V23.86 — Work Log Transparency
+## 🚀 Version: V23.91 — Synopsis Hardening (Narrative & Deduplication)
 
 ## 🚀 Overview (Updated 2026-04-22)
-- **Status**: PRODUCTION HARDENED (Transparent & Accurate)
-- **Current Version**: V23.86
-- **Key Resolution**: Universal session fidelity across all stocks/indices and restored verbose work logs for diagnostic visibility.
+- **Status**: PRODUCTION HARDENED (Narrative Intelligence)
+- **Current Version**: V23.91
+- **Key Resolution**: Narrative stutter eliminated; triple-layer deduplication active.
 
-### 🛠️ Latest Architectural Hardening (V23.86)
-1. **Work Log Transparency**: Added verbose logs for cache hits, TTL countdowns, and lead intelligence ranking.
-2. **Universal Stock Fidelity**: Headlines and briefings now use `get_session_data` (fixes `ALAB`/`POET` stale rendering).
-3. **Index Futures Integration**: `S&P 500`, `NASDAQ`, and `DOW` tiles now automatically toggle to Futures during extended hours.
-4. **Time-Anchored Source**: `live_prices.py` uses clock-based windows (PRE/AH) to prioritize data fields, bypassing stale Yahoo `marketState` flags.
+### 🛠️ Latest Architectural Hardening (V23.91)
+1. **Narrative Coherence**: Switched to thematic anchor paragraphs with semantic overlap filters.
+2. **Triple-Layer Deduplication**: normalized set (ingestion) + fuzzy Jaccard (ranking) + link-filter (cross-section).
+3. **High-Density UI**: Watchlist and Movers padding reduced by 50% for institutional cockpit view.
+2. **Refactored Testability**: Decoupled session logic into testable functions in `live_prices.py` and `email_market_synopsis.py`.
+3. **Dependency Stability**: Fixed `timedelta` runtime errors in price pipeline.
+4. **Session Transition Intelligence**: Forced JIT price pull when market crosses session boundaries.
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V23.86 (Universal Session Fidelity)
-- **Critical Progress**: Deployed Universal Session Fidelity across all stocks and indices. Standardized all time-anchored logic to UTC-anchored US/Eastern HHMM format. Hardened `live_prices.py` to prioritize most-active fields (PRE/AH/OVN). Implemented JIT price hydration in `email_market_synopsis.py` to refresh cache if >300s old. Restored Work Log transparency.
-- **Next Milestone**: Multi-agent sentiment validation for divergent headlines.
+- **Current Tier**: V23.88 (Session Transition Intelligence)
+- **Critical Progress**: Hardened session intelligence by decoupling from provider metadata and enforcing boundary-crossing refreshes. Resolved POET stale price leak ($10.25 vs $12.56).
+- **Next Milestone**: Multi-source news deduplication and high-density RSS intelligence.
 
 ## 🚀 Active Roadmap: V23.76 (Institutional Intelligence Narrative)
 1. **Core Overhaul**: Switched from headline concatenation to dense NLP-driven narrative paragraphs.

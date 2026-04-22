@@ -1,15 +1,18 @@
-## 🚀 Active Context: V23.87 (Hardened Session Intelligence & Price Extraction Fixes)
+## 🚀 Active Context: V23.91 (Narrative & Deduplication Hardening)
 
 ### 🧩 Logic & Patterns
-1. **Sovereign Intelligence Engine (V23.60/61)**:
-   - **High-Density Cockpit Layout**: 42px headers, brutalist spacing, and institutional formatting for maximum data density.
-   - **Macro Pulse & RSS Aggregator**: Multi-source aggregation (MarketWatch, Investing, CNBC) with tech-weighted scoring (Photonics, AI, Semi).
-   - **Gmail Clipping Defense**: Automated HTML minification (regex-based) ensuring payloads remain < 102KB.
-   - **Stealth Fetching Protocol**: Integrated `curl_cffi` (Chrome146), randomized human jitter (3.3s-10s), and shared `yahoo_auth` state.
-   - **Velocity Override (CSS Redesign)**: Precision-CSS blue bars (`#0ea5e9`) replaced character-based blocks.
-   - **Strict Icon De-duplication**: Stateful pool tracking ensures 100% icon variety across all dossiers.
+1. **Sovereign Intelligence Engine (V23.91)**:
+   - **Triple-Layer Deduplication**: normalized set (ingestion) + fuzzy Jaccard-token match (ranking) + link-based cross-section filter (email render).
+   - **Cohesive Narrative Synthesis**: Refactored `LocalIntelligenceSynthesizer` to produce single, dense institutional paragraphs anchored by high-alpha macro catalysts.
+   - **Semantic Stutter Defense**: Automated word-overlap filtering (Jaccard > 0.5) to prevent redundant sentence stitching.
+   - **High-Density Brutalist UI**: Watchlist padding reduced to 5px 12px; Movers cards compacted to 280px width for extreme desktop density.
+   - **Institutional Data Formatting**: Mandatory price injection into high-alpha news headlines via `inject_price_flair`.
+   - **Automated Verification**: `tests/test_temporal_integrity.py` ensures 100% accuracy in EST/Session detection.
+   - **Sovereign Clock Architecture**: Anchors session classification (PRE/AH/OVN) to US/Eastern temporal ground truth.
+   - **Gmail Clipping Defense**: Automated HTML minification ensuring payloads remain < 102KB.
+   - **Stealth Fetching Protocol**: `curl_cffi` (Chrome146) + randomized jitter (3.3s-10s).
 
-2. **Dependency Guardian (V23.60)**:
+2. **Dependency Guardian (V23.89)**:
    - **Auto-Restart Protocol**: Uses `os.execv` to automatically refresh the Python process after resolving missing dependencies, ensuring zero-interruption execution.
 
 3. **AI UI Generation (V19.5)**:
@@ -20,14 +23,6 @@
 4. **Stealth Session Path Hardening (V4.5)**:
    - ALWAYS ensure parent directories exist before Playwright `storage_state` calls.
    - Use absolute paths for `stealth_session.json` to prevent CWD-dependent `FileNotFoundError`.
-
-5. **Universal Session Fidelity (V23.86)**:
-   - **Time-Anchored Windows**: Use clock-based logic (PRE: 4AM-9:30AM, LIVE: 9:30AM-4PM, AH: 4PM-8PM EST) to prioritize data fields, bypassing stale Yahoo state flags.
-   - **Atomic Overrides**: Prices and percentages MUST update as a pair. Never show regular price with extended percentage.
-   - **Midpoint Fallback**: Calculate `(bid + ask) / 2` if pre-market price is null.
-   - **Work Log Transparency**: Log cache status (Fresh/Expired), TTL countdowns, and lead intelligence ranking.
-   - **Index Futures**: Map S&P 500/DOW to Futures (`ES=F`, `YM=F`) during extended hours.
-   - **Live Icon**: Regular session badge is `L⚡` (Green).
 
 ### 🏛️ File Roles
 - `engine/email_market_synopsis.py`: SIE Orchestrator. Managed high-density "Cockpit" UI and minified HTML dispatch.

@@ -405,12 +405,14 @@ class SovereignIntelligenceEngine:
         priority_headlines.sort(key=lambda x: x['score'], reverse=True)
         return priority_headlines[:10]
 
-    def get_market_session(self, symbol=None):
+    def get_market_session(self, symbol=None, dt_override=None):
         # V22.93: Precise Session Detection + Overnight Awareness
         # V23.47: Suffix-Aware Global Exchange Logic
-        hr = self.now.hour; mn = self.now.minute
+        # V23.90: Testable dt_override
+        target_dt = dt_override if dt_override else self.now
+        hr = target_dt.hour; mn = target_dt.minute
         tm = hr * 100 + mn
-        day = self.now.weekday()
+        day = target_dt.weekday()
         
         # 1. Crypto & Sunday Futures Override
         if symbol and symbol.endswith("-USD"): return "LIVE"
@@ -659,7 +661,7 @@ class SovereignIntelligenceEngine:
         vibe_status = "NEUTRAL / CHOPPY" if 40 <= m_fg <= 60 else ("RISK-ON / ACCUMULATING" if m_fg > 60 else "RISK-OFF / PROTECTING")
         
         # Real-world NLP Narrative Synthesis
-        intel_text = nlp.synthesize_market_narrative(best_headlines, vibe_status)
+        intel_text, used_links = nlp.synthesize_market_narrative(best_headlines, vibe_status)
         
         # Institutional Summary Layout - Standardized with primary header classes (V23.72)
         summary_hdr_style = f'color:{text_bright}; font-size:42px; font-weight:900; letter-spacing:-1.5px; text-transform:uppercase; line-height:1.1; margin-bottom:12px;'
@@ -668,11 +670,19 @@ class SovereignIntelligenceEngine:
         else:
             exec_summary = f'<div class="hdr-title" style="{summary_hdr_style}">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL SUMMARY</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6;">The session is carving out a {vibe_status} posture (F&G: {m_fg}). Liquidity is shifting across tech sectors.</div>'
         
+        # V23.91: Cross-Section Deduplication
+        # If a headline link was used for the summary, skip it in the bulleted list
         macro_intel_rows = ""
-        for i, res in enumerate(best_headlines): # Show 15
+        row_count = 0
+        for i, res in enumerate(best_headlines):
+             # Skip if headline was used in summary
+             if res.get('link') in used_links: continue
+             
              f_title = self.inject_price_flair(res["title"], prices, master_data)
-             row_color = "#60a5fa" if i % 2 == 0 else "#4ade80" 
+             row_color = "#60a5fa" if row_count % 2 == 0 else "#4ade80" 
              macro_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
+             row_count += 1
+             if row_count >= 15: break
         
         # Watchlist Intel Logic (V23.55)
         watchlist_intel_html = "" # Minimal fallback for now to ensure recovery stability
@@ -684,23 +694,43 @@ class SovereignIntelligenceEngine:
         prices_path = self.db_path / "live_prices.json"
         
         # V23.86: Price Freshness Governance
+        # V23.88: Session Transition Intelligence
+        # We refresh if:
+        # 1. Prices are > 5 minutes old (Standard TTL)
+        # 2. Market has transitioned sessions (e.g., PRE -> LIVE) since last fetch
         prices = {}
         if prices_path.exists():
-            stale = (time.time() - prices_path.stat().st_mtime) > 300 # 5 minutes
-            if stale:
-                print(f"[INFO] [CACHE] Prices STALE ({int(time.time() - prices_path.stat().st_mtime)}s). Triggering just-in-time refresh...")
-                try:
-                    from live_prices import async_run_fetch
-                    all_to_fetch = list(set(master.keys()) | set([t.upper() for t in (custom_tickers or [])]))
-                    # V23.87: Increased JIT capacity to 250 to ensure full coverage
-                    prices = asyncio.run(async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True))
-                    print(f"[INFO] [LIVE] Refreshed {len(prices)} priority tickers via JIT.")
-                except Exception as e:
-                    print(f"[WARN] Price refresh failed: {e}. Falling back to disk.")
-                    prices = self._load_json("live_prices.json")
-            else:
+            try:
+                raw_prices = self._load_json("live_prices.json")
+                # Detect session of the last fetch
+                sample = next(iter([v for k,v in raw_prices.items() if k != "_meta"]), {})
+                last_fetch_type = sample.get("ext_type", "UNKNOWN")
+                current_sess = self.get_market_session()
+                
+                # Logic: If last was PRE and now is LIVE, or last was REG/LIVE and now is POST, force refresh.
+                session_changed = (last_fetch_type == "PRE" and current_sess == "LIVE") or \
+                                 (last_fetch_type == "LIVE" and current_sess == "AH") or \
+                                 (last_fetch_type == "UNKNOWN")
+                
+                stale_time = (time.time() - prices_path.stat().st_mtime) > 300
+                
+                if stale_time or session_changed:
+                    reason = "STALE" if stale_time else f"SESSION TRANSITION ({last_fetch_type} -> {current_sess})"
+                    print(f"[INFO] [CACHE] Refresh Triggered: {reason}. Hardening live data...")
+                    try:
+                        from live_prices import async_run_fetch
+                        all_to_fetch = list(set(master.keys()) | set([t.upper() for t in (custom_tickers or [])]))
+                        prices = asyncio.run(async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True))
+                        print(f"[INFO] [LIVE] JIT Refresh Complete: {len(prices)} tickers.")
+                    except Exception as e:
+                        print(f"[WARN] Price refresh failed: {e}. Falling back to disk.")
+                        prices = raw_prices
+                else:
+                    prices = raw_prices
+                    print(f"[INFO] [CACHE] Prices Fresh: {int(300 - (time.time() - prices_path.stat().st_mtime))}s / Session: {current_sess}")
+            except Exception as e:
+                print(f"[WARN] Cache analysis failed: {e}. Forcing fresh fetch.")
                 prices = self._load_json("live_prices.json")
-                print(f"[INFO] [CACHE] Prices Fresh: {int(300 - (time.time() - prices_path.stat().st_mtime))}s remaining.")
         else:
             prices = self._load_json("live_prices.json")
 
@@ -950,12 +980,12 @@ class SovereignIntelligenceEngine:
                     badge = self.get_session_tag_html(fs="8px", sess_override=s.get('session', 'LIVE'))
                     symbol_link = f'<a href="https://finance.yahoo.com/quote/{s["symbol"]}" style="color:#f59e0b; text-decoration:none;">${s["symbol"]}</a>'
                     
-                    # V23.78: Institutional Hardening for multi-digit prices and large tickers
+                    # V23.91: Institutional Hardening — Tightened Padding & Alignment
                     items_html.append(f'''
-                        <div style="margin-bottom:4px; text-align:center;">
-                            <div class="perf-item" style="display:inline-block; width:300px; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:3px; font-family:monospace; font-size:18px; text-align:left; vertical-align:top;">
-                                <span style="display:inline-block; min-width:100px; color:#f59e0b; font-weight:bold;">{symbol_link}</span>
-                                <span style="display:inline-block; min-width:90px; color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; margin-right:15px; vertical-align:middle;">{price_str}</span>
+                        <div style="margin-bottom:2px; text-align:center;">
+                            <div class="perf-item" style="display:inline-block; width:280px; background:rgba(255,255,255,0.02); padding:4px 10px; border-radius:3px; font-family:monospace; font-size:18px; text-align:left; vertical-align:top;">
+                                <span style="display:inline-block; min-width:90px; color:#f59e0b; font-weight:bold;">{symbol_link}</span>
+                                <span style="display:inline-block; min-width:80px; color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; margin-right:10px; vertical-align:middle;">{price_str}</span>
                                 <span style="color:{color_movers}; font-weight:900; float:right;">{pct_str}&nbsp;{badge}</span>
                             </div>
                         </div>''')
@@ -1011,7 +1041,7 @@ class SovereignIntelligenceEngine:
                 display_name = t['name'] if t['name'].upper() != sym.upper() else self.ticker_name_map.get(sym, "")
 
                 rows.append(f"""
-                    <div style="background:rgba(255,255,255,0.03); border-left:3px solid {clr}; padding:9px 15px; border-radius:4px; margin-bottom:4px;">
+                    <div style="background:rgba(255,255,255,0.03); border-left:3px solid {clr}; padding:5px 12px; border-radius:4px; margin-bottom:4px;">
                         <table width="100%" cellpadding="0" cellspacing="0"><tr>
                             <td width="35%" style="font-family:monospace; font-weight:bold; font-size:18px;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none;">${sym}</a></td>
                             <td width="65%" style="text-align:right; font-family:monospace;">{pct_display}</td>
@@ -1030,7 +1060,7 @@ class SovereignIntelligenceEngine:
                 content = "".join(rows)
 
             return (
-                f'<div style="margin-top:20px;">'
+                f'<div style="margin-top:10px;">'
                 f'<div class="section-hdr" style="color:{text_dim}; font-family:monospace; font-size:20px; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #1e2130;">— {title} —</div>'
                 f'{content}</div>'
             )

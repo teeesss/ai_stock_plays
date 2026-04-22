@@ -119,6 +119,9 @@ class MacroAggregator:
         except:
             user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
 
+        # V23.91: Strict Cross-Source Deduplication
+        seen_titles = set()
+        
         async with AsyncSession(impersonate='chrome146') as client:
             client.headers.update({
                 'User-Agent': user_agent,
@@ -152,7 +155,13 @@ class MacroAggregator:
                         feed = feedparser.parse(res.content)
                         now_ts = time.time()
                         for entry in feed.entries:
-                            title = entry.get('title', 'No Title')
+                            title = entry.get('title', 'No Title').strip()
+                            
+                            # Deduplication Logic
+                            norm_title = re.sub(r'[^a-z0-9]', '', title.lower())
+                            if norm_title in seen_titles: continue
+                            seen_titles.add(norm_title)
+
                             link = entry.get('link', '')
                             pub_date = entry.get('published', '')
                             

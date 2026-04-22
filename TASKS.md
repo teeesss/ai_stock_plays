@@ -1,21 +1,13 @@
-### 🚀 Current Status: V23.86 — Work Log Transparency (Source/Email)
-- [x] **Engine Transparency (V23.86)**: Restored verbose "Work Logs" for price freshness, ticker coverage, and NLP lead ranking.
-- [x] **Universal Session Fidelity (V23.85)**: Hardened flair injection and index futures mapping. Stocks like `ALAB` now show real-time PRE prices.
-- [x] **Global Web Hardening (V23.83)**: Propagated atomic session logic to Web Terminal JS templates.
-- [x] **Bid/Ask Premarket Fallback (V23.82)**: Hardened live fetcher to calculate midpoint if preMarketPrice is null (fixes POET price stasis).
-- [x] **Unified Time Anchor (V23.81)**: Bypassed system-local time in favor of UTC-anchored US/Eastern calculations.
-- [x] **Session Data Hardening (V23.80)**: Resolved "Stale Closing Price" bug in Premarket/After-hours. Standardized session labels (PRE, AH, OVN) and implemented fuzzy matching/aliasing (PM->PRE, POST->AH).
-- [x] **Documentation Hardening (V23.86)**: Synchronized all project manifests to version V23.86.
-- [x] **Macro Pulse & RSS Aggregator (V23.60)**: Multi-source feed aggregation with precision tech-weighted scoring and live enrichment.
-- [x] **Stealth Fetching Protocol (V23.60)**: Integrated session sharing, randomized jitter (3.3-10s), and `curl_cffi` impersonation to ensure ban-resistance.
-- [x] **Gmail Clipping Defense (V23.60)**: Deployed HTML minification and headline capping (Top 15) to keep payload under 102KB.
-- [x] **Auto-Continue Guardian (V23.60)**: Upgraded dependency manager to automatically restart the engine via `os.execv` after resolution.
-- [x] **Headline Deduplication (V23.60)**: Suppressed redundant headlines between Macro Pulse and Sector Dossier.
-- [x] **High-Density Cockpit Layout (V23.60)**: Systematically reduced vertical whitespace across sectors and performance movers for professional desktop aesthetic.
-- [x] **Stateful Icon De-duplication (V23.60)**: Guaranteed 100% icon variety across headlines via context-aware pool tracking.
-- [x] **CSS Velocity Bars (V23.60)**: Replaced character-based blocks with precision-CSS bars for volume surges.
-- [x] **Auto-Dependency Guardian (V23.59)**: All core scripts now auto-check for missing libraries (bs4, playwright, etc.) and offer one-click installation. Supports Windows & Linux.
-- Date: 2026-04-21
+### 🚀 Current Status: V23.89 — Dependency Stability & Price Hardening
+1. - [x] **Dependency Stability (V23.89)**: Fixed `NameError: timedelta` in `live_prices.py` preventing automated JIT refreshes.
+2. - [x] **Session Transition Intelligence (V23.88)**: Forced JIT price pull when market crosses session boundaries (PRE/LIVE/POST), eliminating "Yesterday's Price" cache leaks.
+2. - [x] **Sovereign Clock Architecture (V23.87)**: Decoupled session intelligence from provider metadata. System now anchors PRE/AH/OVN classification to US/Eastern temporal ground truth.
+3. - [x] **Synthetic Data Recovery (V23.87)**: Implemented atomic percentage calculation fallbacks for null-provider responses during extended hours.
+4. - [x] **Institutional Data Density (V23.87)**: Added stock prices to movers and expanded column spacing (90px) to handle high-priced institutional assets.
+5. - [x] **JIT Capacity Expansion (V23.87)**: Increased Just-In-Time price hydration to 250 tickers to ensure full watchlist coverage in a single pass.
+6. - [x] **Engine Transparency (V23.86)**: Restored verbose "Work Logs" for price freshness, ticker coverage, and NLP lead ranking.
+7. - [x] **Documentation Hardening (V23.88)**: Synchronized all project manifests to version V23.88.
+8. - Date: 2026-04-22
 
 # Project Status — April 20, 2026
 ## 🚀 Version: V23.48 (Visual Supercycle)

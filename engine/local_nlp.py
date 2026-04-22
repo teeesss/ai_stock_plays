@@ -129,35 +129,42 @@ class LocalIntelligenceSynthesizer:
             print(f"[NLP ERR] {e}")
             return []
 
-    def synthesize_market_narrative(self, articles: list, vibe: str) -> str:
-        """Constructs a dense, 3-sentence institutional paragraph from summary data."""
-        if not articles: return f"The market maintains a {vibe} posture. No primary catalysts identified."
+    def synthesize_market_narrative(self, articles: list, vibe: str) -> tuple:
+        """Constructs a dense, cohesive institutional paragraph. Returns (narrative, used_links)."""
+        if not articles: 
+            return f"The market maintains a {vibe} posture. No primary catalysts identified.", set()
         
         # 1. Extract Top Themes
         themes = self.get_top_themes(articles, top_n=2)
         top_theme = themes[0] if themes else "Sector Rotation"
         
-        # 2. Extract Lead Anchor (Overview)
+        # 2. Identify Primary Anchor
         anchor = articles[0]
-        lead_para = anchor.get('summary', anchor.get('raw_title', '')).strip()
+        used_links = {anchor.get('link')}
+        
+        # Use summary if dense, otherwise use title
+        lead_para = anchor.get('summary', '').strip()
+        if len(lead_para) < 40: lead_para = anchor.get('raw_title', '').strip()
         if not lead_para.endswith((".", "!", "?")): lead_para += "."
         
-        # 3. Use LSA on the corpus for a dense 2nd/3rd sentence
-        # Filter out the lead anchor's text from the dense pool to avoid stutter
-        dense_points = self.synthesize_macro_overview(articles[1:10], sentences_count=2, group_paragraphs=False)
+        # 3. Extract Secondary Insights (avoiding stutter)
+        dense_points_with_meta = self.synthesize_macro_overview_with_meta(articles[1:10], sentences_count=1)
         
-        # Deduplicate sentences logically
-        unique_points = []
-        lead_lower = lead_para.lower()
-        for p in dense_points:
-            pt = p.strip()
+        dense_text = ""
+        lead_words = set(re.findall(r'\b\w{4,}\b', lead_para.lower()))
+        
+        for pt, link in dense_points_with_meta:
             if not pt: continue
-            if pt.lower() in lead_lower: continue
-            if any(pt.lower() in up.lower() for up in unique_points): continue
-            unique_points.append(pt)
+            
+            # Stutter check
+            pt_words = set(re.findall(r'\b\w{4,}\b', pt.lower()))
+            overlap = len(pt_words & lead_words) / (len(pt_words) + 1)
+            if overlap > 0.5: continue
+            
+            dense_text = pt
+            if link: used_links.add(link)
+            break
 
-        dense_text = " ".join(unique_points[:2])
-        
         # 4. Final Institutional Construction
         narrative = f"{lead_para}"
         if dense_text:
@@ -166,7 +173,37 @@ class LocalIntelligenceSynthesizer:
             
         narrative += f" This reinforces <strong>{top_theme}</strong> as the primary focal point during this {vibe} cycle."
 
-        return narrative
+        return narrative, used_links
+
+    def synthesize_macro_overview_with_meta(self, articles: list, sentences_count=2) -> list:
+        """Helper to get sentences with their source links."""
+        try:
+            from sumy.parsers.plaintext import PlaintextParser
+            from sumy.nlp.tokenizers import Tokenizer
+            from sumy.summarizers.lsa import LsaSummarizer
+            
+            # Map sentences back to articles
+            doc_text = ""
+            link_map = {}
+            for a in articles:
+                text = a.get('summary', a.get('raw_title', ''))
+                doc_text += text + " "
+                # Very crude mapping
+                for sentence in re.split(r'(?<=[.!?])\s+', text):
+                    if len(sentence) > 20:
+                        link_map[sentence.strip()] = a.get('link')
+            
+            parser = PlaintextParser.from_string(doc_text, Tokenizer("english"))
+            summarizer = LsaSummarizer()
+            summary = summarizer(parser.document, sentences_count)
+            
+            results = []
+            for s in summary:
+                s_text = str(s).strip()
+                results.append((s_text, link_map.get(s_text)))
+            return results
+        except:
+            return [(a.get('summary', a.get('raw_title', '')), a.get('link')) for a in articles[:sentences_count]]
 
     def get_top_themes(self, articles: list, top_n=5) -> list:
         if not self.is_active or not articles:
@@ -213,21 +250,36 @@ class LocalIntelligenceSynthesizer:
             return []
 
     def rank_news_relevance(self, articles: list, top_n=15) -> list:
-        """Score and rank headlines by information density and relevance."""
+        """Score and rank headlines by information density and relevance with fuzzy deduplication."""
         if not self.is_active or not articles: return articles[:top_n]
         
         try:
+            seen_tokens = []
+            def is_duplicate(text):
+                tokens = set(re.findall(r'\b\w{4,}\b', text.lower()))
+                for st in seen_tokens:
+                    overlap = len(tokens & st) / (len(tokens | st) + 1)
+                    if overlap > 0.6: return True
+                seen_tokens.append(tokens)
+                return False
+
             # Informational Density Score (Length + Punctuation + Keywords)
             scored = []
             for a in articles:
-                text = (a.get('title', '') + " " + a.get('summary', '')).lower()
+                title = a.get('title', '')
+                summary = a.get('summary', '')
+                text = (title + " " + summary).lower()
+                
+                # Deduplication check
+                if is_duplicate(title): continue
+
                 length_score = min(len(text) / 200.0, 1.0)
                 
                 # Check for "High Alpha" keywords
-                alpha_words = ['breakthrough', 'record', 'surge', 'monopoly', 'pivot', 'exclusive', 'bottleneck', 'monopoly', 'bottleneck', 'acceleration']
+                alpha_words = ['breakthrough', 'record', 'surge', 'monopoly', 'pivot', 'exclusive', 'bottleneck', 'acceleration']
                 alpha_score = sum(1.5 for w in alpha_words if w in text)
                 
-                # VADER Sentiment Intensity (Stronger usually means more 'newsy')
+                # VADER Sentiment Intensity
                 sentiment = self.analyzer.polarity_scores(text)
                 tone_score = abs(sentiment['compound']) * 2.0
                 
