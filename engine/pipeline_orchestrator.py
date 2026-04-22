@@ -166,7 +166,7 @@ class PipelineOrchestrator:
                 "analysts": obb.get("analyst_count"),
                 "inst_pct": obb.get("inst_ownership_pct"),
                 "short_pct": obb.get("short_interest_pct"),
-                "conviction_count": financial_master.get(symbol, {}).get("human_research", {}).get("inst_13f_alpha", {}).get("conviction_count", 0),
+                "conviction_count": research_raw.get(symbol, {}).get("human_research", {}).get("inst_13f_alpha", {}).get("conviction_count", 0),
                 "rev_num": rev_num,
                 "growth_str": growth_str,
                 "obb_raw": obb # Store to prevent clobbering
