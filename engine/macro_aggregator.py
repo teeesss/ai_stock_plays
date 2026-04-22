@@ -20,9 +20,11 @@ log = logging.getLogger(__name__)
 ROOT = Path(__file__).parent.parent
 LIVE_PRICES_JSON = ROOT / 'database' / 'live_prices.json'
 MACRO_NEWS_CACHE = ROOT / 'database' / 'macro_news_cache.json'
+VELOCITY_PULSE_DB = ROOT / 'database' / 'macro_velocity_metrics.json'
 
 class MacroAggregator:
     def __init__(self):
+        self.velocity_pulse = {} # Tracks keyword frequency rolling window
         self.priority_keywords = [
             "PHOTONICS", "SEMI", "CXL", "BLACKWELL", "NVIDIA", "SUPPLY CHAIN", 
             "CHIP", "AI REVENUE", "WAFER", "HBM", "CPO", "SILICON",
@@ -110,6 +112,45 @@ class MacroAggregator:
         
         return enriched
 
+    def _update_velocity_pulse(self, title, now_ts):
+        """V24.2 SVM: Tracks frequency of keywords to identify velocity shifts."""
+        t_upper = title.upper()
+        for kw in self.priority_keywords:
+            if kw in t_upper:
+                if kw not in self.velocity_pulse: self.velocity_pulse[kw] = []
+                self.velocity_pulse[kw].append(now_ts)
+        
+        for tick in self.priority_tickers:
+            if re.search(rf'\b{tick}\b', t_upper):
+                if tick not in self.velocity_pulse: self.velocity_pulse[tick] = []
+                self.velocity_pulse[tick].append(now_ts)
+
+    def _finalize_velocity_metrics(self):
+        """Calculates deltas (velocity) for monitored keywords over the last 4h vs prior 24h."""
+        now = time.time()
+        metrics = {}
+        for kw, timestamps in self.velocity_pulse.items():
+            # Clean old timestamps (> 24h)
+            valid = [ts for ts in timestamps if (now - ts) < 86400]
+            self.velocity_pulse[kw] = valid
+            
+            recent_4h = [ts for ts in valid if (now - ts) < 14400]
+            prior_20h = [ts for ts in valid if 14400 <= (now - ts) < 86400]
+            
+            # Simple Velocity: Frequency ratio
+            v_score = len(recent_4h) / (len(prior_20h)/5 + 1) # Normalized
+            metrics[kw] = {
+                "count_24h": len(valid),
+                "count_4h": len(recent_4h),
+                "velocity": round(v_score, 2)
+            }
+        
+        try:
+            with open(VELOCITY_PULSE_DB, 'w', encoding='utf-8') as f:
+                json.dump({"timestamp": now, "metrics": metrics}, f, indent=4)
+        except: pass
+        return metrics
+
     async def fetch_agg(self):
         """Aggregates and scores news with hardening/stealth protocols."""
         print(f"[DEBUG] fetch_agg called. Cache target: {MACRO_NEWS_CACHE}")
@@ -170,10 +211,25 @@ class MacroAggregator:
                             log.info(f"  [STEALTH] Cadence Match ({domain}): Sleeping {delay:.2f}s...")
                             await asyncio.sleep(delay)
 
-                        log.info(f"  [STEALTH] Fetching {name} Pulse...")
-                        res = await client.get(url, timeout=15)
-                        if res.status_code != 200:
-                            log.error(f"  [!] Blocked or Error {name}: HTTP {res.status_code}")
+                        # V24.2: Robust Fetch with Retry & Impersonation Rotation
+                        res = None
+                        impersonations = ["chrome110", "chrome120", "chrome124", "edge101", "safari_ios_16_5"]
+                        
+                        for attempt in range(3):
+                            try:
+                                current_imp = impersonations[attempt % len(impersonations)]
+                                res = await client.get(url, timeout=15, impersonate=current_imp)
+                                if res.status_code == 200: 
+                                    break
+                                log.warning(f"  [!] Attempt {attempt+1} failed ({res.status_code}) for {name}. Retrying with {current_imp}...")
+                                await asyncio.sleep(random.uniform(2, 5))
+                            except Exception as e:
+                                log.error(f"  [!] Fetch error {name} (Attempt {attempt+1}): {e}")
+                                await asyncio.sleep(2)
+
+                        if not res or res.status_code != 200:
+                            status = res.status_code if res else "TIMEOUT"
+                            log.error(f"  [!] Blocked or Error {name}: HTTP {status}")
                             continue
 
                         now_ts = time.time()
@@ -195,6 +251,7 @@ class MacroAggregator:
                                 link = entry.get('link', '')
                                 pub_date = entry.get('published', '')
                                 
+                                entry_ts = now_ts
                                 if hasattr(entry, 'published_parsed') and entry.published_parsed:
                                     entry_ts = time.mktime(entry.published_parsed)
                                     if (now_ts - entry_ts) > (48 * 3600):
@@ -212,13 +269,21 @@ class MacroAggregator:
                                 summary = entry.get('summary', entry.get('description', ''))
                                 summary = re.sub(r'<[^>]+>', '', summary).strip()
                                 
+                                # V24.2: Signal Decay Engine (5% per hour after 1h, floor at 50%)
+                                hours_old = (now_ts - entry_ts) / 3600
+                                decay = max(0.5, 1.0 - (max(0, hours_old - 1) * 0.05))
+                                score = score * decay
+                                
+                                # V24.2: Sentiment Velocity Monitor (SVM) Update
+                                self._update_velocity_pulse(title, now_ts)
+                                
                                 queue_items.append({
                                     "title": enriched_title,
                                     "raw_title": title,
                                     "summary": summary,
                                     "link": link,
                                     "source": name,
-                                    "score": score,
+                                    "score": round(score, 1),
                                     "date": pub_date,
                                     "is_earnings": is_earnings
                                 })
@@ -229,7 +294,6 @@ class MacroAggregator:
                             
                             items = []
                             if "bloomberg" in url:
-                                # Target major headlines on Bloomberg
                                 links = soup.find_all('a', href=re.compile(r'/news/articles/|/news/features/'))
                                 for l in links[:10]:
                                     title = l.get_text().strip()
@@ -266,6 +330,10 @@ class MacroAggregator:
                                 if is_earnings: score += 100 # Boost earnings
 
                                 enriched_title = self.enrich_headline(title, prices)
+                                
+                                # V24.2: SVM Update
+                                self._update_velocity_pulse(title, now_ts)
+                                
                                 queue_items.append({
                                     "title": enriched_title,
                                     "raw_title": title,
@@ -298,6 +366,9 @@ class MacroAggregator:
             with open(MACRO_NEWS_CACHE, 'w', encoding='utf-8') as f:
                 json.dump({"timestamp": time.time(), "headlines": top_ranked}, f, indent=4)
         except: pass
+
+        # V24.2: Finalize Sentiment Velocity Metrics (SVM)
+        self._finalize_velocity_metrics()
 
         log.info(f"[MACRO] Aggregation complete. {len(top_ranked)} high-alpha headlines identified (Earnings Boost: {has_earnings}).")
         return top_ranked

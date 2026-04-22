@@ -119,6 +119,8 @@ def _rebuild_news_module(news: dict):
     OUT_JS = os.path.join(ROOT, 'database', 'YAHOO_NEWS_MODULE.js')
     seen_ids = set()
     flat = []
+    
+    # 1. Ticker News
     for ticker, articles in news.items():
         for a in articles:
             key = a.get('link') or a.get('url') or ''
@@ -135,15 +137,42 @@ def _rebuild_news_module(news: dict):
                 pub = datetime.fromtimestamp(raw, tz=timezone.utc).strftime('%Y-%m-%d %H:%M EST')
             else:
                 pub = str(raw)[:16] if raw else ''
+            
+            title = a.get('title', '')
             flat.append({
-                'title': a.get('title', ''),
+                'title': title,
                 'url':   a.get('link') or a.get('url') or '',
                 'source': a.get('provider') or a.get('source') or '',
                 'summary': a.get('summary') or '',
                 'published_est': pub,
                 'tickers': [ticker],
                 'vibe_score': a.get('vibe_score', 0),
+                'is_earnings': "EARNINGS" in title.upper(),
+                'is_macro': False
             })
+
+    # 2. V24.2: Merge Macro News into the JS Module
+    MACRO_CACHE = os.path.join(ROOT, 'database', 'macro_news_cache.json')
+    if os.path.exists(MACRO_CACHE):
+        try:
+            with open(MACRO_CACHE, 'r', encoding='utf-8') as f:
+                m_data = json.load(f)
+                for a in m_data.get('headlines', []):
+                    key = a.get('link') or a.get('url') or ''
+                    if key in seen_ids: continue
+                    seen_ids.add(key)
+                    flat.append({
+                        'title': a.get('title', ''),
+                        'url':   a.get('link') or a.get('url') or '',
+                        'source': a.get('source') or 'Macro',
+                        'summary': a.get('summary') or '',
+                        'published_est': a.get('date') or 'Just now',
+                        'tickers': ['MACRO'],
+                        'is_earnings': a.get('is_earnings', False) or "EARNINGS" in a.get('title', '').upper(),
+                        'is_macro': True
+                    })
+        except: pass
+
     flat.sort(key=lambda x: x['published_est'], reverse=True)
     payload = {'last_updated': datetime.now().isoformat(), 'total': len(flat), 'articles': flat}
     js = 'window.YAHOO_NEWS_MODULE = ' + json.dumps(payload, ensure_ascii=True) + ';'

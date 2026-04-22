@@ -1,17 +1,17 @@
-## 🚀 Active Context: V24.1 (Earnings Intelligence & News Hardening)
+## 🚀 Active Context: V24.2 (Hardened Intelligence & News Velocity)
 
 ### 🧩 Logic & Patterns
-1. **Sovereign Intelligence Engine (V24.1)**:
-   - **Working Macro Pulse**: Migrated from failing Reuters/Bloomberg RSS to high-fidelity CNBC/OilPrice streams.
-   - **Dynamic Earnings Expansion**: Automatically increases intelligence list to 20 items and separates "Earnings Intelligence" into a dedicated dashboard area.
-   - **Triple-Layer Deduplication**: Hardened with token-based Jaccard-lite overlap check (threshold: 0.35 in NLP, 0.40 in Aggregator) to eliminate similar headlines.
-   - **Institutional Data Formatting**: Mandatory price injection into high-alpha news headlines via `inject_price_flair`.
-   - **JIT Narrative Synthesis**: Scrapes real-time institutional recaps to anchor the executive summary.
+1. **Sovereign Intelligence Engine (V24.2)**:
+   - **Sentiment Velocity Monitor (SVM)**: Real-time frequency tracking (4h vs 24h) to identify accelerating market narratives.
+   - **Impersonation Rotation**: Multi-UA (Chrome/Edge/Safari) failover logic in `MacroAggregator` to bypass 401/403 data blocks.
+   - **Institutional Anchor Pricing**: Standardized "C: $price" (previous close) injection for all non-standard session quotes.
+   - **Dynamic Earnings Expansion**: Automatically increases intelligence list to 20 items and isolates earnings into high-visibility sections.
+   - **Signal Decay Engine**: 5% hourly linear decay applied to macro catalysts to ensure maximum thematic freshness.
+   - **JIT Narrative Synthesis**: Scrapes real-time institutional recaps to anchor executive summaries.
    - **Stealth Fetching Protocol**: `curl_cffi` (Chrome146) + randomized jitter (3.3s-10s) + sequential domain queuing.
    - **Automated Verification**: `tests/test_temporal_integrity.py` ensures 100% accuracy in EST/Session detection.
    - **Sovereign Clock Architecture**: Anchors session classification (PRE/AH/OVN) to US/Eastern temporal ground truth.
    - **Gmail Clipping Defense**: Automated HTML minification ensuring payloads remain < 102KB.
-   - **Stealth Fetching Protocol**: `curl_cffi` (Chrome146) + randomized jitter (3.3s-10s).
 
 2. **Dependency Guardian (V23.89)**:
    - **Auto-Restart Protocol**: Uses `os.execv` to automatically refresh the Python process after resolving missing dependencies, ensuring zero-interruption execution.

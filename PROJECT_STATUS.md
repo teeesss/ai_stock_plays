@@ -1,17 +1,18 @@
 # Project Status: Market Intelligence Engine
 
-## 🚀 Current Milestone: V23.95 (Sovereign Narrative Hardened)
+## 🚀 Current Milestone: V24.2 (Hardened Intelligence & News Velocity)
 **Status**: 🟢 PRODUCTION-READY // **Temporal Integrity**: 100% // **Narrative Alpha**: Institutional
 
 ### 🧩 Core Accomplishments
-- **[NEW] JIT Narrative Synthesis**: Automated scraping of Edward Jones, Briefing.com, and CNBC Live blogs for high-fidelity summary anchors.
-- **[NEW] Macro Intelligence Expansion**: Integrated OilPrice, Reuters Energy, and Reuters World feeds into the aggregator.
-- **[NEW] NLP Synthesis Hardening**: Prioritized institutional leads with triple-layered cross-section deduplication.
-- **Temporal Sync**: Force-refresh on high-alpha assets during US/Eastern session transitions.
+- **[NEW] Proxy Failover & Impersonation Rotation**: Hardened the fetch pipeline with automated retry logic and multi-UA (Chrome/Edge/Safari) impersonation to bypass 401/403 blocks on financial feeds.
+- **[NEW] Sentiment Velocity Monitor (SVM)**: Implemented real-time keyword frequency tracking (4h vs 24h) to identify accelerating market narratives and high-alpha shifts.
+- **[NEW] Extended-Hours Anchor Pricing**: Integrated "C: $price" (previous close) anchoring across the Terminal UI, email synopsis, and ticker chips for institutional-grade premium/discount analysis.
+- **[NEW] Earnings Intelligence Segmentation**: Automated separation of earnings news into a dedicated, high-priority section when volume exceeds thresholds.
+- **Signal Decay Engine**: Integrated a linear 5% hourly decay into the news aggregator to prioritize fresh macro catalysts over stale information.
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V23.88 (Session Transition Intelligence)
-- **Critical Progress**: Hardened session intelligence by decoupling from provider metadata and enforcing boundary-crossing refreshes. Resolved POET stale price leak ($10.25 vs $12.56).
+- **Current Tier**: V24.2 (Hardened Intelligence & News Velocity)
+- **Critical Progress**: Hardened the macro intelligence pipeline against data blocks and implemented real-time narrative velocity tracking. Unified anchor pricing across all institutional endpoints.
 - **Next Milestone**: Multi-source news deduplication and high-density RSS intelligence.
 
 ## 🚀 Active Roadmap: V23.76 (Institutional Intelligence Narrative)

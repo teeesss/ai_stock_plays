@@ -580,14 +580,19 @@ class SovereignIntelligenceEngine:
         color = self.COLOR_GREEN if pct >= 0 else self.COLOR_DANGER
         emoji = "🟢" if pct >= 0 else "🔴"
         
-        sess_tag = self.get_session_tag_html(sess_override=sess)
+        sess_tag = self.get_session_tag_html(fs="8px", sess_override=sess)
         
+        anchor = ""
+        if sess in ["PRE", "AH", "OVN", "POST"]:
+            c_p = p.get("close_price") or p.get("price")
+            if c_p: anchor = f'<span style="font-size:9px; color:#94a3b8; font-weight:normal;">&nbsp;| C: ${c_p:,.2f}</span>'
+
         style = f'color:{gold}; font-weight:bold; text-decoration:none;'
         pct_style = f'color:{color}; font-weight:800; text-decoration:none;'
 
         if simple:
-            return f'<span style="{style}">{display_sym}</span>&nbsp;<span style="color:#cbd5e1; font-size:11px;">${price:.2f}</span>&nbsp;<span style="{pct_style}">{pct:+.2f}%{sess_tag}</span>'
-        return f'<span style="{style}">${display_sym}</span>&nbsp;<span style="color:#cbd5e1; font-size:12px;">${price:.2f}</span>&nbsp;<span style="{pct_style}">{emoji}&nbsp;{pct:+.2f}%{sess_tag}</span>'
+            return f'<span style="{style}">{display_sym}</span>&nbsp;<span style="color:#cbd5e1; font-size:11px;">${price:.2f}</span>&nbsp;<span style="{pct_style}">{pct:+.2f}%{sess_tag}{anchor}</span>'
+        return f'<span style="{style}">${display_sym}</span>&nbsp;<span style="color:#cbd5e1; font-size:12px;">${price:.2f}</span>&nbsp;<span style="{pct_style}">{emoji}&nbsp;{pct:+.2f}%{sess_tag}{anchor}</span>'
 
     def _fetch_ancillary_prices(self, tickers, prices):
         """V22.9: Hardened discovery hydration with 15m Global TTL bypass."""
@@ -636,8 +641,13 @@ class SovereignIntelligenceEngine:
                 sign = "+" if pct >= 0 else ""
                 sess_tag = self.get_session_tag_html(fs="8px", sess_override=sess)
                 
+                anchor = ""
+                if sess in ["PRE", "AH", "OVN", "POST"]:
+                    c_p = p_data.get("close_price") or p_data.get("price")
+                    if c_p: anchor = f' <span style="font-size:8px; color:#94a3b8; font-weight:normal;">| C: ${c_p:,.2f}</span>'
+
                 if f"(${price:.2f}" not in text:
-                    flair = f'<strong>{word}</strong>&nbsp;(<span style="color:{color}; font-weight:bold;">${price:,.2f}&nbsp;{sign}{pct:.1f}%{sess_tag}</span>)'
+                    flair = f'<strong>{word}</strong>&nbsp;(<span style="color:{color}; font-weight:bold;">${price:,.2f}&nbsp;{sign}{pct:.1f}%{sess_tag}{anchor}</span>)'
                     text = text.replace(word, flair)
                     break 
         return text
@@ -1063,8 +1073,14 @@ class SovereignIntelligenceEngine:
                 else:
                     clr = bull if pct >= 0 else bear
                     sess_tag = self.get_session_tag_html(fs="8px", sess_override=sess)
+                    
+                    anchor = ""
+                    if sess in ["PRE", "AH", "OVN", "POST"]:
+                        c_p = p_entry.get("close_price") or p_entry.get("price")
+                        if c_p: anchor = f'<span style="font-size:9px; color:#94a3b8; font-weight:normal;">&nbsp;| C: ${c_p:,.2f}</span>'
+                    
                     price_str = f'<span style="color:#cbd5e1; font-size:13px; margin-right:8px;">${price:,.2f}</span>'
-                    pct_display = f'{price_str}<span style="color:{clr}; font-weight:bold; font-size:14px;">{pct:+.2f}%{sess_tag}</span>'
+                    pct_display = f'{price_str}<span style="color:{clr}; font-weight:bold; font-size:14px;">{pct:+.2f}%{sess_tag}{anchor}</span>'
 
                 notes = "" if hide_notes else t.get('notes', '').strip()
                 flaired_notes = self.inject_price_flair(notes, prices, link=False)

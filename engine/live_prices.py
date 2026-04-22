@@ -195,8 +195,12 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
 
             vol_spike = round(volume / avg_vol, 2) if avg_vol and avg_vol > 0 else 0
             
+            # V24.2: Anchor Price Logic
+            close_price = item.get('regularMarketPrice') or item.get('previousClose')
+
             entry = {
                 'price':      round(price, 2) if price is not None else None,
+                'close_price': round(close_price, 2) if close_price is not None else None,
                 'price_chg':  round(price_chg, 2) if price_chg is not None else None,
                 'change_pct': round(change_pct, 2) if change_pct is not None else None,
                 'volume':     int(volume) if volume else None,

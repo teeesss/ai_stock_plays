@@ -171,6 +171,14 @@
     <div class="stat"><span>UNIVERSE</span><div class="val" id="stat-total">—</div></div>
     <div class="stat"><span>PRIVATE</span><div class="val" id="stat-private" style="color:var(--purple)">—</div></div>
     <div class="stat"><span>PINNED</span><div class="val" id="stat-pinned">0</div></div>
+    
+    <!-- V24.2: News Velocity Widget -->
+    <div class="stat" id="velocity-stat" style="display:none; cursor:pointer;" onclick="openNewsModal()">
+        <span>VELOCITY</span>
+        <div class="val" id="stat-velocity" style="color:var(--gold); display:flex; align-items:center; gap:4px;">
+            <span id="vel-icon">🔥</span> <span id="vel-val">0</span>
+        </div>
+    </div>
 
     <div class="search-container">
         <div class="search-row">
@@ -219,7 +227,42 @@ document.addEventListener('DOMContentLoaded', () => {
     
     initPulse();
     render();
+    initVelocity();
 });
+
+async function initVelocity() {
+    try {
+        const res = await fetch('../database/macro_velocity_metrics.json');
+        if (!res.ok) return;
+        const data = await res.json();
+        const metrics = data.metrics || {};
+        
+        let topKW = null;
+        let maxV = 0;
+        for (const [kw, m] of Object.entries(metrics)) {
+            if (m.velocity > maxV) {
+                maxV = m.velocity;
+                topKW = kw;
+            }
+        }
+        
+        const statEl = document.getElementById('velocity-stat');
+        if (topKW && maxV >= 1.5) {
+            statEl.style.display = 'flex';
+            document.getElementById('vel-val').innerText = topKW;
+            statEl.title = `ACCELERATING NARRATIVE: ${topKW}\nVelocity Score: ${maxV.toFixed(1)}\n${metrics[topKW].count_4h} mentions in last 4h`;
+            
+            // Animation for high velocity
+            if (maxV > 5) {
+                document.getElementById('vel-icon').innerText = '⚡';
+            }
+        } else {
+            statEl.style.display = 'none';
+        }
+    } catch(e) {
+        console.warn("Velocity metrics unavailable");
+    }
+}
 </script>
 
 <!-- CPO PULSE: Powered by live_prices.js (run 'python engine/live_prices.py' to refresh) -->
@@ -587,7 +630,7 @@ function render() {
             <td style="font-weight:700;">
                 ${extStr !== null ? `
                 <div style="font-size:8px;color:var(--text-dim);font-weight:700;">${e.extType || ''}</div>
-                <div style="font-size:11px;color:var(--gold);font-weight:800;">$${e.extPrice.toFixed(2)}</div>
+                <div style="font-size:11px;color:var(--gold);font-weight:800;">$${e.extPrice.toFixed(2)} <span style="font-size:8px;color:var(--text-dim);font-weight:500;">(C: $${(e.price || 0).toFixed(2)})</span></div>
                 <div style="font-size:9px;" class="${extCls}">${extStr}</div>
                 ` : '<span style="color:var(--text-dim);font-size:10px;">--</span>'}
             </td>
@@ -877,32 +920,55 @@ function filterNews() {
 function renderNews(articles, query='', limit=50) {
     const container = document.getElementById('newsBody');
     const countEl = document.getElementById('news-count');
-    const shown = articles.slice(0, limit);
     if (countEl) countEl.innerText = `${articles.length} ARTICLES`;
-    if (!shown.length) {
+    
+    if (!articles.length) {
         container.innerHTML = '<div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">NO MATCHING ARTICLES.</div>';
         return;
     }
-    container.innerHTML = shown.map(a => {
-        const tickers = (a.tickers||[]).map(t => `<span style="background:rgba(212,163,115,0.15);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;margin-right:3px;cursor:pointer;" onclick="syncNewsSearch('${t}')">\$${t}</span>`).join('');
-        const pub = a.published_est || a.published || '';
-        const src = a.source || '';
-        let title = a.title || '';
-        if (query && query.length > 1) {
-            const re = new RegExp(`(${query.replace(/[$]/g,'\\$')})`, 'gi');
-            title = title.replace(re, '<span class="highlight">$1</span>');
-        }
-        return `<div class="intel-item">
-            <div class="meta" style="justify-content:space-between;">
-                <span style="color:var(--accent);font-weight:700;font-size:9px;">${src}</span>
-                <span style="color:var(--text-dim);font-size:9px;">${pub}</span>
-            </div>
-            <div style="margin:4px 0 5px;font-size:11px;font-weight:700;line-height:1.4;">${title}</div>
-            <div style="font-size:9px;color:#94a3b8;margin-bottom:5px;">${a.summary ? a.summary.substring(0,180)+'...' : ''}</div>
-            <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${tickers}</div>
-            <div style="margin-top:6px;text-align:right;"><a href="${a.url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;">READ ARTICLE ↗</a></div>
-        </div>`;
-    }).join('');
+
+    // V24.2: Separate Earnings Intelligence
+    const earnings = articles.filter(a => a.is_earnings).slice(0, 8);
+    const others = articles.filter(a => !a.is_earnings).slice(0, limit);
+
+    let html = '';
+    
+    // Only show earnings area if no specific search query is active
+    if (earnings.length > 0 && !query) {
+        html += `<div style="margin-bottom:20px; padding:12px; background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:8px;">
+            <div style="color:var(--gold); font-size:14px; font-weight:900; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
+                <span style="font-size:18px;">📊</span> EARNINGS INTELLIGENCE
+            </div>`;
+        html += earnings.map(a => renderArticle(a, query)).join('');
+        html += `</div>`;
+    }
+
+    html += others.map(a => renderArticle(a, query)).join('');
+    container.innerHTML = html;
+}
+
+function renderArticle(a, query) {
+    const tickers = (a.tickers||[]).map(t => `<span style="background:rgba(212,163,115,0.15);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;margin-right:3px;cursor:pointer;" onclick="syncNewsSearch('${t}')">${t === 'MACRO' ? 'MACRO' : '$'+t}</span>`).join('');
+    const pub = a.published_est || a.published || '';
+    const src = a.source || '';
+    let title = a.title || '';
+    if (query && query.length > 1) {
+        const re = new RegExp(`(${query.replace(/[$]/g,'\\$')})`, 'gi');
+        title = title.replace(re, '<span class="highlight">$1</span>');
+    }
+    const borderStyle = a.is_earnings ? 'border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.03);' : '';
+    const macroBadge = a.is_macro ? '<span style="color:var(--accent); font-size:8px; font-weight:900; margin-right:6px;">[MACRO]</span>' : '';
+    
+    return `<div class="intel-item" style="${borderStyle}">
+        <div class="meta" style="justify-content:space-between;">
+            <span style="color:var(--accent);font-weight:700;font-size:9px;">${macroBadge}${src}</span>
+            <span style="color:var(--text-dim);font-size:9px;">${pub}</span>
+        </div>
+        <div style="margin:4px 0 5px;font-size:11px;font-weight:700;line-height:1.4;">${title}</div>
+        <div style="font-size:9px;color:#94a3b8;margin-bottom:5px;">${a.summary ? a.summary.substring(0,180)+'...' : ''}</div>
+        <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${tickers}</div>
+        <div style="margin-top:6px;text-align:right;"><a href="${a.url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;">READ ARTICLE ↗</a></div>
+    </div>`;
 }
 
 function openNewsModal() {
