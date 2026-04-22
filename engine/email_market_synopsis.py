@@ -480,11 +480,20 @@ class SovereignIntelligenceEngine:
             if match or (sess == "LIVE" and ext_type == "LIVE"):
                 e_p = p_data.get("ext_price")
                 e_pct = p_data.get("ext_pct")
-                if e_p is not None and e_pct is not None:
-                    price, pct = e_p, e_pct
-                    if match: sess = ext_type # Return effective session
+                
+                # V24.4: If we have an extended price, use it, but calculate TOTAL change from previous close
+                if e_p is not None:
+                    price = e_p
+                    prev = p_data.get("prev_close") or p_data.get("close_price")
+                    if prev:
+                        pct = ((price / prev) - 1) * 100
+                    elif e_pct is not None:
+                        pct = e_pct
+                    
+                    if match:
+                        effective_sess = ext_type # Only override session string if we actually used ext data
         
-        return price, pct, sess
+        return price, pct, effective_sess
 
     def get_session_tag_html(self, fs="9px", color=None, sess_override=None):
         sess = sess_override if sess_override is not None else self.get_market_session()

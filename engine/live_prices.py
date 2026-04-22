@@ -197,6 +197,7 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
             
             # V24.2: Anchor Price Logic
             close_price = item.get('regularMarketPrice') or item.get('previousClose')
+            prev_close  = item.get('regularMarketPreviousClose') or item.get('previousClose')
 
             entry = {
                 'price':      round(price, 2) if price is not None else None,
@@ -212,6 +213,7 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
                 'ext_price':  ext_price,
                 'ext_pct':    ext_pct,
                 'ext_type':   ext_type,
+                'prev_close': prev_close
             }
             results[original_ticker] = entry
 
