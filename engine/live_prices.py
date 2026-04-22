@@ -48,57 +48,59 @@ def clean_ticker(ticker: str) -> str:
 
 def calculate_session_data(item: dict, tm: int) -> tuple:
     """
-    V23.90: Decoupled Session Extraction Logic
-    Analyzes Yahoo fields based on current EST time (tm = HHMM).
-    Returns (ext_price, ext_pct, ext_type)
+    V24.5: Greedy Session Extraction Logic
+    Exhaustively searches for AH/PRE/OVN prices based on time, even if primary fields are missing.
     """
     price   = item.get('regularMarketPrice')
     bid     = item.get('bid')
     ask     = item.get('ask')
     m_state = item.get('marketState', 'REGULAR')
     
+    # Standard Fields
+    p_p, p_pct = item.get("preMarketPrice"), item.get("preMarketChangePercent")
+    a_p, a_pct = item.get("postMarketPrice"), item.get("postMarketChangePercent")
+    o_p, o_pct = item.get("overnightMarketPrice"), item.get("overnightMarketChangePercent")
+    
     ext_price, ext_pct, ext_type = None, None, "REG"
-    
-    p_p = item.get("preMarketPrice")
-    p_pct = item.get("preMarketChangePercent")
-    a_p = item.get("postMarketPrice")
-    a_pct = item.get("postMarketChangePercent")
-    o_p = item.get("overnightMarketPrice")
-    o_pct = item.get("overnightMarketChangePercent")
 
-    if 400 <= tm < 930: # 4:00 AM - 9:30 AM (PREMARKET)
-        if p_p is not None: 
+    # Session Priority Logic
+    if 400 <= tm < 930: # PRE-MARKET (4:00 AM - 9:30 AM)
+        if p_p is not None: ext_price, ext_pct, ext_type = p_p, p_pct, "PRE"
+        elif o_p is not None: ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
+        elif a_p is not None and tm < 700: # Early morning AH residue
+            ext_price, ext_pct, ext_type = a_p, a_pct, "POST"
+            
+    elif 1600 <= tm < 2000: # AFTER-HOURS (4:00 PM - 8:00 PM)
+        if a_p is not None: ext_price, ext_pct, ext_type = a_p, a_pct, "POST"
+        elif o_p is not None: ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
+        elif p_p is not None and tm < 1630: # Stale PRE residue? Only if close
             ext_price, ext_pct, ext_type = p_p, p_pct, "PRE"
-            if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
-        elif o_p is not None: 
-            ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
-            if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
-        # Midpoint Fallback for PRE
-        if ext_price is None and bid and ask:
-            ext_price = (bid + ask) / 2
-            ext_pct = ((ext_price / price) - 1) * 100 if price else 0
-            ext_type = "PRE"
-    
-    elif 1600 <= tm < 2000: # 4:00 PM - 8:00 PM (AFTER-HOURS)
-        if a_p is not None: 
-            ext_price, ext_pct, ext_type = a_p, a_pct, "POST"
-            if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
-        elif o_p is not None: 
-            ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
-            if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
-    
-    elif tm >= 2000 or tm < 400: # 8:00 PM - 4:00 AM (OVERNIGHT)
-        if o_p is not None: 
-            ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
-            if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
-        elif a_p is not None: 
-            ext_price, ext_pct, ext_type = a_p, a_pct, "POST"
-            if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
 
-    # V23.87 Guard: Only override to LIVE if we are actually in US regular hours (9:30-16:00)
+    elif tm >= 2000 or tm < 400: # OVERNIGHT (8:00 PM - 4:00 AM)
+        if o_p is not None: ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
+        elif a_p is not None: ext_price, ext_pct, ext_type = a_p, a_pct, "POST"
+        elif p_p is not None: ext_price, ext_pct, ext_type = p_p, p_pct, "PRE"
+
+    # Midpoint Fallback for ALL extended sessions if Price is missing but Bid/Ask exist
+    if ext_price is None and bid and ask and not (930 <= tm < 1600):
+        # Only use midpoint if it differs from regular price (implies active session)
+        mid = (bid + ask) / 2
+        if price and abs(mid - price) / price > 0.0005: 
+            ext_price = mid
+            ext_pct = ((ext_price / price) - 1) * 100 if price else 0
+            # Label based on time
+            if 400 <= tm < 930: ext_type = "PRE"
+            elif 1600 <= tm < 2000: ext_type = "POST"
+            else: ext_type = "OVN"
+
+    # Percent calculation fallback
+    if ext_price is not None and ext_pct is None and price:
+        ext_pct = ((ext_price / price) - 1) * 100
+
+    # V23.87 Guard: Force LIVE if in regular hours
     if m_state.startswith("REGULAR") and (930 <= tm < 1600):
         ext_type = "LIVE"
-        
+    
     return ext_price, ext_pct, ext_type
 
 
