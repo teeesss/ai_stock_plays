@@ -1,13 +1,10 @@
-### 🚀 Current Status: V23.89 — Dependency Stability & Price Hardening
-1. - [x] **Dependency Stability (V23.89)**: Fixed `NameError: timedelta` in `live_prices.py` preventing automated JIT refreshes.
-2. - [x] **Session Transition Intelligence (V23.88)**: Forced JIT price pull when market crosses session boundaries (PRE/LIVE/POST), eliminating "Yesterday's Price" cache leaks.
-2. - [x] **Sovereign Clock Architecture (V23.87)**: Decoupled session intelligence from provider metadata. System now anchors PRE/AH/OVN classification to US/Eastern temporal ground truth.
-3. - [x] **Synthetic Data Recovery (V23.87)**: Implemented atomic percentage calculation fallbacks for null-provider responses during extended hours.
-4. - [x] **Institutional Data Density (V23.87)**: Added stock prices to movers and expanded column spacing (90px) to handle high-priced institutional assets.
-5. - [x] **JIT Capacity Expansion (V23.87)**: Increased Just-In-Time price hydration to 250 tickers to ensure full watchlist coverage in a single pass.
-6. - [x] **Engine Transparency (V23.86)**: Restored verbose "Work Logs" for price freshness, ticker coverage, and NLP lead ranking.
-7. - [x] **Documentation Hardening (V23.88)**: Synchronized all project manifests to version V23.88.
-8. - Date: 2026-04-22
+### 🚀 Current Status: V23.95 — Sovereign Narrative Synthesis (Hardened)
+1. - [x] **JIT Narrative Synthesis (V23.95)**: Automated scraping of Edward Jones, Briefing.com, and CNBC Live for high-fidelity executive summaries.
+2. - [x] **Macro Intelligence Expansion (V23.95)**: Integrated OilPrice, Reuters Energy, and Reuters World feeds for multi-sector macro coverage.
+3. - [x] **NLP Synthesis Hardening (V23.95)**: Prioritized institutional leads with triple-layered cross-section deduplication.
+4. - [x] **UI Density Refinement (V23.95)**: Reduced padding and optimized mobile/desktop density for the institutional cockpit.
+5. - [x] **Price Integrity (V23.95)**: Resolved POET stale price leak and established US/Eastern temporal ground truth.
+6. - Date: 2026-04-22
 
 # Project Status — April 20, 2026
 ## 🚀 Version: V23.48 (Visual Supercycle)

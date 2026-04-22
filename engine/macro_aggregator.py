@@ -26,7 +26,8 @@ class MacroAggregator:
         self.priority_keywords = [
             "PHOTONICS", "SEMI", "CXL", "BLACKWELL", "NVIDIA", "SUPPLY CHAIN", 
             "CHIP", "AI REVENUE", "WAFER", "HBM", "CPO", "SILICON",
-            "MARKET OVERVIEW", "WALL ST", "CLOSING BELL", "OPENING BELL", "RECAP", "STOCKS FALL", "STOCKS RISE"
+            "MARKET OVERVIEW", "WALL ST", "CLOSING BELL", "OPENING BELL", "RECAP", "STOCKS FALL", "STOCKS RISE",
+            "CRUDE", "OIL", "CEASEFIRE", "GEOPOLITICAL", "DEFENSE", "ENERGY", "HORMUZ", "OPEC", "BRENT"
         ]
         self.priority_tickers = [
             "NVDA", "AMD", "AVGO", "ALAB", "ARM", "MRVL", "LITE", "FN", 
@@ -37,7 +38,10 @@ class MacroAggregator:
             "MarketWatch Pulse": "https://feeds.content.dowjones.io/public/rss/mw_marketpulse",
             "Investing Tech": "https://www.investing.com/rss/news_25.rss",
             "Investing World": "https://www.investing.com/rss/news_301.rss",
-            "CNBC Tech": "https://www.cnbc.com/id/19854910/device/rss/rss.html"
+            "CNBC Tech": "https://www.cnbc.com/id/19854910/device/rss/rss.html",
+            "OilPrice Macro": "https://oilprice.com/rss/main_feed.rss",
+            "Reuters Energy": "https://www.reuters.com/business/energy/rss",
+            "Reuters World": "https://www.reuters.com/world/rss"
         }
 
     def _load_prices(self):

@@ -129,37 +129,42 @@ class LocalIntelligenceSynthesizer:
             print(f"[NLP ERR] {e}")
             return []
 
-    def synthesize_market_narrative(self, articles: list, vibe: str) -> tuple:
+    def synthesize_market_narrative(self, articles: list, vibe: str, scraped_lead: str = None) -> tuple:
         """Constructs a dense, cohesive institutional paragraph. Returns (narrative, used_links)."""
-        if not articles: 
-            return f"The market maintains a {vibe} posture. No primary catalysts identified.", set()
+        used_links = set()
         
-        # 1. Extract Top Themes
+        # 1. Determine Primary Anchor
+        if scraped_lead and len(scraped_lead) > 50:
+            lead_para = scraped_lead.strip()
+            # If we have a scraped lead, we don't have its specific link here, 
+            # but we can try to filter out articles that overlap too much.
+            anchor_words = set(re.findall(r'\b\w{4,}\b', lead_para.lower()))
+        elif articles:
+            anchor = articles[0]
+            used_links.add(anchor.get('link'))
+            lead_para = anchor.get('summary', '').strip()
+            if len(lead_para) < 40: lead_para = anchor.get('raw_title', '').strip()
+            anchor_words = set(re.findall(r'\b\w{4,}\b', lead_para.lower()))
+        else:
+            return f"The market maintains a {vibe} posture. No primary catalysts identified.", set()
+
+        if not lead_para.endswith((".", "!", "?")): lead_para += "."
+        
+        # 2. Extract Top Themes
         themes = self.get_top_themes(articles, top_n=2)
         top_theme = themes[0] if themes else "Sector Rotation"
         
-        # 2. Identify Primary Anchor
-        anchor = articles[0]
-        used_links = {anchor.get('link')}
-        
-        # Use summary if dense, otherwise use title
-        lead_para = anchor.get('summary', '').strip()
-        if len(lead_para) < 40: lead_para = anchor.get('raw_title', '').strip()
-        if not lead_para.endswith((".", "!", "?")): lead_para += "."
-        
         # 3. Extract Secondary Insights (avoiding stutter)
-        dense_points_with_meta = self.synthesize_macro_overview_with_meta(articles[1:10], sentences_count=1)
+        dense_points_with_meta = self.synthesize_macro_overview_with_meta(articles, sentences_count=1)
         
         dense_text = ""
-        lead_words = set(re.findall(r'\b\w{4,}\b', lead_para.lower()))
-        
         for pt, link in dense_points_with_meta:
             if not pt: continue
             
-            # Stutter check
+            # Stutter check against the lead
             pt_words = set(re.findall(r'\b\w{4,}\b', pt.lower()))
-            overlap = len(pt_words & lead_words) / (len(pt_words) + 1)
-            if overlap > 0.5: continue
+            overlap = len(pt_words & anchor_words) / (len(pt_words) + 1)
+            if overlap > 0.4: continue # Tighter threshold for scraped leads
             
             dense_text = pt
             if link: used_links.add(link)

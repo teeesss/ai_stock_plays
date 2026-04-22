@@ -1,9 +1,11 @@
-## 🚀 Active Context: V23.91 (Narrative & Deduplication Hardening)
+## 🚀 Active Context: V23.95 (Sovereign Narrative & Macro Hardening)
 
 ### 🧩 Logic & Patterns
-1. **Sovereign Intelligence Engine (V23.91)**:
+1. **Sovereign Intelligence Engine (V23.95)**:
+   - **JIT Narrative Synthesis**: Scrapes real-time institutional recaps (Edward Jones, CNBC Live) to anchor the executive summary.
    - **Triple-Layer Deduplication**: normalized set (ingestion) + fuzzy Jaccard-token match (ranking) + link-based cross-section filter (email render).
-   - **Cohesive Narrative Synthesis**: Refactored `LocalIntelligenceSynthesizer` to produce single, dense institutional paragraphs anchored by high-alpha macro catalysts.
+   - **Cohesive Narrative Synthesis**: Prioritizes scraped institutional leads as the "Sovereign Anchor" in `LocalIntelligenceSynthesizer`.
+   - **Expanded Macro Aggregator**: Integrated high-alpha feeds for energy, oil, and geopolitics (OilPrice, Reuters Energy).
    - **Semantic Stutter Defense**: Automated word-overlap filtering (Jaccard > 0.5) to prevent redundant sentence stitching.
    - **High-Density Brutalist UI**: Watchlist padding reduced to 5px 12px; Movers cards compacted to 280px width for extreme desktop density.
    - **Institutional Data Formatting**: Mandatory price injection into high-alpha news headlines via `inject_price_flair`.

@@ -37,11 +37,13 @@ from curl_cffi import requests
 try:
     from dependency_mgr import ensure_dependencies
     from live_prices import async_run_fetch
+    from live_blog_scraper import LiveBlogScraper
     from local_nlp import LocalIntelligenceSynthesizer
     from macro_aggregator import MacroAggregator # V23.60 Aggregator
 except ImportError:
     from engine.dependency_mgr import ensure_dependencies
     from engine.live_prices import async_run_fetch
+    from engine.live_blog_scraper import LiveBlogScraper
     from engine.local_nlp import LocalIntelligenceSynthesizer
     from engine.macro_aggregator import MacroAggregator
     from engine.email_spark_fetcher import run_spark_fetch
@@ -660,8 +662,13 @@ class SovereignIntelligenceEngine:
         m_fg = int(sentiment.get('market', {}).get('value', 50))
         vibe_status = "NEUTRAL / CHOPPY" if 40 <= m_fg <= 60 else ("RISK-ON / ACCUMULATING" if m_fg > 60 else "RISK-OFF / PROTECTING")
         
-        # Real-world NLP Narrative Synthesis
-        intel_text, used_links = nlp.synthesize_market_narrative(best_headlines, vibe_status)
+        # 3. Intelligent Narrative Synthesis (JIT Scrape + NLP)
+        scraper = LiveBlogScraper()
+        scraped_lead, lead_url = asyncio.run(scraper.get_sovereign_narrative())
+        if scraped_lead:
+            print(f"[MACRO] Scraped Live Narrative: {lead_url}")
+        
+        intel_text, used_links = nlp.synthesize_market_narrative(best_headlines, vibe_status, scraped_lead=scraped_lead)
         
         # Institutional Summary Layout - Standardized with primary header classes (V23.72)
         summary_hdr_style = f'color:{text_bright}; font-size:42px; font-weight:900; letter-spacing:-1.5px; text-transform:uppercase; line-height:1.1; margin-bottom:12px;'
@@ -671,12 +678,18 @@ class SovereignIntelligenceEngine:
             exec_summary = f'<div class="hdr-title" style="{summary_hdr_style}">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL SUMMARY</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6;">The session is carving out a {vibe_status} posture (F&G: {m_fg}). Liquidity is shifting across tech sectors.</div>'
         
         # V23.91: Cross-Section Deduplication
-        # If a headline link was used for the summary, skip it in the bulleted list
+        # 4. Prune corpus for the supporting list (remove items used in narrative)
+        # If we have a lead_url, ensure it's "used" if it matches anything in the corpus
+        if lead_url:
+            for art in best_headlines:
+                if art.get('link') == lead_url:
+                    used_links.add(lead_url)
+
+        pruned_news = [art for art in best_headlines if art.get('link') not in used_links][:15]
+
         macro_intel_rows = ""
         row_count = 0
-        for i, res in enumerate(best_headlines):
-             # Skip if headline was used in summary
-             if res.get('link') in used_links: continue
+        for i, res in enumerate(pruned_news):
              
              f_title = self.inject_price_flair(res["title"], prices, master_data)
              row_color = "#60a5fa" if row_count % 2 == 0 else "#4ade80" 
