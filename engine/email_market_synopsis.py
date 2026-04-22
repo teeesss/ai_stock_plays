@@ -743,6 +743,16 @@ class SovereignIntelligenceEngine:
         master = self._load_json("CPO_MASTER_DATA.json")
         prices_path = self.db_path / "live_prices.json"
         
+        # V24.7: Direct Market Mover Intelligence (External Discovery)
+        movers_ext = {"gainers": [], "losers": []}
+        try:
+            from market_movers_scraper import get_market_movers
+            movers_ext = asyncio.run(get_market_movers())
+            print(f"[INFO] [MOVERS] Discovered {len(movers_ext['gainers'])} gainers / {len(movers_ext['losers'])} losers.")
+        except Exception as e:
+            print(f"[WARN] Failed to scrape movers: {e}")
+        prices_path = self.db_path / "live_prices.json"
+        
         # V23.86: Price Freshness Governance
         # V23.88: Session Transition Intelligence
         # We refresh if:
@@ -769,7 +779,8 @@ class SovereignIntelligenceEngine:
                     print(f"[INFO] [CACHE] Refresh Triggered: {reason}. Hardening live data...")
                     try:
                         from live_prices import async_run_fetch
-                        all_to_fetch = list(set(master.keys()) | set([t.upper() for t in (custom_tickers or [])]))
+                        movers_list = movers_ext['gainers'] + movers_ext['losers']
+                        all_to_fetch = list(set(master.keys()) | set([t.upper() for t in (custom_tickers or [])]) | set(movers_list))
                         # V24.4: Force Freshness for Email Dossier (Ignore 15m Cache)
                         prices = asyncio.run(async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True, force=True))
                         print(f"[INFO] [LIVE] JIT Refresh Complete: {len(prices)} tickers.")
@@ -804,9 +815,9 @@ class SovereignIntelligenceEngine:
             else: tradeable["ai"].append(item)
 
         for k in tradeable: tradeable[k].sort(key=lambda x: x['pct'], reverse=True)
-        return tradeable, strategic, prices, news_db, sentiment, master
+        return tradeable, strategic, prices, news_db, sentiment, master, movers_ext
 
-    def compose_html(self, tradeable, strategic, prices, news_db, sentiment, master):
+    def compose_html(self, tradeable, strategic, prices, news_db, sentiment, master, movers_ext=None):
         # Design Tokens — matched to main site (#020617 deep navy base)
         bg_main    = "#020617"  # site --bg-main
         bg_surface = "#0f172a"  # site --bg-card
@@ -995,23 +1006,39 @@ class SovereignIntelligenceEngine:
             if len(pair) == 1: pair.append('<td class="tile-cell" style="width:50%; padding:3px;"></td>')
             global_grid_rows += f'<tr>{"".join(pair)}</tr>'
 
-        # 2c. Session Performance Carve-out — Responsive High-Density Tiles (V23.50)
-        perf_candidates = []
-        now_ts = time.time()
-        for sym, p_data in prices.items():
-            if sym == '_meta' or not self.is_legit_ticker(sym): continue
-            
-            # V24.6: Freshness Guard - Only consider data from the last 6 hours
-            last_ts = p_data.get('timestamp', 0)
-            if (now_ts - last_ts) > 21600: continue
-            price, pct, sess = self.get_session_data(p_data, sym)
-            if pct is not None and abs(pct) > 0.05: # filter noise
-                perf_candidates.append({'symbol': sym, 'price': price, 'change_pct': pct, 'session': sess})
+        # V24.7: Direct Market Movers from External Discovery (Yahoo Primary)
+        gainers_top = []
+        losers_top = []
         
-        # Gainers: Greatest to Least
-        gainers_top = sorted([p for p in perf_candidates if p['change_pct'] > 0], key=lambda x: x['change_pct'], reverse=True)[:10]
-        # Losers: Most Negative to Least Negative
-        losers_top = sorted([p for p in perf_candidates if p['change_pct'] < 0], key=lambda x: x['change_pct'])[:10]
+        if movers_ext:
+            for sym in movers_ext.get('gainers', []):
+                p_data = prices.get(sym, {})
+                price, pct, sess = self.get_session_data(p_data, sym)
+                if price:
+                    gainers_top.append({'symbol': sym, 'price': price, 'change_pct': pct, 'session': sess})
+            
+            for sym in movers_ext.get('losers', []):
+                p_data = prices.get(sym, {})
+                price, pct, sess = self.get_session_data(p_data, sym)
+                if price:
+                    losers_top.append({'symbol': sym, 'price': price, 'change_pct': pct, 'session': sess})
+        
+        # Fallback to internal if external fails
+        if not gainers_top and not losers_top:
+            perf_candidates = []
+            now_ts = time.time()
+            for sym, p_data in prices.items():
+                if sym == '_meta' or not self.is_legit_ticker(sym): continue
+                last_ts = p_data.get('timestamp', 0)
+                if (now_ts - last_ts) > 21600: continue
+                price, pct, sess = self.get_session_data(p_data, sym)
+                if pct is not None and abs(pct) > 0.05: 
+                    perf_candidates.append({'symbol': sym, 'price': price, 'change_pct': pct, 'session': sess})
+            gainers_top = sorted([p for p in perf_candidates if p['change_pct'] > 0], key=lambda x: x['change_pct'], reverse=True)[:10]
+            losers_top = sorted([p for p in perf_candidates if p['change_pct'] < 0], key=lambda x: x['change_pct'])[:10]
+        else:
+            gainers_top = gainers_top[:10]
+            losers_top = losers_top[:10]
 
         def render_perf_list(movers, title, color):
             """Renders Movers with centered-block but left-aligned symbols."""
@@ -1438,9 +1465,9 @@ if __name__ == "__main__":
         print(f"[{ts()}] [CLI] Custom Watchlist: {', '.join(valid_custom)}")
 
     print(f"[{ts()}] [DEBUG] Gathering all data...")
-    tradeable, strategic, prices, news_db, sentiment, entries = engine.gather_all_data(custom_tickers=valid_custom)
+    tradeable, strategic, prices, news_db, sentiment, entries, movers_ext = engine.gather_all_data(custom_tickers=valid_custom)
     print(f"[{ts()}] [DEBUG] Data gathered. Composing HTML...")
-    html = engine.compose_html(tradeable, strategic, prices, news_db, sentiment, entries)
+    html = engine.compose_html(tradeable, strategic, prices, news_db, sentiment, entries, movers_ext=movers_ext)
     
     # Aggressive Minification for Gmail (102KB Limit)
     import re
