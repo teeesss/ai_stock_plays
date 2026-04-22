@@ -459,6 +459,7 @@ class SovereignIntelligenceEngine:
     def get_session_data(self, p_data, symbol=None):
         """Unified session logic: extract correct price/pct from live_prices schema."""
         sess = self.get_market_session(symbol)
+        effective_sess = sess
         price = p_data.get("price", 0)
         pct = p_data.get("change_pct", 0)
         
