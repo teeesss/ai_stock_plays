@@ -1,4 +1,4 @@
-## 🚀 Active Context: V23.79 (Parallel Stealth Aggregation & Domain Jitter)
+## 🚀 Active Context: V23.87 (Hardened Session Intelligence & Price Extraction Fixes)
 
 ### 🧩 Logic & Patterns
 1. **Sovereign Intelligence Engine (V23.60/61)**:
@@ -21,6 +21,14 @@
    - ALWAYS ensure parent directories exist before Playwright `storage_state` calls.
    - Use absolute paths for `stealth_session.json` to prevent CWD-dependent `FileNotFoundError`.
 
+5. **Universal Session Fidelity (V23.86)**:
+   - **Time-Anchored Windows**: Use clock-based logic (PRE: 4AM-9:30AM, LIVE: 9:30AM-4PM, AH: 4PM-8PM EST) to prioritize data fields, bypassing stale Yahoo state flags.
+   - **Atomic Overrides**: Prices and percentages MUST update as a pair. Never show regular price with extended percentage.
+   - **Midpoint Fallback**: Calculate `(bid + ask) / 2` if pre-market price is null.
+   - **Work Log Transparency**: Log cache status (Fresh/Expired), TTL countdowns, and lead intelligence ranking.
+   - **Index Futures**: Map S&P 500/DOW to Futures (`ES=F`, `YM=F`) during extended hours.
+   - **Live Icon**: Regular session badge is `L⚡` (Green).
+
 ### 🏛️ File Roles
 - `engine/email_market_synopsis.py`: SIE Orchestrator. Managed high-density "Cockpit" UI and minified HTML dispatch.
 - `engine/macro_aggregator.py`: Multi-source tech-centric news aggregator with weighted scoring.
@@ -33,4 +41,4 @@
 - Gmail will clip messages if the minification fails or if CSS classes exceed length limits.
 - `os.execv` behaves differently on Windows than Linux/Unix (replaces process image).
 
-[Status Synchronized - 2026-04-21]
+[Status Synchronized - 2026-04-22]

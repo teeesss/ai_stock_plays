@@ -642,8 +642,23 @@ Contract Mfg ($FN, $CLS)
 
 ### 4. Technical Intelligence Update: 2026-04-11 (Late Session)
 - **The "Bottleneck Premium"**: As Western/Chinese export controls tighten on Indium/Gallium, the market is mispricing the **recycling and metallurgy** sub-tier. Companies like **$5801.T (Furukawa)** and **$3105.TW (Win Semi)** are entering a supercycle of "secured demand" where price is secondary to delivery speed.
-- **The Portfolio Logic**: We have successfully implemented a tactical scoring model in `cpo_plays.html` that weights these structural bottlenecks 2x–3x higher for aggressive profiles. 
-- **The 130+ Play Ecosystem**: We have achieved full supply chain coverage across 16 layers, from raw material precursors ($5713.T, $UMI.BR) to rack-level interconnects ($CRDO, $APH).
+- **V23.86 [2026-04-22]**: Deployed Universal Session Fidelity. Standardized all time-anchored logic to UTC-anchored US/Eastern HHMM format (Hour*100 + Min). Hardened `live_prices.py` to prioritize most-active fields (PRE/AH/OVN) regardless of Yahoo's reported `marketState`. Implemented JIT (Just-In-Time) price hydration in `email_market_synopsis.py` to refresh cache if >300s old. Restored Work Log transparency (INFO/DEBUG) to the run logs.
+- **V23.85 [2026-04-21]**: Hardened index tracking with futures-based switching (ES=F, NQ=F) during extended hours. Implemented Bid/Ask midpoint fallback for premarket stasis recovery.
+- **V23.60 [2026-04-20]**: Integrated `MacroAggregator` with Tech-weighted scoring (Photonics +150, AI +100). Deployed Gmail Clipping Defense (102KB minification).
+
+## 🏛️ ARCHITECTURAL RECOVERY (V23.86)
+- **Time Sync**: Always anchor to `datetime.now(timezone.utc) - timedelta(hours=4)` for EST/EDT parity.
+- **Session Windows**: 0400-0930 (PRE), 0930-1600 (LIVE), 1600-2000 (AH), 2000-0400 (OVN).
+- **Pricing Logic**: `get_session_data()` must link `ext_type` (JSON) to current `sess` (Time) for atomic rendering.
+- **JIT Protocol**: Engine MUST refresh prices via `async_run_fetch()` if cache is stale to prevent 10.18-stasis in premarket.
+- **Session aware price flairs**: Headlines and narrative briefings now use `get_session_data` to inject active pre/post session prices.
+- **Index Futures Toggle**: Market Pulse tiles for S&P 500, NASDAQ, and DOW now automatically map to front-month futures (`ES=F`, `NQ=F`, `YM=F`) during extended hours to provide 24/7 price action.
+
+### 2026-04-22 - V23.86 Time-Anchored Fidelity & Work Log Transparency
+- **Time-Anchored Windowing**: `live_prices.py` now uses clock-based windows (4:00-9:30 AM EST for `PRE`, etc.) to force-prioritize data fields, bypassing stale Yahoo state flags.
+- **Atomic Session Overrides**: Enforced simultaneous price/pct updates as a single unit to prevent mixed-state rendering (Regular Price + Extended Percentage).
+- **Just-In-Time (JIT) Refresh**: The email engine now auto-triggers a background fetch if `live_prices.json` is older than 5 minutes.
+- **Verbose Work Logs**: Deployed high-fidelity diagnostic logging showing Cache TTLs, fetch counts, and NLP lead intelligence ranking.
 
 ### 5. Catalyst Alert: The "Rubin Ultra" Communication Wall (2026-04-11)
 - **The Shortage**: As of April 2026, 1.6T optical transceivers are facing a **30% supply gap** due to 200G-per-lane InP laser (EML) bottlenecks.

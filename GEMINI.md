@@ -1,4 +1,4 @@
-## 🚀 Active Context: V23.79 (Parallel Stealth Aggregation & Domain Jitter)
+## 🚀 Active Context: V23.87 (Hardened Session Intelligence & Price Extraction Fixes)
 
 ### 🧩 Logic & Patterns
 1. **Sovereign Intelligence Engine (V23.60/61)**:

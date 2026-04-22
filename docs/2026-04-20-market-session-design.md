@@ -14,8 +14,17 @@ The system tracks the exact minute of the trading day and categorizes sessions:
 * `AH`: Evening Session (4:00 PM - 8:00 PM EST)
 * `OVN`: Overnight / Sunday Futures (8:00 PM - 4:00 AM EST)
 
-### 3. BOATS (Blue Ocean ATS) Discovery
-Overnight pricing is now harvested using the hidden `overnightMarketPrice` field by appending `&overnightPrice=true` to the Yahoo Finance API v7 calls. This eliminates the "frozen Friday" problem and provides high-fidelity institutional OVN tracking.
+### 4. Time-Anchored Windowing (V23.86 Hardening)
+To combat stale `marketState` flags from Yahoo, the engine now uses clock-based windows to force-prioritize data fields:
+* **4:00 - 9:30 AM EST**: Forced prioritization of `preMarketPrice`.
+* **16:00 - 20:00 PM EST**: Forced prioritization of `postMarketPrice`.
+* **20:00 - 4:00 AM EST**: Forced prioritization of `overnightMarketPrice`.
+
+### 5. Atomic Session Overrides
+Data integrity is maintained by treating Price and Percentage as an atomic unit. If a session change is detected, both fields must be updated simultaneously to prevent "mixed state" rendering ($REG + %EXT).
+
+### 6. Midpoint Fallback
+For low-volume assets where `preMarketPrice` returns null, the engine calculates the average of `bid` and `ask` to maintain real-time volatility tracking.
 
 ### 4. UI Rendering standard
 Badges have strict color coordination to assist visual scanning:

@@ -86,10 +86,14 @@ class SovereignIntelligenceEngine:
         print(f"[{ts()}] [DEBUG] Constructor: Map loaded ({len(self.ticker_name_map)} entries) in {elapsed:.2f}s.")
 
     def _get_est_now(self):
-        """Returns the current time normalized to US/Eastern (EDT/EST)."""
+        """Returns the current time normalized to US/Eastern (EDT/EST) anchored to UTC."""
         now_utc = datetime.datetime.now(datetime.timezone.utc)
-        # Simplified 2026 DST Hack: April is EDT (UTC-4)
-        return now_utc - datetime.timedelta(hours=4)
+        try:
+            from zoneinfo import ZoneInfo
+            return now_utc.astimezone(ZoneInfo("US/Eastern"))
+        except:
+            # Fallback for systems without zoneinfo
+            return now_utc - datetime.timedelta(hours=4)
 
 
     # V22.5: Centralized High-Confidence Aliases (Names to Tickers)
@@ -405,7 +409,7 @@ class SovereignIntelligenceEngine:
         # V22.93: Precise Session Detection + Overnight Awareness
         # V23.47: Suffix-Aware Global Exchange Logic
         hr = self.now.hour; mn = self.now.minute
-        tm = hr * 60 + mn
+        tm = hr * 100 + mn
         day = self.now.weekday()
         
         # 1. Crypto & Sunday Futures Override
@@ -415,19 +419,19 @@ class SovereignIntelligenceEngine:
         
         # 2. Exchange Hour Mapping (Normalization to EST)
         # Default: US (09:30 - 16:00)
-        open_m, close_m = 570, 960
+        open_m, close_m = 930, 1600
         
         if symbol:
             s_up = symbol.upper()
             # Europe (DE/ST/L/PA/MI/MC/AS): ~03:00 - 11:30 EST
             if any(s_up.endswith(s) for s in [".DE", ".ST", ".L", ".PA", ".MI", ".MC", ".AS"]):
-                open_m, close_m = 180, 690 
+                open_m, close_m = 300, 1130 
             # Asia (HK/N225): ~21:30 - 04:00 EST
             elif any(s_up.endswith(s) for s in [".HK", ".N225", ".TW", ".KS"]):
-                open_m, close_m = 1290, 240 # Spans midnight
+                open_m, close_m = 2130, 400 # Spans midnight
             # Australia (AX/CX): ~19:00 - 01:00 EST
             elif any(s_up.endswith(s) for s in [".AX", ".CX"]):
-                open_m, close_m = 1140, 60  # Spans midnight
+                open_m, close_m = 1900, 100  # Spans midnight
 
         # 3. Session Classification
         is_live = False
@@ -441,11 +445,11 @@ class SovereignIntelligenceEngine:
         # US-Centric Extended Hours (V23.58 Labels: PRE/AH)
         if day < 5:
             # Morning Session: 4AM - 9:30AM EST
-            if 240 <= tm < open_m: return "PRE"
+            if 400 <= tm < open_m: return "PRE"
             # Evening Session: 4PM - 8PM EST
-            if close_m <= tm < 1200: return "AH"
+            if close_m <= tm < 2000: return "AH"
             # Overnight / Late Night
-            if tm >= 1200 or tm < 240: return "OVN"
+            if tm >= 2000 or tm < 400: return "OVN"
         return ""
 
     def get_session_data(self, p_data, symbol=None):
@@ -456,23 +460,25 @@ class SovereignIntelligenceEngine:
         
         ext_type = p_data.get("ext_type")
         # High-Fidelity: Link data to session
-        if ext_type and ext_type in ["OVN", "PRE", "POST"]:
+        if ext_type and ext_type in ["OVN", "PRE", "POST", "AH"]:
             # Prioritize matching session
             match = (ext_type == sess)
-            # Aliases for same session (POST == AH, PRE == PM)
+            # Aliases for same session (POST == AH, PRE == PM/PRE)
             if not match:
-                match = (sess == "AH" and ext_type == "POST") or (sess == "PM" and ext_type == "PRE")
+                match = (sess == "AH" and ext_type in ["POST", "AH"]) or (sess == "PRE" and ext_type == "PRE")
             
-            # V23.01e: OVN Fallback — If we just entered PM (4AM-5AM) but only have OVN data, use OVN
-            if not match and sess == "PM" and ext_type == "OVN":
+            # V23.80: OVN Fallback — If we are in PRE (4AM-9:30AM) but only have OVN data, use OVN
+            if not match and sess == "PRE" and ext_type == "OVN":
                 match = True
 
-            # V23.47: LIVE status takes precedence for Regular Hours data
-            if match or sess == "LIVE":
-                price = p_data.get("ext_price") or price
-                pct = p_data.get("ext_pct") or pct
-                # Return the effective session for the UI tag
-                if match: sess = ext_type
+            # V23.87: Atomic override to prevent mixed state ($REG + %EXT)
+            # We only override if it's a confirmed session match OR if the data is explicitly LIVE
+            if match or (sess == "LIVE" and ext_type == "LIVE"):
+                e_p = p_data.get("ext_price")
+                e_pct = p_data.get("ext_pct")
+                if e_p is not None and e_pct is not None:
+                    price, pct = e_p, e_pct
+                    if match: sess = ext_type # Return effective session
         
         return price, pct, sess
 
@@ -485,12 +491,11 @@ class SovereignIntelligenceEngine:
         bg = "rgba(148,163,184,0.1)" # Default dim
         text_color = color if color else "#94a3b8"
         
-        if sess == "PRE":
+        if sess == "PRE" or sess == "PM":
             text_color = "#f59e0b" # Orange
             bg = "rgba(245,158,11,0.1)"
-        elif sess == "PM":
-            text_color = "#60a5fa" # Lightened Blue (V23.58)
-            bg = "rgba(96,165,250,0.1)"
+            if sess == "PM": # Standardize
+                sess = "PRE"
         elif sess == "AH" or sess == "POST":
             sess = "AH" # Standardize
             text_color = "#ef4444" # Red
@@ -619,14 +624,16 @@ class SovereignIntelligenceEngine:
             clean_word = word.strip(".,;:()$").upper()
             if clean_word in prices:
                 p_data = prices[clean_word]
-                p = p_data.get('price')
-                chg = p_data.get('change_pct')
-                if p is None or chg is None: continue
+                # V23.85: Force Session Awareness in headlines
+                price, pct, sess = self.get_session_data(p_data, clean_word)
+                if price is None or pct is None: continue
                 
-                color = "#22c55e" if chg >= 0 else "#ef4444"
-                sign = "+" if chg >= 0 else ""
-                if f"(${p:.1f}" not in text:
-                    flair = f'<strong>{word}</strong>&nbsp;(<span style="color:{color}; font-weight:bold;">{sign}{chg:.1f}%</span>)'
+                color = "#22c55e" if pct >= 0 else "#ef4444"
+                sign = "+" if pct >= 0 else ""
+                sess_tag = self.get_session_tag_html(fs="8px", sess_override=sess)
+                
+                if f"(${price:.2f}" not in text:
+                    flair = f'<strong>{word}</strong>&nbsp;(<span style="color:{color}; font-weight:bold;">${price:,.2f}&nbsp;{sign}{pct:.1f}%{sess_tag}</span>)'
                     text = text.replace(word, flair)
                     break 
         return text
@@ -639,9 +646,14 @@ class SovereignIntelligenceEngine:
         agg = MacroAggregator()
         macro_headlines = asyncio.run(agg.fetch_agg())
         
+        print(f"[INFO] NLP Processor: Analyzing {len(macro_headlines)} headlines for institutional relevance...")
         # Real-world NLP Intelligence Synthesis for Executive Summary
         # V23.69 Filter: Pull more for the pool, then rank the best 15
         best_headlines = nlp.rank_news_relevance(macro_headlines, top_n=15)
+        
+        if best_headlines:
+            top_t = best_headlines[0].get('title', 'Unknown')
+            print(f"[INFO] [ALPHA] Lead Intelligence: {top_t[:70]}...")
         
         m_fg = int(sentiment.get('market', {}).get('value', 50))
         vibe_status = "NEUTRAL / CHOPPY" if 40 <= m_fg <= 60 else ("RISK-ON / ACCUMULATING" if m_fg > 60 else "RISK-OFF / PROTECTING")
@@ -669,9 +681,33 @@ class SovereignIntelligenceEngine:
 
     def gather_all_data(self, custom_tickers=None):
         master = self._load_json("CPO_MASTER_DATA.json")
-        prices = self._load_json("live_prices.json")
+        prices_path = self.db_path / "live_prices.json"
+        
+        # V23.86: Price Freshness Governance
+        prices = {}
+        if prices_path.exists():
+            stale = (time.time() - prices_path.stat().st_mtime) > 300 # 5 minutes
+            if stale:
+                print(f"[INFO] [CACHE] Prices STALE ({int(time.time() - prices_path.stat().st_mtime)}s). Triggering just-in-time refresh...")
+                try:
+                    from live_prices import async_run_fetch
+                    all_to_fetch = list(set(master.keys()) | set([t.upper() for t in (custom_tickers or [])]))
+                    # V23.87: Increased JIT capacity to 250 to ensure full coverage
+                    prices = asyncio.run(async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True))
+                    print(f"[INFO] [LIVE] Refreshed {len(prices)} priority tickers via JIT.")
+                except Exception as e:
+                    print(f"[WARN] Price refresh failed: {e}. Falling back to disk.")
+                    prices = self._load_json("live_prices.json")
+            else:
+                prices = self._load_json("live_prices.json")
+                print(f"[INFO] [CACHE] Prices Fresh: {int(300 - (time.time() - prices_path.stat().st_mtime))}s remaining.")
+        else:
+            prices = self._load_json("live_prices.json")
+
         news_db = self._load_json("YAHOO_NEWS_DB.json").get("news", {})
         sentiment = self.fetch_sentiment()
+        
+        print(f"[INFO] Analyzing Coverage: {len(master)} Master Tickers // {len(custom_tickers or [])} Custom Overrides.")
         
         tradeable = {"semi": [], "ai": [], "watchlist": []}; strategic = []
         custom_set = set([t.upper() for t in custom_tickers]) if custom_tickers else set()
@@ -702,7 +738,10 @@ class SovereignIntelligenceEngine:
         accent = "#6366f1" # indigo — close to site var(--accent)
         gold  = "#f59e0b"  # amber — site var(--gold)
         border = "#1e293b" # site border line
-        session = "WEEKEND INTEL" if self.now.weekday() >= 5 else "MARKET LIVE"
+        
+        # V23.87: Dynamic Session detection for Global Header
+        sess_now = self.get_market_session()
+        session = "WEEKEND INTEL" if self.now.weekday() >= 5 and not sess_now else f"MARKET {sess_now}" if sess_now else "MARKET CLOSED"
         
         # Sentiment Calculations
         market_fg = int(sentiment.get('market', {}).get('value', 50))
@@ -816,13 +855,19 @@ class SovereignIntelligenceEngine:
                 f'</div></td>'
             )
 
-        if is_live_main:
+        if is_live_main or is_futures_active:
             index_tiles = []
             for index in COMPARATIVE_INDICES:
-                c_data = prices.get(index['cash'], {})
-                c_val, c_chg, _ = self.get_session_data(c_data, index['cash'])
-                c_color = bull if c_chg >= 0 else bear
-                index_tiles.append(render_tile(index['cash'], index['name'], c_val, c_chg, "LIVE", c_color))
+                # V23.85: Switch to Futures during extended hours
+                target_ticker = index['cash'] if is_live_main else index['fut']
+                c_data = prices.get(target_ticker, {})
+                # Safely extract session data
+                c_val, c_chg, c_sess = self.get_session_data(c_data, target_ticker)
+                c_color = bull if (c_chg or 0) >= 0 else bear
+                
+                # For indices, session label is extra crucial
+                label = "LIVE" if is_live_main else c_sess
+                index_tiles.append(render_tile(target_ticker, index['name'], c_val or 0, c_chg or 0, label, c_color))
             pulse_grid_rows = f'<tr><td style="padding:4px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>{" ".join(index_tiles)}</tr></table></td></tr>'
         else:
             pulse_grid_rows = "\n".join(pulse_rows)
@@ -910,7 +955,7 @@ class SovereignIntelligenceEngine:
                         <div style="margin-bottom:4px; text-align:center;">
                             <div class="perf-item" style="display:inline-block; width:300px; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:3px; font-family:monospace; font-size:18px; text-align:left; vertical-align:top;">
                                 <span style="display:inline-block; min-width:100px; color:#f59e0b; font-weight:bold;">{symbol_link}</span>
-                                <span style="display:inline-block; min-width:70px; color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; margin-right:15px; vertical-align:middle;">{price_str}</span>
+                                <span style="display:inline-block; min-width:90px; color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; margin-right:15px; vertical-align:middle;">{price_str}</span>
                                 <span style="color:{color_movers}; font-weight:900; float:right;">{pct_str}&nbsp;{badge}</span>
                             </div>
                         </div>''')
@@ -1132,7 +1177,7 @@ class SovereignIntelligenceEngine:
                 <table width="100%" cellpadding="0" cellspacing="0"><tr>
                     <td class="header-cell">
                         <div class="header-title hdr-title" style="color:{text_bright}; font-size:42px; font-weight:900; letter-spacing:-1.5px; text-transform:uppercase; line-height:1.1;">Market Insights <span style="color:{accent};">and Intel</span></div>
-                        <div style="color:{text_dim}; font-size:10px; font-family:monospace; margin-top:8px; letter-spacing:1px;">V23.78 // {self.now.strftime('%a %Y-%m-%d %H:%M EST')} // {session}</div>
+                        <div style="color:{text_dim}; font-size:10px; font-family:monospace; margin-top:8px; letter-spacing:1px;">V23.86 // {self.now.strftime('%a %Y-%m-%d %H:%M EST')} // {session}</div>
                     </td>
                     <td class="badge-cell" style="text-align:right; white-space:nowrap; vertical-align:middle; padding-left:10px;">
                         <span style="background:{accent}; color:#fff; padding:4px 10px; font-size:9px; border-radius:2px; font-weight:bold; letter-spacing:1px;">CONFIDENCE: HIGH</span>
@@ -1201,7 +1246,7 @@ class SovereignIntelligenceEngine:
                 <tr><td style="padding:30px 0; border-top:1px solid #25272d; text-align:center;">
                     <div style="color:{text_dim}; font-size:10px; font-family:monospace;">
                         END OF DOSSIER // TRANSMISSION SECURE // {session}<br>
-                        SOVEREIGN ENGINE HARDENED // AUTO-GENERATED BY GIGACPO V23.78
+                        SOVEREIGN ENGINE HARDENED // AUTO-GENERATED BY GIGACPO V23.87
                     </div>
                 </td></tr>
             </table>
@@ -1273,9 +1318,9 @@ if __name__ == "__main__":
     except Exception as e:
         log.warning(f"Sparkline sidecar failed: {e}")
 
-    def ts(): return datetime.datetime.now().strftime("%H:%M:%S")
+    def ts(): return datetime.datetime.now().strftime("%H%M")
 
-    print(f"[{ts()}] [DEBUG] Initializing SovereignIntelligenceEngine...")
+    print(f"[{ts()}] # V23.87: Sovereign Intelligence Engine — Unified Session Pulse (EST)")
     engine = SovereignIntelligenceEngine()
     print(f"[{ts()}] [DEBUG] Engine initialized.")
     

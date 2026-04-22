@@ -11,7 +11,7 @@ The intelligence architecture is split into synchronized sub-engines that handle
 ### 2. `live_prices.py` (The Pulse)
 * **Goal**: Provide low-latency, session-aware pricing across multi-market assets without hitting API limits.
 * **Architecture**: Intercepts Yahoo Finance v7 endpoints using HTTP requests (`cffi_requests`).
-* **Protocol**: Enforces a strict 15-minute global TTL bypass. If an asset is younger than 15 minutes, the cache handles the request unless manually forced. Normalizes `PRE`, `LIVE`, `AH`, and `OVN` sessions.
+* **Protocol (V23.86)**: Implements **Time-Anchored Windowing** to force-prioritize `preMarketPrice` or `postMarketPrice` during specific clock hours, bypassing stale Yahoo state reporting. Includes **Bid/Ask Midpoint Fallback** for low-liquidity extended sessions.
 
 ### 3. `macro_aggregator.py`
 * **Goal**: Harvest global headlines, filter out sensationalist noise, and rank by alpha-generating priorities.
@@ -23,4 +23,5 @@ The intelligence architecture is split into synchronized sub-engines that handle
 
 ### 5. `email_market_synopsis.py` (The Orchestrator)
 * **Goal**: Render the final payload.
-* **Architecture**: Merges sentiment metrics, live prices, macro text, and watchlist tracking into a single HTML stream. Injects structural CSS and minifies the final document to safely traverse Gmail's 102KB clipping limits before autonomous dispatch.
+* **Architecture**: Merges sentiment metrics, live prices, macro text, and watchlist tracking into a single HTML stream. 
+* **Hardening (V23.86)**: Enforces **Atomic Session Overrides** (paired price/pct updates) and **Work Log Transparency** (verbose cache/NLP diagnostics). Minifies document to <102KB for Gmail compliance.

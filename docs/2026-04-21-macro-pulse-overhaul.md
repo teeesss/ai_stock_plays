@@ -19,7 +19,11 @@ To handle duplicate syndications (e.g., CNBC and Yahoo reporting the same story 
 - **Strict Blacklists:** Sites and authors that produce low-signal "noise" are regex-filtered entirely from the NLP extraction.
 - **Regex Ticker Detection:** Using `\b` boundaries, the scraper perfectly distinguishes between "$ARM" and "arming", preventing hallucinated volatility tags inline.
 
-### 4. High-Density Cockpit UI
-- Brutalist spatial composition ensures high data density.
-- Font sizes dynamically scaled across Desktop (`28px` headers, `18px` grids) and Mobile (`27px` headers max) to ensure no wrapping or broken layouts.
-- Alternating colors for headlines provide clear visual separation without wasted whitespace.
+### 5. Market Pulse Index Futures (V23.86)
+Indices now support dynamic ticker mapping. If the system is in `PRE`, `AH`, or `OVN` session, the `S&P 500`, `NASDAQ`, and `DOW` tiles automatically switch from cash tickers (`^GSPC`) to front-month futures (`ES=F`, `NQ=F`, `YM=F`). This provides 24/7 price action in the market pulse strip.
+
+### 6. Work Log Transparency
+To ensure diagnostic visibility during automated runs, the aggregation engine explicitly logs:
+- **Cache TTL**: Seconds remaining for Macro News and Live Prices.
+- **NLP Relevance**: The top-ranked "Lead Intelligence" headline being utilized for the executive summary.
+- **Coverage Audit**: Total count of master vs. custom tickers ingested.

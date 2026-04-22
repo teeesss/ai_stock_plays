@@ -1,12 +1,21 @@
-# Project Status — April 21, 2026
-## 🚀 Version: V23.70 (Institutional Uniformity)
+# Project Status — April 22, 2026
+## 🚀 Version: V23.86 — Work Log Transparency
 
-Status: **PRODUCTION DEPLOYED — VISUAL SUPERCYCLE V2.1 (STANDARDIZED)**
+## 🚀 Overview (Updated 2026-04-22)
+- **Status**: PRODUCTION HARDENED (Transparent & Accurate)
+- **Current Version**: V23.86
+- **Key Resolution**: Universal session fidelity across all stocks/indices and restored verbose work logs for diagnostic visibility.
+
+### 🛠️ Latest Architectural Hardening (V23.86)
+1. **Work Log Transparency**: Added verbose logs for cache hits, TTL countdowns, and lead intelligence ranking.
+2. **Universal Stock Fidelity**: Headlines and briefings now use `get_session_data` (fixes `ALAB`/`POET` stale rendering).
+3. **Index Futures Integration**: `S&P 500`, `NASDAQ`, and `DOW` tiles now automatically toggle to Futures during extended hours.
+4. **Time-Anchored Source**: `live_prices.py` uses clock-based windows (PRE/AH) to prioritize data fields, bypassing stale Yahoo `marketState` flags.
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V23.76 (Institutional Intelligence Narrative)
-- **Critical Progress**: Harmonized visual hierarchy by upsizing the "Executive Summary" header to match the 42px primary brand font. Fully implemented the "Best of the Best" headline ranking system, which utilizes TF-IDF and Informational Density scoring (LSA) to extract the top 15 high-alpha news signals.
-- **Next Milestone**: Multi-agent divergent signal validation for sector-specific alpha detection.
+- **Current Tier**: V23.86 (Universal Session Fidelity)
+- **Critical Progress**: Deployed Universal Session Fidelity across all stocks and indices. Standardized all time-anchored logic to UTC-anchored US/Eastern HHMM format. Hardened `live_prices.py` to prioritize most-active fields (PRE/AH/OVN). Implemented JIT price hydration in `email_market_synopsis.py` to refresh cache if >300s old. Restored Work Log transparency.
+- **Next Milestone**: Multi-agent sentiment validation for divergent headlines.
 
 ## 🚀 Active Roadmap: V23.76 (Institutional Intelligence Narrative)
 1. **Core Overhaul**: Switched from headline concatenation to dense NLP-driven narrative paragraphs.

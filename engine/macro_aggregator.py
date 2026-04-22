@@ -98,10 +98,15 @@ class MacroAggregator:
                 with open(MACRO_NEWS_CACHE, 'r', encoding='utf-8') as f:
                     cache_data = json.load(f)
                     cached_at = cache_data.get("timestamp", 0)
-                    if (time.time() - cached_at) < 900: # 15 minutes
-                        log.info(f"[CACHE] Macro News Fresh: {int(900 - (time.time() - cached_at))}s remaining.")
+                    elapsed = time.time() - cached_at
+                    if elapsed < 900: # 15 minutes
+                        ttl = int(900 - elapsed)
+                        log.info(f"[CACHE] Macro News Fresh: {ttl}s remaining. Serving {len(cache_data.get('headlines', []))} ranked items.")
                         return cache_data.get("headlines", [])
-            except: pass
+                    else:
+                        log.info(f"[CACHE] Macro News EXPIRED ({int(elapsed)}s old). Triggering fresh aggregate...")
+            except Exception as e:
+                log.warning(f"[CACHE] Read failure: {e}")
 
         log.info("[MACRO] Aggregating multi-source news feeds...")
         all_items = []

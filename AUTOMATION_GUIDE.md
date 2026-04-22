@@ -16,13 +16,14 @@ $trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday -At 9am
 Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "XTweetsRefresh" -Description "Syncs CPO data, audits financials, and exports LLM bundles."
 ```
 
-## 2.5 Sovereign Dossier Scheduling (V23.76)
+## 2.5 Sovereign Dossier Scheduling (V23.86)
 
 The Sovereign Intelligence Engine is designed for high-frequency market alignment. It is recommended to schedule dispatches at **Market Pre-Open**, **Market Close**, and **Sunday Night / Overnight**.
 
 **PowerShell Automation:**
 ```powershell
-# Morning Intelligence (7:30 AM) - PM/Premarket State
+# Morning Intelligence (7:30 AM) - PRE/Premarket State
+# V23.86: Guarantees <5m Price Freshness via JIT refresh.
 $a1 = New-ScheduledTaskAction -Execute 'python' -Argument 'engine\email_market_synopsis.py' -WorkingDirectory 'z:\COS_Stock_Plays'
 $t1 = New-ScheduledTaskTrigger -Daily -At 7:30am
 Register-ScheduledTask -Action $a1 -Trigger $t1 -TaskName "SIE_Morning_Dispatch"
@@ -37,6 +38,12 @@ $a3 = New-ScheduledTaskAction -Execute 'python' -Argument 'engine\email_market_s
 $t3 = New-ScheduledTaskTrigger -Daily -At 8:01pm
 Register-ScheduledTask -Action $a3 -Trigger $t3 -TaskName "SIE_Overnight_Dispatch"
 ```
+
+## 3. Work Log Transparency (V23.86)
+When running via Task Scheduler, review your `soe_intel.log` for high-fidelity work status:
+- **`[INFO] [CACHE]`**: Confirms if the run is utilizing fresh price/news data.
+- **`[INFO] [LIVE]`**: Indicates a just-in-time fetch triggered by stale cache.
+- **`[INFO] [ALPHA]`**: Confirms the NLP ranking engine successfully isolated the top headline.
 
 ## 3. Manual Setup (The GUI Way)
 1. Open **Task Scheduler**.

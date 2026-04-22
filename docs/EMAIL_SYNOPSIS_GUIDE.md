@@ -39,19 +39,29 @@
 
 ### 1. Sovereign Index Pulse (US & Global)
 - **Timezone Normalized (V23.58)**: All session detection is normalized to **US/Eastern (EST)**. 
+- **Time-Anchored Windows (V23.86)**: Forces correct session data even if Yahoo flags are stale.
+- **Index Futures (V23.86)**: Automatically switches to `ES=F`, `NQ=F`, `YM=F` during extended hours.
 - **Session Badges**: 
   - `L⚡` (Green): Regular Market.
   - `PRE` (Orange): Pre-market (4 AM - 9:30 AM EST).
   - `AH` (Red): After-hours (4 PM - 8 PM EST).
-  - `PM` (Light Blue): Post-market secondary visualization.
+  - `OVN` (Amber): Overnight / Sunday Futures (8 PM - 4 AM EST).
 
 ### 2. Narrative Intelligence (`local_nlp.py`)
 - Uses **Latent Semantic Analysis (LSA)** to scan the headlines of target tickers.
-- Generates a **20-sentence dynamic synthesis** summarizing the dominant market narrative without external LLM costs.
+- **Session-Aware Flair (V23.85)**: Headlines injected into the narrative now reflect active session prices (PRE/AH) instead of stale close data.
 
 ### 3. Sector Dossier Cards
 - Maps tickers to specific sectors (Semiconductors, AI Infrastructure, Cloud).
 - Prioritizes **conviction-weighted scoring** and 13F institutional signals.
+
+---
+
+## 🔍 Work Log Transparency (V23.86)
+The script now provides high-fidelity diagnostic output during execution:
+- **`[INFO] [CACHE]`**: Shows remaining TTL for news and prices.
+- **`[INFO] [LIVE]`**: Confirms just-in-time data refreshes.
+- **`[INFO] [ALPHA]`**: Previews the top-ranked insight selected by the NLP engine.
 
 ---
 

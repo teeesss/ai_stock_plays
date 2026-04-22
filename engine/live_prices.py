@@ -1,5 +1,5 @@
 """
-engine/live_prices.py
+engine/live_prices.py [V23.86]
 ======================
 Real-time price fetcher for the GIGACPO terminal.
 
@@ -75,13 +75,13 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
     Fetch real-time quotes via Stealth API directly.
     """
     results = {}
-    # Use EST (US/Eastern) for all internal timestamps to match user requirement
+    # Use EST (US/Eastern) for all internal timestamps anchored to UTC
+    now_utc = datetime.now(timezone.utc)
     try:
         from zoneinfo import ZoneInfo
-        now = datetime.now(ZoneInfo("US/Eastern"))
+        now = now_utc.astimezone(ZoneInfo("US/Eastern"))
     except Exception:
-        from datetime import timedelta
-        now = datetime.now(timezone.utc) - timedelta(hours=4)
+        now = now_utc - timedelta(hours=4)
     
     # Extract primary tickers
     primary_map = {clean_ticker(t): t for t in tickers}
@@ -123,83 +123,70 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
             if price is None: price = item.get('preMarketPrice')
             if price is None: price = item.get('previousClose')
             
-            price_chg  = item.get('regularMarketChange') or item.get('postMarketChange') or 0
-            change_pct = item.get('regularMarketChangePercent') or item.get('postMarketChangePercent') or 0
-            volume     = item.get('regularMarketVolume') or 0
-            avg_vol    = item.get('averageDailyVolume10Day') or 0
+            price_chg  = item.get('regularMarketChange') if item.get('regularMarketChange') is not None else (item.get('postMarketChange') if item.get('postMarketChange') is not None else 0)
+            change_pct = item.get('regularMarketChangePercent') if item.get('regularMarketChangePercent') is not None else (item.get('postMarketChangePercent') if item.get('postMarketChangePercent') is not None else 0)
+            volume     = item.get('regularMarketVolume') if item.get('regularMarketVolume') is not None else 0
+            avg_vol    = item.get('averageDailyVolume10Day') if item.get('averageDailyVolume10Day') is not None else 0
             exch_res   = item.get('fullExchangeName') or item.get('exchangeName') or item.get('exchange') or '???'
-            market_st  = item.get('marketState')
+            m_state    = item.get('marketState', 'REGULAR')
+            bid        = item.get('bid')
+            ask        = item.get('ask')
 
-            ext_price = None
-            ext_pct = None
-            ext_type = None
+            # V23.84: Time-Anchored Session Extraction
+            # Prioritizes the most active field based on current US/Eastern time
+            ext_price, ext_pct, ext_type = None, None, "REG"
             
-            # V23.44: High-Fidelity Session Prioritization
-            # Priority: PRE/POST > OVERNIGHT
-            pre_p = item.get('preMarketPrice')
-            post_p = item.get('postMarketPrice')
+            p_p = item.get("preMarketPrice")
+            p_pct = item.get("preMarketChangePercent")
+            a_p = item.get("postMarketPrice")
+            a_pct = item.get("postMarketChangePercent")
+            o_p = item.get("overnightMarketPrice")
+            o_pct = item.get("overnightMarketChangePercent")
+
+            tm = now.hour * 100 + now.minute
+
+            if 400 <= tm < 930: # 4:00 AM - 9:30 AM (PREMARKET)
+                if p_p is not None: 
+                    ext_price, ext_pct, ext_type = p_p, p_pct, "PRE"
+                    if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
+                elif o_p is not None: 
+                    ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
+                    if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
+                # Midpoint Fallback for PRE
+                if ext_price is None and bid and ask:
+                    ext_price = (bid + ask) / 2
+                    ext_pct = ((ext_price / price) - 1) * 100 if price else 0
+                    ext_type = "PRE"
             
-            if market_st in ('PRE', 'PREPRE') or (pre_p is not None and market_st == 'OVERNIGHT'):
-                ext_price = pre_p
-                ext_pct   = item.get('preMarketChangePercent')
-                ext_type  = 'PRE'
-            elif market_st == 'OVERNIGHT':
-                # V22.94: High-fidelity BOATS (Blue Ocean ATS) overnight data
-                ext_price = item.get('overnightMarketPrice')
-                ext_pct   = item.get('overnightMarketChangePercent')
-                ext_type  = 'OVN'
-            elif market_st in ('POST', 'POSTPOST', 'CLOSED'):
-                # V23.49: Session-aware prioritization. 
-                # After 12 PM EST, we MUST prioritize POST (After-Hours) data over stale morning PRE data.
-                # Before 12 PM EST (while CLOSED), we prioritize PRE (Premarket) data for the upcoming session.
-                post_p = item.get('postMarketPrice')
-                post_pct = item.get('postMarketChangePercent')
-                pre_p = item.get('preMarketPrice')
-                pre_pct = item.get('preMarketChangePercent')
-                
-                if now.hour >= 12:
-                    if post_p is not None and post_pct is not None:
-                        ext_price, ext_pct, ext_type = post_p, post_pct, 'POST'
-                    elif pre_p is not None and pre_pct is not None:
-                        ext_price, ext_pct, ext_type = pre_p, pre_pct, 'PRE'
-                else:
-                    if pre_p is not None and pre_pct is not None:
-                        ext_price, ext_pct, ext_type = pre_p, pre_pct, 'PRE'
-                    elif post_p is not None and post_pct is not None:
-                        ext_price, ext_pct, ext_type = post_p, post_pct, 'POST'
-                
-                # Check for explicit overnight data even in CLOSED state
-                ovn_p = item.get('overnightMarketPrice')
-                ovn_pct = item.get('overnightMarketChangePercent')
-                if ovn_p is not None and ovn_pct is not None:
-                    # Prefer Overnight over Post-Market if available
-                    ext_price = ovn_p
-                    ext_pct   = ovn_pct
-                    ext_type  = 'OVN'
-                
-                # V22.93 Fallback: Overnight proxy via bid/ask midpoint if BOATS is missing
-                if ext_price is None:
-                    bid = item.get('bid', 0)
-                    ask = item.get('ask', 0)
-                    if bid and ask and bid > 0 and ask > 0:
-                        mid = round((bid + ask) / 2, 2)
-                        spread_pct = ((ask - bid) / mid) * 100
-                        if spread_pct < 5.0 and price and price > 0:
-                            mid_pct = round(((mid - price) / price) * 100, 2)
-                            ext_price = mid
-                            ext_pct   = mid_pct
-                            ext_type  = 'OVN'
+            elif 1600 <= tm < 2000: # 4:00 PM - 8:00 PM (AFTER-HOURS)
+                if a_p is not None: 
+                    ext_price, ext_pct, ext_type = a_p, a_pct, "POST"
+                    if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
+                elif o_p is not None: 
+                    ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
+                    if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
+            
+            elif tm >= 2000 or tm < 400: # 8:00 PM - 4:00 AM (OVERNIGHT)
+                if o_p is not None: 
+                    ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
+                    if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
+                elif a_p is not None: 
+                    ext_price, ext_pct, ext_type = a_p, a_pct, "POST"
+                    if ext_pct is None and price: ext_pct = ((ext_price / price) - 1) * 100
 
-            vol_spike = None
-            if volume and avg_vol and avg_vol > 0:
-                vol_spike = round(volume / avg_vol, 2)
+            # V23.87: Only override to LIVE if we are actually in US regular hours (9:30-16:00)
+            # This prevents Yahoo's stale 'REGULAR' state from killing PRE data at 4:01 AM.
+            if m_state.startswith("REGULAR") and (930 <= tm < 1600):
+                ext_type = "LIVE"
 
+            vol_spike = round(volume / avg_vol, 2) if avg_vol and avg_vol > 0 else 0
+            
             entry = {
-                'price':      round(price,      2) if price      is not None else None,
-                'price_chg':  round(price_chg,  2) if price_chg  is not None else None,
+                'price':      round(price, 2) if price is not None else None,
+                'price_chg':  round(price_chg, 2) if price_chg is not None else None,
                 'change_pct': round(change_pct, 2) if change_pct is not None else None,
-                'volume':     int(volume)           if volume               else None,
-                'avg_volume': int(avg_vol)          if avg_vol              else None,
+                'volume':     int(volume) if volume else None,
+                'avg_volume': int(avg_vol) if avg_vol else None,
                 'vol_spike':  vol_spike,
                 'exchange':   exch_res,
                 'updated':    now.strftime('%Y-%m-%d %H:%M EST'),
@@ -323,14 +310,13 @@ async def async_run_fetch(tickers: list = None, force: bool = False, dry_run: bo
     # Add metadata including top movers
     movers = analyze_movers(all_prices)
     
-    # Use EST (US/Eastern) for display
+    # Use EST (US/Eastern) for display anchored to UTC
+    now_utc = datetime.now(timezone.utc)
     try:
         from zoneinfo import ZoneInfo
-        now_est = datetime.now(ZoneInfo("US/Eastern"))
+        now_est = now_utc.astimezone(ZoneInfo("US/Eastern"))
     except Exception:
-        # Fallback if zoneinfo is weird on some Windows setups
-        from datetime import timedelta
-        now_est = datetime.now(timezone.utc) - timedelta(hours=4) # Rough EST
+        now_est = now_utc - timedelta(hours=4) # Rough EST
         
     refreshed_at_str = now_est.strftime("%Y-%m-%d %I:%M %p EST")
     # Compact format for UI: 2026-04-16 01:49 EST
