@@ -1014,19 +1014,34 @@ class SovereignIntelligenceEngine:
                 for s in sub_movers:
                     pct_val = s.get('change_pct', 0)
                     price_val = s.get('price', 0)
-                    color_movers = "#10b981" if pct_val >= 0 else "#f43f5e"
+                    sym = s['symbol']
+                    p_entry = prices.get(sym, {})
+                    sess = s.get('session', 'LIVE')
+                    
+                    color_movers = bull if pct_val >= 0 else bear
                     pct_str = f"{'+' if pct_val >= 0 else ''}{pct_val:.2f}%"
                     price_str = f"${price_val:,.2f}" if price_val > 0 else ""
-                    badge = self.get_session_tag_html(fs="8px", sess_override=s.get('session', 'LIVE'))
-                    symbol_link = f'<a href="https://finance.yahoo.com/quote/{s["symbol"]}" style="color:#f59e0b; text-decoration:none;">${s["symbol"]}</a>'
                     
-                    # V23.91: Institutional Hardening — Tightened Padding & Alignment
+                    # V24.3: Session-Aware Anchoring & Scaled Typography
+                    anchor = ""
+                    pct_fs = "18px"
+                    tag_fs = "8px"
+                    
+                    if sess in ["PRE", "AH", "OVN", "POST"]:
+                        c_p = p_entry.get("close_price") or p_entry.get("price")
+                        if c_p: anchor = f'<span style="font-size:9px; color:#94a3b8; font-weight:normal;">&nbsp;| C: ${c_p:,.2f}</span>'
+                        pct_fs = "14px" # Smaller per user request
+                        tag_fs = "7px"
+                        
+                    badge = self.get_session_tag_html(fs=tag_fs, sess_override=sess)
+                    symbol_link = f'<a href="https://finance.yahoo.com/quote/{sym}" style="color:#f59e0b; text-decoration:none;">${sym}</a>'
+                    
                     items_html.append(f'''
                         <div style="margin-bottom:2px; text-align:center;">
                             <div class="perf-item" style="display:inline-block; width:280px; background:rgba(255,255,255,0.02); padding:4px 10px; border-radius:3px; font-family:monospace; font-size:18px; text-align:left; vertical-align:top;">
                                 <span style="display:inline-block; min-width:90px; color:#f59e0b; font-weight:bold;">{symbol_link}</span>
                                 <span style="display:inline-block; min-width:80px; color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; margin-right:10px; vertical-align:middle;">{price_str}</span>
-                                <span style="color:{color_movers}; font-weight:900; float:right;">{pct_str}&nbsp;{badge}</span>
+                                <span style="color:{color_movers}; font-weight:900; float:right; font-size:{pct_fs};">{pct_str}&nbsp;{badge}{anchor}</span>
                             </div>
                         </div>''')
 
@@ -1207,7 +1222,7 @@ class SovereignIntelligenceEngine:
                     /* Movers: Larger Font */
                     .perf-item {{ font-size:18px !important; margin-bottom:6px !important; }}
                     .perf-hdr {{ font-size:18px !important; margin-bottom:15px !important; letter-spacing:3px !important; }}
-                    .perf-cell {{ padding:0 20px !important; }}
+                    .perf-cell {{ padding:0 4px !important; }}
                     /* Watchlist: Larger Font */
                     .sector-card {{ padding:14px 18px !important; }}
                     .sec-ticker {{ font-size:16px !important; }}
