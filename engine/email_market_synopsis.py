@@ -720,6 +720,8 @@ class SovereignIntelligenceEngine:
         fresh_pool = [art for art in pruned_news if art.get('link') not in sent_news_history]
         stale_pool = [art for art in pruned_news if art.get('link') in sent_news_history]
         rotated_news = fresh_pool + stale_pool
+        
+        print(f"[INFO] Rotation Engine: {len(fresh_pool)} Fresh articles available, {len(stale_pool)} previously sent.")
 
         macro_intel_rows = ""
         earnings_intel_rows = ""
@@ -748,8 +750,12 @@ class SovereignIntelligenceEngine:
                      
              if added:
                  sent_news_history[res["link"]] = now_ts
+                 status = "FRESH" if res in fresh_pool else "STALE"
+                 print(f"[DEBUG] Selected ({status}) -> [{is_earn and 'EARNINGS' or 'MACRO'}] {res.get('title', 'Unknown')}")
              
-             if row_count >= 15 and earn_count >= 8: break
+             if row_count >= 15 and earn_count >= 8: 
+                 print(f"[INFO] News Quota Met: {row_count} Macro, {earn_count} Earnings.")
+                 break
              
         # Save history for rotation
         try:

@@ -367,6 +367,8 @@ class MacroAggregator:
         has_earnings = any(it.get('is_earnings') for it in all_items)
         limit = 200 # Pass the entire viable pool to ensure we never fall below 15
         
+        log.info(f"[DEBUG] Aggregator: Pulled {len(all_items)} valid raw items before sorting.")
+        
         # Sort by score (descending) and take top limit
         top_ranked = sorted(all_items, key=lambda x: x['score'], reverse=True)[:limit]
         
@@ -379,7 +381,7 @@ class MacroAggregator:
         # V24.2: Finalize Sentiment Velocity Metrics (SVM)
         self._finalize_velocity_metrics()
 
-        log.info(f"[MACRO] Aggregation complete. {len(top_ranked)} high-alpha headlines identified (Earnings Boost: {has_earnings}).")
+        log.info(f"[MACRO] Aggregation complete. {len(top_ranked)} high-alpha headlines passed to NLP (Earnings Boost: {has_earnings}).")
         return top_ranked
 
 if __name__ == "__main__":
