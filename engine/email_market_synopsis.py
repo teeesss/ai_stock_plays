@@ -1133,22 +1133,36 @@ class SovereignIntelligenceEngine:
                     .sector-card {{ padding:10px !important; }}
                     .global-chip {{ display:block !important; width:100% !important; margin-bottom:10px; }}
                     .fg-left, .fg-right {{ width:50% !important; }}
-                    /* MOBILE: 6-column side-by-side Movers */
-                    .pulse-val {{ font-size:28px !important; }}
-                    .pulse-idx-name {{ font-size:18px !important; }}
-                    .pulse-chg {{ font-size:16px !important; }}
-                    .global-chg {{ font-size:24px !important; }}
-                    .global-label {{ font-size:18px !important; }}
+                    
+                    /* Typography Scaling */
+                    .pulse-idx-name {{ font-size:12px !important; margin-bottom:4px !important; }}
+                    .pulse-val {{ font-size:22px !important; font-weight:900 !important; }}
+                    .pulse-chg {{ font-size:14px !important; }}
+                    .global-label {{ font-size:16px !important; }}
+                    .global-chg {{ font-size:20px !important; font-weight:bold !important; }}
                     .section-hdr {{ font-size:24px !important; font-weight:900 !important; letter-spacing:1px !important; }}
+                    
+                    /* Movers Vertical Hardening */
                     .perf-cell {{ display:block !important; width:100% !important; padding:4px 0 !important; text-align:center !important; border-bottom:1px solid rgba(255,255,255,0.05); }}
                     .perf-hdr {{ font-size:14px !important; margin-bottom:12px !important; }}
                     .perf-item {{ font-size:16px !important; padding:8px !important; overflow:visible !important; }}
                     .perf-sym  {{ min-width:70px !important; font-size:16px !important; }}
                     .perf-price {{ min-width:75px !important; margin-right:10px !important; font-size:14px !important; }}
                     .perf-pct   {{ font-size:16px !important; }}
+                    
+                    /* Watchlist Density */
                     .bucket-col {{ display:block !important; width:100% !important; padding:0 !important; }}
                     .sec-ticker-cell {{ width:25% !important; font-size:16px !important; }}
                     .sec-pct-cell    {{ width:75% !important; font-size:10px !important; text-align:right !important; }}
+                }}
+
+                /* Ultra-Narrow Mobile (e.g. 320px) */
+                @media only screen and (max-width:350px) {{
+                    .pulse-val {{ font-size:18px !important; }}
+                    .pulse-idx-name {{ font-size:11px !important; }}
+                    .crypto-val {{ font-size:18px !important; }}
+                    .global-chg {{ font-size:18px !important; }}
+                    .sec-ticker-cell {{ font-size:14px !important; }}
                 }}
 
                 /* Desktop / large screen upsizing */
@@ -1220,15 +1234,9 @@ class SovereignIntelligenceEngine:
                         color:{text_bright} !important;
                         letter-spacing:1px !important;
                     }}
-                    .pulse-idx-name {{ font-size:12px !important; margin-bottom:6px !important; }}
-                    .pulse-sub-label {{ font-size:8px !important; }}
-                    .pulse-val {{ font-size:22px !important; font-weight:900 !important; }}
-                    .pulse-chg {{ font-size:14px !important; }}
                     .crypto-label {{ font-size:14px !important; margin-bottom:4px !important; }}
                     .crypto-val   {{ font-size:20px !important; font-weight:900 !important; }}
                     .crypto-chg   {{ font-size:14px !important; }}
-                    .global-label {{ font-size:16px !important; }}
-                    .global-chg   {{ font-size:20px !important; font-weight:bold !important; }}
                     .perf-item    {{ font-size:16px !important; }}
                     .perf-cell    {{ padding:0 6px !important; }}
                     /* Mobile header reduction by 35% (42px -> 27px) */
