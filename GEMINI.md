@@ -1,25 +1,19 @@
-### 🚀 Active Context: V24.99 (UI Mirror Architecture & Global Data Restoration)
+### 🚀 Active Context: V25.0 (Intelligence Pipeline Ranking & Rotation)
 [Status Synchronized - 2026-04-23]
 
 ### 🧩 Logic & Patterns
-1. **Sovereign Intelligence Engine (V24.99)**:
-   - **Unified Mirror UI**: Sovereign Index Pulse and Crypto tiles now structurally mirror the Global Markets design. Every tile features background-colored percentage chips, integrated point deltas, and live session badges (LIVE/CLOSED/AH).
-   - **JIT Global Data Hardening**: Explicitly force-fetches global indices (`^HSI`, `^N225`, `^GDAXI`, `^FTSE`) during the price-refresh cycle to eliminate zero-value cache misses.
-   - **Desktop Density Scaling (V24.98)**: Applied a global +20% font-size increase for desktop viewports (600px+) across all dashboard components to meet institutional readability requirements.
-   - **100% Dual-Surface Architecture**: Introduced distinct `<div class="desktop-only">` and `<div class="mobile-only">` wrappers in `email_market_synopsis.py` to eliminate responsive CSS constraints. Desktop view maintains horizontal side-by-side components (Indices, Global Markets, Movers), while mobile view strictly enforces vertical stacking and density limits.
-   - **3-Column Mobile Pulse**: Pulse sections (Index/Crypto) maintain 3-column density on mobile via adaptive font scaling (22px values for 375px, 18px for 320px).
-   - **Vertical Movers Stack**: "Session Performance Movers" lock to a single-column vertical stack on mobile to prevent horizontal clipping.
-   - **Watchlist Density**: Adjusted column ratios (25%/75%) and reduced font sizes to ensure single-line data integrity on narrow screens.
-   - **Ticker Flair Integrity**: Implemented positional reconstruction in `inject_price_flair` to prevent word-internal corruption (e.g., 'ON' inside 'semiconductor').
+1. **Sovereign Intelligence Engine (V25.0)**:
+   - **Article Rotation Engine**: Deployed `sent_news_history.json` ledger to track previously sent URLs for 24h. The loop prefers fresh articles, dropping to stale ones ONLY if the quota falls short.
+   - **Massive Rank Sifting**: Increased aggregator pool size to `200` to allow the engine to naturally degrade its threshold down the sorted list to guarantee 15 valid non-earnings items.
+   - **Preserved Scoring Hierarchy**: NLP Engine correctly adds its VADER/Length bonuses directly ON TOP of the `MacroAggregator` score (e.g., +30 for macro, +20 for tech), preserving original ranking priorities.
+   - **Unified Mirror UI**: Sovereign Index Pulse and Crypto tiles structurally mirror the Global Markets design. 
+   - **JIT Global Data Hardening**: Explicitly force-fetches global indices (`^HSI`, `^N225`, `^GDAXI`, `^FTSE`) during the price-refresh cycle.
+   - **Desktop Density Scaling**: Applied a global +20% font-size increase for desktop viewports (600px+).
+   - **100% Dual-Surface Architecture**: Distinct `<div class="desktop-only">` and `<div class="mobile-only">` wrappers.
+   - **3-Column Mobile Pulse**: Pulse sections (Index/Crypto) maintain 3-column density on mobile.
    - **Data-Driven Session Detection**: ALWAYS match session badges (AH, OVN, PRE) to the actual data source, not clock time.
-   - **Session-Aware Delta Rendering**: Performance deltas MUST include the session label (e.g., `(AH +0.7%)`) to provide volatility context.
-   - **24h Ghost Ticker Purge**: Database entries older than 24h must be purged during every save cycle to prevent stale data contamination.
-   - **Sentiment Velocity Monitor (SVM)**: Real-time frequency tracking (4h vs 24h) to identify accelerating market narratives.
-   - **Impersonation Rotation**: Multi-UA (Chrome/Edge/Safari) failover logic in `MacroAggregator` to bypass 401/403 data blocks.
-   - **Institutional Anchor Pricing**: Standardized "C: $price" (previous close) injection for all non-standard session quotes.
-   - **Dynamic Earnings Expansion**: Automatically increases intelligence list to 20 items and isolates earnings into high-visibility sections.
+   - **24h Ghost Ticker Purge**: Database entries older than 24h must be purged during every save cycle.
    - **Signal Decay Engine**: 5% hourly linear decay applied to macro catalysts.
-   - **Stealth Fetching Protocol**: `curl_cffi` (Chrome146) + randomized jitter (3.3s-10s) + sequential domain queuing.
 
 2. **Dependency Guardian (V23.89)**:
    - **Auto-Restart Protocol**: Uses `os.execv` to automatically refresh the Python process after resolving missing dependencies.
