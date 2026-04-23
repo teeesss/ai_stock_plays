@@ -750,6 +750,7 @@ class SovereignIntelligenceEngine:
                  d_clean = d_clean.replace("Financial Times", "FT")
                  d_clean = d_clean.replace("The Economic Times", "EconTimes")
                  d_clean = d_clean.replace("The Motley Fool", "MotleyFool")
+                 d_clean = d_clean.replace("Barron's", "Barrons")
                  src_label = f"GOOG/{d_clean}"
              else:
                  src_label = display_src.replace("CNBC ", "").strip()

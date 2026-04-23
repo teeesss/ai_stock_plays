@@ -60,8 +60,11 @@ class MacroAggregator:
             "Google News Markets": {"url": "https://news.google.com/rss/search?q=stock+market+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 95},
             "Google News AI Tech": {"url": "https://news.google.com/rss/search?q=AI+semiconductor+nvidia+earnings+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 105},
             "Google News Finance": {"url": "https://news.google.com/rss/search?q=fed+rate+inflation+macro+economy+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 85},
-            # V25.6: Stealth Reuters Bypass via Google News (site search)
+            # V25.6: Premium Stealth Bypasses via Google News
             "Google News Reuters": {"url": "https://news.google.com/rss/search?q=site:reuters.com+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 145},
+            "Google News Bloomberg": {"url": "https://news.google.com/rss/search?q=site:bloomberg.com+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 140},
+            "Google News FT": {"url": "https://news.google.com/rss/search?q=site:ft.com+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 135},
+            "Google News Barrons": {"url": "https://news.google.com/rss/search?q=site:barrons.com+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 130},
         }
         # V25.4: Max articles any single outlet (by root domain) can contribute.
         # Scoring still determines rank — this just prevents a single firehose outlet from
@@ -427,6 +430,8 @@ class MacroAggregator:
             if 'wsj' in clean: return 'wsj'
             if 'reuters' in clean: return 'reuters'
             if 'bloomberg' in clean: return 'bloomberg'
+            if 'financialtimes' in clean or 'ft' in clean: return 'ft'
+            if 'barrons' in clean: return 'barrons'
             if 'investorsbusiness' in clean or 'ibd' in clean: return 'ibd'
             if 'marketwatch' in clean: return 'marketwatch'
             if 'seekingalpha' in clean: return 'seekingalpha'
