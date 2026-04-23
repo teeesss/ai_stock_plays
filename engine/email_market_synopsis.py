@@ -649,8 +649,8 @@ class SovereignIntelligenceEngine:
                 # Reconstruction to prevent internal word corruption (e.g. "semiconductor")
                 # We find the exact position of the stripped part to preserve surrounding punctuation
                 start_idx = word.find(stripped)
-                prefix = word[:start_idx]
-                suffix = word[start_idx + len(stripped):]
+                prefix = word[:start_idx].replace("'", "").replace('"', "").replace("`", "")
+                suffix = word[start_idx + len(stripped):].replace("'", "").replace('"', "").replace("`", "")
                 
                 flair = f'{prefix}<strong>{stripped}</strong>&nbsp;(<span style="color:{color}; font-weight:bold;">${price:,.2f}&nbsp;{sign}{pct:.1f}%{sess_tag}{anchor}</span>){suffix}'
                 words[i] = flair
@@ -669,7 +669,7 @@ class SovereignIntelligenceEngine:
         print(f"[INFO] NLP Processor: Analyzing {len(macro_headlines)} headlines for institutional relevance...")
         # Real-world NLP Intelligence Synthesis for Executive Summary
         # V24.9: mandatory 15 articles in list, increase ranking depth
-        best_headlines = nlp.rank_news_relevance(macro_headlines, top_n=25)
+        best_headlines = nlp.rank_news_relevance(macro_headlines, top_n=45)
         
         if best_headlines:
             top_t = best_headlines[0].get('title', 'Unknown')
@@ -702,7 +702,7 @@ class SovereignIntelligenceEngine:
                     used_links.add(lead_url)
 
         # V24.9: Increased capacity to ensure 15+ articles
-        pruned_news = [art for art in best_headlines if art.get('link') not in used_links][:25]
+        pruned_news = [art for art in best_headlines if art.get('link') not in used_links][:45]
 
         macro_intel_rows = ""
         earnings_intel_rows = ""
@@ -715,16 +715,18 @@ class SovereignIntelligenceEngine:
              # V24.1: Separate Earnings Area Logic
              is_earn = res.get('is_earnings') or "EARNINGS" in res.get('raw_title', '').upper() or res.get('source') == "CNBC Earnings"
              
-             if is_earn and earn_count < 8:
-                 row_color = gold
-                 earnings_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color}; font-weight:600;"><span style="font-size:14px;">📊</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
-                 earn_count += 1
+             if is_earn:
+                 if earn_count < 8:
+                     row_color = gold
+                     earnings_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color}; font-weight:600;"><span style="font-size:14px;">📊</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
+                     earn_count += 1
              else:
-                 row_color = "#60a5fa" if row_count % 2 == 0 else "#4ade80" 
-                 macro_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
-                 row_count += 1
+                 if row_count < 15:
+                     row_color = "#60a5fa" if row_count % 2 == 0 else "#4ade80" 
+                     macro_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
+                     row_count += 1
              
-             if (row_count + earn_count) >= 25: break
+             if row_count >= 15 and earn_count >= 8: break
              
         # V24.9: Reordered - Earnings Intelligence comes AFTER general news URLs
         if earnings_intel_rows:

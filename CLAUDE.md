@@ -1,8 +1,11 @@
-### 🚀 Active Context: V24.98 (100% Desktop/Mobile View Separation)
+### 🚀 Active Context: V24.99 (UI Mirror Architecture & Global Data Restoration)
 [Status Synchronized - 2026-04-23]
 
 ### 🧩 Logic & Patterns
-1. **Sovereign Intelligence Engine (V24.98)**:
+1. **Sovereign Intelligence Engine (V24.99)**:
+   - **Unified Mirror UI**: Sovereign Index Pulse and Crypto tiles now structurally mirror the Global Markets design. Every tile features background-colored percentage chips, integrated point deltas, and live session badges (LIVE/CLOSED/AH).
+   - **JIT Global Data Hardening**: Explicitly force-fetches global indices (`^HSI`, `^N225`, `^GDAXI`, `^FTSE`) during the price-refresh cycle to eliminate zero-value cache misses.
+   - **Desktop Density Scaling (V24.98)**: Applied a global +20% font-size increase for desktop viewports (600px+) across all dashboard components to meet institutional readability requirements.
    - **100% Dual-Surface Architecture**: Introduced distinct `<div class="desktop-only">` and `<div class="mobile-only">` wrappers in `email_market_synopsis.py` to eliminate responsive CSS constraints. Desktop view maintains horizontal side-by-side components (Indices, Global Markets, Movers), while mobile view strictly enforces vertical stacking and density limits.
    - **3-Column Mobile Pulse**: Pulse sections (Index/Crypto) maintain 3-column density on mobile via adaptive font scaling (22px values for 375px, 18px for 320px).
    - **Vertical Movers Stack**: "Session Performance Movers" lock to a single-column vertical stack on mobile to prevent horizontal clipping.

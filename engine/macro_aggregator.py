@@ -271,6 +271,8 @@ class MacroAggregator:
                                 
                                 summary = entry.get('summary', entry.get('description', ''))
                                 summary = re.sub(r'<[^>]+>', '', summary).strip()
+                                summary = re.sub(r'(?i)[T]?he post .*? appeared first on .*?(?:\.|$)', '', summary).strip()
+                                summary = re.sub(r'(?i)Read more on Yahoo Finance.*', '', summary).strip()
                                 
                                 # V24.2: Signal Decay Engine (5% per hour after 1h, floor at 50%)
                                 hours_old = (now_ts - entry_ts) / 3600
@@ -363,7 +365,7 @@ class MacroAggregator:
 
         # V24.1: Dynamic List Extension for Earnings News
         has_earnings = any(it.get('is_earnings') for it in all_items)
-        limit = 20 if has_earnings else 15
+        limit = 45 # Give plenty of buffer to ensure 15 non-earnings and some earnings
         
         # Sort by score (descending) and take top limit
         top_ranked = sorted(all_items, key=lambda x: x['score'], reverse=True)[:limit]

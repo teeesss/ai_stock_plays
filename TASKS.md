@@ -1,5 +1,8 @@
-### 🚀 Current Status: V24.7 — Data-Driven Session Hardening (Locked)
-1. - [x] **Data-Driven Session Labeling (V24.7)**: Session badges (AH, OVN, PRE) now match actual trade source data, not just clock time.
+### 🚀 Current Status: V24.99 — Market Synopsis UI Hardening & Global Data Restoration (Locked)
+1. - [x] **Global Markets Data Restoration (V24.99)**: Restored HSI, NIKKEI, DAX, FTSE pricing by hardening JIT fetch pipeline.
+2. - [x] **UI Mirror Architecture (V24.99)**: Unified Index Pulse and Crypto tiles with Global Markets visual design (colored boxes + session badges).
+3. - [x] **Desktop Density Upscaling (V24.98)**: Implemented +20% font-size increase for all high-res desktop dashboard metrics.
+4. - [x] **Mobile-Fluid Architecture (V24.97)**: Fully optimized for 320px-600px mobile spectrum with adaptive scaling.
 2. - [x] **Overnight Delta Sync (V24.7)**: Performance movers now show precise session deltas (e.g., "+0.7% AH") anchored to previous close.
 3. - [x] **Ghost Ticker Purge (V24.6)**: Implemented 24h TTL database purge to eliminate stale movers (PEGA/CNQ confirmed purged).
 4. - [x] **JIT Narrative Synthesis (V23.95)**: Automated scraping of Edward Jones, Briefing.com, and CNBC Live for high-fidelity executive summaries.
@@ -10,13 +13,13 @@
 9. - Date: 2026-04-23
 
 # Project Status — April 23, 2026
-## 🚀 Version: V24.7 (Data-Driven Session Hardening)
+## 🚀 Version: V24.99 (Market Synopsis UI Hardening & Global Data Restoration)
 
 Status: **PRODUCTION DEPLOYED — HARDENED**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V24.7 (Data-Driven Session) / V24.2 (Hardened Intel) / V23.48 (Visual Supercycle)
-- **Critical Progress**: Eliminated session labeling artifacts. Badges now accurately reflect the source of trading data (AH/OVN/PRE). Implemented overnight delta calculations for performance lists. Purged 24h+ stale tickers from database to prevent ghost movers.
+- **Current Tier**: V24.99 (UI Hardening & Global Data)
+- **Critical Progress**: Restored missing global index data and unified the dashboard visual language. Sovereign Pulse tiles now structurally mirror the high-density Global Markets design with integrated session badges and point deltas.
 - **Next Milestone**: Sentiment-weighted multi-source deduplication.
 - Date: 2026-04-23
 
