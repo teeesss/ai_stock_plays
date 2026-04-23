@@ -60,6 +60,8 @@ class MacroAggregator:
             "Google News Markets": {"url": "https://news.google.com/rss/search?q=stock+market+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 95},
             "Google News AI Tech": {"url": "https://news.google.com/rss/search?q=AI+semiconductor+nvidia+earnings+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 105},
             "Google News Finance": {"url": "https://news.google.com/rss/search?q=fed+rate+inflation+macro+economy+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 85},
+            # V25.6: Stealth Reuters Bypass via Google News (site search)
+            "Google News Reuters": {"url": "https://news.google.com/rss/search?q=site:reuters.com+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 145},
         }
         # V25.4: Max articles any single outlet (by root domain) can contribute.
         # Scoring still determines rank — this just prevents a single firehose outlet from
@@ -414,11 +416,10 @@ class MacroAggregator:
         import urllib.parse as _up
         def _src_bucket(item):
             ds = item.get('display_source', item.get('source', 'unknown'))
-            # V25.5: If it looks like a URL, extract netloc
+            # V25.6: Enhanced Bucketing
             if ds.startswith('http'):
                 return _up.urlparse(ds).netloc.lower().replace('www.', '')
-            # If it's a known feed name like "CNBC Top News" -> "cnbc"
-            # If it's a publisher from Google News like "The Fly" -> "thefly"
+            
             clean = re.sub(r'[^a-zA-Z0-9]', '', ds).lower()
             if 'cnbc' in clean: return 'cnbc'
             if 'google' in clean: return 'google'
@@ -426,6 +427,12 @@ class MacroAggregator:
             if 'wsj' in clean: return 'wsj'
             if 'reuters' in clean: return 'reuters'
             if 'bloomberg' in clean: return 'bloomberg'
+            if 'investorsbusiness' in clean or 'ibd' in clean: return 'ibd'
+            if 'marketwatch' in clean: return 'marketwatch'
+            if 'seekingalpha' in clean: return 'seekingalpha'
+            if 'oilprice' in clean: return 'oilprice'
+            if 'zerohedge' in clean: return 'zerohedge'
+            if 'msn' in clean: return 'msn'
             return clean[:10]
         
         all_sorted = sorted(all_items, key=lambda x: x['score'], reverse=True)
