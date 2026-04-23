@@ -931,10 +931,12 @@ class SovereignIntelligenceEngine:
                 chg_bg = 'rgba(16,185,129,0.08)' if chg >= 0 else 'rgba(244,63,94,0.08)'
                 
                 w = width_list[i] if i < len(width_list) else width_list[0]
+                val_str = f"{val:,.0f}" if val else "0"
                 inner = (
                     f'<div style="background:{bg_accent}; border-radius:5px; padding:12px 10px; text-align:center;">'
                     f'<div class="global-badge" style="margin-bottom:4px;">{badge}</div>'
                     f'<div class="global-label" style="font-family:sans-serif; color:{text_dim}; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">{name}</div>'
+                    f'<div class="global-val" style="color:{text_bright}; font-size:16px; font-weight:bold; margin-bottom:2px;">{val_str}</div>'
                     f'<div class="global-chg" style="background:{chg_bg}; border-radius:3px; padding:4px 0; font-family:monospace; color:{color}; font-size:15px; font-weight:bold;">'
                     f'{arrow}{abs(chg):.1f}%'
                     f'<div style="font-size:9px; opacity:0.8; margin-top:2px;">{get_diff_str(p.get("price",0), chg, color, fs="9px")}</div>'
@@ -1160,20 +1162,21 @@ class SovereignIntelligenceEngine:
                     .main-table {{ max-width:850px !important; }}
                     .section-hdr {{ font-size:16px !important; font-weight:900 !important; letter-spacing:3px !important; color:{text_bright} !important; }}
                     .macro-hdr {{ font-size:18px !important; font-weight:900 !important; letter-spacing:2px !important; }}
-                    .global-label {{ font-size:16px !important; letter-spacing:1.5px !important; }}
-                    .global-chg   {{ font-size:24px !important; padding:4px 0 !important; }}
-                    .global-badge {{ font-size:12px !important; }}
-                    .pulse-idx-name {{ font-size:16px !important; letter-spacing:1.5px !important; margin-bottom:15px !important; }}
-                    .pulse-sub-label {{ font-size:10px !important; }}
-                    .pulse-val {{ font-size:24px !important; }}
-                    .pulse-chg {{ font-size:14px !important; }}
-                    .pulse-chg-pill {{ font-size:14px !important; padding:4px 8px !important; }}
-                    .pulse-diff {{ font-size:12px !important; margin-top:2px !important; }}
-                    .crypto-label {{ font-size:13px !important; margin-bottom:6px !important; }}
-                    .crypto-val   {{ font-size:24px !important; }}
-                    .crypto-chg   {{ font-size:14px !important; }}
-                    .fg-val       {{ font-size:32px !important; }}
-                    .fg-label     {{ font-size:13px !important; }}
+                    .global-label {{ font-size:19px !important; letter-spacing:1.5px !important; margin-bottom:8px !important; }}
+                    .global-val   {{ font-size:22px !important; }}
+                    .global-chg   {{ font-size:29px !important; padding:4px 0 !important; }}
+                    .global-badge {{ font-size:14px !important; }}
+                    .pulse-idx-name {{ font-size:19px !important; letter-spacing:1.5px !important; margin-bottom:15px !important; }}
+                    .pulse-sub-label {{ font-size:12px !important; }}
+                    .pulse-val {{ font-size:29px !important; }}
+                    .pulse-chg {{ font-size:17px !important; }}
+                    .pulse-chg-pill {{ font-size:17px !important; padding:4px 8px !important; }}
+                    .pulse-diff {{ font-size:14px !important; margin-top:2px !important; }}
+                    .crypto-label {{ font-size:16px !important; margin-bottom:6px !important; }}
+                    .crypto-val   {{ font-size:29px !important; }}
+                    .crypto-chg   {{ font-size:17px !important; }}
+                    .fg-val       {{ font-size:38px !important; }}
+                    .fg-label     {{ font-size:16px !important; }}
                     .sec-ticker {{ font-size:18px !important; }}
                     .sec-name   {{ font-size:16px !important; }}
                     .sec-pct    {{ font-size:18px !important; }}
