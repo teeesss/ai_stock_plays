@@ -1,3 +1,24 @@
+# V26.0: GIGACPO SOVEREIGN INTELLIGENCE ENGINE
+import os
+import json
+import datetime
+import smtplib
+import re
+import sys
+import time
+import argparse
+import asyncio
+import logging
+import uuid
+import calendar
+import math
+import hashlib
+from pathlib import Path
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from dotenv import load_dotenv
+from curl_cffi import requests as cffi_requests
+
 # V23.59: Auto-Dependency Guardian
 try:
     try:
@@ -5,55 +26,24 @@ try:
     except ImportError:
         from engine.dependency_mgr import ensure_dependencies
     ensure_dependencies()
-except ImportError:
+except:
     pass
 
-import os
-import json
-import datetime
-import smtplib
-import re
-import requests
-import sys
-import time
-import argparse
-import asyncio
-from pathlib import Path
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from dotenv import load_dotenv
-import uuid
-import asyncio
-import random
-import re
-import datetime
-import calendar
-import time
-import math
-from pathlib import Path
-from curl_cffi import requests
-
-# V23.59 Intelligence Foundation
+# Engine Foundations
 try:
-    from dependency_mgr import ensure_dependencies
     from live_prices import async_run_fetch
     from live_blog_scraper import LiveBlogScraper
     from local_nlp import LocalIntelligenceSynthesizer
-    from macro_aggregator import MacroAggregator # V23.60 Aggregator
+    from macro_aggregator import MacroAggregator
 except ImportError:
-    from engine.dependency_mgr import ensure_dependencies
     from engine.live_prices import async_run_fetch
     from engine.live_blog_scraper import LiveBlogScraper
     from engine.local_nlp import LocalIntelligenceSynthesizer
     from engine.macro_aggregator import MacroAggregator
     from engine.email_spark_fetcher import run_spark_fetch
-from curl_cffi import requests as cffi_requests
-import logging
 
-# V23.47: Logger initialization
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 log = logging.getLogger(__name__)
-
 load_dotenv()
 
 class SovereignIntelligenceEngine:
@@ -481,32 +471,18 @@ class SovereignIntelligenceEngine:
 
         return price, pct, effective_sess
 
-    def get_session_tag_html(self, fs="9px", color=None, sess_override=None):
-        sess = sess_override if sess_override is not None else self.get_market_session()
+    def get_session_tag_html(self, fs="8px", sess_override=None, color=None):
+        sess = sess_override if sess_override else ""
         if not sess: return ""
         
-        # V23.55: User-defined session colors
-        # PRE = Orange, PM = Blue, AH = Red, OVN = Amber, LIVE = Green
-        bg = "rgba(148,163,184,0.1)" # Default dim
-        text_color = color if color else "#94a3b8"
+        # Standardize
+        if sess == "PM": sess = "PRE"
+        if sess == "POST": sess = "AH"
         
-        if sess == "PRE" or sess == "PM":
-            text_color = "#f59e0b" # Orange
-            bg = "rgba(245,158,11,0.1)"
-            if sess == "PM": # Standardize
-                sess = "PRE"
-        elif sess == "AH" or sess == "POST":
-            sess = "AH" # Standardize
-            text_color = "#ef4444" # Red
-            bg = "rgba(239,68,68,0.1)"
-        elif sess == "OVN":
-            text_color = "#f59e0b" # Amber
-            bg = "rgba(245,158,11,0.1)"
-        elif sess == "LIVE": 
-            bg = "rgba(16,185,129,0.12)" # Green
-            return f'<span class="sess-badge sess-live" style="font-size:{fs}; color:#10b981; background:{bg}; padding:1px 3px; border-radius:3px; font-weight:bold; margin-left:4px; vertical-align:baseline; border:1px solid rgba(16,185,129,0.2);">L<span style="color:#10b981;">⚡</span></span>'
+        if sess == "LIVE": 
+            return f'<span class="sess-badge sess-live" style="font-size:{fs};">L<span style="color:#10b981;">⚡</span></span>'
         
-        return f'<span class="sess-badge sess-{sess.lower()}" style="font-size:{fs}; color:{text_color}; background:{bg}; padding:1px 3px; border-radius:3px; font-weight:bold; margin-left:4px; vertical-align:middle; border:1px solid rgba(255,255,255,0.05);">{sess}</span>'
+        return f'<span class="sess-badge sess-{sess.lower()}" style="font-size:{fs};">{sess}</span>'
 
     def get_context_icon(self, title, used_icons=None):
         """V23.60: Context-aware icon selection with deep rotation and de-duplication."""
@@ -760,19 +736,15 @@ class SovereignIntelligenceEngine:
              if len(src_label) > 22: src_label = src_label[:22]
              src_label = src_label.upper().replace(" ", "")
              
-             # Orange monospace badge matching the EXECUTIVE SUMMARY header font aesthetic
-             SRC_BADGE = (f'&nbsp;<span style="font-family:\'Courier New\',Courier,monospace; '
-                          f'color:#f97316; font-size:11px; font-weight:900; '
-                          f'letter-spacing:1px; text-transform:uppercase;">'
-                          f'[{src_label}]</span>')
+             # monospaced badge
+             SRC_BADGE = f'&nbsp;<span class="src-badge">[{src_label}]</span>'
              if is_earn:
                  if earn_count < 8:
                      # V25.7: Institutional Blue Glassmorphism for Earnings
-                     row_color = "#38bdf8" if earn_count % 2 == 0 else "#7dd3fc"
-                     row_bg = "rgba(56,189,248,0.05)" if earn_count % 2 == 0 else "rgba(125,211,252,0.08)"
-                     earnings_intel_rows += (f'<div style="padding:6px 8px; margin-bottom:4px; border-radius:6px; background:{row_bg}; border:1px solid rgba(56,189,248,0.1); color:{row_color}; font-weight:600;">'
+                     row_class = "earn-row-even" if earn_count % 2 == 0 else "earn-row-odd"
+                     earnings_intel_rows += (f'<div class="{row_class}">'
                                              f'<span style="font-size:14px;">📊</span>&nbsp;'
-                                             f'<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">'
+                                             f'<a href="{res["link"]}" class="news-link">'
                                              f'{f_title}</a>{SRC_BADGE}</div>')
                      earn_count += 1
                      added = True
@@ -797,10 +769,10 @@ class SovereignIntelligenceEngine:
                      for kw in matched_kws:
                          topic_counts[kw] += 1
                          
-                     row_color = "#60a5fa" if row_count % 2 == 0 else "#4ade80"
-                     macro_intel_rows += (f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color};">'
+                     row_class = "news-row-even" if row_count % 2 == 0 else "news-row-odd"
+                     macro_intel_rows += (f'<div class="{row_class}">'
                                          f'<span style="font-size:14px;">&bull;</span>&nbsp;'
-                                         f'<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">'
+                                         f'<a href="{res["link"]}" class="news-link">'
                                          f'{f_title}</a>{SRC_BADGE}</div>')
                      row_count += 1
                      added = True
@@ -826,7 +798,7 @@ class SovereignIntelligenceEngine:
              
         # V24.9: Reordered - Earnings Intelligence comes AFTER general news URLs
         if earnings_intel_rows:
-            earnings_area = f'<div style="margin-top:20px; margin-bottom:20px;"><div style="color:#38bdf8; font-size:18px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">🚨 Earnings Intelligence</div>{earnings_intel_rows}</div>'
+            earnings_area = f'<div style="margin-top:20px; margin-bottom:20px;"><div class="earn-hdr">🚨 Earnings Intelligence</div>{earnings_intel_rows}</div>'
             macro_intel_rows = macro_intel_rows + earnings_area
 
         # Watchlist Intel Logic (V23.55)
@@ -971,26 +943,18 @@ class SovereignIntelligenceEngine:
             chg_bg = 'rgba(16,185,129,0.08)' if pct >= 0 else 'rgba(244,63,94,0.08)'
             arrow = '▲' if pct >= 0 else '▼'
             
-            if sess == "LIVE":
-                badge_html = f'<span style="color:{bull}; font-size:10px; font-weight:bold;">● LIVE</span>'
-            elif sess in ("CLOSE", "CLOSED"):
-                badge_html = f'<span style="color:{bear}; font-size:10px; font-weight:bold;">● CLOSED</span>'
-            elif sess == "":
-                badge_html = ""
-            else:
-                badge_html = f'<span style="color:#f59e0b; font-size:10px; font-weight:bold;">● {sess}</span>'
-                
+            badge_html = self.get_session_tag_html(fs="10px", sess_override=sess)
             badge_div = f'<div class="pulse-badge" style="margin-bottom:4px;">{badge_html}</div>' if badge_html else ""
             
             return (
                 f'<td width="{width}" style="padding:3px; vertical-align:top;">'
-                f'<div style="background:{bg_deep}; border-radius:5px; padding:12px 10px; text-align:center;">'
+                f'<div class="pulse-tile">'
                 f'{badge_div}'
-                f'<div class="pulse-idx-name" style="font-family:sans-serif; color:{text_dim}; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; {tag_style}">{name}</div>'
-                f'<div class="pulse-val" style="color:{text_bright}; font-size:16px; font-weight:bold; margin-bottom:2px;">{val_str}</div>'
-                f'<div class="pulse-chg" style="background:{chg_bg}; border-radius:3px; padding:4px 0; font-family:monospace; color:{color}; font-size:15px; font-weight:bold;">'
+                f'<div class="pulse-idx-name" style="{tag_style}">{name}</div>'
+                f'<div class="pulse-val">{val_str}</div>'
+                f'<div class="pulse-chg-box" style="background:{chg_bg}; color:{color};">'
                 f'{arrow}{abs(pct):.1f}%'
-                f'<div style="font-size:9px; opacity:0.8; margin-top:2px;">{get_diff_str(val, pct, color, fs="9px")}</div>'
+                f'{get_diff_str(val, pct, color, fs="9px")}'
                 f'</div></div></td>'
             )
 
@@ -1012,7 +976,7 @@ class SovereignIntelligenceEngine:
                 if not is_live_main and not is_futures_active:
                     c_data = prices.get(index['cash'], {})
                     c_val, c_chg, _ = self.get_session_data(c_data, index['cash'])
-                    c_sess = "CLOSE"
+                    c_sess = "CLOSED"
                 c_color = bull if (c_chg or 0) >= 0 else bear
                 label = "LIVE" if is_live_main else c_sess
                 tiles += render_tile(target_ticker, index['name'], c_val or 0, c_chg or 0, label, c_color, width=width)
@@ -1051,7 +1015,7 @@ class SovereignIntelligenceEngine:
                     (ticker in ('^HSI', '^N225') and (hr >= 20 or hr <= 4)) or
                     (ticker in ('^GDAXI', '^FTSE') and (3 <= hr <= 11))
                 )
-                badge = f'<span style="color:{bull}; font-size:10px; font-weight:bold;">● LIVE</span>' if is_open else f'<span style="color:{bear}; font-size:10px; font-weight:bold;">● CLOSED</span>'
+                badge = self.get_session_tag_html(fs="10px", sess_override="LIVE" if is_open else "CLOSED")
                 chg_bg = 'rgba(16,185,129,0.08)' if chg >= 0 else 'rgba(244,63,94,0.08)'
                 
                 w = width_list[i] if i < len(width_list) else width_list[0]
@@ -1127,12 +1091,12 @@ class SovereignIntelligenceEngine:
                 symbol_link = f'<a href="https://finance.yahoo.com/quote/{sym}" style="color:#f59e0b; text-decoration:none;">${sym}</a>'
                 
                 items_html.append(f'''
-                    <div style="margin-bottom:4px; text-align:center; width:100%;">
-                        <div class="perf-item" style="display:block; width:100%; box-sizing:border-box; background:rgba(255,255,255,0.02); padding:6px 12px; border-radius:3px; font-family:monospace; font-size:16px; text-align:left; overflow:hidden;">
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-                                <td style="width:30%; color:#f59e0b; font-weight:bold; vertical-align:middle;">{symbol_link}</td>
-                                <td style="width:30%; color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; padding-right:10px; vertical-align:middle;">{price_str}</td>
-                                <td style="width:40%; color:{color_movers}; font-weight:900; font-size:16px; vertical-align:middle; text-align:right;">{pct_str}&nbsp;{badge}{ovn_delta_html}</td>
+                    <div class="perf-item-wrap">
+                        <div class="perf-item">
+                            <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                                <td width="30%" class="perf-sym">{symbol_link}</td>
+                                <td width="30%" class="perf-price">{price_str}</td>
+                                <td width="40%" class="perf-pct" style="color:{color_movers};">{pct_str}&nbsp;{badge}{ovn_delta_html}</td>
                             </tr></table>
                         </div>
                     </div>''')
@@ -1209,12 +1173,12 @@ class SovereignIntelligenceEngine:
                 display_name = t['name'] if t['name'].upper() != sym.upper() else self.ticker_name_map.get(sym, "")
 
                 rows.append(f"""
-                    <div style="background:rgba(255,255,255,0.03); border-left:3px solid {clr}; padding:5px 12px; border-radius:4px; margin-bottom:4px;">
+                    <div class="bucket-item" style="border-left:3px solid {clr};">
                         <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                            <td class="sec-ticker-cell" style="font-family:monospace; font-weight:bold; font-size:18px;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none;">${sym}</a></td>
-                            <td class="sec-pct-cell" style="text-align:right; font-family:monospace;">{pct_display}</td>
+                            <td class="sec-ticker-cell"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none;">${sym}</a></td>
+                            <td class="sec-pct-cell">{pct_display}</td>
                         </tr></table>
-                        {f'<div style="font-size:12px; color:#8f9bb3; margin-top:6px; line-height:1.6; overflow:hidden; max-height:80px;">{flaired_notes}</div>' if flaired_notes else ''}
+                        {f'<div class="bucket-notes">{flaired_notes}</div>' if flaired_notes else ''}
                     </div>
                 """)
             
@@ -1247,60 +1211,73 @@ class SovereignIntelligenceEngine:
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
-                body {{ margin:0; padding:0; background-color:{bg_main}; }}
+                /* Base & Layout */
+                body {{ margin:0; padding:0; background-color:{bg_main}; font-family:sans-serif; }}
+                table {{ border-collapse:collapse; border-spacing:0; border:0; }}
                 .wrap {{ background-color:{bg_main}; padding:20px 16px; }}
                 .main-table {{ max-width:600px; width:100%; margin:0 auto; }}
+                
+                /* Typography & Headers */
+                .section-hdr {{ font-size:20px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-top:20px; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border}; }}
+                .news-link {{ text-decoration:none !important; font-size:14px; font-weight:600; }}
+                .src-badge {{ font-family:'Courier New',Courier,monospace; color:#f97316; font-size:11px; font-weight:900; letter-spacing:1px; text-transform:uppercase; }}
+                .earn-hdr {{ color:#38bdf8; font-size:18px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }}
+
+                /* Pulse Grid Components */
+                .pulse-tile {{ background:{bg_deep}; border-radius:5px; padding:12px 10px; text-align:center; }}
+                .pulse-idx-name {{ color:{text_dim}; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }}
+                .pulse-val {{ color:{text_bright}; font-size:16px; font-weight:bold; margin-bottom:2px; }}
+                .pulse-chg-box {{ border-radius:3px; padding:4px 0; font-family:monospace; font-size:15px; font-weight:bold; }}
+                .pulse-diff {{ font-size:9px; opacity:0.8; font-weight:bold; margin-top:2px; }}
+
+                /* Performance Movers */
+                .perf-item-wrap {{ margin-bottom:4px; text-align:center; width:100%; }}
+                .perf-item {{ display:block; width:100%; box-sizing:border-box; background:rgba(255,255,255,0.02); padding:6px 12px; border-radius:3px; font-family:monospace; font-size:16px; text-align:left; overflow:hidden; }}
+                .perf-sym a {{ color:#f59e0b; text-decoration:none; font-weight:bold; }}
+                .perf-price {{ color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; padding-right:10px; vertical-align:middle; }}
+                .perf-pct {{ font-weight:900; font-size:16px; vertical-align:middle; text-align:right; }}
+
+                /* Watchlist & Intelligence */
+                .bucket-item {{ background:rgba(255,255,255,0.03); padding:5px 12px; border-radius:4px; margin-bottom:4px; }}
+                .sec-ticker-cell {{ font-family:monospace; font-weight:bold; font-size:18px; }}
+                .sec-pct-cell {{ text-align:right; font-family:monospace; }}
+                .bucket-notes {{ font-size:12px; color:#8f9bb3; margin-top:6px; line-height:1.6; overflow:hidden; max-height:80px; }}
+
+                /* News Alternates */
+                .news-row-even, .news-row-odd {{ padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:#60a5fa; }}
+                .news-row-odd {{ color:#4ade80; }}
+                .earn-row-even, .earn-row-odd {{ padding:6px 8px; margin-bottom:4px; border-radius:6px; background:rgba(56,189,248,0.05); border:1px solid rgba(56,189,248,0.1); color:#38bdf8; font-weight:600; }}
+                .earn-row-odd {{ background:rgba(125,211,252,0.08); color:#7dd3fc; }}
+
+                /* Session Badges */
+                .sess-badge {{ padding:1px 3px; border-radius:3px; font-weight:bold; margin-left:4px; border:1px solid rgba(255,255,255,0.05); vertical-align:middle; display:inline-block; }}
+                .sess-live  {{ color:#10b981; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.2); vertical-align:baseline; }}
+                .sess-pre, .sess-ovn {{ color:#f59e0b; background:rgba(245,158,11,0.1); }}
+                .sess-ah    {{ color:#ef4444; background:rgba(239,68,68,0.1); }}
+                .sess-closed {{ color:#94a3b8; background:rgba(148,163,184,0.1); }}
 
                 /* Mobile overrides */
                 @media only screen and (max-width:599px) {{
                     .wrap {{ padding:8px !important; }}
-                    
-                    /* Global Markets grid wrapper */
                     .global-col {{ display:inline-block !important; width:50% !important; box-sizing:border-box !important; margin:0 !important; }}
-                    
-                    /* Movers vertical stack */
                     .mover-col {{ display:block !important; width:100% !important; padding-left:0 !important; padding-right:0 !important; padding-top:15px !important; }}
-                    
-                    /* Typography Scaling */
                     .pulse-idx-name {{ font-size:12px !important; margin-bottom:4px !important; }}
                     .pulse-val {{ font-size:22px !important; font-weight:900 !important; }}
-                    .pulse-chg {{ font-size:14px !important; }}
-                    .global-label {{ font-size:16px !important; }}
-                    .global-chg {{ font-size:20px !important; font-weight:bold !important; }}
+                    .pulse-chg-box {{ font-size:14px !important; }}
                     .section-hdr {{ font-size:24px !important; font-weight:900 !important; letter-spacing:1px !important; }}
-                    
-                    /* Movers Vertical Hardening */
-                    .perf-cell {{ display:block !important; width:100% !important; padding:4px 0 !important; text-align:center !important; border-bottom:1px solid rgba(255,255,255,0.05); }}
-                    .perf-hdr {{ font-size:18px !important; padding-top:12px !important; padding-bottom:8px !important; margin-bottom:12px !important; }}
-                    
-                    /* Watchlist Density */
+                    .perf-item {{ padding:10px !important; }}
                     .bucket-col {{ display:block !important; width:100% !important; padding:0 !important; }}
-                    .sec-ticker-cell {{ width:25% !important; font-size:16px !important; }}
-                    .sec-pct-cell    {{ width:75% !important; font-size:10px !important; text-align:right !important; }}
-                    
-                    /* Mobile header reduction by 35% (42px -> 27px) */
-                    .hdr-title    {{ font-size:27px !important; }}
+                    .hdr-title {{ font-size:27px !important; }}
                 }}
 
-                /* Desktop / large screen upsizing */
+                /* Desktop Density */
                 @media only screen and (min-width:600px) {{
                     .main-table {{ max-width:850px !important; }}
                     .section-hdr {{ font-size:16px !important; font-weight:900 !important; letter-spacing:3px !important; color:{text_bright} !important; }}
-                    .macro-hdr {{ font-size:18px !important; font-weight:900 !important; letter-spacing:2px !important; }}
-                    .global-label {{ font-size:19px !important; letter-spacing:1.5px !important; margin-bottom:8px !important; }}
-                    .global-val   {{ font-size:22px !important; }}
-                    .global-chg   {{ font-size:29px !important; padding:4px 0 !important; }}
-                    .global-badge {{ font-size:14px !important; }}
                     .pulse-idx-name {{ font-size:19px !important; letter-spacing:1.5px !important; margin-bottom:8px !important; }}
-                    .pulse-sub-label {{ font-size:12px !important; }}
                     .pulse-val {{ font-size:22px !important; }}
-                    .pulse-chg {{ font-size:29px !important; padding:4px 0 !important; }}
-                    .pulse-badge {{ font-size:14px !important; }}
-                    .pulse-chg-pill {{ font-size:17px !important; padding:4px 8px !important; }}
+                    .pulse-chg-box {{ font-size:29px !important; padding:4px 0 !important; }}
                     .pulse-diff {{ font-size:14px !important; margin-top:2px !important; }}
-                    .crypto-label {{ font-size:16px !important; margin-bottom:6px !important; }}
-                    .crypto-val   {{ font-size:29px !important; }}
-                    .crypto-chg   {{ font-size:17px !important; }}
                     .fg-val       {{ font-size:38px !important; }}
                     .fg-label     {{ font-size:16px !important; }}
                     .sec-ticker {{ font-size:18px !important; }}
