@@ -1200,8 +1200,9 @@ class SovereignIntelligenceEngine:
             )
 
         watchlist_html = render_bucket("Real-time Watchlist", tradeable.get("watchlist", []), hide_notes=True, columns=2)
-        # Merge Semi and AI - Limit total dashboard to Top 25 to avoid Gmail clipping
-        merged_intel = (tradeable.get("semi", []) + tradeable.get("ai", []))[:25]
+        # Merge Semi and AI, then sort by highest momentum to ensure dynamic rotation
+        merged_intel = tradeable.get("semi", []) + tradeable.get("ai", [])
+        merged_intel = sorted(merged_intel, key=lambda x: x.get('pct', 0), reverse=True)[:25]
         intelligence_html = render_bucket("Sovereign Intelligence Dashboard", merged_intel, columns=1)
 
         # Master Template Assembly — Responsive Single-Surface Design
