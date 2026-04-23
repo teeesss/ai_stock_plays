@@ -1,32 +1,28 @@
 # Project Status: Market Intelligence Engine
 
-## 🚀 Current Milestone: V24.7 (Data-Driven Session Hardening)
-**Status**: 🟢 PRODUCTION-READY // **Temporal Integrity**: 100% // **Data Integrity**: Hardened
+## 🚀 Current Milestone: V24.97 (Mobile Fluidity & Logic Hardening)
+**Status**: 🟢 PRODUCTION-READY // **UI Integrity**: Hardened (320px-600px) // **Logic Integrity**: Locked
 ---
 ### 🧩 Core Accomplishments
-- **[NEW] Data-Driven Session Detection (V24.7)**: Replaced clock-based labeling with data-driven verification. Labels (AH, OVN, PRE) now accurately match the trading source, preventing misleading badges during illiquid gaps.
-- **[NEW] Session-Aware Delta Tracking**: Performance movers now include explicit session deltas (e.g., "+1.2% OVN") anchored to the previous regular session close, providing precise volatility context.
-- **[NEW] 24h Database Purge (V24.6)**: Implemented automatic TTL purging in the price engine to eliminate "ghost" tickers from previous sessions (e.g., PEGA, CNQ confirmed purged).
-- **[NEW] Proxy Failover & Impersonation Rotation**: Hardened the fetch pipeline with automated retry logic and multi-UA (Chrome/Edge/Safari) impersonation.
+- **[NEW] Mobile-Fluid Architecture (V24.97)**: Fully optimized for the 320px-600px mobile spectrum. Implemented adaptive font scaling for 3-column layouts and consolidated media queries for cross-device consistency.
+- **[NEW] Ticker Flair Positional Reconstruction**: Resolved word-internal corruption bugs (e.g., "semiconductor" vs "ON") by implementing exact index-based string replacement in news headlines.
+- **[NEW] Performance Movers Vertical Stack**: Hardened mobile layouts by locking gainers/losers into a single-column vertical stack, ensuring zero clipping of prices or session badges.
+- **[NEW] Data-Driven Session Detection (V24.7)**: Replaced clock-based labeling with data-driven verification. Labels (AH, OVN, PRE) now accurately match the trading source.
+- **[NEW] Session-Aware Delta Tracking**: Performance movers now include explicit session deltas (e.g., "+1.2% OVN") anchored to the previous regular session close.
+- **[NEW] 24h Database Purge (V24.6)**: Implemented automatic TTL purging in the price engine to eliminate "ghost" tickers from previous sessions.
 - **[NEW] Sentiment Velocity Monitor (SVM)**: Real-time keyword frequency tracking (4h vs 24h) to identify accelerating market narratives.
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V24.7 (Data-Driven Session Hardening)
-- **Critical Progress**: Locked down session labeling logic and overnight delta calculations. Verified data integrity across AH/OVN transition windows.
+- **Current Tier**: V24.97 (Mobile & Logic Hardening)
+- **Critical Progress**: Hardened the intelligence synthesis pipeline against ticker corruption and finalized the institutional mobile UI for ultra-narrow viewports.
 - **Next Milestone**: Sentiment-weighted multi-source deduplication.
 
-## 🚀 Active Roadmap: V23.76 (Institutional Intelligence Narrative)
-1. **Core Overhaul**: Switched from headline concatenation to dense NLP-driven narrative paragraphs.
-2. **Intelligence Hygiene**: Strict 48-hour TTL filter and regex-based ticker detection.
-3. **Data Depth**: Hardened RSS summary extraction for institutional semantic fidelity.
-4. **Institutional Cockpit**: Premium brutalist design with narrative executive summaries.
-
-Date: 2026-04-21
+Date: 2026-04-23
 Tests: **55 passing / 0 failing**
 
 ---
 
-### 🚀 Current Status: V23.59 — Environment Hardening // Auto-Guardian
+### 🚀 Previous Status: V23.59 — Environment Hardening // Auto-Guardian
 - [x] **Auto-Dependency Guardian (V23.59)**: All core scripts now auto-check for missing libraries (bs4, playwright, etc.) and offer one-click installation. Supports Windows & Linux.
 - [x] **Timezone-Aware Session Logic (V23.58)**: Implemented `_get_est_now()` to normalize VM/Server calculations to US/Eastern (EDT). Resolves CST vs EST session misclassification.
 - [x] **PM Blue Lightening (V23.58)**: Refined `PM` session badge color to `#60a5fa` for better visual harmony.

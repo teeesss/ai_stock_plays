@@ -818,10 +818,17 @@ Contract Mfg ($FN, $CLS)
 
 ### 2026-04-23 - V24.7 Data-Driven Session Hardening
 - **Data-Driven Labeling Protocol**: Re-engineered `get_session_data()` to abandon time-forced labeling. Badges (`AH`, `OVN`, `PRE`) now strictly reflect the **source** of the trading data. If a stock is in the OVN time window but only has AH (After-Hours) trade data, it is correctly labeled as `AH`.
-- **Session-Aware Delta Rendering**: Performance lists now explicitly include the session source in the delta string (e.g., `(AH +0.7%)`). This ensures users can differentiate between residual after-hours moves and active overnight trading.
+- **Session-Aware Delta Rendering**: Performance deltas MUST include the session label (e.g., `(AH +0.7%)`) to provide volatility context.
 - **Ghost Ticker Elimination (V24.6)**: Implemented an automated 24-hour TTL database purge in `live_prices.py`. The engine now identifies and deletes any ticker entry older than 24 hours every time the database is saved, preventing stale prices from previous sessions (e.g., PEGA, CNQ) from contaminating today's movers.
 - **Indentation & Logic Hardening**: Fixed critical `IndentationError` in the synopsis engine and reinforced the `AH` scavenging logic during `OVN` windows to prevent `+0.0%` reporting gaps.
 
-> **Last Updated**: 2026-04-23T13:27:00Z
+### 2026-04-23 - V24.97 Mobile Fluidity & Logic Hardening
+- **Mobile-Fluid Architecture**: Optimized typography and layouts for the 320px-600px mobile spectrum. Enforced adaptive font scaling for 3-column Pulse sections (22px for 375px, 18px for 320px) to prevent layout breakages.
+- **Vertical Movers Stack**: Hardened mobile responsiveness by locking "Session Performance Movers" into a strict single-column vertical stack, ensuring full visibility of prices and session badges without clipping.
+- **Ticker Flair Positional Reconstruction**: Resolved word-internal ticker corruption (e.g., "semiconductor" being mangled by "ON") by implementing exact index-based string replacement in `inject_price_flair`. This protocol preserves word boundaries while providing high-fidelity price enrichment.
+- **Institutional Layout Density**: Consolidated media queries to ensure consistent rendering across high-DPI mobile devices and finalized institutional column ratios (25%/75%) for the Real-time Watchlist.
+
+> **Last Updated**: 2026-04-23T16:03:00Z
 > **Total Plays Tracked**: 130 (Command Center Active)
-> **Phases Complete**: 8 (Data-Driven Integrity Locked)
+> **Phases Complete**: 9 (Institutional Mobile Architecture Locked)
+

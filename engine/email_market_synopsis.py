@@ -848,7 +848,6 @@ class SovereignIntelligenceEngine:
         fg_color_total = get_fg_color(market_fg)
         fg_color_crypto = get_fg_color(crypto_fg)
 
-        # 2. Market Pulse — Comparative Divergence Section (Cash vs Futures)
         def get_diff_str(price, pct, clr, fs="8px"):
             if not price or pct is None: return ""
             prev = price / (1 + pct/100)
@@ -856,13 +855,13 @@ class SovereignIntelligenceEngine:
             sign = "+" if diff >= 0 else ""
             return f'<div class="pulse-diff" style="font-size:{fs}; color:{clr}; opacity:0.8; font-weight:bold; margin-top:1px;">{sign}{diff:,.0f} pts</div>'
 
-        def render_tile(symbol, name, val, pct, sess, color):
+        def render_tile(symbol, name, val, pct, sess, color, width="33.33%"):
             tag_style = "text-decoration:none;"
             if sess in ('PRE', 'AH', 'POST'): tag_style = "text-decoration:underline;"
             val_str = f"{val:,.0f}" if val > 1000 else f"{val:.2f}"
             
             return (
-                f'<td width="33%" style="padding:3px;">'
+                f'<td width="{width}" style="padding:3px;">'
                 f'<div style="background:{bg_deep}; border-radius:5px; padding:10px 8px; text-align:center;">'
                 f'<div class="pulse-idx-name" style="color:{text_dim}; font-size:12px; margin-bottom:4px; font-weight:bold; text-transform:uppercase; {tag_style}">{name}</div>'
                 f'<div class="pulse-val" style="color:{text_bright}; font-size:18px; font-weight:bold;">{val_str}</div>'
@@ -880,71 +879,70 @@ class SovereignIntelligenceEngine:
         is_live_main = self.get_market_session() in ("LIVE", "AH")
         is_futures_active = (self.now.weekday() == 6 and self.now.hour >= 18) or (self.now.weekday() < 5)
         
-        pulse_grid_rows = ""
-        if is_live_main or is_futures_active:
-            index_tiles = []
+        def get_index_tiles(width="33.33%"):
+            tiles = ""
             for index in COMPARATIVE_INDICES:
-                # Switch to Futures during extended hours, use Cash during regular hours
                 target_ticker = index['cash'] if is_live_main else index['fut']
                 c_data = prices.get(target_ticker, {})
                 c_val, c_chg, c_sess = self.get_session_data(c_data, target_ticker)
+                if not is_live_main and not is_futures_active:
+                    c_data = prices.get(index['cash'], {})
+                    c_val, c_chg, _ = self.get_session_data(c_data, index['cash'])
+                    c_sess = "CLOSE"
                 c_color = bull if (c_chg or 0) >= 0 else bear
                 label = "LIVE" if is_live_main else c_sess
-                index_tiles.append(render_tile(target_ticker, index['name'], c_val or 0, c_chg or 0, label, c_color))
-            pulse_grid_rows = f'<tr><td style="padding:4px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>{" ".join(index_tiles)}</tr></table></td></tr>'
-        else:
-            # Weekend / Stasis Layout: Show last Friday close cash data
-            index_tiles = []
-            for index in COMPARATIVE_INDICES:
-                c_data = prices.get(index['cash'], {})
-                c_val, c_chg, _ = self.get_session_data(c_data, index['cash'])
-                c_color = bull if (c_chg or 0) >= 0 else bear
-                index_tiles.append(render_tile(index['cash'], index['name'], c_val or 0, c_chg or 0, "CLOSE", c_color))
-            pulse_grid_rows = f'<tr><td style="padding:4px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>{" ".join(index_tiles)}</tr></table></td></tr>'
+                tiles += render_tile(target_ticker, index['name'], c_val or 0, c_chg or 0, label, c_color, width=width)
+            return tiles
 
-        # 2b. Crypto Pulse Row
         crypto_tickers = ['BTC-USD', 'ETH-USD', 'SOL-USD']
-        crypto_tiles = []
-        for t in crypto_tickers:
-            p = prices.get(t, {})
-            val, chg, sess = self.get_session_data(p, t)
-            color = bull if chg >= 0 else bear
-            crypto_tiles.append(render_tile(t, t.split('-')[0], val, chg, sess, color))
-        crypto_pulse_row = f'<tr><td style="padding:4px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>{" ".join(crypto_tiles)}</tr></table></td></tr>'
-        # 2b. Global sentinel — 2-per-row tiles
-        global_map = [('HSI', '^HSI'), ('NIKKEI', '^N225'), ('DAX', '^GDAXI'), ('FTSE', '^FTSE')]
-        global_tiles = []
-        hr = self.now.hour
-        for name, ticker in global_map:
-            p = prices.get(ticker, {})
-            val, chg, sess = self.get_session_data(p, ticker)
-            color = bull if chg >= 0 else bear
-            arrow = '▲' if chg >= 0 else '▼'
-            is_open = (
-                (ticker in ('^HSI', '^N225') and (hr >= 20 or hr <= 4)) or
-                (ticker in ('^GDAXI', '^FTSE') and (3 <= hr <= 11))
-            )
-            badge = f'<span style="color:{bull}; font-size:10px; font-weight:bold;">● LIVE</span>' if is_open else f'<span style="color:{bear}; font-size:10px; font-weight:bold;">● CLOSED</span>'
-            chg_bg = 'rgba(16,185,129,0.08)' if chg >= 0 else 'rgba(244,63,94,0.08)'
-            global_tiles.append(
-                f'<td class="tile-cell" style="width:50%; padding:3px; vertical-align:top;">'
-                f'<div style="background:{bg_accent}; border-radius:5px; padding:12px 10px; text-align:center;">'
-                f'<div class="global-badge" style="margin-bottom:4px;">{badge}</div>'
-                f'<div class="global-label" style="font-family:sans-serif; color:{text_dim}; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">{name}</div>'
-                f'<div class="global-chg" style="background:{chg_bg}; border-radius:3px; padding:4px 0; font-family:monospace; color:{color}; font-size:15px; font-weight:bold;">'
-                f'{arrow}{abs(chg):.1f}%'
-                f'<div style="font-size:9px; opacity:0.8; margin-top:2px;">{get_diff_str(p.get("price",0), chg, color, fs="9px")}</div>'
-                f'</div>'
+        def get_crypto_tiles(width="33.33%"):
+            tiles = ""
+            for t in crypto_tickers:
+                p = prices.get(t, {})
+                val, chg, sess = self.get_session_data(p, t)
+                color = bull if chg >= 0 else bear
+                tiles += render_tile(t, t.split('-')[0], val, chg, sess, color, width=width)
+            return tiles
+
+        def render_fg_tile(label, val, color, sub, width="50%"):
+            return (
+                f'<td style="width:{width}; padding:3px; vertical-align:top;">'
+                f'<div style="background:#0a0f1e; border-radius:5px; padding:12px 8px; text-align:center;">'
+                f'<div class="fg-label" style="font-size:8px; font-family:monospace; color:#8f9bb3; letter-spacing:1px; margin-bottom:3px;">{label}</div>'
+                f'<div class="fg-val" style="font-size:32px; font-weight:900; color:{color}; line-height:1;">{val}</div>'
+                f'<div style="font-size:7px; color:#8f9bb3; margin-top:2px;">{sub}</div>'
                 f'</div></td>'
             )
 
-        global_grid_rows = ""
-        for i in range(0, len(global_tiles), 2):
-            pair = global_tiles[i:i+2]
-            if len(pair) == 1: pair.append('<td class="tile-cell" style="width:50%; padding:3px;"></td>')
-            global_grid_rows += f'<tr>{"".join(pair)}</tr>'
+        global_map = [('HSI', '^HSI'), ('NIKKEI', '^N225'), ('DAX', '^GDAXI'), ('FTSE', '^FTSE')]
+        def get_global_tiles(width_list):
+            tiles = []
+            hr = self.now.hour
+            for i, (name, ticker) in enumerate(global_map):
+                p = prices.get(ticker, {})
+                val, chg, sess = self.get_session_data(p, ticker)
+                color = bull if chg >= 0 else bear
+                arrow = '▲' if chg >= 0 else '▼'
+                is_open = (
+                    (ticker in ('^HSI', '^N225') and (hr >= 20 or hr <= 4)) or
+                    (ticker in ('^GDAXI', '^FTSE') and (3 <= hr <= 11))
+                )
+                badge = f'<span style="color:{bull}; font-size:10px; font-weight:bold;">● LIVE</span>' if is_open else f'<span style="color:{bear}; font-size:10px; font-weight:bold;">● CLOSED</span>'
+                chg_bg = 'rgba(16,185,129,0.08)' if chg >= 0 else 'rgba(244,63,94,0.08)'
+                
+                w = width_list[i] if i < len(width_list) else width_list[0]
+                inner = (
+                    f'<div style="background:{bg_accent}; border-radius:5px; padding:12px 10px; text-align:center;">'
+                    f'<div class="global-badge" style="margin-bottom:4px;">{badge}</div>'
+                    f'<div class="global-label" style="font-family:sans-serif; color:{text_dim}; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">{name}</div>'
+                    f'<div class="global-chg" style="background:{chg_bg}; border-radius:3px; padding:4px 0; font-family:monospace; color:{color}; font-size:15px; font-weight:bold;">'
+                    f'{arrow}{abs(chg):.1f}%'
+                    f'<div style="font-size:9px; opacity:0.8; margin-top:2px;">{get_diff_str(p.get("price",0), chg, color, fs="9px")}</div>'
+                    f'</div></div>'
+                )
+                tiles.append(f'<td class="tile-cell" style="width:{w}; padding:3px; vertical-align:top;">{inner}</td>')
+            return tiles
 
-        # V24.7: Direct Market Movers from External Discovery (Yahoo Primary)
         gainers_top = []
         losers_top = []
         
@@ -979,7 +977,6 @@ class SovereignIntelligenceEngine:
             losers_top = losers_top[:10]
 
         def render_perf_list(movers, title, color):
-            """Renders Movers as a vertical block stack for mobile compatibility."""
             items_html = []
             for s in movers:
                 pct_val = s.get('change_pct', 0)
@@ -998,17 +995,19 @@ class SovereignIntelligenceEngine:
                     if c_p and price_val > 0:
                         delta_pct = (price_val - c_p) / c_p * 100
                         d_color = "#22c55e" if delta_pct >= 0 else "#ef4444"
-                        ovn_delta_html = f'<span style="font-size:9px; color:{d_color}; font-weight:bold; margin-left:2px;">({sess} {delta_pct:+.1f}%)</span>'
+                        ovn_delta_html = f'<br/><span style="font-size:9px; color:{d_color}; font-weight:bold; margin-top:2px; display:inline-block;">({sess} {delta_pct:+.1f}%)</span>'
 
                 badge = self.get_session_tag_html(fs="7px", sess_override=sess)
                 symbol_link = f'<a href="https://finance.yahoo.com/quote/{sym}" style="color:#f59e0b; text-decoration:none;">${sym}</a>'
                 
                 items_html.append(f'''
-                    <div style="margin-bottom:2px; text-align:center; width:100%;">
-                        <div class="perf-item" style="display:inline-block; width:98%; max-width:400px; background:rgba(255,255,255,0.02); padding:6px 12px; border-radius:3px; font-family:monospace; font-size:18px; text-align:left; vertical-align:middle; white-space:nowrap; overflow:visible;">
-                            <span class="perf-sym" style="display:inline-block; min-width:80px; color:#f59e0b; font-weight:bold;">{symbol_link}</span>
-                            <span class="perf-price" style="display:inline-block; min-width:85px; color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; margin-right:15px; vertical-align:middle;">{price_str}</span>
-                            <span class="perf-pct" style="display:inline-block; color:{color_movers}; font-weight:900; font-size:18px; vertical-align:middle;">{pct_str}&nbsp;{badge}{ovn_delta_html}</span>
+                    <div style="margin-bottom:4px; text-align:center; width:100%;">
+                        <div class="perf-item" style="display:block; width:100%; box-sizing:border-box; background:rgba(255,255,255,0.02); padding:6px 12px; border-radius:3px; font-family:monospace; font-size:16px; text-align:left; overflow:hidden;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+                                <td style="width:30%; color:#f59e0b; font-weight:bold; vertical-align:middle;">{symbol_link}</td>
+                                <td style="width:30%; color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; padding-right:10px; vertical-align:middle;">{price_str}</td>
+                                <td style="width:40%; color:{color_movers}; font-weight:900; font-size:16px; vertical-align:middle; text-align:right;">{pct_str}&nbsp;{badge}{ovn_delta_html}</td>
+                            </tr></table>
                         </div>
                     </div>''')
 
@@ -1019,9 +1018,48 @@ class SovereignIntelligenceEngine:
                 </div>
             '''
 
-        # V23.60: High-Density Gainer/Loser Grid
-        perf_carveout_html = f"""
-        <tr><td style="padding:15px 0 25px 0;">
+        # Build Desktop and Mobile Blocks
+        desktop_pulse = f"""
+        <div class="desktop-only">
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;"><tr>{get_index_tiles("33.33%")}</tr></table>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;"><tr>{get_crypto_tiles("33.33%")}</tr></table>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;"><tr>
+                {render_fg_tile("MARKET F&G", market_fg, fg_color_total, "FEAR & GREED", "50%")}
+                {render_fg_tile("CRYPTO F&G", crypto_fg, fg_color_crypto, "COIN GLASS", "50%")}
+            </tr></table>
+            <div class="section-hdr" style="font-size:20px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-top:20px; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border};">Global Markets</div>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;"><tr>
+                {"".join(get_global_tiles(["25%", "25%", "25%", "25%"]))}
+            </tr></table>
+            <div class="section-hdr" style="font-family:monospace; font-size:20px; letter-spacing:5px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; color:{text_bright};">Session Performance Movers</div>
+            <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td width="50%" style="vertical-align:top; padding-right:5px;">
+                    <div style="font-size:16px; color:{bull}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▲ Top Gainers</div>
+                    {render_perf_list(gainers_top, "", bull)}
+                </td>
+                <td width="50%" style="vertical-align:top; padding-left:5px;">
+                    <div style="font-size:16px; color:{bear}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▼ Top Losers</div>
+                    {render_perf_list(losers_top, "", bear)}
+                </td>
+            </tr></table>
+        </div>
+        """
+
+        g_tiles = get_global_tiles(["50%", "50%", "50%", "50%"])
+        g_grid_mobile = f"<tr>{g_tiles[0]}{g_tiles[1]}</tr><tr>{g_tiles[2]}{g_tiles[3]}</tr>"
+        mobile_pulse = f"""
+        <!--[if !mso]><!-->
+        <div class="mobile-only">
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;"><tr>{get_index_tiles("33.33%")}</tr></table>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;"><tr>{get_crypto_tiles("33.33%")}</tr></table>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;"><tr>
+                {render_fg_tile("MARKET F&G", market_fg, fg_color_total, "FEAR & GREED", "50%")}
+                {render_fg_tile("CRYPTO F&G", crypto_fg, fg_color_crypto, "COIN GLASS", "50%")}
+            </tr></table>
+            <div class="section-hdr" style="font-size:20px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-top:20px; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border};">Global Markets</div>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">
+                {g_grid_mobile}
+            </table>
             <div class="section-hdr" style="font-family:monospace; font-size:20px; letter-spacing:5px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; color:{text_bright};">Session Performance Movers</div>
             <table width="100%" cellpadding="0" cellspacing="0">
                 <tr><td style="font-size:16px; color:{bull}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▲ Top Gainers</td></tr>
@@ -1029,7 +1067,8 @@ class SovereignIntelligenceEngine:
                 <tr><td style="padding-top:25px; font-size:16px; color:{bear}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▼ Top Losers</td></tr>
                 <tr><td>{render_perf_list(losers_top, "", bear)}</td></tr>
             </table>
-        </td></tr>
+        </div>
+        <!--<![endif]-->
         """
 
         # 3. Narrative Intelligence
@@ -1110,29 +1149,20 @@ class SovereignIntelligenceEngine:
                 .main-table {{ max-width:600px; width:100%; margin:0 auto; }}
                 .tile-cell {{ width:50%; padding:3px; vertical-align:top; }}
 
+                /* 100% Separate View Classes */
+                .mobile-only {{ display: none !important; mso-hide: all; }}
+                .desktop-only {{ display: block !important; }}
+
                 /* Desktop: side-by-side cockpit */
                 .pulse-left {{ width:55%; padding-right:18px; vertical-align:top; }}
                 .pulse-right {{ width:45%; padding-left:18px; vertical-align:top; border-left:1px solid {border}; }}
 
                 /* Mobile overrides */
-                @media only screen and (max-width:520px) {{
+                @media only screen and (max-width:599px) {{
+                    .desktop-only {{ display: none !important; }}
+                    .mobile-only {{ display: block !important; }}
+
                     .wrap {{ padding:8px !important; }}
-                    .pulse-left, .pulse-right {{
-                        display:block !important;
-                        width:100% !important;
-                        padding-left:0 !important;
-                        padding-right:0 !important;
-                        border-left:none !important;
-                        border-top:1px solid {border};
-                        padding-top:14px !important;
-                        margin-top:14px !important;
-                    }}
-                    .pulse-left {{ border-top:none !important; margin-top:0 !important; padding-top:0 !important; }}
-                    .header-cell {{ display:block !important; width:100% !important; text-align:left !important; padding-bottom:6px; }}
-                    .badge-cell {{ display:block !important; width:100% !important; text-align:left !important; padding-bottom:0; }}
-                    .sector-card {{ padding:10px !important; }}
-                    .global-chip {{ display:block !important; width:100% !important; margin-bottom:10px; }}
-                    .fg-left, .fg-right {{ width:50% !important; }}
                     
                     /* Typography Scaling */
                     .pulse-idx-name {{ font-size:12px !important; margin-bottom:4px !important; }}
@@ -1145,102 +1175,23 @@ class SovereignIntelligenceEngine:
                     /* Movers Vertical Hardening */
                     .perf-cell {{ display:block !important; width:100% !important; padding:4px 0 !important; text-align:center !important; border-bottom:1px solid rgba(255,255,255,0.05); }}
                     .perf-hdr {{ font-size:14px !important; margin-bottom:12px !important; }}
-                    .perf-item {{ font-size:16px !important; padding:8px !important; overflow:visible !important; }}
-                    .perf-sym  {{ min-width:70px !important; font-size:16px !important; }}
-                    .perf-price {{ min-width:75px !important; margin-right:10px !important; font-size:14px !important; }}
-                    .perf-pct   {{ font-size:16px !important; }}
                     
                     /* Watchlist Density */
                     .bucket-col {{ display:block !important; width:100% !important; padding:0 !important; }}
                     .sec-ticker-cell {{ width:25% !important; font-size:16px !important; }}
                     .sec-pct-cell    {{ width:75% !important; font-size:10px !important; text-align:right !important; }}
-                }}
-
-                /* Ultra-Narrow Mobile (e.g. 320px) */
-                @media only screen and (max-width:350px) {{
-                    .pulse-val {{ font-size:18px !important; }}
-                    .pulse-idx-name {{ font-size:11px !important; }}
-                    .crypto-val {{ font-size:18px !important; }}
-                    .global-chg {{ font-size:18px !important; }}
-                    .sec-ticker-cell {{ font-size:14px !important; }}
+                    
+                    /* Mobile header reduction by 35% (42px -> 27px) */
+                    .hdr-title    {{ font-size:27px !important; }}
                 }}
 
                 /* Desktop / large screen upsizing */
                 @media only screen and (min-width:600px) {{
                     .main-table {{ max-width:850px !important; }}
-                    /* Section headers --- bold, large, prominent */
-                    .section-hdr {{
-                        font-size:16px !important;
-                        font-weight:900 !important;
-                        letter-spacing:3px !important;
-                        color:{text_bright} !important;
-                    }}
-                    .macro-hdr {{
-                        font-size:18px !important;
-                        font-weight:900 !important;
-                        letter-spacing:2px !important;
-                    }}
-                    /* Global Markets grid labels */
-                    .global-label {{ font-size:16px !important; letter-spacing:1.5px !important; }}
-                    .global-chg   {{ font-size:24px !important; padding:4px 0 !important; }}
-                    .global-badge {{ font-size:12px !important; }}
-                    /* Sovereign Pulse & Crypto Upsizing */
+                    .section-hdr {{ font-size:16px !important; font-weight:900 !important; letter-spacing:3px !important; color:{text_bright} !important; }}
                     .pulse-idx-name {{ font-size:16px !important; letter-spacing:1.5px !important; margin-bottom:15px !important; }}
-                    .pulse-sub-label {{ font-size:10px !important; }}
                     .pulse-val {{ font-size:24px !important; }}
-                    .pulse-chg {{ font-size:14px !important; }}
-                    .pulse-chg-pill {{ font-size:14px !important; padding:4px 8px !important; }}
-                    .pulse-diff {{ font-size:12px !important; margin-top:2px !important; }}
-                    .crypto-label {{ font-size:13px !important; margin-bottom:6px !important; }}
-                    .crypto-val   {{ font-size:24px !important; }}
-                    .crypto-chg   {{ font-size:14px !important; }}
-                    .fg-val       {{ font-size:32px !important; }}
-                    .fg-label     {{ font-size:13px !important; }}
-                    /* Sector cards */
-                    .sec-ticker {{ font-size:18px !important; }}
-                    .sec-name   {{ font-size:16px !important; }}
-                    .sec-pct    {{ font-size:18px !important; }}
-                    .sec-notes  {{ font-size:13px !important; line-height:1.6 !important; color:#8f9bb3 !important; }}
-                    
-                    /* TARGETED: CLOSING PRICES */
-                    .sec-price {{ font-size:15px !important; font-weight:bold !important; color:{text_bright} !important; }}
-                    
-                    /* Velocity Override: Tighter Padding, Larger Font */
-                    .vel-chip {{ font-size:16px !important; padding:8px 12px !important; }}
-                    .vel-vol  {{ font-size:14px !important; }}
-                    .mv-row   {{ font-size:16px !important; padding:10px 16px !important; }}
-                    .mv-vol   {{ font-size:14px !important; }}
-                    .top-mover-chip {{ font-size:11px !important; padding:8px 12px !important; }}
-                    /* Movers: Larger Font */
-                    .perf-item {{ font-size:18px !important; margin-bottom:6px !important; }}
-                    .perf-hdr {{ font-size:18px !important; margin-bottom:15px !important; letter-spacing:3px !important; }}
-                    .perf-cell {{ padding:0 4px !important; }}
-                    /* Watchlist: Larger Font */
-                    .sector-card {{ padding:14px 18px !important; }}
-                    .sec-ticker {{ font-size:16px !important; }}
-                    .sec-name   {{ font-size:13px !important; }}
-                    .sec-pct    {{ font-size:16px !important; }}
-                    .sec-notes  {{ font-size:14px !important; line-height:1.6 !important; color:#8f9bb3 !important; }}
-                    
-                    /* Header block */
                     .hdr-title {{ font-size:28px !important; }}
-                    .hdr-sub   {{ font-size:15px !important; }}
-                }}
-                /* Mobile lock --- Upscaling for S&P, NASDAQ, DOW, BTC, ETH, SOL */
-                @media only screen and (max-width:599px) {{
-                    .section-hdr {{
-                        font-size:16px !important;
-                        font-weight:bold !important;
-                        color:{text_bright} !important;
-                        letter-spacing:1px !important;
-                    }}
-                    .crypto-label {{ font-size:14px !important; margin-bottom:4px !important; }}
-                    .crypto-val   {{ font-size:20px !important; font-weight:900 !important; }}
-                    .crypto-chg   {{ font-size:14px !important; }}
-                    .perf-item    {{ font-size:16px !important; }}
-                    .perf-cell    {{ padding:0 6px !important; }}
-                    /* Mobile header reduction by 35% (42px -> 27px) */
-                    .hdr-title    {{ font-size:27px !important; }}
                 }}
             </style>
         </head>
@@ -1265,38 +1216,11 @@ class SovereignIntelligenceEngine:
             <!-- ═══ PULSE BLOCK ═══ -->
             <tr><td class="narrative-box" style="background:{bg_surface}; padding:20px 0; border-radius:6px;">
 
-                <!-- US Markets grid -->
                 <div class="section-hdr" style="font-size:20px; font-family:monospace; color:{gold}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid rgba(245,158,11,0.2);">Sovereign Index Pulse // Divergence</div>
-                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">
-                    {pulse_grid_rows}
-                    {crypto_pulse_row}
-                    
-                    <!-- Fear & Greed — centered 2-col -->
-                    <tr><td style="padding:10px 0 15px 0;">
-                        <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                            <td width="50%" style="padding:3px; vertical-align:top;">
-                                <div style="background:#0a0f1e; border-radius:5px; padding:12px 8px; text-align:center;">
-                                    <div class="fg-label" style="font-size:8px; font-family:monospace; color:#8f9bb3; letter-spacing:1px; margin-bottom:3px;">MARKET F&G</div>
-                                    <div class="fg-val" style="font-size:32px; font-weight:900; color:{fg_color_total}; line-height:1;">{market_fg}</div>
-                                    <div style="font-size:7px; color:#8f9bb3; margin-top:2px;">FEAR & GREED</div>
-                                </div>
-                            </td>
-                            <td width="50%" style="padding:3px; vertical-align:top;">
-                                <div style="background:#0a0f1e; border-radius:5px; padding:12px 8px; text-align:center;">
-                                    <div class="fg-label" style="font-size:8px; font-family:monospace; color:#8f9bb3; letter-spacing:1px; margin-bottom:3px;">CRYPTO F&G</div>
-                                    <div class="fg-val" style="font-size:32px; font-weight:900; color:{fg_color_crypto}; line-height:1;">{crypto_fg}</div>
-                                    <div style="font-size:7px; color:#8f9bb3; margin-top:2px;">COIN GLASS</div>
-                                </div>
-                            </td>
-                        </tr></table>
-                    </td></tr>
-                </table>
-
-                <!-- Global Markets grid -->
-                <div class="section-hdr" style="font-size:20px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border};">Global Markets</div>
-                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">{global_grid_rows}</table>
-
-                {perf_carveout_html}
+                
+                <!-- 100% Separate Dual-View Assembly -->
+                {desktop_pulse}
+                {mobile_pulse}
                 
                 <!-- Macro Intelligence leads the news flow -->
                 <div style="margin-top:25px;">
@@ -1313,21 +1237,21 @@ class SovereignIntelligenceEngine:
                 {watchlist_intel_html}
             </td></tr>
 
-                <!-- Narrative Intel -->
-                <tr><td style="padding-bottom:30px;">
-                    {watchlist_html}
-                    {intelligence_html}
-                </td></tr>
+            <!-- Narrative Intel -->
+            <tr><td style="padding-bottom:30px;">
+                {watchlist_html}
+                {intelligence_html}
+            </td></tr>
 
-                <!-- Footer -->
-                <tr><td style="padding:30px 0; border-top:1px solid #25272d; text-align:center;">
-                    <div style="color:{text_dim}; font-size:10px; font-family:monospace;">
-                        END OF DOSSIER // TRANSMISSION SECURE // {session}<br>
-                        SOVEREIGN ENGINE HARDENED // AUTO-GENERATED BY GIGACPO V23.87
-                    </div>
-                </td></tr>
-            </table>
-            </center>
+            <!-- Footer -->
+            <tr><td style="padding:30px 0; border-top:1px solid #25272d; text-align:center;">
+                <div style="color:{text_dim}; font-size:10px; font-family:monospace;">
+                    END OF DOSSIER // TRANSMISSION SECURE // {session}<br>
+                    SOVEREIGN ENGINE HARDENED // AUTO-GENERATED BY GIGACPO V23.87
+                </div>
+            </td></tr>
+        </table>
+        </center>
         </body></html>
         """
         # V23.60: Gmail Clipping Defense (Minification)
