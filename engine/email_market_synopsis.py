@@ -669,7 +669,7 @@ class SovereignIntelligenceEngine:
         print(f"[INFO] NLP Processor: Analyzing {len(macro_headlines)} headlines for institutional relevance...")
         # Real-world NLP Intelligence Synthesis for Executive Summary
         # V24.9: mandatory 15 articles in list, increase ranking depth
-        best_headlines = nlp.rank_news_relevance(macro_headlines, top_n=100)
+        best_headlines = nlp.rank_news_relevance(macro_headlines, top_n=200)
         
         if best_headlines:
             top_t = best_headlines[0].get('title', 'Unknown')
@@ -702,7 +702,7 @@ class SovereignIntelligenceEngine:
                     used_links.add(lead_url)
 
         # V24.9: Increased capacity to ensure 15+ articles
-        pruned_news = [art for art in best_headlines if art.get('link') not in used_links][:100]
+        pruned_news = [art for art in best_headlines if art.get('link') not in used_links][:200]
 
         macro_intel_rows = ""
         earnings_intel_rows = ""

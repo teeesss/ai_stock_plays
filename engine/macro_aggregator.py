@@ -365,7 +365,7 @@ class MacroAggregator:
 
         # V24.1: Dynamic List Extension for Earnings News
         has_earnings = any(it.get('is_earnings') for it in all_items)
-        limit = 100 # Massive buffer to guarantee 15 non-earnings after deduplication
+        limit = 200 # Pass the entire viable pool to ensure we never fall below 15
         
         # Sort by score (descending) and take top limit
         top_ranked = sorted(all_items, key=lambda x: x['score'], reverse=True)[:limit]
