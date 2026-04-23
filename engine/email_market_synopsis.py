@@ -870,14 +870,30 @@ class SovereignIntelligenceEngine:
             if sess in ('PRE', 'AH', 'POST'): tag_style = "text-decoration:underline;"
             val_str = f"{val:,.0f}" if val > 1000 else f"{val:.2f}"
             
+            chg_bg = 'rgba(16,185,129,0.08)' if pct >= 0 else 'rgba(244,63,94,0.08)'
+            arrow = '▲' if pct >= 0 else '▼'
+            
+            if sess == "LIVE":
+                badge_html = f'<span style="color:{bull}; font-size:10px; font-weight:bold;">● LIVE</span>'
+            elif sess in ("CLOSE", "CLOSED"):
+                badge_html = f'<span style="color:{bear}; font-size:10px; font-weight:bold;">● CLOSED</span>'
+            elif sess == "":
+                badge_html = ""
+            else:
+                badge_html = f'<span style="color:#f59e0b; font-size:10px; font-weight:bold;">● {sess}</span>'
+                
+            badge_div = f'<div class="pulse-badge" style="margin-bottom:4px;">{badge_html}</div>' if badge_html else ""
+            
             return (
-                f'<td width="{width}" style="padding:3px;">'
-                f'<div style="background:{bg_deep}; border-radius:5px; padding:10px 8px; text-align:center;">'
-                f'<div class="pulse-idx-name" style="color:{text_dim}; font-size:12px; margin-bottom:4px; font-weight:bold; text-transform:uppercase; {tag_style}">{name}</div>'
-                f'<div class="pulse-val" style="color:{text_bright}; font-size:18px; font-weight:bold;">{val_str}</div>'
-                f'{get_diff_str(val, pct, color, fs="9px")}'
-                f'<div class="pulse-chg" style="color:{color}; font-size:13px; font-weight:bold;">{"+" if pct >= 0 else ""}{pct:.1f}%</div>'
-                f'</div></td>'
+                f'<td width="{width}" style="padding:3px; vertical-align:top;">'
+                f'<div style="background:{bg_deep}; border-radius:5px; padding:12px 10px; text-align:center;">'
+                f'{badge_div}'
+                f'<div class="pulse-idx-name" style="font-family:sans-serif; color:{text_dim}; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; {tag_style}">{name}</div>'
+                f'<div class="pulse-val" style="color:{text_bright}; font-size:16px; font-weight:bold; margin-bottom:2px;">{val_str}</div>'
+                f'<div class="pulse-chg" style="background:{chg_bg}; border-radius:3px; padding:4px 0; font-family:monospace; color:{color}; font-size:15px; font-weight:bold;">'
+                f'{arrow}{abs(pct):.1f}%'
+                f'<div style="font-size:9px; opacity:0.8; margin-top:2px;">{get_diff_str(val, pct, color, fs="9px")}</div>'
+                f'</div></div></td>'
             )
 
         COMPARATIVE_INDICES = [
@@ -1176,10 +1192,11 @@ class SovereignIntelligenceEngine:
                     .global-val   {{ font-size:22px !important; }}
                     .global-chg   {{ font-size:29px !important; padding:4px 0 !important; }}
                     .global-badge {{ font-size:14px !important; }}
-                    .pulse-idx-name {{ font-size:19px !important; letter-spacing:1.5px !important; margin-bottom:15px !important; }}
+                    .pulse-idx-name {{ font-size:19px !important; letter-spacing:1.5px !important; margin-bottom:8px !important; }}
                     .pulse-sub-label {{ font-size:12px !important; }}
-                    .pulse-val {{ font-size:29px !important; }}
-                    .pulse-chg {{ font-size:17px !important; }}
+                    .pulse-val {{ font-size:22px !important; }}
+                    .pulse-chg {{ font-size:29px !important; padding:4px 0 !important; }}
+                    .pulse-badge {{ font-size:14px !important; }}
                     .pulse-chg-pill {{ font-size:17px !important; padding:4px 8px !important; }}
                     .pulse-diff {{ font-size:14px !important; margin-top:2px !important; }}
                     .crypto-label {{ font-size:16px !important; margin-bottom:6px !important; }}
