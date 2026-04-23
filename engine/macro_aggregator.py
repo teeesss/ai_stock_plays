@@ -36,7 +36,9 @@ class MacroAggregator:
             "NVDA", "AMD", "AVGO", "ALAB", "ARM", "MRVL", "LITE", "FN", 
             "COHR", "LUNA", "PII", "RMBS", "INTC", "TSM", "HIVE"
         ]
-        # V24.1: Hardened 15 High-Fidelity Sources (Updated with working URLs)
+        # V25.3: Hardened 19 High-Fidelity Sources + Google News RSS for source diversity
+        # NOTE: CNBC feeds are kept but the source cap (MAX_PER_SOURCE) prevents any single
+        # outlet from dominating the final 15-article pool.
         self.feeds = {
             "WSJ Markets": {"url": "https://feeds.content.dowjones.io/public/rss/RSSMarketsMain", "type": "rss", "weight": 150},
             "CNBC Top News": {"url": "https://www.cnbc.com/id/100003114/device/rss/rss.html", "type": "rss", "weight": 140},
@@ -44,6 +46,7 @@ class MacroAggregator:
             "IBD Market News": {"url": "https://www.investors.com/rss.axd?path=InvestingRSS.xml", "type": "rss", "weight": 120},
             "CNBC Markets": {"url": "https://www.cnbc.com/id/10000664/device/rss/rss.html", "type": "rss", "weight": 110},
             "MarketWatch Pulse": {"url": "https://feeds.content.dowjones.io/public/rss/mw_marketpulse", "type": "rss", "weight": 100},
+            "Reuters Markets": {"url": "https://feeds.reuters.com/reuters/businessNews", "type": "rss", "weight": 145},
             "Seeking Alpha": {"url": "https://seekingalpha.com/feed.xml", "type": "rss", "weight": 90},
             "Business Insider": {"url": "https://markets.businessinsider.com/rss/news", "type": "rss", "weight": 80},
             "CNBC Earnings": {"url": "https://www.cnbc.com/id/15839135/device/rss/rss.html", "type": "rss", "weight": 170},
@@ -52,8 +55,16 @@ class MacroAggregator:
             "OilPrice Macro": {"url": "https://oilprice.com/feed/rss.html", "type": "rss", "weight": 115},
             "CNBC Energy": {"url": "https://www.cnbc.com/id/19836768/device/rss/rss.html", "type": "rss", "weight": 35},
             "ZeroHedge": {"url": "http://feeds.feedburner.com/zerohedge/feed", "type": "rss", "weight": 20},
-            "Investing Tech": {"url": "https://www.investing.com/rss/news_25.rss", "type": "rss", "weight": 10}
+            "Investing Tech": {"url": "https://www.investing.com/rss/news_25.rss", "type": "rss", "weight": 10},
+            # V25.3: Google News RSS — diverse multi-outlet source; each article carries the
+            # ACTUAL publisher name so source-cap still applies per-outlet.
+            "Google News Markets": {"url": "https://news.google.com/rss/search?q=stock+market+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 95},
+            "Google News AI Tech": {"url": "https://news.google.com/rss/search?q=AI+semiconductor+nvidia+earnings+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 105},
+            "Google News Finance": {"url": "https://news.google.com/rss/search?q=fed+rate+inflation+macro+economy+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 85},
         }
+        # V25.3: Max articles any single source can contribute to final ranked pool.
+        # Prevents CNBC (5 feeds) or any other high-volume outlet from flooding the top 15.
+        self.MAX_PER_SOURCE = 3
         self.blacklist = ["DAVE RAMSEY", "PR NEWSWIRE", "BUSINESS WIRE", "GLOBE NEWSWIRE"]
 
     def _load_prices(self):
@@ -365,12 +376,32 @@ class MacroAggregator:
 
         # V24.1: Dynamic List Extension for Earnings News
         has_earnings = any(it.get('is_earnings') for it in all_items)
-        limit = 200 # Pass the entire viable pool to ensure we never fall below 15
         
-        log.info(f"[DEBUG] Aggregator: Pulled {len(all_items)} valid raw items before sorting.")
+        log.info(f"[DEBUG] Aggregator: Pulled {len(all_items)} valid raw items before scoring sort.")
         
-        # Sort by score (descending) and take top limit
-        top_ranked = sorted(all_items, key=lambda x: x['score'], reverse=True)[:limit]
+        # V25.3: Source Diversity Cap — enforce MAX_PER_SOURCE per outlet BEFORE final cut.
+        # This prevents 5 CNBC feeds (or any other single outlet) from dominating the pool.
+        # We first sort ALL items by score desc, then walk the list applying the per-source cap.
+        all_sorted = sorted(all_items, key=lambda x: x['score'], reverse=True)
+        source_counts = {}
+        top_ranked = []
+        for item in all_sorted:
+            # Normalise source name: strip feed suffixes so "CNBC Top News", "CNBC Tech", etc.
+            # all count against the same "CNBC" bucket.
+            src_domain = item.get('source', 'Unknown')
+            # Extract root domain keyword (e.g. "cnbc", "google", "wsj")
+            src_key = src_domain.lower().split()[0]  # first word of source name
+            count = source_counts.get(src_key, 0)
+            if count >= self.MAX_PER_SOURCE:
+                log.debug(f"  [SOURCE-CAP] Skipping '{item['raw_title'][:60]}...' — {src_key} already at {count}/{self.MAX_PER_SOURCE}")
+                continue
+            source_counts[src_key] = count + 1
+            top_ranked.append(item)
+        
+        # Log source diversity summary
+        diversity = {k: v for k, v in sorted(source_counts.items(), key=lambda x: -x[1])}
+        log.info(f"[V25.3] Source Diversity After Cap: {diversity}")
+        log.info(f"[V25.3] Total viable articles after source cap: {len(top_ranked)} (from {len(all_items)} raw)")
         
         # Save to Cache
         try:
