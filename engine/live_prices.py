@@ -327,8 +327,8 @@ async def async_run_fetch(tickers: list = None, force: bool = False, dry_run: bo
         
         i += len(batch)
         if i < len(tickers):
-            # V23.60: Tightened delay for faster hydration (was 3.3-10s)
-            delay = random.uniform(1.5, 3.0)
+            # V25.2: Relaxed delay to 2.0-6.0s to improve stealth and avoid Yahoo rate limits
+            delay = random.uniform(2.0, 6.0)
             log.info(f"Sleeping for {delay:.2f}s before next price batch...")
             await asyncio.sleep(delay)
 
