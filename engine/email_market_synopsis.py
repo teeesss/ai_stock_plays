@@ -122,30 +122,35 @@ class SovereignIntelligenceEngine:
         return merged
 
     def is_legit_ticker(self, t):
+        if not t or not isinstance(t, str): return False
         t = t.upper()
         if len(t) < 2 or t.isdigit(): return False
-        # V22.10: Production Leak Suppression (Blacklisting common non-tradeable jargon)
-        noise = {
-            "AI", "ETF", "US", "EST", "MARKET", "NLP", "DOW", "NASDAQ", "FED", "CPI", "PPI", "GDP",
-            "USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CNY", "EPS", "ROE", "ROI", "PE", "YTD", "MTD",
-            "CAGR", "MCAP", "APY", "APR", "SPX", "NDX", "RUT", "NQ", "ES", "YM",
-            "Q1", "Q2", "Q3", "Q4", "FY26", "FY27", "IPO", "FDA", "SEC", "NASA", "HELOC", "SWOT", "ASIC",
-            "NYSE", "AMEX", "CBOE", "LIQUIDITY", "VOLUME", "TOTAL", "HIGH", "LOW", "OPEN", "CLOSE",
-            "AND", "FOR", "THE", "WITH", "FROM", "THIS", "THAT", "THEY", "HAVE", "SOME", "POS", "ITS",
-            "TECH", "SENTIMENT", "POSITION", "ALPHA", "BETA", "GAMMA", "DELTA", "THETA", "VEGA",
-            "CAPABILITIES", "RESEPI", "ACQUISITION", "ANNOUNCES", "ANNOUNCEMENT", "OFFERING",
-            "VISUAL", "INSPECTION", "METROLOGY", "SUPER", "POWER", "GREEN", "BLUE", "RED", "OF", "TO",
-            "IN", "OR", "IT", "IS", "AS", "BE", "AN", "SO", "ME", "ON", "AT", "BY", "IF", "NASA",
-            "HLSE", "EMS", "OSAT", "ESA", "BLA", "ENXTAM", "DEEPEN", "JVCKENWOOD", "J.P", "RAN",
-            "M1", "M2", "M3", "G1", "G3", "G5", "UX111", "PFIC", "EUV", "ITS", "AOI", "MKS", "G3", "G2",
-            "CEO", "IRA", "NV", "SAVE", "LAYER", 
-            "USDC", "USDT", "DAI", "BUSD", "PYUSD", "TUSD", "FDUSD", "FRAX", "LUSD", "USDD", "GUSD", "STETH", "WSTETH",
-            "USDC-USD", "USDT-USD", "DAI-USD", "BUSD-USD", "PYUSD-USD", "TUSD-USD", "FDUSD-USD", "USDC.CX", "USDT.CX",
-            "SK", "RAN", "DEEPEN", "SZKMY", "PT", "PTO"
+        
+        # V22.93: High-Fidelity Noise Shield
+        # Filter company names or noise accidentally being treated as tickers
+        if any(x in t for x in [" ", "/", "\\", "(", ")", ".", ",", ":", "'", '"']): return False
+        
+        # Mandatory 2-Letter Whitelist (Filters out IN, OF, TO, BY, etc.)
+        if len(t) == 2:
+            WHITELIST_2 = {
+                "BA", "GM", "GE", "MU", "FN", "V", "MA", "T", "F", "KO", "VZ", "PYPL", 
+                "UBER", "LYFT"
+            }
+            return t in WHITELIST_2
+            
+        # Financial Acronym & Intelligence Blacklist
+        FETCH_BLACKLIST = {
+            "AI", "US", "NYSE", "NASDAQ", "ITS", "OSAT", "POS", "AND", "RESEPI", 
+            "NASA", "EUV", "ESA", "PT", "PTO", "M1", "M2", "M3", "G1", "G2", "G3", "G5",
+            "YTD", "HELOC", "APY", "APR", "PE", "EPS", "ROE", "ROIC", "EBITDA", "GAAP",
+            "CFO", "COO", "CEO", "CTO", "IPO", "LBO", "PFIC", "FATCA", "ETF", "IRA", 
+            "HSA", "RAN", "EMS", "LIDE", "HBM", "DRAM", "NAND", "CPO", "GPU", "CPU",
+            "NPU", "LSA", "NLP", "AIAI", "S&P", "DJI", "SNP", "QQQ", "CD", "EST",
+            "MARKET", "FED", "CPI", "PPI", "GDP", "USD", "EUR", "GBP", "JPY", "CAD",
+            "USDC", "USDT", "DAI", "BUSD", "PYUSD", "TETHER", "STABLECOINS", "FDUSD",
+            "ON", "AT", "BY", "IF", "SO", "ME", "IT", "IS", "AS", "BE", "AN", "OR", "OF", "TO", "IN"
         }
-        if t in noise: return False
-        if t.startswith("FY20") or t.startswith("P500"): return False
-        return True
+        return t not in FETCH_BLACKLIST
 
     def _load_json(self, name):
         p = self.db_path / name
@@ -215,37 +220,6 @@ class SovereignIntelligenceEngine:
 
         return {"market": {"value": market_val, "label": label(market_val)}, "crypto": {"value": crypto_val, "label": label(crypto_val)}}
 
-    def is_legit_ticker(self, sym):
-        if not sym or not isinstance(sym, str): return False
-        sym = sym.upper()
-        # V22.8: High-Fidelity Noise Shield
-        # Filter company names or noise accidentally being treated as tickers
-        if any(x in sym for x in [" ", "/", "\\", "(", ")", ".", ",", ":"]): return False
-        if len(sym) < 1 or len(sym) > 12: return False
-        
-        # 1. Mandatory 2-Letter Whitelist (Filters out IN, OF, TO, BY, etc.)
-        if len(sym) == 2:
-            WHITELIST_2 = {
-                "BA", "GM", "GE", "MU", "FN", "V", "MA", "T", "F", "KO", "VZ", "PYPL", 
-                "UBER", "LYFT" # Some 4-char are fine, but 2-char are risky
-            }
-            # Only allow common 2-letter stocks or if they are in master_data
-            return sym in WHITELIST_2
-            
-        # 2. Financial Acronym & Intelligence Blacklist
-        # These are common high-signal words that are NOT tickers in news context
-        FETCH_BLACKLIST = {
-            "AI", "US", "NYSE", "NASDAQ", "ITS", "OSAT", "POS", "AND", "RESEPI", 
-            "NASA", "EUV", "ESA", "PT", "PTO", "M1", "M2", "M3", "G1", "G2", "G3", "G5",
-            "YTD", "HELOC", "APY", "APR", "PE", "EPS", "ROE", "ROIC", "EBITDA", "GAAP",
-            "CFO", "COO", "CEO", "CTO", "IPO", "LBO", "PFIC", "FATCA", "ETF", "IRA", 
-            "HSA", "RAN", "EMS", "LIDE", "HBM", "DRAM", "NAND", "CPO", "GPU", "CPU",
-            "NPU", "LSA", "NLP", "AIAI", "S&P", "DJI", "SNP", "QQQ", "CD",
-            # V22.99: Hardened Stablecoin Purge
-            "USDC", "USDT", "DAI", "BUSD", "PYUSD", "TETHER", "STABLECOINS", "FDUSD"
-        }
-        if sym in FETCH_BLACKLIST: return False
-        return True
 
     def is_shite_ticker(self, sym):
         """V23.01: Aggressive Stablecoin and Fake-Ticker Purge."""
@@ -648,14 +622,17 @@ class SovereignIntelligenceEngine:
     def inject_price_flair(self, text, prices, master=None, link=True):
         """High-density utility to inject real-time price info into headlines."""
         if not text: return text
+        
+        # V23.96: Absolute Isolation Logic
         words = text.split()
         for i, word in enumerate(words):
-            # V23.94: Isolation-First Logic (Extended Punctuation)
-            # We only match standalone words that are exactly ticker symbols to avoid internal-word corruption
-            # Added single/double quotes to stripping list for possessives and quotes.
-            stripped = word.strip(".,;:()$ '\"")
+            # Strip punctuation to find the core ticker candidate
+            stripped = word.strip(".,;:()$ '\"?!")
+            if not stripped: continue
             clean_word = stripped.upper()
-            if clean_word in prices:
+            
+            # Check if it's a legit ticker we have price data for
+            if clean_word in prices and self.is_legit_ticker(clean_word):
                 p_data = prices[clean_word]
                 price, pct, sess = self.get_session_data(p_data, clean_word)
                 if price is None or pct is None: continue
@@ -669,9 +646,15 @@ class SovereignIntelligenceEngine:
                     c_p = p_data.get("close_price") or p_data.get("price")
                     if c_p: anchor = f' <span style="font-size:8px; color:#94a3b8; font-weight:normal;">| C: ${c_p:,.2f}</span>'
 
-                # Only flair the first match and break
-                flair = word.replace(stripped, f'<strong>{stripped}</strong>&nbsp;(<span style="color:{color}; font-weight:bold;">${price:,.2f}&nbsp;{sign}{pct:.1f}%{sess_tag}{anchor}</span>)', 1)
+                # Reconstruction to prevent internal word corruption (e.g. "semiconductor")
+                # We find the exact position of the stripped part to preserve surrounding punctuation
+                start_idx = word.find(stripped)
+                prefix = word[:start_idx]
+                suffix = word[start_idx + len(stripped):]
+                
+                flair = f'{prefix}<strong>{stripped}</strong>&nbsp;(<span style="color:{color}; font-weight:bold;">${price:,.2f}&nbsp;{sign}{pct:.1f}%{sess_tag}{anchor}</span>){suffix}'
                 words[i] = flair
+                # Only flair the first high-confidence match per headline
                 return " ".join(words)
         return text
 
@@ -881,10 +864,10 @@ class SovereignIntelligenceEngine:
             return (
                 f'<td width="33%" style="padding:3px;">'
                 f'<div style="background:{bg_deep}; border-radius:5px; padding:10px 8px; text-align:center;">'
-                f'<div class="crypto-label" style="color:{text_dim}; font-size:8px; margin-bottom:4px; font-weight:bold; text-transform:uppercase; {tag_style}">{name}</div>'
-                f'<div class="crypto-val" style="color:{text_bright}; font-size:12px; font-weight:bold;">{val_str}</div>'
-                f'{get_diff_str(val, pct, color, fs="7px")}'
-                f'<div class="crypto-chg" style="color:{color}; font-size:10px; font-weight:bold;">{"+" if pct >= 0 else ""}{pct:.1f}%</div>'
+                f'<div class="pulse-idx-name" style="color:{text_dim}; font-size:12px; margin-bottom:4px; font-weight:bold; text-transform:uppercase; {tag_style}">{name}</div>'
+                f'<div class="pulse-val" style="color:{text_bright}; font-size:18px; font-weight:bold;">{val_str}</div>'
+                f'{get_diff_str(val, pct, color, fs="9px")}'
+                f'<div class="pulse-chg" style="color:{color}; font-size:13px; font-weight:bold;">{"+" if pct >= 0 else ""}{pct:.1f}%</div>'
                 f'</div></td>'
             )
 
@@ -996,73 +979,55 @@ class SovereignIntelligenceEngine:
             losers_top = losers_top[:10]
 
         def render_perf_list(movers, title, color):
-            """Renders Movers with centered-block but left-aligned symbols."""
-            results = []
-            # Split into two columns for top 10
-            mid = (len(movers) + 1) // 2
-            col1 = movers[:mid]
-            col2 = movers[mid:]
-            
-            for sub_movers in [col1, col2]:
-                if not sub_movers: 
-                    results.append('<td width="50%"></td>')
-                    continue
+            """Renders Movers as a vertical block stack for mobile compatibility."""
+            items_html = []
+            for s in movers:
+                pct_val = s.get('change_pct', 0)
+                price_val = s.get('price', 0)
+                sym = s['symbol']
+                p_entry = prices.get(sym, {})
+                sess = s.get('session', 'LIVE')
+                
+                color_movers = bull if pct_val >= 0 else bear
+                pct_str = f"{'+' if pct_val >= 0 else ''}{pct_val:.2f}%"
+                price_str = f"${price_val:,.2f}" if price_val > 0 else ""
+                
+                ovn_delta_html = ""
+                if sess in ["PRE", "AH", "OVN", "POST"]:
+                    c_p = p_entry.get("close_price") or p_entry.get("price")
+                    if c_p and price_val > 0:
+                        delta_pct = (price_val - c_p) / c_p * 100
+                        d_color = "#22c55e" if delta_pct >= 0 else "#ef4444"
+                        ovn_delta_html = f'<span style="font-size:9px; color:{d_color}; font-weight:bold; margin-left:2px;">({sess} {delta_pct:+.1f}%)</span>'
 
-                items_html = []
-                for s in sub_movers:
-                    pct_val = s.get('change_pct', 0)
-                    price_val = s.get('price', 0)
-                    sym = s['symbol']
-                    p_entry = prices.get(sym, {})
-                    sess = s.get('session', 'LIVE')
-                    
-                    color_movers = bull if pct_val >= 0 else bear
-                    pct_str = f"{'+' if pct_val >= 0 else ''}{pct_val:.2f}%"
-                    price_str = f"${price_val:,.2f}" if price_val > 0 else ""
-                    
-                    # V24.3: Session-Aware Anchoring & Scaled Typography
-                    anchor = ""
-                    pct_fs = "18px"
-                    tag_fs = "7px"
-                        
-                    # V24.3: Calculate Session Delta (e.g. OVN %)
-                    ovn_delta_html = ""
-                    if sess in ["PRE", "AH", "OVN", "POST"]:
-                        c_p = p_entry.get("close_price") or p_entry.get("price")
-                        if c_p and price_val > 0:
-                            delta_pct = (price_val - c_p) / c_p * 100
-                            d_color = "#22c55e" if delta_pct >= 0 else "#ef4444"
-                            ovn_delta_html = f'<span style="font-size:9px; color:{d_color}; font-weight:bold; margin-left:2px;">({sess} {delta_pct:+.1f}%)</span>'
+                badge = self.get_session_tag_html(fs="7px", sess_override=sess)
+                symbol_link = f'<a href="https://finance.yahoo.com/quote/{sym}" style="color:#f59e0b; text-decoration:none;">${sym}</a>'
+                
+                items_html.append(f'''
+                    <div style="margin-bottom:2px; text-align:center; width:100%;">
+                        <div class="perf-item" style="display:inline-block; width:98%; max-width:400px; background:rgba(255,255,255,0.02); padding:6px 12px; border-radius:3px; font-family:monospace; font-size:18px; text-align:left; vertical-align:middle; white-space:nowrap; overflow:visible;">
+                            <span class="perf-sym" style="display:inline-block; min-width:80px; color:#f59e0b; font-weight:bold;">{symbol_link}</span>
+                            <span class="perf-price" style="display:inline-block; min-width:85px; color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; margin-right:15px; vertical-align:middle;">{price_str}</span>
+                            <span class="perf-pct" style="display:inline-block; color:{color_movers}; font-weight:900; font-size:18px; vertical-align:middle;">{pct_str}&nbsp;{badge}{ovn_delta_html}</span>
+                        </div>
+                    </div>''')
 
-                    badge = self.get_session_tag_html(fs=tag_fs, sess_override=sess)
-                    symbol_link = f'<a href="https://finance.yahoo.com/quote/{sym}" style="color:#f59e0b; text-decoration:none;">${sym}</a>'
-                    
-                    items_html.append(f'''
-                        <div style="margin-bottom:2px; text-align:center;">
-                            <div class="perf-item" style="display:inline-block; width:98%; max-width:380px; background:rgba(255,255,255,0.02); padding:4px 12px; border-radius:3px; font-family:monospace; font-size:18px; text-align:left; vertical-align:middle; white-space:nowrap;">
-                                <span class="perf-sym" style="display:inline-block; min-width:80px; color:#f59e0b; font-weight:bold;">{symbol_link}</span>
-                                <span class="perf-price" style="display:inline-block; min-width:85px; color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; margin-right:15px; vertical-align:middle;">{price_str}</span>
-                                <span class="perf-pct" style="display:inline-block; color:{color_movers}; font-weight:900; font-size:{pct_fs}; vertical-align:middle;">{pct_str}&nbsp;{badge}{ovn_delta_html}{anchor}</span>
-                            </div>
-                        </div>''')
-
-                results.append(f"""
-                    <td class="perf-cell" width="50%" style="vertical-align:top; padding:0 2px; text-align:center;">
-                        <div class="perf-hdr" style="color:{color}; font-size:10px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">{title}</div>
-                        {''.join(items_html)}
-                    </td>
-                """)
-            return "".join(results)
+            return f'''
+                <div class="perf-cell" style="width:100%; text-align:center; margin-bottom:15px;">
+                    <div class="perf-hdr" style="color:{color}; font-size:12px; font-weight:900; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px;">{title}</div>
+                    {''.join(items_html)}
+                </div>
+            '''
 
         # V23.60: High-Density Gainer/Loser Grid
         perf_carveout_html = f"""
         <tr><td style="padding:15px 0 25px 0;">
             <div class="section-hdr" style="font-family:monospace; font-size:20px; letter-spacing:5px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; color:{text_bright};">Session Performance Movers</div>
             <table width="100%" cellpadding="0" cellspacing="0">
-                <tr><td colspan="2" style="font-size:16px; color:{bull}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▲ Top Gainers</td></tr>
-                <tr>{render_perf_list(gainers_top, "", bull)}</tr>
-                <tr><td colspan="2" style="padding-top:25px; font-size:16px; color:{bear}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▼ Top Losers</td></tr>
-                <tr>{render_perf_list(losers_top, "", bear)}</tr>
+                <tr><td style="font-size:16px; color:{bull}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▲ Top Gainers</td></tr>
+                <tr><td>{render_perf_list(gainers_top, "", bull)}</td></tr>
+                <tr><td style="padding-top:25px; font-size:16px; color:{bear}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▼ Top Losers</td></tr>
+                <tr><td>{render_perf_list(losers_top, "", bear)}</td></tr>
             </table>
         </td></tr>
         """
@@ -1105,8 +1070,8 @@ class SovereignIntelligenceEngine:
                 rows.append(f"""
                     <div style="background:rgba(255,255,255,0.03); border-left:3px solid {clr}; padding:5px 12px; border-radius:4px; margin-bottom:4px;">
                         <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                            <td class="sec-ticker-cell" width="35%" style="font-family:monospace; font-weight:bold; font-size:18px;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none;">${sym}</a></td>
-                            <td class="sec-pct-cell" width="65%" style="text-align:right; font-family:monospace;">{pct_display}</td>
+                            <td class="sec-ticker-cell" style="font-family:monospace; font-weight:bold; font-size:18px;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none;">${sym}</a></td>
+                            <td class="sec-pct-cell" style="text-align:right; font-family:monospace;">{pct_display}</td>
                         </tr></table>
                         {f'<div style="font-size:12px; color:#8f9bb3; margin-top:6px; line-height:1.6; overflow:hidden; max-height:80px;">{flaired_notes}</div>' if flaired_notes else ''}
                     </div>
@@ -1169,15 +1134,21 @@ class SovereignIntelligenceEngine:
                     .global-chip {{ display:block !important; width:100% !important; margin-bottom:10px; }}
                     .fg-left, .fg-right {{ width:50% !important; }}
                     /* MOBILE: 6-column side-by-side Movers */
-                    .perf-cell {{ display:table-cell !important; width:50% !important; padding:4px 2px !important; text-align:center !important; }}
-                    .perf-hdr {{ font-size:10px !important; margin-bottom:8px !important; }}
-                    .perf-item {{ font-size:10px !important; padding:4px !important; overflow:visible !important; }}
-                    .perf-sym  {{ min-width:45px !important; font-size:11px !important; }}
-                    .perf-price {{ min-width:50px !important; margin-right:2px !important; font-size:10px !important; }}
-                    .perf-pct   {{ font-size:11px !important; }}
+                    .pulse-val {{ font-size:28px !important; }}
+                    .pulse-idx-name {{ font-size:18px !important; }}
+                    .pulse-chg {{ font-size:16px !important; }}
+                    .global-chg {{ font-size:24px !important; }}
+                    .global-label {{ font-size:18px !important; }}
+                    .section-hdr {{ font-size:24px !important; font-weight:900 !important; letter-spacing:1px !important; }}
+                    .perf-cell {{ display:block !important; width:100% !important; padding:4px 0 !important; text-align:center !important; border-bottom:1px solid rgba(255,255,255,0.05); }}
+                    .perf-hdr {{ font-size:14px !important; margin-bottom:12px !important; }}
+                    .perf-item {{ font-size:16px !important; padding:8px !important; overflow:visible !important; }}
+                    .perf-sym  {{ min-width:70px !important; font-size:16px !important; }}
+                    .perf-price {{ min-width:75px !important; margin-right:10px !important; font-size:14px !important; }}
+                    .perf-pct   {{ font-size:16px !important; }}
                     .bucket-col {{ display:block !important; width:100% !important; padding:0 !important; }}
-                    .sec-ticker-cell {{ width:22% !important; font-size:14px !important; }}
-                    .sec-pct-cell    {{ width:78% !important; font-size:10px !important; }}
+                    .sec-ticker-cell {{ width:25% !important; font-size:16px !important; }}
+                    .sec-pct-cell    {{ width:75% !important; font-size:10px !important; text-align:right !important; }}
                 }}
 
                 /* Desktop / large screen upsizing */
@@ -1249,15 +1220,15 @@ class SovereignIntelligenceEngine:
                         color:{text_bright} !important;
                         letter-spacing:1px !important;
                     }}
-                    .pulse-idx-name {{ font-size:14px !important; margin-bottom:8px !important; }}
-                    .pulse-sub-label {{ font-size:9px !important; }}
-                    .pulse-val {{ font-size:26px !important; font-weight:900 !important; }}
+                    .pulse-idx-name {{ font-size:12px !important; margin-bottom:6px !important; }}
+                    .pulse-sub-label {{ font-size:8px !important; }}
+                    .pulse-val {{ font-size:22px !important; font-weight:900 !important; }}
                     .pulse-chg {{ font-size:14px !important; }}
-                    .crypto-label {{ font-size:16px !important; margin-bottom:4px !important; }}
-                    .crypto-val   {{ font-size:24px !important; font-weight:900 !important; }}
+                    .crypto-label {{ font-size:14px !important; margin-bottom:4px !important; }}
+                    .crypto-val   {{ font-size:20px !important; font-weight:900 !important; }}
                     .crypto-chg   {{ font-size:14px !important; }}
-                    .global-label {{ font-size:18px !important; }}
-                    .global-chg   {{ font-size:22px !important; font-weight:bold !important; }}
+                    .global-label {{ font-size:16px !important; }}
+                    .global-chg   {{ font-size:20px !important; font-weight:bold !important; }}
                     .perf-item    {{ font-size:16px !important; }}
                     .perf-cell    {{ padding:0 6px !important; }}
                     /* Mobile header reduction by 35% (42px -> 27px) */
