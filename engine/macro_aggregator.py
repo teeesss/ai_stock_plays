@@ -424,6 +424,7 @@ class MacroAggregator:
                 return _up.urlparse(ds).netloc.lower().replace('www.', '')
             
             clean = re.sub(r'[^a-zA-Z0-9]', '', ds).lower()
+            if 'motleyfool' in clean: return 'BLACKLIST'
             if 'cnbc' in clean: return 'cnbc'
             if 'google' in clean: return 'google'
             if 'yahoo' in clean: return 'yahoo'
@@ -445,6 +446,7 @@ class MacroAggregator:
         top_ranked = []
         for item in all_sorted:
             src_key = _src_bucket(item)
+            if src_key == 'BLACKLIST': continue
             count = source_counts.get(src_key, 0)
             if count >= self.MAX_PER_SOURCE:
                 log.debug(f"  [SOURCE-CAP] Skipping — {src_key} at {count}/{self.MAX_PER_SOURCE}: {item['raw_title'][:55]}")

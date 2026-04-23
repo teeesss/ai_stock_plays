@@ -405,11 +405,14 @@ class SovereignIntelligenceEngine:
             if any(s_up.endswith(s) for s in [".DE", ".ST", ".L", ".PA", ".MI", ".MC", ".AS"]):
                 open_m, close_m = 300, 1130 
             # Asia (HK/N225): ~21:30 - 04:00 EST
-            elif any(s_up.endswith(s) for s in [".HK", ".N225", ".TW", ".KS"]):
+            elif any(s_up.endswith(s) for s in [".HK", ".N225", ".TW", ".KS", "HSI", "N225"]):
                 open_m, close_m = 2130, 400 # Spans midnight
-            # Australia (AX/CX): ~19:00 - 01:00 EST
-            elif any(s_up.endswith(s) for s in [".AX", ".CX"]):
-                open_m, close_m = 1900, 100  # Spans midnight
+            # Australia / UK / EU Index Anchors
+            elif any(s_up.endswith(s) or s_up in ["^FTSE", "^GDAXI"] for s in [".AX", ".CX", ".L", ".DE"]):
+                if s_up in ["^FTSE", "^GDAXI", ".L", ".DE"]:
+                    open_m, close_m = 300, 1130
+                else:
+                    open_m, close_m = 1900, 100  # Spans midnight
 
         # 3. Session Classification
         is_live = False
@@ -473,10 +476,8 @@ class SovereignIntelligenceEngine:
             elif sess == "LIVE":
                 effective_sess = "LIVE"
             else:
-                # If no match in an extended session, we return the session name but maybe a flag for 'No Trade'?
-                # Per user: "prior trading will show only". If match is false, we are showing REG price.
-                # In this case, we return an empty session to hide the badge.
-                effective_sess = ""
+                # If no match in an extended session, return CLOSED if not in REG
+                effective_sess = "CLOSED"
 
         return price, pct, effective_sess
 
@@ -751,7 +752,7 @@ class SovereignIntelligenceEngine:
                  d_clean = d_clean.replace("The Economic Times", "EconTimes")
                  d_clean = d_clean.replace("The Motley Fool", "MotleyFool")
                  d_clean = d_clean.replace("Barron's", "Barrons")
-                 src_label = f"GOOG/{d_clean}"
+                 src_label = d_clean
              else:
                  src_label = display_src.replace("CNBC ", "").strip()
                  
@@ -766,8 +767,10 @@ class SovereignIntelligenceEngine:
                           f'[{src_label}]</span>')
              if is_earn:
                  if earn_count < 8:
-                     row_color = gold
-                     earnings_intel_rows += (f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color}; font-weight:600;">'
+                     # V25.7: Institutional Blue Glassmorphism for Earnings
+                     row_color = "#38bdf8" if earn_count % 2 == 0 else "#7dd3fc"
+                     row_bg = "rgba(56,189,248,0.05)" if earn_count % 2 == 0 else "rgba(125,211,252,0.08)"
+                     earnings_intel_rows += (f'<div style="padding:6px 8px; margin-bottom:4px; border-radius:6px; background:{row_bg}; border:1px solid rgba(56,189,248,0.1); color:{row_color}; font-weight:600;">'
                                              f'<span style="font-size:14px;">📊</span>&nbsp;'
                                              f'<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">'
                                              f'{f_title}</a>{SRC_BADGE}</div>')
@@ -823,7 +826,7 @@ class SovereignIntelligenceEngine:
              
         # V24.9: Reordered - Earnings Intelligence comes AFTER general news URLs
         if earnings_intel_rows:
-            earnings_area = f'<div style="margin-top:20px; margin-bottom:20px; padding:12px; background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:8px;"><div style="color:{gold}; font-size:18px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">🚨 Earnings Intelligence</div>{earnings_intel_rows}</div>'
+            earnings_area = f'<div style="margin-top:20px; margin-bottom:20px;"><div style="color:#38bdf8; font-size:18px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">🚨 Earnings Intelligence</div>{earnings_intel_rows}</div>'
             macro_intel_rows = macro_intel_rows + earnings_area
 
         # Watchlist Intel Logic (V23.55)
