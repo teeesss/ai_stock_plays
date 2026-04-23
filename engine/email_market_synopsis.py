@@ -777,8 +777,8 @@ class SovereignIntelligenceEngine:
                     try:
                         from live_prices import async_run_fetch
                         movers_list = movers_ext['gainers'] + movers_ext['losers']
-                        # V24.9: Explicitly include indices and crypto to prevent 0.00% Pulse errors
-                        pulse_anchors = ['^GSPC', '^IXIC', '^DJI', 'ES=F', 'NQ=F', 'YM=F', 'BTC-USD', 'ETH-USD', 'SOL-USD']
+                        # V24.9: Explicitly include indices, global markets, and crypto to prevent 0.00% Pulse errors
+                        pulse_anchors = ['^GSPC', '^IXIC', '^DJI', 'ES=F', 'NQ=F', 'YM=F', 'BTC-USD', 'ETH-USD', 'SOL-USD', '^HSI', '^N225', '^GDAXI', '^FTSE']
                         all_to_fetch = list(set(master.keys()) | set([t.upper() for t in (custom_tickers or [])]) | set(movers_list) | set(pulse_anchors))
                         # V24.4: Force Freshness for Email Dossier (Ignore 15m Cache)
                         prices = asyncio.run(async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True, force=True))
@@ -793,7 +793,17 @@ class SovereignIntelligenceEngine:
                 print(f"[WARN] Cache analysis failed: {e}. Forcing fresh fetch.")
                 prices = self._load_json("live_prices.json")
         else:
-            prices = self._load_json("live_prices.json")
+            print(f"[INFO] [CACHE] Cache file missing. Forcing fresh fetch.")
+            try:
+                from live_prices import async_run_fetch
+                movers_list = movers_ext['gainers'] + movers_ext['losers']
+                pulse_anchors = ['^GSPC', '^IXIC', '^DJI', 'ES=F', 'NQ=F', 'YM=F', 'BTC-USD', 'ETH-USD', 'SOL-USD', '^HSI', '^N225', '^GDAXI', '^FTSE']
+                all_to_fetch = list(set(master.keys()) | set([t.upper() for t in (custom_tickers or [])]) | set(movers_list) | set(pulse_anchors))
+                prices = asyncio.run(async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True, force=True))
+                print(f"[INFO] [LIVE] Initial Fetch Complete: {len(prices)} tickers.")
+            except Exception as e:
+                print(f"[WARN] Initial price fetch failed: {e}.")
+                prices = {}
 
         news_db = self._load_json("YAHOO_NEWS_DB.json").get("news", {})
         sentiment = self.fetch_sentiment()
