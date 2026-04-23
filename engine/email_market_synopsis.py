@@ -751,7 +751,9 @@ class SovereignIntelligenceEngine:
              if added:
                  sent_news_history[res["link"]] = now_ts
                  status = "FRESH" if res in fresh_pool else "STALE"
-                 print(f"[DEBUG] Selected ({status}) -> [{is_earn and 'EARNINGS' or 'MACRO'}] {res.get('title', 'Unknown')}")
+                 score = res.get('final_score', res.get('score', 0))
+                 if isinstance(score, float): score = f"{score:.2f}"
+                 print(f"[DEBUG] Selected ({status}) [Score: {score}] -> [{is_earn and 'EARNINGS' or 'MACRO'}] {res.get('title', 'Unknown')}")
              
              if row_count >= 15 and earn_count >= 8: 
                  print(f"[INFO] News Quota Met: {row_count} Macro, {earn_count} Earnings.")

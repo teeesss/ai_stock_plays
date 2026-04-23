@@ -288,7 +288,8 @@ class LocalIntelligenceSynthesizer:
                 sentiment = self.analyzer.polarity_scores(text)
                 tone_score = abs(sentiment['compound']) * 2.0
                 
-                final_score = length_score + alpha_score + tone_score
+                final_score = a.get('score', 0) + length_score + alpha_score + tone_score
+                a['final_score'] = final_score
                 scored.append((a, final_score))
             
             # Sort by score descending
