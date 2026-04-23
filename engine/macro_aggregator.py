@@ -46,7 +46,6 @@ class MacroAggregator:
             "IBD Market News": {"url": "https://www.investors.com/rss.axd?path=InvestingRSS.xml", "type": "rss", "weight": 120},
             "CNBC Markets": {"url": "https://www.cnbc.com/id/10000664/device/rss/rss.html", "type": "rss", "weight": 110},
             "MarketWatch Pulse": {"url": "https://feeds.content.dowjones.io/public/rss/mw_marketpulse", "type": "rss", "weight": 100},
-            "Reuters Markets": {"url": "https://feeds.reuters.com/reuters/businessNews", "type": "rss", "weight": 145},
             "Seeking Alpha": {"url": "https://seekingalpha.com/feed.xml", "type": "rss", "weight": 90},
             "Business Insider": {"url": "https://markets.businessinsider.com/rss/news", "type": "rss", "weight": 80},
             "CNBC Earnings": {"url": "https://www.cnbc.com/id/15839135/device/rss/rss.html", "type": "rss", "weight": 170},
@@ -62,9 +61,17 @@ class MacroAggregator:
             "Google News AI Tech": {"url": "https://news.google.com/rss/search?q=AI+semiconductor+nvidia+earnings+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 105},
             "Google News Finance": {"url": "https://news.google.com/rss/search?q=fed+rate+inflation+macro+economy+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 85},
         }
-        # V25.3: Max articles any single source can contribute to final ranked pool.
-        # Prevents CNBC (5 feeds) or any other high-volume outlet from flooding the top 15.
-        self.MAX_PER_SOURCE = 3
+        # V25.4: Max articles any single outlet (by root domain) can contribute.
+        # Scoring still determines rank — this just prevents a single firehose outlet from
+        # flooding the final pool. 5 is generous; real diversity comes from source count.
+        self.MAX_PER_SOURCE = 5
+        # Junk nav / site-section strings that scrape targets sometimes emit
+        self.SCRAPE_JUNK_TITLES = frozenset([
+            "entertainment", "news", "life", "sports", "opinion", "politics",
+            "technology", "science", "health", "travel", "food", "style",
+            "videos", "photos", "podcasts", "newsletters", "subscribe",
+            "sign in", "log in", "markets", "finance", "more",
+        ])
         self.blacklist = ["DAVE RAMSEY", "PR NEWSWIRE", "BUSINESS WIRE", "GLOBE NEWSWIRE"]
 
     def _load_prices(self):
@@ -265,6 +272,17 @@ class MacroAggregator:
                                 link = entry.get('link', '')
                                 pub_date = entry.get('published', '')
                                 
+                                # V25.5: Google News RSS publisher extraction (title key)
+                                display_source = name
+                                if 'news.google.com' in name.lower() or 'google news' in name.lower():
+                                    gn_src = entry.get('source', {})
+                                    if isinstance(gn_src, dict):
+                                        display_source = gn_src.get('title', name)
+                                    elif isinstance(gn_src, str):
+                                        display_source = gn_src
+                                    # Also strip " - Publisher" suffix from title if present
+                                    # e.g. "Stock market falls — Reuters" -> keep as-is, tag it
+                                
                                 entry_ts = now_ts
                                 if hasattr(entry, 'published_parsed') and entry.published_parsed:
                                     entry_ts = time.mktime(entry.published_parsed)
@@ -299,6 +317,7 @@ class MacroAggregator:
                                     "summary": summary,
                                     "link": link,
                                     "source": name,
+                                    "display_source": display_source,
                                     "score": round(score, 1),
                                     "date": pub_date,
                                     "is_earnings": is_earnings
@@ -322,12 +341,21 @@ class MacroAggregator:
                                     title = l.get_text().strip()
                                     items.append({"title": title, "link": "https://thefly.com" + l['href'] if l['href'].startswith('/') else l['href']})
                             elif "yahoo" in url:
-                                links = soup.find_all('a', class_='subLink') or soup.find_all('h3')
-                                for l in links[:10]:
+                                # V25.4: Hardened Yahoo scraper — filter nav junk
+                                # Yahoo Finance topic pages mix real article <a> tags with
+                                # site-nav links. We filter by: min length, not-junk-title,
+                                # and must contain at least one uppercase word (real headline).
+                                links = soup.find_all('a', href=True)
+                                for l in links:
                                     title = l.get_text().strip()
-                                    a_tag = l if l.name == 'a' else l.find('a')
-                                    if a_tag and a_tag.get('href'):
-                                        items.append({"title": title, "link": a_tag['href']})
+                                    href = l.get('href', '')
+                                    if len(title) < 30: continue  # too short = nav item
+                                    if title.lower() in self.SCRAPE_JUNK_TITLES: continue
+                                    if not re.search(r'[A-Z]', title): continue  # no caps = nav
+                                    if not ('/news/' in href or '/m/' in href or 'finance.yahoo' in href): continue
+                                    full_href = href if href.startswith('http') else 'https://finance.yahoo.com' + href
+                                    items.append({"title": title, "link": full_href})
+                                    if len(items) >= 15: break
 
                             for it in items:
                                 title = it['title']
@@ -357,6 +385,7 @@ class MacroAggregator:
                                     "summary": "",
                                     "link": it['link'],
                                     "source": name,
+                                    "display_source": name,
                                     "score": score,
                                     "date": "Just now",
                                     "is_earnings": is_earnings
@@ -379,29 +408,42 @@ class MacroAggregator:
         
         log.info(f"[DEBUG] Aggregator: Pulled {len(all_items)} valid raw items before scoring sort.")
         
-        # V25.3: Source Diversity Cap — enforce MAX_PER_SOURCE per outlet BEFORE final cut.
-        # This prevents 5 CNBC feeds (or any other single outlet) from dominating the pool.
-        # We first sort ALL items by score desc, then walk the list applying the per-source cap.
+        # V25.4: Source Diversity Cap — enforce MAX_PER_SOURCE per ROOT DOMAIN (not feed name).
+        # We bucket by the actual display_source domain, not the feed name, so Google News
+        # articles from Reuters count toward 'reuters.com', not 'google'.
+        import urllib.parse as _up
+        def _src_bucket(item):
+            ds = item.get('display_source', item.get('source', 'unknown'))
+            # V25.5: If it looks like a URL, extract netloc
+            if ds.startswith('http'):
+                return _up.urlparse(ds).netloc.lower().replace('www.', '')
+            # If it's a known feed name like "CNBC Top News" -> "cnbc"
+            # If it's a publisher from Google News like "The Fly" -> "thefly"
+            clean = re.sub(r'[^a-zA-Z0-9]', '', ds).lower()
+            if 'cnbc' in clean: return 'cnbc'
+            if 'google' in clean: return 'google'
+            if 'yahoo' in clean: return 'yahoo'
+            if 'wsj' in clean: return 'wsj'
+            if 'reuters' in clean: return 'reuters'
+            if 'bloomberg' in clean: return 'bloomberg'
+            return clean[:10]
+        
         all_sorted = sorted(all_items, key=lambda x: x['score'], reverse=True)
         source_counts = {}
         top_ranked = []
         for item in all_sorted:
-            # Normalise source name: strip feed suffixes so "CNBC Top News", "CNBC Tech", etc.
-            # all count against the same "CNBC" bucket.
-            src_domain = item.get('source', 'Unknown')
-            # Extract root domain keyword (e.g. "cnbc", "google", "wsj")
-            src_key = src_domain.lower().split()[0]  # first word of source name
+            src_key = _src_bucket(item)
             count = source_counts.get(src_key, 0)
             if count >= self.MAX_PER_SOURCE:
-                log.debug(f"  [SOURCE-CAP] Skipping '{item['raw_title'][:60]}...' — {src_key} already at {count}/{self.MAX_PER_SOURCE}")
+                log.debug(f"  [SOURCE-CAP] Skipping — {src_key} at {count}/{self.MAX_PER_SOURCE}: {item['raw_title'][:55]}")
                 continue
             source_counts[src_key] = count + 1
             top_ranked.append(item)
         
-        # Log source diversity summary
         diversity = {k: v for k, v in sorted(source_counts.items(), key=lambda x: -x[1])}
-        log.info(f"[V25.3] Source Diversity After Cap: {diversity}")
-        log.info(f"[V25.3] Total viable articles after source cap: {len(top_ranked)} (from {len(all_items)} raw)")
+        log.info(f"[V25.4] Source Diversity After Cap: {diversity}")
+        log.info(f"[V25.4] Total viable articles after cap: {len(top_ranked)} (from {len(all_items)} raw)")
+
         
         # Save to Cache
         try:

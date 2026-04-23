@@ -739,10 +739,37 @@ class SovereignIntelligenceEngine:
              is_earn = res.get('is_earnings') or "EARNINGS" in res.get('raw_title', '').upper() or res.get('source') == "CNBC Earnings"
              
              added = False
+             # V25.4: Build clean source label for display
+             feed_name = res.get('source', '')
+             display_src = res.get('display_source', feed_name)
+             
+             if "Google News" in feed_name and display_src != feed_name:
+                 # Clean up common long publishers
+                 d_clean = display_src.replace("Investor's Business Daily", "IBD")
+                 d_clean = d_clean.replace("The Wall Street Journal", "WSJ")
+                 d_clean = d_clean.replace("Financial Times", "FT")
+                 d_clean = d_clean.replace("The Economic Times", "EconTimes")
+                 d_clean = d_clean.replace("The Motley Fool", "MotleyFool")
+                 src_label = f"GOOG/{d_clean}"
+             else:
+                 src_label = display_src.replace("CNBC ", "").strip()
+                 
+             # Truncate to keep badge tight
+             if len(src_label) > 22: src_label = src_label[:22]
+             src_label = src_label.upper().replace(" ", "")
+             
+             # Orange monospace badge matching the EXECUTIVE SUMMARY header font aesthetic
+             SRC_BADGE = (f'&nbsp;<span style="font-family:\'Courier New\',Courier,monospace; '
+                          f'color:#f97316; font-size:11px; font-weight:900; '
+                          f'letter-spacing:1px; text-transform:uppercase;">'
+                          f'[{src_label}]</span>')
              if is_earn:
                  if earn_count < 8:
                      row_color = gold
-                     earnings_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color}; font-weight:600;"><span style="font-size:14px;">📊</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
+                     earnings_intel_rows += (f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color}; font-weight:600;">'
+                                             f'<span style="font-size:14px;">📊</span>&nbsp;'
+                                             f'<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">'
+                                             f'{f_title}</a>{SRC_BADGE}</div>')
                      earn_count += 1
                      added = True
              else:
@@ -766,8 +793,11 @@ class SovereignIntelligenceEngine:
                      for kw in matched_kws:
                          topic_counts[kw] += 1
                          
-                     row_color = "#60a5fa" if row_count % 2 == 0 else "#4ade80" 
-                     macro_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
+                     row_color = "#60a5fa" if row_count % 2 == 0 else "#4ade80"
+                     macro_intel_rows += (f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color};">'
+                                         f'<span style="font-size:14px;">&bull;</span>&nbsp;'
+                                         f'<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">'
+                                         f'{f_title}</a>{SRC_BADGE}</div>')
                      row_count += 1
                      added = True
                      
