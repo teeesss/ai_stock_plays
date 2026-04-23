@@ -940,7 +940,7 @@ class SovereignIntelligenceEngine:
                     f'<div style="font-size:9px; opacity:0.8; margin-top:2px;">{get_diff_str(p.get("price",0), chg, color, fs="9px")}</div>'
                     f'</div></div>'
                 )
-                tiles.append(f'<td class="tile-cell" style="width:{w}; padding:3px; vertical-align:top;">{inner}</td>')
+                tiles.append(f'<td class="global-col" style="width:{w}; padding:3px; vertical-align:top;">{inner}</td>')
             return tiles
 
         gainers_top = []
@@ -1018,38 +1018,12 @@ class SovereignIntelligenceEngine:
                 </div>
             '''
 
-        # Build Desktop and Mobile Blocks
-        desktop_pulse = f"""
-        <div class="desktop-only">
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;"><tr>{get_index_tiles("33.33%")}</tr></table>
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;"><tr>{get_crypto_tiles("33.33%")}</tr></table>
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;"><tr>
-                {render_fg_tile("MARKET F&G", market_fg, fg_color_total, "FEAR & GREED", "50%")}
-                {render_fg_tile("CRYPTO F&G", crypto_fg, fg_color_crypto, "COIN GLASS", "50%")}
-            </tr></table>
-            <div class="section-hdr" style="font-size:20px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-top:20px; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border};">Global Markets</div>
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;"><tr>
-                {"".join(get_global_tiles(["25%", "25%", "25%", "25%"]))}
-            </tr></table>
-            <div class="section-hdr" style="font-family:monospace; font-size:20px; letter-spacing:5px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; color:{text_bright};">Session Performance Movers</div>
-            <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                <td width="50%" style="vertical-align:top; padding-right:5px;">
-                    <div style="font-size:16px; color:{bull}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▲ Top Gainers</div>
-                    {render_perf_list(gainers_top, "", bull)}
-                </td>
-                <td width="50%" style="vertical-align:top; padding-left:5px;">
-                    <div style="font-size:16px; color:{bear}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▼ Top Losers</div>
-                    {render_perf_list(losers_top, "", bear)}
-                </td>
-            </tr></table>
-        </div>
-        """
+        # 2c. Global Markets
+        g_tiles = get_global_tiles(["25%", "25%", "25%", "25%"])
+        global_grid_html = f'<tr>{"".join(g_tiles)}</tr>'
 
-        g_tiles = get_global_tiles(["50%", "50%", "50%", "50%"])
-        g_grid_mobile = f"<tr>{g_tiles[0]}{g_tiles[1]}</tr><tr>{g_tiles[2]}{g_tiles[3]}</tr>"
-        mobile_pulse = f"""
-        <!--[if !mso]><!-->
-        <div class="mobile-only">
+        # Build Unified Pulse Block
+        unified_pulse = f"""
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;"><tr>{get_index_tiles("33.33%")}</tr></table>
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;"><tr>{get_crypto_tiles("33.33%")}</tr></table>
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;"><tr>
@@ -1058,17 +1032,19 @@ class SovereignIntelligenceEngine:
             </tr></table>
             <div class="section-hdr" style="font-size:20px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-top:20px; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border};">Global Markets</div>
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">
-                {g_grid_mobile}
+                {global_grid_html}
             </table>
             <div class="section-hdr" style="font-family:monospace; font-size:20px; letter-spacing:5px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; color:{text_bright};">Session Performance Movers</div>
-            <table width="100%" cellpadding="0" cellspacing="0">
-                <tr><td style="font-size:16px; color:{bull}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▲ Top Gainers</td></tr>
-                <tr><td>{render_perf_list(gainers_top, "", bull)}</td></tr>
-                <tr><td style="padding-top:25px; font-size:16px; color:{bear}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▼ Top Losers</td></tr>
-                <tr><td>{render_perf_list(losers_top, "", bear)}</td></tr>
-            </table>
-        </div>
-        <!--<![endif]-->
+            <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td class="mover-col" width="50%" style="vertical-align:top; padding-right:5px;">
+                    <div class="perf-hdr" style="font-size:16px; color:{bull}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▲ Top Gainers</div>
+                    {render_perf_list(gainers_top, "", bull)}
+                </td>
+                <td class="mover-col" width="50%" style="vertical-align:top; padding-left:5px; padding-top:0;">
+                    <div class="perf-hdr" style="font-size:16px; color:{bear}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▼ Top Losers</div>
+                    {render_perf_list(losers_top, "", bear)}
+                </td>
+            </tr></table>
         """
 
         # 3. Narrative Intelligence
@@ -1136,7 +1112,7 @@ class SovereignIntelligenceEngine:
         merged_intel = (tradeable.get("semi", []) + tradeable.get("ai", []))[:25]
         intelligence_html = render_bucket("Sovereign Intelligence Dashboard", merged_intel, columns=1)
 
-        # Master Template Assembly — Responsive Dual-Surface Design
+        # Master Template Assembly — Responsive Single-Surface Design
         html = f"""
         <!DOCTYPE html>
         <html lang="en">
@@ -1147,22 +1123,16 @@ class SovereignIntelligenceEngine:
                 body {{ margin:0; padding:0; background-color:{bg_main}; }}
                 .wrap {{ background-color:{bg_main}; padding:20px 16px; }}
                 .main-table {{ max-width:600px; width:100%; margin:0 auto; }}
-                .tile-cell {{ width:50%; padding:3px; vertical-align:top; }}
-
-                /* 100% Separate View Classes */
-                .mobile-only {{ display: none !important; mso-hide: all; }}
-                .desktop-only {{ display: block !important; }}
-
-                /* Desktop: side-by-side cockpit */
-                .pulse-left {{ width:55%; padding-right:18px; vertical-align:top; }}
-                .pulse-right {{ width:45%; padding-left:18px; vertical-align:top; border-left:1px solid {border}; }}
 
                 /* Mobile overrides */
                 @media only screen and (max-width:599px) {{
-                    .desktop-only {{ display: none !important; }}
-                    .mobile-only {{ display: block !important; }}
-
                     .wrap {{ padding:8px !important; }}
+                    
+                    /* Global Markets grid wrapper */
+                    .global-col {{ display:inline-block !important; width:50% !important; box-sizing:border-box !important; margin:0 !important; }}
+                    
+                    /* Movers vertical stack */
+                    .mover-col {{ display:block !important; width:100% !important; padding-left:0 !important; padding-right:0 !important; padding-top:15px !important; }}
                     
                     /* Typography Scaling */
                     .pulse-idx-name {{ font-size:12px !important; margin-bottom:4px !important; }}
@@ -1174,7 +1144,7 @@ class SovereignIntelligenceEngine:
                     
                     /* Movers Vertical Hardening */
                     .perf-cell {{ display:block !important; width:100% !important; padding:4px 0 !important; text-align:center !important; border-bottom:1px solid rgba(255,255,255,0.05); }}
-                    .perf-hdr {{ font-size:14px !important; margin-bottom:12px !important; }}
+                    .perf-hdr {{ font-size:18px !important; padding-top:12px !important; padding-bottom:8px !important; margin-bottom:12px !important; }}
                     
                     /* Watchlist Density */
                     .bucket-col {{ display:block !important; width:100% !important; padding:0 !important; }}
@@ -1189,9 +1159,32 @@ class SovereignIntelligenceEngine:
                 @media only screen and (min-width:600px) {{
                     .main-table {{ max-width:850px !important; }}
                     .section-hdr {{ font-size:16px !important; font-weight:900 !important; letter-spacing:3px !important; color:{text_bright} !important; }}
+                    .macro-hdr {{ font-size:18px !important; font-weight:900 !important; letter-spacing:2px !important; }}
+                    .global-label {{ font-size:16px !important; letter-spacing:1.5px !important; }}
+                    .global-chg   {{ font-size:24px !important; padding:4px 0 !important; }}
+                    .global-badge {{ font-size:12px !important; }}
                     .pulse-idx-name {{ font-size:16px !important; letter-spacing:1.5px !important; margin-bottom:15px !important; }}
+                    .pulse-sub-label {{ font-size:10px !important; }}
                     .pulse-val {{ font-size:24px !important; }}
+                    .pulse-chg {{ font-size:14px !important; }}
+                    .pulse-chg-pill {{ font-size:14px !important; padding:4px 8px !important; }}
+                    .pulse-diff {{ font-size:12px !important; margin-top:2px !important; }}
+                    .crypto-label {{ font-size:13px !important; margin-bottom:6px !important; }}
+                    .crypto-val   {{ font-size:24px !important; }}
+                    .crypto-chg   {{ font-size:14px !important; }}
+                    .fg-val       {{ font-size:32px !important; }}
+                    .fg-label     {{ font-size:13px !important; }}
+                    .sec-ticker {{ font-size:18px !important; }}
+                    .sec-name   {{ font-size:16px !important; }}
+                    .sec-pct    {{ font-size:18px !important; }}
+                    .sec-notes  {{ font-size:13px !important; line-height:1.6 !important; color:#8f9bb3 !important; }}
+                    .sec-price {{ font-size:15px !important; font-weight:bold !important; color:{text_bright} !important; }}
+                    .perf-item {{ font-size:18px !important; margin-bottom:6px !important; }}
+                    .perf-hdr {{ font-size:18px !important; margin-bottom:15px !important; letter-spacing:3px !important; }}
+                    .perf-cell {{ padding:0 4px !important; }}
+                    .sector-card {{ padding:14px 18px !important; }}
                     .hdr-title {{ font-size:28px !important; }}
+                    .hdr-sub   {{ font-size:15px !important; }}
                 }}
             </style>
         </head>
@@ -1218,9 +1211,8 @@ class SovereignIntelligenceEngine:
 
                 <div class="section-hdr" style="font-size:20px; font-family:monospace; color:{gold}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid rgba(245,158,11,0.2);">Sovereign Index Pulse // Divergence</div>
                 
-                <!-- 100% Separate Dual-View Assembly -->
-                {desktop_pulse}
-                {mobile_pulse}
+                <!-- Unified View Assembly -->
+                {unified_pulse}
                 
                 <!-- Macro Intelligence leads the news flow -->
                 <div style="margin-top:25px;">
