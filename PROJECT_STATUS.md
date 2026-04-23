@@ -1,19 +1,19 @@
 # Project Status: Market Intelligence Engine
 
-## 🚀 Current Milestone: V24.2 (Hardened Intelligence & News Velocity)
-**Status**: 🟢 PRODUCTION-READY // **Temporal Integrity**: 100% // **Narrative Alpha**: Institutional
-
+## 🚀 Current Milestone: V24.7 (Data-Driven Session Hardening)
+**Status**: 🟢 PRODUCTION-READY // **Temporal Integrity**: 100% // **Data Integrity**: Hardened
+---
 ### 🧩 Core Accomplishments
-- **[NEW] Proxy Failover & Impersonation Rotation**: Hardened the fetch pipeline with automated retry logic and multi-UA (Chrome/Edge/Safari) impersonation to bypass 401/403 blocks on financial feeds.
-- **[NEW] Sentiment Velocity Monitor (SVM)**: Implemented real-time keyword frequency tracking (4h vs 24h) to identify accelerating market narratives and high-alpha shifts.
-- **[NEW] Extended-Hours Anchor Pricing**: Integrated "C: $price" (previous close) anchoring across the Terminal UI, email synopsis, and ticker chips for institutional-grade premium/discount analysis.
-- **[NEW] Earnings Intelligence Segmentation**: Automated separation of earnings news into a dedicated, high-priority section when volume exceeds thresholds.
-- **Signal Decay Engine**: Integrated a linear 5% hourly decay into the news aggregator to prioritize fresh macro catalysts over stale information.
+- **[NEW] Data-Driven Session Detection (V24.7)**: Replaced clock-based labeling with data-driven verification. Labels (AH, OVN, PRE) now accurately match the trading source, preventing misleading badges during illiquid gaps.
+- **[NEW] Session-Aware Delta Tracking**: Performance movers now include explicit session deltas (e.g., "+1.2% OVN") anchored to the previous regular session close, providing precise volatility context.
+- **[NEW] 24h Database Purge (V24.6)**: Implemented automatic TTL purging in the price engine to eliminate "ghost" tickers from previous sessions (e.g., PEGA, CNQ confirmed purged).
+- **[NEW] Proxy Failover & Impersonation Rotation**: Hardened the fetch pipeline with automated retry logic and multi-UA (Chrome/Edge/Safari) impersonation.
+- **[NEW] Sentiment Velocity Monitor (SVM)**: Real-time keyword frequency tracking (4h vs 24h) to identify accelerating market narratives.
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V24.2 (Hardened Intelligence & News Velocity)
-- **Critical Progress**: Hardened the macro intelligence pipeline against data blocks and implemented real-time narrative velocity tracking. Unified anchor pricing across all institutional endpoints.
-- **Next Milestone**: Multi-source news deduplication and high-density RSS intelligence.
+- **Current Tier**: V24.7 (Data-Driven Session Hardening)
+- **Critical Progress**: Locked down session labeling logic and overnight delta calculations. Verified data integrity across AH/OVN transition windows.
+- **Next Milestone**: Sentiment-weighted multi-source deduplication.
 
 ## 🚀 Active Roadmap: V23.76 (Institutional Intelligence Narrative)
 1. **Core Overhaul**: Switched from headline concatenation to dense NLP-driven narrative paragraphs.

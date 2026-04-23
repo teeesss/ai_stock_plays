@@ -1,21 +1,24 @@
-### 🚀 Current Status: V23.95 — Sovereign Narrative Synthesis (Hardened)
-1. - [x] **JIT Narrative Synthesis (V23.95)**: Automated scraping of Edward Jones, Briefing.com, and CNBC Live for high-fidelity executive summaries.
-2. - [x] **Macro Intelligence Expansion (V23.95)**: Integrated OilPrice, Reuters Energy, and Reuters World feeds for multi-sector macro coverage.
-3. - [x] **NLP Synthesis Hardening (V23.95)**: Prioritized institutional leads with triple-layered cross-section deduplication.
-4. - [x] **UI Density Refinement (V23.95)**: Reduced padding and optimized mobile/desktop density for the institutional cockpit.
-5. - [x] **Price Integrity (V23.95)**: Resolved POET stale price leak and established US/Eastern temporal ground truth.
-6. - Date: 2026-04-22
+### 🚀 Current Status: V24.7 — Data-Driven Session Hardening (Locked)
+1. - [x] **Data-Driven Session Labeling (V24.7)**: Session badges (AH, OVN, PRE) now match actual trade source data, not just clock time.
+2. - [x] **Overnight Delta Sync (V24.7)**: Performance movers now show precise session deltas (e.g., "+0.7% AH") anchored to previous close.
+3. - [x] **Ghost Ticker Purge (V24.6)**: Implemented 24h TTL database purge to eliminate stale movers (PEGA/CNQ confirmed purged).
+4. - [x] **JIT Narrative Synthesis (V23.95)**: Automated scraping of Edward Jones, Briefing.com, and CNBC Live for high-fidelity executive summaries.
+5. - [x] **Macro Intelligence Expansion (V23.95)**: Integrated OilPrice, Reuters Energy, and Reuters World feeds for multi-sector macro coverage.
+6. - [x] **NLP Synthesis Hardening (V23.95)**: Prioritized institutional leads with triple-layered cross-section deduplication.
+7. - [x] **UI Density Refinement (V23.95)**: Reduced padding and optimized mobile/desktop density for the institutional cockpit.
+8. - [x] **Price Integrity (V23.95)**: Resolved POET stale price leak and established US/Eastern temporal ground truth.
+9. - Date: 2026-04-23
 
-# Project Status — April 20, 2026
-## 🚀 Version: V23.48 (Visual Supercycle)
+# Project Status — April 23, 2026
+## 🚀 Version: V24.7 (Data-Driven Session Hardening)
 
-Status: **PRODUCTION DEPLOYED — VISUAL SUPERCYCLE**
+Status: **PRODUCTION DEPLOYED — HARDENED**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V23.48 (Visual Supercycle) / V23.47 (Session Parity) / V23.01 (Signal Purge)
-- **Critical Progress**: Deployed context-aware news icons mapping headlines to intelligence themes (Shields, Intel, Energy). Integrated `engine/email_spark_fetcher.py` sidecar for high-fidelity 1d regular session sparklines. Hardened watchlist UI with 26% column width for global tickers. Implemented suffix-aware session logic for global exchanges (.DE, .HK, .ST). Optimized email layout to hide stale Futures data during active trading hours.
-- **Next Milestone**: Multi-agent sentiment validation for divergent headlines.
-- Date: 2026-04-20
+- **Current Tier**: V24.7 (Data-Driven Session) / V24.2 (Hardened Intel) / V23.48 (Visual Supercycle)
+- **Critical Progress**: Eliminated session labeling artifacts. Badges now accurately reflect the source of trading data (AH/OVN/PRE). Implemented overnight delta calculations for performance lists. Purged 24h+ stale tickers from database to prevent ghost movers.
+- **Next Milestone**: Sentiment-weighted multi-source deduplication.
+- Date: 2026-04-23
 
 ### 🚀 Previous Status: V22.51 — Sovereign Intelligence Hardening (Futures Divergence)
 - [x] **Index Divergence Pulse**: Integrated comparative row-tracking for all major US indices. Shows **Friday Cash Close** vs. **Sunday Night Futures** side-by-side to highlight market opening sentiment.

@@ -815,3 +815,13 @@ Contract Mfg ($FN, $CLS)
 - **Data Hygiene**: Hardwired a 48-hour TTL to automatically discard stale news (solving the 2024 lingering updates), and enabled regex bounding for clean ticker parsing.
 - **Narrative Deduplication**: Added exact-string semantic filtering to eliminate stutter resulting from multiple overlapping RSS feeds conveying the same signal.
 - **Visual Scale Override**: Scaled the "Cockpit" font typography down by 35% on mobile (42px -> 27px) while enforcing the `Light Blue / Green` institutional alternating motif on the headline list.
+
+### 2026-04-23 - V24.7 Data-Driven Session Hardening
+- **Data-Driven Labeling Protocol**: Re-engineered `get_session_data()` to abandon time-forced labeling. Badges (`AH`, `OVN`, `PRE`) now strictly reflect the **source** of the trading data. If a stock is in the OVN time window but only has AH (After-Hours) trade data, it is correctly labeled as `AH`.
+- **Session-Aware Delta Rendering**: Performance lists now explicitly include the session source in the delta string (e.g., `(AH +0.7%)`). This ensures users can differentiate between residual after-hours moves and active overnight trading.
+- **Ghost Ticker Elimination (V24.6)**: Implemented an automated 24-hour TTL database purge in `live_prices.py`. The engine now identifies and deletes any ticker entry older than 24 hours every time the database is saved, preventing stale prices from previous sessions (e.g., PEGA, CNQ) from contaminating today's movers.
+- **Indentation & Logic Hardening**: Fixed critical `IndentationError` in the synopsis engine and reinforced the `AH` scavenging logic during `OVN` windows to prevent `+0.0%` reporting gaps.
+
+> **Last Updated**: 2026-04-23T13:27:00Z
+> **Total Plays Tracked**: 130 (Command Center Active)
+> **Phases Complete**: 8 (Data-Driven Integrity Locked)

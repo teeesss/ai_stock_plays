@@ -211,6 +211,8 @@ class MacroAggregator:
                             log.info(f"  [STEALTH] Cadence Match ({domain}): Sleeping {delay:.2f}s...")
                             await asyncio.sleep(delay)
 
+                        log.info(f"  [FETCH] {name} ({f_type.upper()}) -> {url}")
+
                         # V24.2: Robust Fetch with Retry & Impersonation Rotation
                         res = None
                         impersonations = ["chrome110", "chrome120", "chrome124", "edge101", "safari_ios_16_5"]
@@ -233,6 +235,7 @@ class MacroAggregator:
                             continue
 
                         now_ts = time.time()
+                        source_item_count = 0
                         
                         if f_type == "rss":
                             feed = feedparser.parse(res.content)
@@ -287,6 +290,7 @@ class MacroAggregator:
                                     "date": pub_date,
                                     "is_earnings": is_earnings
                                 })
+                                source_item_count += 1
                         else:
                             # Scrape Type
                             from bs4 import BeautifulSoup
@@ -344,6 +348,9 @@ class MacroAggregator:
                                     "date": "Just now",
                                     "is_earnings": is_earnings
                                 })
+                                source_item_count += 1
+                        
+                        log.info(f"  [SUCCESS] {name}: {source_item_count} items identified.")
                     except Exception as e:
                         log.error(f"  [ERR] Failed {name}: {e}")
                 return queue_items

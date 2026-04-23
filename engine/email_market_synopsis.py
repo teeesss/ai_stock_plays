@@ -468,9 +468,11 @@ class SovereignIntelligenceEngine:
         if ext_type and ext_type in ["OVN", "PRE", "POST", "AH"]:
             # Prioritize matching session
             match = (ext_type == sess)
-            # Aliases for same session (POST == AH, PRE == PM/PRE)
+            # Aliases for same session (POST == AH, PRE == PM/PRE, OVN matches AH/POST residues)
             if not match:
-                match = (sess == "AH" and ext_type in ["POST", "AH"]) or (sess == "PRE" and ext_type == "PRE")
+                match = (sess == "AH" and ext_type in ["POST", "AH"]) or \
+                        (sess == "PRE" and ext_type == "PRE") or \
+                        (sess == "OVN" and ext_type in ["POST", "AH", "OVN"])
             
             # V23.80: OVN Fallback — If we are in PRE (4AM-9:30AM) but only have OVN data, use OVN
             if not match and sess == "PRE" and ext_type == "OVN":
@@ -478,11 +480,10 @@ class SovereignIntelligenceEngine:
 
             # V23.87: Atomic override to prevent mixed state ($REG + %EXT)
             # We only override if it's a confirmed session match OR if the data is explicitly LIVE
-            if match or (sess == "LIVE" and ext_type == "LIVE"):
+            if match:
                 e_p = p_data.get("ext_price")
                 e_pct = p_data.get("ext_pct")
                 
-                # V24.4: If we have an extended price, use it, but calculate TOTAL change from previous close
                 if e_p is not None:
                     price = e_p
                     prev = p_data.get("prev_close") or p_data.get("close_price")
@@ -491,9 +492,18 @@ class SovereignIntelligenceEngine:
                     elif e_pct is not None:
                         pct = e_pct
                     
-                    if match:
-                        effective_sess = ext_type # Only override session string if we actually used ext data
-        
+                    # V24.7: Data-Driven Labeling. If we scavenged AH data during OVN, label it AH.
+                    lbl = ext_type
+                    if lbl == "POST": lbl = "AH"
+                    effective_sess = lbl
+            elif sess == "LIVE":
+                effective_sess = "LIVE"
+            else:
+                # If no match in an extended session, we return the session name but maybe a flag for 'No Trade'?
+                # Per user: "prior trading will show only". If match is false, we are showing REG price.
+                # In this case, we return an empty session to hide the badge.
+                effective_sess = ""
+
         return price, pct, effective_sess
 
     def get_session_tag_html(self, fs="9px", color=None, sess_override=None):
@@ -640,10 +650,13 @@ class SovereignIntelligenceEngine:
         if not text: return text
         words = text.split()
         for i, word in enumerate(words):
-            clean_word = word.strip(".,;:()$").upper()
+            # V23.94: Isolation-First Logic (Extended Punctuation)
+            # We only match standalone words that are exactly ticker symbols to avoid internal-word corruption
+            # Added single/double quotes to stripping list for possessives and quotes.
+            stripped = word.strip(".,;:()$ '\"")
+            clean_word = stripped.upper()
             if clean_word in prices:
                 p_data = prices[clean_word]
-                # V23.85: Force Session Awareness in headlines
                 price, pct, sess = self.get_session_data(p_data, clean_word)
                 if price is None or pct is None: continue
                 
@@ -656,10 +669,10 @@ class SovereignIntelligenceEngine:
                     c_p = p_data.get("close_price") or p_data.get("price")
                     if c_p: anchor = f' <span style="font-size:8px; color:#94a3b8; font-weight:normal;">| C: ${c_p:,.2f}</span>'
 
-                if f"(${price:.2f}" not in text:
-                    flair = f'<strong>{word}</strong>&nbsp;(<span style="color:{color}; font-weight:bold;">${price:,.2f}&nbsp;{sign}{pct:.1f}%{sess_tag}{anchor}</span>)'
-                    text = text.replace(word, flair)
-                    break 
+                # Only flair the first match and break
+                flair = word.replace(stripped, f'<strong>{stripped}</strong>&nbsp;(<span style="color:{color}; font-weight:bold;">${price:,.2f}&nbsp;{sign}{pct:.1f}%{sess_tag}{anchor}</span>)', 1)
+                words[i] = flair
+                return " ".join(words)
         return text
 
     def synthesize_dossier(self, news_db, prices, master_data, sentiment):
@@ -672,8 +685,8 @@ class SovereignIntelligenceEngine:
         
         print(f"[INFO] NLP Processor: Analyzing {len(macro_headlines)} headlines for institutional relevance...")
         # Real-world NLP Intelligence Synthesis for Executive Summary
-        # V23.69 Filter: Pull more for the pool, then rank the best 15
-        best_headlines = nlp.rank_news_relevance(macro_headlines, top_n=15)
+        # V24.9: mandatory 15 articles in list, increase ranking depth
+        best_headlines = nlp.rank_news_relevance(macro_headlines, top_n=25)
         
         if best_headlines:
             top_t = best_headlines[0].get('title', 'Unknown')
@@ -705,7 +718,8 @@ class SovereignIntelligenceEngine:
                 if art.get('link') == lead_url:
                     used_links.add(lead_url)
 
-        pruned_news = [art for art in best_headlines if art.get('link') not in used_links][:20]
+        # V24.9: Increased capacity to ensure 15+ articles
+        pruned_news = [art for art in best_headlines if art.get('link') not in used_links][:25]
 
         macro_intel_rows = ""
         earnings_intel_rows = ""
@@ -727,12 +741,12 @@ class SovereignIntelligenceEngine:
                  macro_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
                  row_count += 1
              
-             if (row_count + earn_count) >= 20: break
+             if (row_count + earn_count) >= 25: break
              
-        # Wrap earnings in a dedicated area if present
+        # V24.9: Reordered - Earnings Intelligence comes AFTER general news URLs
         if earnings_intel_rows:
-            earnings_area = f'<div style="margin-bottom:20px; padding:12px; background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:8px;"><div style="color:{gold}; font-size:18px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">🚨 Earnings Intelligence</div>{earnings_intel_rows}</div>'
-            macro_intel_rows = earnings_area + macro_intel_rows
+            earnings_area = f'<div style="margin-top:20px; margin-bottom:20px; padding:12px; background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:8px;"><div style="color:{gold}; font-size:18px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">🚨 Earnings Intelligence</div>{earnings_intel_rows}</div>'
+            macro_intel_rows = macro_intel_rows + earnings_area
 
         # Watchlist Intel Logic (V23.55)
         watchlist_intel_html = "" # Minimal fallback for now to ensure recovery stability
@@ -780,7 +794,9 @@ class SovereignIntelligenceEngine:
                     try:
                         from live_prices import async_run_fetch
                         movers_list = movers_ext['gainers'] + movers_ext['losers']
-                        all_to_fetch = list(set(master.keys()) | set([t.upper() for t in (custom_tickers or [])]) | set(movers_list))
+                        # V24.9: Explicitly include indices and crypto to prevent 0.00% Pulse errors
+                        pulse_anchors = ['^GSPC', '^IXIC', '^DJI', 'ES=F', 'NQ=F', 'YM=F', 'BTC-USD', 'ETH-USD', 'SOL-USD']
+                        all_to_fetch = list(set(master.keys()) | set([t.upper() for t in (custom_tickers or [])]) | set(movers_list) | set(pulse_anchors))
                         # V24.4: Force Freshness for Email Dossier (Ignore 15m Cache)
                         prices = asyncio.run(async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True, force=True))
                         print(f"[INFO] [LIVE] JIT Refresh Complete: {len(prices)} tickers.")
@@ -856,113 +872,52 @@ class SovereignIntelligenceEngine:
             diff = price - prev
             sign = "+" if diff >= 0 else ""
             return f'<div class="pulse-diff" style="font-size:{fs}; color:{clr}; opacity:0.8; font-weight:bold; margin-top:1px;">{sign}{diff:,.0f} pts</div>'
+
+        def render_tile(symbol, name, val, pct, sess, color):
+            tag_style = "text-decoration:none;"
+            if sess in ('PRE', 'AH', 'POST'): tag_style = "text-decoration:underline;"
+            val_str = f"{val:,.0f}" if val > 1000 else f"{val:.2f}"
+            
+            return (
+                f'<td width="33%" style="padding:3px;">'
+                f'<div style="background:{bg_deep}; border-radius:5px; padding:10px 8px; text-align:center;">'
+                f'<div class="crypto-label" style="color:{text_dim}; font-size:8px; margin-bottom:4px; font-weight:bold; text-transform:uppercase; {tag_style}">{name}</div>'
+                f'<div class="crypto-val" style="color:{text_bright}; font-size:12px; font-weight:bold;">{val_str}</div>'
+                f'{get_diff_str(val, pct, color, fs="7px")}'
+                f'<div class="crypto-chg" style="color:{color}; font-size:10px; font-weight:bold;">{"+" if pct >= 0 else ""}{pct:.1f}%</div>'
+                f'</div></td>'
+            )
+
         COMPARATIVE_INDICES = [
             {"name": "S&P 500", "cash": "^GSPC", "fut": "ES=F"},
             {"name": "NASDAQ",  "cash": "^IXIC", "fut": "NQ=F"},
             {"name": "DOW 30",  "cash": "^DJI",  "fut": "YM=F"}
         ]
         
-        # Dynamic Market Labels
         is_live_main = self.get_market_session() in ("LIVE", "AH")
         is_futures_active = (self.now.weekday() == 6 and self.now.hour >= 18) or (self.now.weekday() < 5)
         
-        prior_close_label = "FRIDAY CLOSE" if self.now.weekday() in [0, 5, 6] else "PRIOR CLOSE"
-        live_label = "SUNDAY FUTURES" if self.now.weekday() == 6 and is_futures_active else "PREMARKET" if (7 <= self.now.hour < 9) else "LIVE FUTURES" if is_futures_active else "WEEKEND STASIS"
-        label_color = gold if is_futures_active else text_dim
-        
-        pulse_rows = []
-        def render_tile(symbol, name, val, pct, sess, color):
-            tag_style = "text-decoration:none;"
-            if sess in ('PRE', 'AH', 'POST'): tag_style = "text-decoration:underline;"
-            val_str = f"{val:,.0f}" if val > 1000 else f"{val:.2f}"
-            
-            return (
-                f'<td width="33%" style="padding:3px;">'
-                f'<div style="background:{bg_deep}; border-radius:5px; padding:10px 8px; text-align:center;">'
-                f'<div class="crypto-label" style="color:{text_dim}; font-size:8px; margin-bottom:4px; font-weight:bold; text-transform:uppercase; {tag_style}">{name}</div>'
-                f'<div class="crypto-val" style="color:{text_bright}; font-size:12px; font-weight:bold;">{val_str}</div>'
-                f'{get_diff_str(val, pct, color, fs="7px")}'
-                f'<div class="crypto-chg" style="color:{color}; font-size:10px; font-weight:bold;">{"+" if pct >= 0 else ""}{pct:.1f}%</div>'
-                f'</div></td>'
-            )
-
-        if is_live_main:
-            index_tiles = []
-            for index in COMPARATIVE_INDICES:
-                c_data = prices.get(index['cash'], {})
-                c_val, c_chg, _ = self.get_session_data(c_data, index['cash'])
-                c_color = bull if c_chg >= 0 else bear
-                index_tiles.append(render_tile(index['cash'], index['name'], c_val, c_chg, "LIVE", c_color))
-            pulse_grid_rows = f'<tr><td style="padding:4px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>{" ".join(index_tiles)}</tr></table></td></tr>'
-        else:
-            # Multi-row layout for Futures tracking
-            for index in COMPARATIVE_INDICES:
-                c_data = prices.get(index['cash'], {})
-                f_data = prices.get(index['fut'], {})
-                c_val = c_data.get('price', 0); c_chg = c_data.get('change_pct', 0)
-                c_color = bull if c_chg >= 0 else bear
-                c_arr = '+' if c_chg >= 0 else ''
-                f_val, f_chg, f_sess = self.get_session_data(f_data, index['fut'])
-                
-                f_color = bull if f_chg >= 0 else bear
-                f_arr = '+' if f_chg >= 0 else ''
-                f_bg = 'rgba(16,185,129,0.08)' if f_chg >= 0 else 'rgba(244,63,94,0.08)'
-                
-                pulse_rows.append(
-                    f'<tr>'
-                    f'<td style="padding:4px;"><div style="background:{bg_accent}; border-radius:5px; padding:12px 10px;">'
-                    f'<div class="pulse-idx-name" style="color:{text_dim}; font-size:9px; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; font-weight:bold; text-align:center;">{index["name"]}</div>'
-                    f'<table width="100%" cellpadding="0" cellspacing="0"><tr>'
-                    f'<td width="{"48%" if not is_live_main else "100%"}" style="{"border-right:1px solid "+border+"; padding-right:8px;" if not is_live_main else ""} text-align:center;">'
-                    f'<div class="pulse-sub-label" style="color:{text_dim}; font-size:7px; margin-bottom:2px;">{prior_close_label}</div>'
-                    f'<div class="pulse-val" style="color:{text_bright}; font-size:14px; font-weight:bold;">{c_val:,.0f}</div>'
-                    f'{get_diff_str(c_val, c_chg, c_color)}'
-                    f'<div class="pulse-chg" style="color:{c_color}; font-size:10px; font-weight:bold;">{c_arr}{c_chg:.1f}%</div>'
-                    f'</td>'
-                    f'<td width="52%" style="padding-left:12px; text-align:center;">'
-                    f'<div class="pulse-sub-label" style="color:{label_color}; font-size:7px; font-weight:bold; margin-bottom:2px;">{live_label}</div>'
-                    f'<div class="pulse-val" style="color:{text_bright}; font-size:14px; font-weight:bold;">{f_val:,.0f}</div>'
-                    f'{get_diff_str(f_val, f_chg, f_color)}'
-                    f'<div class="pulse-chg-pill" style="display:inline-block; background:{f_bg}; color:{f_color}; font-size:11px; padding:2px 6px; border-radius:3px; font-weight:bold; margin-top:2px;">{f_arr}{f_chg:.1f}%</div>'
-                    f'</td>'
-                    f'</tr></table>'
-                    f'</div></td>'
-                    f'</tr>'
-                )
-            pulse_grid_rows = "\n".join(pulse_rows)
-
-        pulse_rows = []
-        def render_tile(symbol, name, val, pct, sess, color):
-            tag_style = "text-decoration:none;"
-            if sess in ('PRE', 'AH', 'POST'): tag_style = "text-decoration:underline;"
-            val_str = f"{val:,.0f}" if val > 1000 else f"{val:.2f}"
-            
-            return (
-                f'<td width="33%" style="padding:3px;">'
-                f'<div style="background:{bg_deep}; border-radius:5px; padding:10px 8px; text-align:center;">'
-                f'<div class="crypto-label" style="color:{text_dim}; font-size:8px; margin-bottom:4px; font-weight:bold; text-transform:uppercase; {tag_style}">{name}</div>'
-                f'<div class="crypto-val" style="color:{text_bright}; font-size:12px; font-weight:bold;">{val_str}</div>'
-                f'{get_diff_str(val, pct, color, fs="7px")}'
-                f'<div class="crypto-chg" style="color:{color}; font-size:10px; font-weight:bold;">{"+" if pct >= 0 else ""}{pct:.1f}%</div>'
-                f'</div></td>'
-            )
-
+        pulse_grid_rows = ""
         if is_live_main or is_futures_active:
             index_tiles = []
             for index in COMPARATIVE_INDICES:
-                # V23.85: Switch to Futures during extended hours
+                # Switch to Futures during extended hours, use Cash during regular hours
                 target_ticker = index['cash'] if is_live_main else index['fut']
                 c_data = prices.get(target_ticker, {})
-                # Safely extract session data
                 c_val, c_chg, c_sess = self.get_session_data(c_data, target_ticker)
                 c_color = bull if (c_chg or 0) >= 0 else bear
-                
-                # For indices, session label is extra crucial
                 label = "LIVE" if is_live_main else c_sess
                 index_tiles.append(render_tile(target_ticker, index['name'], c_val or 0, c_chg or 0, label, c_color))
             pulse_grid_rows = f'<tr><td style="padding:4px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>{" ".join(index_tiles)}</tr></table></td></tr>'
         else:
-            pulse_grid_rows = "\n".join(pulse_rows)
+            # Weekend / Stasis Layout: Show last Friday close cash data
+            index_tiles = []
+            for index in COMPARATIVE_INDICES:
+                c_data = prices.get(index['cash'], {})
+                c_val, c_chg, _ = self.get_session_data(c_data, index['cash'])
+                c_color = bull if (c_chg or 0) >= 0 else bear
+                index_tiles.append(render_tile(index['cash'], index['name'], c_val or 0, c_chg or 0, "CLOSE", c_color))
+            pulse_grid_rows = f'<tr><td style="padding:4px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>{" ".join(index_tiles)}</tr></table></td></tr>'
 
         # 2b. Crypto Pulse Row
         crypto_tickers = ['BTC-USD', 'ETH-USD', 'SOL-USD']
@@ -1068,23 +1023,26 @@ class SovereignIntelligenceEngine:
                     # V24.3: Session-Aware Anchoring & Scaled Typography
                     anchor = ""
                     pct_fs = "18px"
-                    tag_fs = "8px"
-                    
+                    tag_fs = "7px"
+                        
+                    # V24.3: Calculate Session Delta (e.g. OVN %)
+                    ovn_delta_html = ""
                     if sess in ["PRE", "AH", "OVN", "POST"]:
                         c_p = p_entry.get("close_price") or p_entry.get("price")
-                        if c_p: anchor = f'<span style="font-size:9px; color:#94a3b8; font-weight:normal;">&nbsp;| C: ${c_p:,.2f}</span>'
-                        pct_fs = "14px" # Smaller per user request
-                        tag_fs = "7px"
-                        
+                        if c_p and price_val > 0:
+                            delta_pct = (price_val - c_p) / c_p * 100
+                            d_color = "#22c55e" if delta_pct >= 0 else "#ef4444"
+                            ovn_delta_html = f'<span style="font-size:9px; color:{d_color}; font-weight:bold; margin-left:2px;">({sess} {delta_pct:+.1f}%)</span>'
+
                     badge = self.get_session_tag_html(fs=tag_fs, sess_override=sess)
                     symbol_link = f'<a href="https://finance.yahoo.com/quote/{sym}" style="color:#f59e0b; text-decoration:none;">${sym}</a>'
                     
                     items_html.append(f'''
                         <div style="margin-bottom:2px; text-align:center;">
-                            <div class="perf-item" style="display:inline-block; width:98%; max-width:380px; background:rgba(255,255,255,0.02); padding:4px 12px; border-radius:3px; font-family:monospace; font-size:18px; text-align:left; vertical-align:middle; white-space:nowrap; overflow:hidden;">
-                                <span style="display:inline-block; min-width:80px; color:#f59e0b; font-weight:bold;">{symbol_link}</span>
-                                <span style="display:inline-block; min-width:85px; color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; margin-right:15px; vertical-align:middle;">{price_str}</span>
-                                <span style="display:inline-block; color:{color_movers}; font-weight:900; font-size:{pct_fs}; vertical-align:middle;">{pct_str}&nbsp;{badge}{anchor}</span>
+                            <div class="perf-item" style="display:inline-block; width:98%; max-width:380px; background:rgba(255,255,255,0.02); padding:4px 12px; border-radius:3px; font-family:monospace; font-size:18px; text-align:left; vertical-align:middle; white-space:nowrap;">
+                                <span class="perf-sym" style="display:inline-block; min-width:80px; color:#f59e0b; font-weight:bold;">{symbol_link}</span>
+                                <span class="perf-price" style="display:inline-block; min-width:85px; color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; margin-right:15px; vertical-align:middle;">{price_str}</span>
+                                <span class="perf-pct" style="display:inline-block; color:{color_movers}; font-weight:900; font-size:{pct_fs}; vertical-align:middle;">{pct_str}&nbsp;{badge}{ovn_delta_html}{anchor}</span>
                             </div>
                         </div>''')
 
@@ -1147,8 +1105,8 @@ class SovereignIntelligenceEngine:
                 rows.append(f"""
                     <div style="background:rgba(255,255,255,0.03); border-left:3px solid {clr}; padding:5px 12px; border-radius:4px; margin-bottom:4px;">
                         <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                            <td width="35%" style="font-family:monospace; font-weight:bold; font-size:18px;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none;">${sym}</a></td>
-                            <td width="65%" style="text-align:right; font-family:monospace;">{pct_display}</td>
+                            <td class="sec-ticker-cell" width="35%" style="font-family:monospace; font-weight:bold; font-size:18px;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none;">${sym}</a></td>
+                            <td class="sec-pct-cell" width="65%" style="text-align:right; font-family:monospace;">{pct_display}</td>
                         </tr></table>
                         {f'<div style="font-size:12px; color:#8f9bb3; margin-top:6px; line-height:1.6; overflow:hidden; max-height:80px;">{flaired_notes}</div>' if flaired_notes else ''}
                     </div>
@@ -1159,7 +1117,7 @@ class SovereignIntelligenceEngine:
                 half = (len(rows) + 1) // 2
                 col1 = "".join(rows[:half])
                 col2 = "".join(rows[half:])
-                content = f'<table width="100%" cellpadding="0" cellspacing="0"><tr><td width="50%" style="vertical-align:top; padding-right:4px;">{col1}</td><td width="50%" style="vertical-align:top; padding-left:4px;">{col2}</td></tr></table>'
+                content = f'<table width="100%" cellpadding="0" cellspacing="0"><tr><td class="bucket-col" width="50%" style="vertical-align:top; padding-right:4px;">{col1}</td><td class="bucket-col" width="50%" style="vertical-align:top; padding-left:4px;">{col2}</td></tr></table>'
             else:
                 content = "".join(rows)
 
@@ -1211,9 +1169,15 @@ class SovereignIntelligenceEngine:
                     .global-chip {{ display:block !important; width:100% !important; margin-bottom:10px; }}
                     .fg-left, .fg-right {{ width:50% !important; }}
                     /* MOBILE: 6-column side-by-side Movers */
-                    .perf-cell {{ display:table-cell !important; width:50% !important; padding:4px !important; text-align:center !important; }}
-                    .perf-hdr {{ font-size:11px !important; margin-bottom:10px !important; }}
-                    .perf-item {{ font-size:11px !important; padding:6px 8px !important; }}
+                    .perf-cell {{ display:table-cell !important; width:50% !important; padding:4px 2px !important; text-align:center !important; }}
+                    .perf-hdr {{ font-size:10px !important; margin-bottom:8px !important; }}
+                    .perf-item {{ font-size:10px !important; padding:4px !important; overflow:visible !important; }}
+                    .perf-sym  {{ min-width:45px !important; font-size:11px !important; }}
+                    .perf-price {{ min-width:50px !important; margin-right:2px !important; font-size:10px !important; }}
+                    .perf-pct   {{ font-size:11px !important; }}
+                    .bucket-col {{ display:block !important; width:100% !important; padding:0 !important; }}
+                    .sec-ticker-cell {{ width:22% !important; font-size:14px !important; }}
+                    .sec-pct-cell    {{ width:78% !important; font-size:10px !important; }}
                 }}
 
                 /* Desktop / large screen upsizing */
@@ -1287,14 +1251,14 @@ class SovereignIntelligenceEngine:
                     }}
                     .pulse-idx-name {{ font-size:14px !important; margin-bottom:8px !important; }}
                     .pulse-sub-label {{ font-size:9px !important; }}
-                    .pulse-val {{ font-size:22px !important; font-weight:900 !important; }}
+                    .pulse-val {{ font-size:26px !important; font-weight:900 !important; }}
                     .pulse-chg {{ font-size:14px !important; }}
-                    .crypto-label {{ font-size:14px !important; margin-bottom:4px !important; }}
-                    .crypto-val   {{ font-size:20px !important; font-weight:900 !important; }}
+                    .crypto-label {{ font-size:16px !important; margin-bottom:4px !important; }}
+                    .crypto-val   {{ font-size:24px !important; font-weight:900 !important; }}
                     .crypto-chg   {{ font-size:14px !important; }}
-                    .global-label {{ font-size:14px !important; }}
-                    .global-chg   {{ font-size:18px !important; font-weight:bold !important; }}
-                    .perf-item    {{ font-size:14px !important; }}
+                    .global-label {{ font-size:18px !important; }}
+                    .global-chg   {{ font-size:22px !important; font-weight:bold !important; }}
+                    .perf-item    {{ font-size:16px !important; }}
                     .perf-cell    {{ padding:0 6px !important; }}
                     /* Mobile header reduction by 35% (42px -> 27px) */
                     .hdr-title    {{ font-size:27px !important; }}
