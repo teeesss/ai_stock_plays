@@ -704,29 +704,60 @@ class SovereignIntelligenceEngine:
         # V24.9: Increased capacity to ensure 15+ articles
         pruned_news = [art for art in best_headlines if art.get('link') not in used_links][:200]
 
+        # V25.0: Rotation Engine - Prioritize fresh news, fallback to stale
+        sent_news_path = Path("database/sent_news_history.json")
+        sent_news_history = {}
+        now_ts = time.time()
+        if sent_news_path.exists():
+            try:
+                with open(sent_news_path, 'r', encoding='utf-8') as f:
+                    sent_news_history = json.load(f)
+                    # Keep only last 24h
+                    sent_news_history = {k: v for k, v in sent_news_history.items() if (now_ts - v) < 86400}
+            except Exception:
+                pass
+        
+        fresh_pool = [art for art in pruned_news if art.get('link') not in sent_news_history]
+        stale_pool = [art for art in pruned_news if art.get('link') in sent_news_history]
+        rotated_news = fresh_pool + stale_pool
+
         macro_intel_rows = ""
         earnings_intel_rows = ""
         row_count = 0
         earn_count = 0
         
-        for i, res in enumerate(pruned_news):
+        for i, res in enumerate(rotated_news):
              f_title = self.inject_price_flair(res["title"], prices, master_data)
              
              # V24.1: Separate Earnings Area Logic
              is_earn = res.get('is_earnings') or "EARNINGS" in res.get('raw_title', '').upper() or res.get('source') == "CNBC Earnings"
              
+             added = False
              if is_earn:
                  if earn_count < 8:
                      row_color = gold
                      earnings_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color}; font-weight:600;"><span style="font-size:14px;">📊</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
                      earn_count += 1
+                     added = True
              else:
                  if row_count < 15:
                      row_color = "#60a5fa" if row_count % 2 == 0 else "#4ade80" 
                      macro_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
                      row_count += 1
+                     added = True
+                     
+             if added:
+                 sent_news_history[res["link"]] = now_ts
              
              if row_count >= 15 and earn_count >= 8: break
+             
+        # Save history for rotation
+        try:
+            sent_news_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(sent_news_path, 'w', encoding='utf-8') as f:
+                json.dump(sent_news_history, f)
+        except Exception as e:
+            print(f"[ERROR] Could not save sent news history: {e}")
              
         # V24.9: Reordered - Earnings Intelligence comes AFTER general news URLs
         if earnings_intel_rows:
