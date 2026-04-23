@@ -728,6 +728,10 @@ class SovereignIntelligenceEngine:
         row_count = 0
         earn_count = 0
         
+        import re
+        # V25.1: Keyword Saturation Limiter to prevent topic flooding (max 2 per topic)
+        topic_counts = {'oil': 0, 'energy': 0, 'apple': 0, 'tesla': 0, 'fed': 0, 'rate': 0, 'rates': 0, 'china': 0, 'iran': 0, 'israel': 0}
+        
         for i, res in enumerate(rotated_news):
              f_title = self.inject_price_flair(res["title"], prices, master_data)
              
@@ -743,6 +747,25 @@ class SovereignIntelligenceEngine:
                      added = True
              else:
                  if row_count < 15:
+                     # Check saturation for MACRO news
+                     tl = res.get('title', '').lower()
+                     is_saturated = False
+                     matched_kws = []
+                     for kw in topic_counts:
+                         if re.search(r'\b' + kw + r'\b', tl):
+                             if topic_counts[kw] >= 2:
+                                 is_saturated = True
+                                 break
+                             matched_kws.append(kw)
+                             
+                     if is_saturated:
+                         print(f"[DEBUG] Skipped (Saturation) -> {res.get('title', 'Unknown')}")
+                         continue
+                         
+                     # Apply increments
+                     for kw in matched_kws:
+                         topic_counts[kw] += 1
+                         
                      row_color = "#60a5fa" if row_count % 2 == 0 else "#4ade80" 
                      macro_intel_rows += f'<div style="padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:{row_color};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" style="color:{row_color}; text-decoration:none !important; font-size:14px;">{f_title}</a></div>'
                      row_count += 1
