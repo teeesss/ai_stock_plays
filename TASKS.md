@@ -1,27 +1,26 @@
-### 🚀 Current Status: V24.99 — Market Synopsis UI Hardening & Global Data Restoration (Locked)
-1. - [x] **Global Markets Data Restoration (V24.99)**: Restored HSI, NIKKEI, DAX, FTSE pricing by hardening JIT fetch pipeline.
-2. - [x] **UI Mirror Architecture (V24.99)**: Unified Index Pulse and Crypto tiles with Global Markets visual design (colored boxes + session badges).
-3. - [x] **Desktop Density Upscaling (V24.98)**: Implemented +20% font-size increase for all high-res desktop dashboard metrics.
-4. - [x] **Mobile-Fluid Architecture (V24.97)**: Fully optimized for 320px-600px mobile spectrum with adaptive scaling.
-2. - [x] **Overnight Delta Sync (V24.7)**: Performance movers now show precise session deltas (e.g., "+0.7% AH") anchored to previous close.
-3. - [x] **Ghost Ticker Purge (V24.6)**: Implemented 24h TTL database purge to eliminate stale movers (PEGA/CNQ confirmed purged).
-4. - [x] **JIT Narrative Synthesis (V23.95)**: Automated scraping of Edward Jones, Briefing.com, and CNBC Live for high-fidelity executive summaries.
-5. - [x] **Macro Intelligence Expansion (V23.95)**: Integrated OilPrice, Reuters Energy, and Reuters World feeds for multi-sector macro coverage.
-6. - [x] **NLP Synthesis Hardening (V23.95)**: Prioritized institutional leads with triple-layered cross-section deduplication.
-7. - [x] **UI Density Refinement (V23.95)**: Reduced padding and optimized mobile/desktop density for the institutional cockpit.
-8. - [x] **Price Integrity (V23.95)**: Resolved POET stale price leak and established US/Eastern temporal ground truth.
-9. - Date: 2026-04-23
+### 🚀 Current Status: V26.0 — Sovereign Intelligence Payload Hardening (Locked)
+1. - [x] **Extreme Payload Optimization (V26.0)**: Slashed HTML size from 109KB to 63KB by implementing a class-based CSS architecture in the <head>.
+2. - [x] **CSS Unification (V26.0)**: Eliminated thousands of redundant inline style attributes across Pulse, News, and Watchlist rows.
+3. - [x] **Institutional Source Hardening (V26.0)**: Blacklisted "The Motley Fool" and normalized source badges (removing GOOG/ prefixes) for institutional clarity.
+4. - [x] **Global Markets Data Restoration (V24.99)**: Restored HSI, NIKKEI, DAX, FTSE pricing by hardening JIT fetch pipeline.
+5. - [x] **UI Mirror Architecture (V24.99)**: Unified Index Pulse and Crypto tiles with Global Markets visual design (colored boxes + session badges).
+6. - [x] **Desktop Density Upscaling (V24.98)**: Implemented +20% font-size increase for all high-res desktop dashboard metrics.
+7. - [x] **Mobile-Fluid Architecture (V24.97)**: Fully optimized for 320px-600px mobile spectrum with adaptive scaling.
+8. - [x] **Overnight Delta Sync (V24.7)**: Performance movers now show precise session deltas (e.g., "+0.7% AH") anchored to previous close.
+9. - [x] **Ghost Ticker Purge (V24.6)**: Implemented 24h TTL database purge to eliminate stale movers (PEGA/CNQ confirmed purged).
+10. - [x] **JIT Narrative Synthesis (V23.95)**: Automated scraping of Edward Jones, Briefing.com, and CNBC Live for high-fidelity executive summaries.
+11. - Date: 2026-04-24
 
-# Project Status — April 23, 2026
-## 🚀 Version: V24.99 (Market Synopsis UI Hardening & Global Data Restoration)
+# Project Status — April 24, 2026
+## 🚀 Version: V26.0 (Sovereign Intelligence Payload Hardening)
 
 Status: **PRODUCTION DEPLOYED — HARDENED**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V24.99 (UI Hardening & Global Data)
-- **Critical Progress**: Restored missing global index data and unified the dashboard visual language. Sovereign Pulse tiles now structurally mirror the high-density Global Markets design with integrated session badges and point deltas.
+- **Current Tier**: V26.0 (Payload Optimization & Source Hardening)
+- **Critical Progress**: Slashed email payload from 109KB to 63KB (42% reduction) using a unified CSS class architecture. Blacklisted "The Motley Fool" and normalized news source badges for professional institutional scannability.
 - **Next Milestone**: Sentiment-weighted multi-source deduplication.
-- Date: 2026-04-23
+- Date: 2026-04-24
 
 ### 🚀 Previous Status: V22.51 — Sovereign Intelligence Hardening (Futures Divergence)
 - [x] **Index Divergence Pulse**: Integrated comparative row-tracking for all major US indices. Shows **Friday Cash Close** vs. **Sunday Night Futures** side-by-side to highlight market opening sentiment.

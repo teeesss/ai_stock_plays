@@ -793,11 +793,15 @@ Contract Mfg ($FN, $CLS)
 - **The Protocol**: All market session classification must normalize to US/Eastern before comparing against market open/close constants (`open_m = 570`).
 - **UI Refinement**: Standardized badges: `PRE` (Orange), `AH` (Red), `PM` (Light Blue #60a5fa), and `LIVE` (Green #10b981 with `L⚡` badge).
 
-### 2026-04-21 - V23.59 Auto-Dependency Guardian
-- **Architecture**: Centralized in `engine/dependency_mgr.py`.
-- **Injection Style**: Injected at the top of all major entry points. Uses a double-nested `try-except` to handle local and relative imports.
-- **Logic**: Uses `importlib.util.find_spec` for stealthy dependency checking. Offers `input()` based installation in TTY environments; fails gracefully in automated environments to prevent hanging.
-- **Platform Parity**: Uses `sys.executable` to ensure `pip` installs to the same environment running the script (critical for Windows CMD vs PowerShell vs WSL).
+### 2026-04-24 - V26.0 Sovereign Intelligence Payload Hardening
+- **Architecture**: Deployed "Extreme Payload Optimization" in `engine/email_market_synopsis.py`. Slashed HTML payload from **109KB to 63KB** (42% reduction).
+- **The CSS Shift**: Transitioned from thousands of redundant inline `style="..."` attributes to a centralized `<style>` block in the `<head>`. 
+  - **Key Classes**: `.pulse-card`, `.news-item`, `.watchlist-row`, `.ticker-badge`, `.move-pct`.
+  - **Significance**: This ensures the institutional dossier remains under Gmail's 102KB clipping threshold, even with expanded news coverage (15+ articles) and 50+ watchlist tickers.
+- **Institutional Source Hardening**:
+  - **Blacklist**: "The Motley Fool" is now strictly blacklisted to maintain high-signal institutional narrative.
+  - **Badge Normalization**: Removed "GOOG/" and other aggregator prefixes from news sources to ensure clean, professional attribution (e.g., "CNBC", "REUTERS", "BLOOMBERG").
+- **Verification**: Pipeline verified via `synopsis_preview.html` (63KB) and synchronized to production environment via `remote_sync.py`.
 - **Playwright Support**: Automatically triggers `playwright install chromium` if the package is new or missing binaries.
 
 ### 📚 Official Guides

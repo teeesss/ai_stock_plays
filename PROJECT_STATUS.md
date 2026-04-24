@@ -1,9 +1,12 @@
 # Project Status: Market Intelligence Engine
 
-## 🚀 Current Milestone: V24.99 (Market Synopsis UI Hardening & Global Data Restoration)
-**Status**: 🟢 PRODUCTION-READY // **UI Integrity**: Unified (High-Density) // **Logic Integrity**: Hardened
+## 🚀 Current Milestone: V26.0 (Sovereign Intelligence Payload Hardening)
+**Status**: 🟢 PRODUCTION-READY // **UI Integrity**: Optimized (42% Leaner) // **Logic Integrity**: Hardened
 ---
 ### 🧩 Core Accomplishments
+- **[NEW] Extreme Payload Optimization (V26.0)**: Slashed HTML payload from 109KB to 63KB by implementing a centralized CSS architecture in the <head>. This prevents Gmail from clipping the institutional dossier and ensures 100% visibility of the intelligence payload.
+- **[NEW] CSS Class Unification (V26.0)**: Eliminated thousands of redundant inline style attributes across all dashboard components (Pulse, News, Watchlist, Movers). Performance and scannability are significantly improved.
+- **[NEW] Institutional Source Hardening (V26.0)**: Implemented a strict blacklist for "The Motley Fool" and normalized source badges (removing GOOG/ prefixes) to maintain a professional, institutional-grade narrative.
 - **[NEW] Global Markets Data Restoration (V24.99)**: Resolved "Zero-Value" bugs for HSI, NIKKEI, DAX, and FTSE by explicitly including them in the JIT refresh pipeline within `engine/email_market_synopsis.py`.
 - **[NEW] UI Mirror Architecture (V24.99)**: Unified the visual language of the dashboard. Sovereign Index Pulse and Crypto tiles now mirror the Global Markets design, featuring background-colored percentage chips, integrated point deltas, and live session badges.
 - **[NEW] Desktop Density Scaling (V24.98)**: Implemented a global +20% font-size bump for all high-resolution desktop viewports (600px+) across all dashboard components (Pulse, F&G, Global Markets).
@@ -13,11 +16,11 @@
 - **[NEW] Data-Driven Session Detection (V24.7)**: Replaced clock-based labeling with data-driven verification. Labels (AH, OVN, PRE) now accurately match the trading source.
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V24.99 (UI Hardening & Global Data Restoration)
-- **Critical Progress**: Hardened the price-fetching pipeline to ensure 100% data fidelity for global indices and established a unified, high-density institutional visual standard across the entire dashboard.
+- **Current Tier**: V26.0 (Payload Optimization & Source Hardening)
+- **Critical Progress**: Slashed email payload from 109KB to 63KB (42% reduction) using a unified CSS class architecture. Blacklisted "The Motley Fool" and normalized news source badges for professional institutional scannability.
 - **Next Milestone**: Sentiment-weighted multi-source deduplication.
 
-Date: 2026-04-23
+Date: 2026-04-24
 Tests: **55 passing / 0 failing**
 
 ---
