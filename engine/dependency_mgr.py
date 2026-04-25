@@ -21,7 +21,8 @@ def ensure_dependencies():
         "pandas": "pandas",
         "requests": "requests",
         "curl_cffi": "curl-cffi",
-        "deep_translator": "deep-translator"
+        "deep_translator": "deep-translator",
+        "yaml": "PyYAML"
     }
     
     missing = []

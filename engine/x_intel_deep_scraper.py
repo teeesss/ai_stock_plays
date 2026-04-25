@@ -496,14 +496,20 @@ async def download_images(posts: list, username: str):
     failed_posts = set()
     for url, path, name, post_obj in to_download:
         try:
-            resp = curlr.get(url, impersonate="chrome110", timeout=12)
+            # V26.1: Increased stealth delay (2.5s - 5.5s) to avoid instance banning
+            await asyncio.sleep(random.uniform(2.5, 5.5))
+            
+            resp = curlr.get(url, impersonate="chrome110", timeout=15)
             if resp.status_code == 200 and len(resp.content) > 500:
                 path.write_bytes(resp.content)
                 saved += 1
+            elif resp.status_code == 429:
+                log.error(f"  IMAGE {name} RATE LIMIT (429). Sleeping 30s...")
+                await asyncio.sleep(30)
+                failed_posts.add(post_obj["id"])
             else:
                 log.warning(f"  IMAGE {name} broken/empty ({resp.status_code}). Queuing VX rescue.")
                 failed_posts.add(post_obj["id"])
-            await asyncio.sleep(random.uniform(0.2, 0.8))
         except Exception as e:
             log.warning(f"  Image fail ({name}): {e}")
             failed_posts.add(post_obj["id"])
@@ -511,9 +517,10 @@ async def download_images(posts: list, username: str):
     # If any images failed, secondary VX rescue pass to get fresh URLs
     if failed_posts:
         log.info(f"  RESCUE: Attempting VX rescue for {len(failed_posts)} posts with broken media...")
+        # Note: rescue_tweet now has internal 2.5-5.5s delays + 429 backoff
         for p in posts:
             if p["id"] in failed_posts:
-                rescue_tweet(p) # This will update image_urls with high-fi api.vxtwitter ones.
+                rescue_tweet(p) 
 
     if saved:
         log.info(f"  IMAGE: Saved {saved}/{len(to_download)} images for @{username}")

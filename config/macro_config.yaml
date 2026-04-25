@@ -1,0 +1,652 @@
+# ============================================================================
+# V28: MacroAggregator Configuration — Optimized & 2026-Tuned
+# ============================================================================
+# SINGLE SOURCE OF TRUTH. All scoring, keywords, feeds, and tickers live here.
+#
+# Changes from V27:
+#   • Higher cluster multiplier (1.55) — rewards dense photonics/packaging headlines
+#   • New 2026 photonics terms: NPO, METALENS, PAM4, O-BAND, C-BAND, UCIe,
+#     HYBRID BONDING, SOIC-X, COHERENT DSP
+#   • Expanded + revalued bonus_keywords for CPO/COUPE ramp
+#   • Expanded cluster_terms: COUPE, TSMC COUPE, CO-WOS, SILICON PHOTONICS,
+#     BROADCOM, MARVELL, ASML, HYBRID BONDING, METALENS, SOIC-X
+#   • Bloomberg feed added; CPO/Semi Google feeds expanded with richer queries
+#   • Full feed list preserved from V27 + V28 additions
+#   • AI models section restored (ANTHROPIC/MYTHOS now market-moving)
+#   • CEASEFIRE retained (geopolitically active)
+#   • All V27 institutional keywords preserved in proper YAML format
+#   • CIEN added to tickers; all V27 tickers retained
+#   • Merged blacklist and forbidden_domains from both versions
+#   • IBD feed corrected to active feedburner URL
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# SCORING RULES & MULTIPLIERS
+# ---------------------------------------------------------------------------
+scoring_rules:
+  priority_keyword_weight: 50
+  anchor_word_weight: 200
+  blacklist_penalty: -1000
+  relevance_floor_penalty: 0
+  billion_scale_bonus: 45
+  billion_scale_regex: '\$?\s?\d+(\.\d+)?\s?(B|BN|BILLION|TRILLION)'
+  cluster_multiplier: 1.55
+
+  # V28: Custom FinVADER Sentiment Overrides
+  # These are mathematically injected into the NLP engine. 
+  # Use positive for bullish/good, negative for bearish/bad.
+  vader_financial_lexicon:
+    "bullish": 2.5
+    "bearish": -2.5
+    "upgrade": 2.0
+    "downgrade": -2.0
+    "outperform": 1.5
+    "underperform": -1.5
+    "beat": 1.5
+    "missed": -1.5
+    "rally": 2.0
+    "plunge": -2.5
+    "surge": 2.0
+    "plummet": -2.5
+    "breakthrough": 2.5
+    "bottleneck": -1.5
+
+# ---------------------------------------------------------------------------
+# UNTRUSTED AGGREGATORS (Trigger Relevance Floor)
+# ---------------------------------------------------------------------------
+untrusted_aggregators:
+  - "Google News"
+
+# ---------------------------------------------------------------------------
+# BASE SCORING EXPLANATION
+# ---------------------------------------------------------------------------
+# priority_keywords & institutional_keywords -> +50 each (or priority_keyword_weight)
+# anchor_words -> +200 (or anchor_word_weight)
+# bonus_keywords -> variable (extra on top of +50 from priority)
+# billion_scale_bonus -> +45 if "$1B", "billion", etc. in headline
+# cluster_terms -> if 2+ appear in same headline -> score *= cluster_multiplier
+
+# ---------------------------------------------------------------------------
+# PRIORITY KEYWORDS  (+50 points each when found in headline)
+# ---------------------------------------------------------------------------
+priority_keywords:
+  # Core Semi / AI
+  - "SEMICONDUCTOR"
+  - "SEMI"
+  - "CHIP"
+  - "CHIPS"
+  - "WAFER"
+  - "SILICON"
+  - "NVIDIA"
+  - "BLACKWELL"
+  - "RUBIN"
+  - "GPU"
+  - "HBM"
+  - "HBM3"
+  - "HBM4"
+  - "AI REVENUE"
+  - "SUPPLY CHAIN"
+  - "CXL"
+  - "CO-WOS"
+  - "COUPE"
+
+  # Photonics & Optics (2026 emphasis)
+  - "PHOTONICS"
+  - "SILICON PHOTONICS"
+  - "SIPH"
+  - "CPO"
+  - "CO-PACKAGED OPTICS"
+  - "COPACKAGED"
+  - "LPO"
+  - "NPO"
+  - "LINEAR DRIVE"
+  - "OPTICAL ENGINE"
+  - "PIC"
+  - "PHOTONIC INTEGRATED CIRCUIT"
+  - "VCSEL"
+  - "LASER"
+  - "CW LASER"
+  - "EML"
+  - "MODULATOR"
+  - "MZM"
+  - "MRM"
+  - "EAM"
+  - "COHERENT DSP"
+  - "PAM4"
+  - "O-BAND"
+  - "C-BAND"
+  - "METALENS"
+
+  # Transceivers & Speeds
+  - "TRANSCEIVER"
+  - "400G"
+  - "800G"
+  - "1.6T"
+  - "1600G"
+  - "3.2T"
+  - "3200G"
+  - "OSFP"
+  - "QSFP"
+
+  # Advanced Packaging & Manufacturing
+  - "ADVANCED PACKAGING"
+  - "OSAT"
+  - "INTERPOSER"
+  - "HETEROGENEOUS INTEGRATION"
+  - "FAN OUT"
+  - "HYBRID BONDING"
+  - "SOIC"
+  - "SOIC-X"
+  - "UCIe"
+
+  # Materials / Equipment
+  - "EUV"
+  - "ASML"
+  - "PHOTORESIST"
+  - "LITHOGRAPHY"
+  - "INDIUM PHOSPHIDE"
+  - "INP"
+  - "GALLIUM"
+
+  # AI Models & Platforms
+  - "ANTHROPIC"
+  - "OPEN AI"
+  - "XAI"
+  - "GEMINI"
+  - "GPT"
+  - "CHAT GPT"
+  - "GROK"
+  - "PERPLEXITY"
+  - "MANUS"
+  - "DEEPMIND"
+
+  # Market Signals
+  - "MARKET OVERVIEW"
+  - "WALL ST"
+  - "CLOSING BELL"
+  - "OPENING BELL"
+  - "RECAP"
+  - "STOCKS FALL"
+  - "STOCKS RISE"
+  - "EARNINGS"
+  - "PROFIT"
+  - "QUARTERLY"
+  - "REVENUE"
+  - "GUIDANCE"
+  - "IPO"
+  - "IPOS"
+
+  # Macro / Geopolitical
+  - "CRUDE"
+  - "OIL"
+  - "CEASEFIRE"
+  - "GEOPOLITICAL"
+  - "DEFENSE"
+  - "ENERGY"
+  - "HORMUZ"
+  - "OPEC"
+  - "BRENT"
+
+# ---------------------------------------------------------------------------
+# INSTITUTIONAL KEYWORDS  (+50 points each — merged into priority at load time)
+# ---------------------------------------------------------------------------
+institutional_keywords:
+  # Bulge Bracket Investment Banks
+  - "GOLDMAN SACHS"
+  - "GOLDMAN"
+  - "JPMORGAN"
+  - "JP MORGAN"
+  - "BANK OF AMERICA"
+  - "BOFA"
+  - "MORGAN STANLEY"
+  - "CITIGROUP"
+  - "CITI "
+  - "BARCLAYS"
+  - "UBS "
+  - "DEUTSCHE BANK"
+  - "WELLS FARGO"
+  - "HSBC"
+  - "BNP PARIBAS"
+  - "RBC "
+  - "JEFFERIES"
+
+  # Elite Boutiques & Advisory
+  - "EVERCORE"
+  - "CENTERVIEW"
+  - "LAZARD"
+  - "MOELIS"
+  - "PJT PARTNERS"
+  - "PERELLA WEINBERG"
+  - "GUGGENHEIM"
+  - "HOULIHAN LOKEY"
+  - "ROTHSCHILD"
+  - "QATALYST"
+  - "ALLEN & COMPANY"
+  - "TD SECURITIES"
+
+  # Hedge Funds & Multi-Strategy
+  - "CITADEL"
+  - "MILLENNIUM MANAGEMENT"
+  - "BRIDGEWATER"
+  - "D.E. SHAW"
+  - "RENAISSANCE TECHNOLOGIES"
+  - "TWO SIGMA"
+  - "ELLIOTT MANAGEMENT"
+  - "BALYASNY"
+  - "SCHONFELD"
+  - "MAN GROUP"
+
+  # Major Asset Managers & PE
+  - "BLACKROCK"
+  - "BLACKSTONE"
+  - "KKR"
+  - "APOLLO GLOBAL"
+  - "CARLYLE GROUP"
+  - "ARES MANAGEMENT"
+
+  # Regional / International / Specialty
+  - "PNC "
+  - "TRUIST"
+  - "U.S. BANCORP"
+  - "NOMURA"
+  - "SOCIETE GENERALE"
+
+# ---------------------------------------------------------------------------
+# BONUS KEYWORDS  (variable extra points on top of the +50 from priority)
+# ---------------------------------------------------------------------------
+bonus_keywords:
+  # Ultra-High Signal 2026 (CPO / COUPE / Packaging Ramp)
+  "CPO": 150
+  "CO-PACKAGED OPTICS": 180
+  "COUPE": 150
+  "TSMC COUPE": 160
+  "COMPACT UNIVERSAL PHOTONIC ENGINE": 155
+  "SILICON PHOTONICS": 140
+  "1.6T": 130
+  "3.2T": 130
+  "800G": 95
+  "400G": 75
+  "OPTICAL ENGINE": 125
+  "HETEROGENEOUS INTEGRATION": 115
+  "CO-WOS": 125
+  "SOIC-X": 135
+  "HYBRID BONDING": 120
+  "METALENS": 100
+  "UCIe": 110
+  "TPU": 110
+  "Tensor Processing Units": 110
+
+  # Key Supply Chain & Photonics Players
+  "ASML": 95
+  "TSM": 95
+  "TSMC": 95
+  "BROADCOM": 85
+  "MARVELL": 85
+  "MARVEL": 85
+  "COHERENT": 80
+  "LUMENTUM": 80
+  "SIVERS": 75
+  "SIVE": 75
+  "SOI": 75
+  "POET": 80
+  "LITE": 80
+  "AAOI": 75
+  "FN": 75
+  "MRVL": 80
+  "ALAB": 75
+  "CIEN": 70
+
+  # Hyperscalers & Mega-Cap Tech
+  "NVIDIA": 65
+  "GOOGLE": 60
+  "MICROSOFT": 60
+  "AMAZON": 60
+  "META": 60
+  "ALPHABET": 60
+  "ORACLE": 55
+  "APPLE": 55
+  "AMD": 55
+  "AVGO": 55
+  "ARM": 55
+  "TSM": 55
+  "TSMC": 55
+  "INTC": 50
+  "MU": 50
+  "AMAT": 50
+  "LRCX": 50
+  "KLAC": 50
+  "LASR": 50
+  "IPGP": 50
+  "MKSI": 50
+  "CRUS": 50
+  "SWKS": 50
+  "QRVO": 50
+  "AEHR": 50
+  "FORM": 50
+  "HIVE": 50
+  "RMBS": 50
+  "PII": 50
+  "LUNA": 50
+
+  # AI / Next-Gen Architecture
+  "BLACKWELL": 80
+  "RUBIN": 95
+
+  # Capital Markets
+  "IPO": 45
+  "IPOS": 45
+
+# ---------------------------------------------------------------------------
+# CLUSTER BONUS — Multiplicative boost when multiple high-signal terms appear
+# ---------------------------------------------------------------------------
+# If 2+ of these terms appear in the SAME headline, score *= cluster_multiplier
+cluster_terms:
+  - "CPO"
+  - "CO-PACKAGED OPTICS"
+  - "COUPE"
+  - "TSMC COUPE"
+  - "COMPACT UNIVERSAL PHOTONIC ENGINE"
+  - "SILICON PHOTONICS"
+  - "1.6T"
+  - "3.2T"
+  - "400G"
+  - "800G"
+  - "OPTICAL ENGINE"
+  - "CO-WOS"
+  - "SOIC-X"
+  - "HYBRID BONDING"
+  - "METALENS"
+  - "NVIDIA"
+  - "BROADCOM"
+  - "MARVELL"
+  - "HBM"
+  - "BLACKWELL"
+  - "RUBIN"
+  - "ASML"
+  - "TSMC"
+
+
+
+# ---------------------------------------------------------------------------
+# ANCHOR WORDS  (+200 points — strong market-moving macro bias)
+# ---------------------------------------------------------------------------
+anchor_words:
+  - "MARKET OVERVIEW"
+  - "WALL ST"
+  - "CLOSING BELL"
+  - "OPENING BELL"
+  - "RECAP"
+  - "STOCKS FALL"
+  - "STOCKS RISE"
+  - "STOCK MARKET TODAY"
+
+# ---------------------------------------------------------------------------
+# BILLION-SCALE BONUS  (+45 for headlines mentioning billion-dollar figures)
+# ---------------------------------------------------------------------------
+billion_scale_bonus: 45
+
+# ---------------------------------------------------------------------------
+# PRIORITY TICKERS  (used for headline enrichment with live prices)
+# ---------------------------------------------------------------------------
+priority_tickers:
+  # Big AI / Semi
+  - "NVDA"
+  - "AMD"
+  - "AVGO"
+  - "TSM"
+  - "INTC"
+  - "MU"
+  - "AMAT"
+  - "LRCX"
+  - "KLAC"
+
+  # Photonics / Optics Leaders
+  - "LITE"
+  - "COHR"
+  - "FN"
+  - "POET"
+  - "AAOI"
+  - "LASR"
+  - "IPGP"
+  - "MKSI"
+  - "SIVE"
+
+  # Supply Chain / Other Semi
+  - "MRVL"
+  - "ALAB"
+  - "ARM"
+  - "CRUS"
+  - "SWKS"
+  - "QRVO"
+  - "AEHR"
+  - "GFS"
+  - "HIVE"
+  - "RMBS"
+  - "SIVEF"
+
+  - "PII"
+  - "LUNA"
+  - "CIEN"
+
+# ---------------------------------------------------------------------------
+# FEEDS  (RSS and Scrape sources with base weights)
+# ---------------------------------------------------------------------------
+feeds:
+  # Tier 1: Premium Institutional
+  "CNBC Earnings":
+    url: "https://www.cnbc.com/id/15839135/device/rss/rss.html"
+    type: "rss"
+    weight: 170
+
+  "Google News Reuters":
+    url: "https://news.google.com/rss/search?q=site:reuters.com+when:1d&hl=en-US&gl=US&ceid=US:en"
+    type: "rss"
+    weight: 155
+
+  "Google News Bloomberg":
+    url: "https://news.google.com/rss/search?q=site:bloomberg.com+when:1d&hl=en-US&gl=US&ceid=US:en"
+    type: "rss"
+    weight: 150
+
+  "Google News FT":
+    url: "https://news.google.com/rss/search?q=site:ft.com+when:1d&hl=en-US&gl=US&ceid=US:en"
+    type: "rss"
+    weight: 145
+
+  # Tier 2: Strong Macro / Markets
+  "CNBC Top News":
+    url: "https://www.cnbc.com/id/100003114/device/rss/rss.html"
+    type: "rss"
+    weight: 140
+
+  "CNBC World":
+    url: "https://www.cnbc.com/id/100727362/device/rss/rss.html"
+    type: "rss"
+    weight: 130
+
+  "IBD Market News":
+    url: "http://feeds.feedburner.com/InvestingRss"
+    type: "rss"
+    weight: 125
+
+  "Google News AI Tech":
+    url: "https://news.google.com/rss/search?q=AI+semiconductor+nvidia+earnings+when:1d&hl=en-US&gl=US&ceid=US:en"
+    type: "rss"
+    weight: 120
+
+  "CNBC Markets":
+    url: "https://www.cnbc.com/id/10000664/device/rss/rss.html"
+    type: "rss"
+    weight: 120
+
+  "OilPrice Macro":
+    url: "https://oilprice.com/feed/rss.html"
+    type: "rss"
+    weight: 115
+
+  "MarketWatch Pulse":
+    url: "https://feeds.content.dowjones.io/public/rss/mw_marketpulse"
+    type: "rss"
+    weight: 110
+
+  "Google News Markets":
+    url: "https://news.google.com/rss/search?q=stock+market+when:1d&hl=en-US&gl=US&ceid=US:en"
+    type: "rss"
+    weight: 95
+
+  # Tier 3: Niche Semiconductor / Photonics (high weight for core relevance)
+  "Google News CPO Photonics":
+    url: "https://news.google.com/rss/search?q=co-packaged+optics+OR+silicon+photonics+OR+CPO+OR+COUPE+OR+CO-WOS+when:1d&hl=en-US&gl=US&ceid=US:en"
+    type: "rss"
+    weight: 145
+
+  "Google News Semiconductors":
+    url: "https://news.google.com/rss/search?q=semiconductors+OR+advanced+packaging+OR+COUPE+OR+hybrid+bonding+when:1d&hl=en-US&gl=US&ceid=US:en"
+    type: "rss"
+    weight: 140
+
+  "SemiEngineering":
+    url: "https://semiengineering.com/feed/"
+    type: "rss"
+    weight: 135
+
+  "Semiconductor Today":
+    url: "https://www.semiconductor-today.com/rss.shtml"
+    type: "rss"
+    weight: 130
+
+  "Google News Transceiver":
+    url: "https://news.google.com/rss/search?q=CPO+OR+1.6T+transceiver+when:1d&hl=en-US&gl=US&ceid=US:en"
+    type: "rss"
+    weight: 115
+
+  # Tier 4: Secondary / Macro
+  "Google News Finance":
+    url: "https://news.google.com/rss/search?q=fed+rate+inflation+macro+economy+when:1d&hl=en-US&gl=US&ceid=US:en"
+    type: "rss"
+    weight: 85
+
+  "Business Insider":
+    url: "https://markets.businessinsider.com/rss/news"
+    type: "rss"
+    weight: 80
+
+  "Yahoo Finance Tech":
+    url: "https://finance.yahoo.com/topic/tech/"
+    type: "scrape"
+    weight: 60
+
+  "CNBC Tech":
+    url: "https://www.cnbc.com/id/19854910/device/rss/rss.html"
+    type: "rss"
+    weight: 65
+
+  "CNBC Energy":
+    url: "https://www.cnbc.com/id/19836768/device/rss/rss.html"
+    type: "rss"
+    weight: 35
+
+  "ZeroHedge":
+    url: "http://feeds.feedburner.com/zerohedge/feed"
+    type: "rss"
+    weight: 30
+
+# ---------------------------------------------------------------------------
+# BLACKLIST  (Hard reject — articles containing these are dropped)
+# ---------------------------------------------------------------------------
+blacklist:
+  - "CHOSUNBIZ"
+  - "BLOOMBERG"
+  - "TELEVISION"
+  - "DAVE RAMSEY"
+  - "PR NEWSWIRE"
+  - "BUSINESS WIRE"
+  - "GLOBE NEWSWIRE"
+  - "NANCY PELOSI"
+  - "JIM CRAMER"
+  - "WARREN BUFFETT"
+  - "WARREN BUFFET"
+  - "TERRY SAVAGE"
+  - "MOTLEY FOOL"
+  - "SEEKING ALPHA"
+  - "SHUTOUT"
+  - "ERA "
+  - "BASEBALL"
+  - "FOOTBALL"
+  - "WEIGHT GAIN"
+  - "ENTERTAINMENT"
+  - "K-POP"
+  - "CELEBRITY"
+  - "NFL "
+  - "NBA "
+  - "KARDASHIAN"
+  - "HYUNA"
+  - "TIGERS"
+  - "ROYALS"
+  - "DODGERS"
+  - "YANKEES"
+  - "WOULD LOVE"
+
+
+# ---------------------------------------------------------------------------
+# FORBIDDEN DOMAINS  (Hard reject — links to these domains are dropped)
+# ---------------------------------------------------------------------------
+forbidden_domains:
+  - "aol.com"
+  - "msn.com"
+  - "fool.com"
+  - "motleyfool.com"
+  - "bloomberg.com"
+  - "wsj.com"
+  - "seekingalpha.com"
+  - "barrons.com"
+  - "investing.com"
+  - "chosunbiz.com"
+  - "simplywall.st"
+  - "indexbox.io"
+
+# ---------------------------------------------------------------------------
+# SOURCE NORMALIZATION  (Explicit display name overrides for email badges)
+# Auto-formatter handles CamelCase splitting. Use this map ONLY for edge
+# cases: acronyms, abbreviations, or stylized brand names the algorithm
+# cannot infer automatically. Keys = raw feed name (as received).
+# ---------------------------------------------------------------------------
+source_space_map:
+  "Yahoo Finance": "Yahoo Finance"
+  "YahooFinance": "Yahoo Finance"
+  "OilPriceMacro": "OilPrice"
+  "EconTimes": "Econ Times"
+  "SouthChinaMorningPost": "S.China Post"
+  "ChicagoTribune": "Chi Tribune"
+  "MarketWatch": "MarketWatch"
+  "Investor's Business Daily": "IBD"
+  "InvestorsBusiness": "IBD"
+  "SemiEngineering": "Semi Engineering"
+  "SemiconductorToday": "Semi Today"
+  "BusinessInsider": "Biz Insider"
+  "TheTechBuzz": "The Tech Buzz"
+  "CryptoBriefing": "Crypto Briefing"
+  "CXOToday": "CXO Today"
+  "InterestingEngineering": "Interesting Eng"
+  "TechInAsia": "Tech In Asia"
+  "FinancialTimes": "Fin Times"
+  "DailyHunt": "Daily Hunt"
+  "DailyMail": "Daily Mail"
+  "NewYorkPost": "NY Post"
+  "NewYorkTimes": "NY Times"
+  "WashingtonPost": "WA Post"
+
+# ---------------------------------------------------------------------------
+# AUTO BADGE RULES  (Fallback formatter when source is not in source_space_map)
+# CamelCase splitting is always attempted first.
+# acronym_max_length: single tokens at or below this char count → ALL-CAPS (WSJ, FT, IBD)
+# camel_split: true = split compound names (DailyHunt → Daily Hunt)
+# ---------------------------------------------------------------------------
+auto_badge_rules:
+  acronym_max_length: 5
+  camel_split: true
+
+# ---------------------------------------------------------------------------
+# MAX PER SOURCE  (Source diversity cap)
+# ---------------------------------------------------------------------------
+max_per_source: 5

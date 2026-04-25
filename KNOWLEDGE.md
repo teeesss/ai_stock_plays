@@ -51,12 +51,12 @@ As AI GPU racks reach 100kW–200kW+, traditional copper interconnects are hitti
 
 ---
 
-## Supply Chain Map
+## Supply Chain Map (The "GIGACPO" Physical Layer)
 
 ```
 GPU/Switch Design ($NVDA, $AVGO, $MRVL)
     ↓
-Networking Silicon / DSP ($CRDO SerDes, $MTSI)
+Networking Silicon / DSP ($CRDO, $MTSI, $MXL)
     ↓
 Optical Engines & CPO Integration ($POET, Ayar Labs [Private])
     ↓
@@ -68,38 +68,27 @@ MOCVD / MBE Equipment ($VECO, $AIXNY, Riber)
     ↓
 Optical Modules / Transceivers ($AAOI, InnoLight, Eoptolink)
     ↓ assembled by
-OSAT / Packaging ($ASE, $AMKR, ShunSin)
+OSAT / Packaging ($ASE, $AMKR, ShunSin, $ASX)
     ↓ using
 Bonding Equipment ($BESIY, $KLIC, $ASMPT, $MYCRF)
-    ↓
-Molding Equipment ($TWCPY)
-    ↓
-Dicing Equipment ($DSCSY)
-    ↓
-Dispensing Equipment ($NDSN)
-    ↓
-Optical Compute Fabric ($MRVL [Celestial AI Acquired])
-    ↓
-Odin Photonic Engine (Ranovus [Private])
-    ↓
-Raw Material Precursors / Recycling ($5713.T, $UMI.BR, $NEO.TO)
+    ↓ protected by
+Molding & Dicing ($TWCPY, $DSCSY)
     ↓ on
-Substrates ($IBIEY ABF, $DNPCY glass, $LPKF TGV drilling, SKC Absolics)
+Substrates (Ibiden ABF, Shinko, DNPCY Glass, LPKF TGV, Nittobo T-Glass)
     ↓ with
-Chemicals ($ENTG CMP slurries, $SHWDY epoxies/underfill)
-ALD Cladding ($ASMIY waveguide oxide layers)
-Thin-Film Materials ($MTRN sputtering targets)
+Chemicals & Targets ($ENTG CMP, $SHWDY, $MTRN Targets)
     ↓ tested by
-Inspection ($ONTO, $CAMT, $NVMI, $KLAC)
+Inspection / Metrology ($ONTO, $CAMT, $NVMI, $KLAC)
 Probe Cards ($FORM, $PROB.MI, MJC)
-Test Sockets ($COHU, Yamaichi, $AEHR burn-in)
+Burn-in ($AEHR, $TRT)
     ↓ cooled by
-Thermal ($Ferrotec micro-TECs)
+Thermal (Ferrotec Micro-TECs, $VRT Liquid, $MOD Cooling)
+    ↓ powered by
+Energy Infrastructure ($OKLO, $SMR, $CCJ, $LEU, $NNE)
+    ↓ hosted by
+HPC Infrastructure ($IREN, $WULF, $CIFR, $APLD, $CORZ)
     ↓ connected by
-Fiber/Connectors ($APH, $GLW, FAU suppliers: FOCI, Suzhou TFC)
-Precision Alignment ($NOVT Celera Motion stages)
-    ↓ assembled into racks by
-Contract Mfg ($FN, $CLS)
+Fiber/Connectors ($APH, $GLW, FAU: FOCI, Suzhou TFC)
 ```
 
 ---
@@ -539,20 +528,48 @@ Contract Mfg ($FN, $CLS)
 
 ---
 
+## 🕵️ Sovereign Search Protocol (V26.6)
+How to find future plays before the "Whales" rerate them.
+
+1.  **Follow the Heat (Loss Function)**:
+    - monitor rack wattage announcements (Blackwell = 120kW).
+    - If Watts go up, Cooling ($VRT, $MOD) and Power ($OKLO, $SMR) must lead.
+2.  **Tracking the "Whale" 13Fs**:
+    - Monitor specialist funds: **Whale Rock**, **Altimeter**, **Coatue**.
+    - If they add a micro-cap Japanese/Taiwanese name, it’s likely a "Patent-to-Fix" bottleneck play.
+3.  **The "In-Kind" Supply Loop**:
+    - Watch who $NVDA and $AVGO invest in. They invest for **Supply Security**, not returns.
+4.  **Keyword Scanners**:
+    - Alert on: `HBM6`, `ABF Substrate`, `TGV (Through Glass Via)`, `1.6T DR8`, `HALEU Enrichment`.
+
+---
+
 ## Research Queue
 > _Leads that need further investigation. Add new items with dates._
 
-- [ ] **Clearfield ($CLFD)** — Fiber management/distribution in data centers. Could benefit from CPO fiber build-out. (Added 2026-04-11)
-- [ ] **IPG Photonics ($IPGP)** — High-power fiber lasers. Could pivot to CPO pump lasers? Less direct than LITE/COHR. (Added 2026-04-11)
-- [ ] **nLIGHT ($LASR)** — High-power semiconductor lasers. Core expertise could pivot to ELS/CW lasers for CPO, but currently focused on defense/industrial. Monitor for any CPO pivot announcement. (Added 2026-04-11)
-- [ ] **Atomera ($ATOM)** — MST technology could improve SiPh waveguide performance. Currently focused on GAA transistors and GaN. Photonics listed as potential application. Pre-revenue licensing model. (Added 2026-04-11)
-- [ ] **Henkel / DELO (private)** — UV-cure optical epoxies. Monitor for public-market exposure. (Added 2026-04-11)
-- [ ] **Senko Group (private)** — High-density fiber optic connectors for CPO. Watch for IPO. (Added 2026-04-11)
-- [ ] **Suzhou TFC (300394.SZ)** — China-based FAU maker reportedly outpacing FOCI in commercial CPO execution. (Added 2026-04-11)
-- [ ] **Micronics Japan (6871.T)** — High-frequency probe cards. Needs deeper financial analysis. (Added 2026-04-11)
-- [ ] **Nitto Boseki** — Already 2x+ YTD per Serenity's callouts. Glass fiber / substrate play. Needs deeper analysis. (Added 2026-04-11)
-- [ ] **Unimicron** — Already 2x+ YTD. Substrate / PCB play adjacent to ABF. (Added 2026-04-11)
-- [ ] **Macronix** — Flash memory / specialty semiconductor. Serenity mentioned as adjacent play. (Added 2026-04-11)
+| Ticker | Sub-Sector | Why? | Date Added |
+| :--- | :--- | :--- | :--- |
+| **$TRT** | Test / Burn-in | Micro-cap $AEHR equivalent. Labs in APAC. | 2026-04-24 |
+| **3110.T** | Glass Fiber | Nittobo. Monopolistic control of T-glass for substrates. | 2026-04-24 |
+| **$NNE** | SMR Nuclear | Nano Nuclear. Micro-reactors for remote DC deployment. | 2026-04-24 |
+| **$CRDO** | Networking | Credo. Optical DSP leader for 800G/1.6T. | 2026-04-24 |
+| **$MOD** | Cooling | Modine. The "Small $VRT" data center thermal play. | 2026-04-24 |
+| **$AAOI** | Transceivers | Applied Opto. 1.6T order wins starting to hit. | 2026-04-24 |
+| **$NBIS** | AI Cloud | Nebius. Vertically integrated AI infrastructure. | 2026-04-24 |
+| **$CCJ** | Energy | Cameco. The uranium fuel source for the AI grid. | 2026-04-24 |
+| **$LEU** | Energy | Centrus. Only US HALEU enrichment play. | 2026-04-24 |
+| **3363.TW** | Connectivity | FOCI. High-precision Fiber Array Units (FAU). | 2026-04-24 |
+| **4062.T** | Substrates | Ibiden. Tier-1 ABF and Glass Substrate leader. | 2026-04-24 |
+| **6967.T** | Substrates | Shinko. ABF and Advanced Packaging. | 2026-04-24 |
+| **$CAMT** | Inspection | Camtek. AI/HBM packaging inspection. | 2026-04-24 |
+| **$ONTO** | Metrology | Onto Innovation. Dragonfly G5 metrology. | 2026-04-24 |
+| **$OKLO** | SMR Nuclear | Altman-backed SMR play for AI energy. | 2026-04-24 |
+| **$SMR** | SMR Nuclear | NuScale. First US-certified SMR design. | 2026-04-24 |
+| **$IREN** | HPC Infra | Iris Energy. GPU-cloud pivot with massive power pipeline. | 2026-04-24 |
+| **$WULF** | HPC Infra | TeraWulf. Nuclear-powered BTC miner pivoting to AI. | 2026-04-24 |
+| **$CIFR** | HPC Infra | Cipher Mining. Vertically integrated HPC infra. | 2026-04-24 |
+| **$APLD** | HPC Infra | Applied Digital. Custom DC build-outs for AI. | 2026-04-24 |
+| **$CORZ** | HPC Infra | Core Scientific. Massive Coreweave deal (Power play). | 2026-04-24 |
 
 ---
 
@@ -832,7 +849,20 @@ Contract Mfg ($FN, $CLS)
 - **Ticker Flair Positional Reconstruction**: Resolved word-internal ticker corruption (e.g., "semiconductor" being mangled by "ON") by implementing exact index-based string replacement in `inject_price_flair`. This protocol preserves word boundaries while providing high-fidelity price enrichment.
 - **Institutional Layout Density**: Consolidated media queries to ensure consistent rendering across high-DPI mobile devices and finalized institutional column ratios (25%/75%) for the Real-time Watchlist.
 
-> **Last Updated**: 2026-04-23T16:03:00Z
-> **Total Plays Tracked**: 130 (Command Center Active)
-> **Phases Complete**: 9 (Institutional Mobile Architecture Locked)
+> **Last Updated**: 2026-04-24T14:40:00Z
+> **Total Plays Tracked**: 138 (Sovereign Intelligence Hardened)
+> **Phases Complete**: 12 (Resilience Overhaul Complete)
 
+---
+
+### V26.6: Sovereign Intelligence Resilience (2026-04-24)
+- **Multi-Tier Gateway Pool**: To eliminate 429 rate-limits in the image rescue pipeline, the engine now uses a 5-tier architecture. It rotates between JSON APIs (`api.fxtwitter`, `api.vxtwitter`) and **OpenGraph HTML Scrapers** (`vxtwitter.com`, `fxtwitter.com`).
+- **OpenGraph Fallback Logic**: If APIs are saturated, the engine scrapes social meta-tags from the main domains. This bypasses API-level throttling as these tags are optimized for social platform crawlers.
+- **Chrome 160 Identity Standard**: Standardized all scraping footprints on **Chrome 160.0.8827** (2026-grade), utilizing deep-stealth `sec-ch-ua` fingerprints to maintain institutional-grade invisibility.
+
+### 2026-04-25 - V28 Config-First & Weekend-Aware Intelligence
+- **Weekend Freshness Mandate**: Implemented clock-aware stasis detection. The system now recognizes that "Weekend news can be STALE.. as markets are not open" and automatically extends lookback coverage to **60 hours** (Friday close through Sunday night futures). This ensures the intelligence cockpit remains saturated even during low-volume periods.
+- **Double-Enrichment Prevention**: Hardened the UI pipeline by stripping all redundant headline tagging from the ingestion layer. High-fidelity pricing flair is now injected once at the synthesis stage, ensuring clean, un-escaped HTML in the cockpit.
+- **Case-Insensitive Badge Mapping**: Standardized the `source_space_map` to handle multi-case feed labels. 'DAILYHUNT' now correctly maps to 'Daily Hunt'.
+- **Signal Collision Shield**: Blacklisted the term 'FORM' from the legitimate ticker search to prevent "form coalition" or "Form 20-F" from triggering noise for FormFactor ($FORM).
+- **Universe Expansion**: Added **GFS** (GlobalFoundries) and **SIVEF** (Sivers Semiconductors OTC) to the high-priority tracking list.

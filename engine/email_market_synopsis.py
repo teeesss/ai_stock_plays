@@ -26,8 +26,10 @@ try:
     except ImportError:
         from engine.dependency_mgr import ensure_dependencies
     ensure_dependencies()
-except:
-    pass
+except SystemExit:
+    raise  # Let the dependency manager cleanly exit the process
+except Exception as e:
+    print(f"[!] Dependency Guardian Warning: {e}")
 
 # Engine Foundations
 try:
@@ -35,12 +37,14 @@ try:
     from live_blog_scraper import LiveBlogScraper
     from local_nlp import LocalIntelligenceSynthesizer
     from macro_aggregator import MacroAggregator
+    from market_session import MarketSession
 except ImportError:
     from engine.live_prices import async_run_fetch
     from engine.live_blog_scraper import LiveBlogScraper
     from engine.local_nlp import LocalIntelligenceSynthesizer
     from engine.macro_aggregator import MacroAggregator
     from engine.email_spark_fetcher import run_spark_fetch
+    from engine.market_session import MarketSession
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 log = logging.getLogger(__name__)
@@ -76,6 +80,9 @@ class SovereignIntelligenceEngine:
         self.ticker_name_map = self._load_json("ticker_name_map.json")
         elapsed = time.time() - start
         print(f"[{ts()}] [DEBUG] Constructor: Map loaded ({len(self.ticker_name_map)} entries) in {elapsed:.2f}s.")
+        
+        # V26.14: Hierarchy Leader Initialization
+        self.market_session = MarketSession()
 
     def _get_est_now(self):
         """Returns the current time normalized to US/Eastern (EDT/EST) anchored to UTC."""
@@ -138,7 +145,7 @@ class SovereignIntelligenceEngine:
             "NPU", "LSA", "NLP", "AIAI", "S&P", "DJI", "SNP", "QQQ", "CD", "EST",
             "MARKET", "FED", "CPI", "PPI", "GDP", "USD", "EUR", "GBP", "JPY", "CAD",
             "USDC", "USDT", "DAI", "BUSD", "PYUSD", "TETHER", "STABLECOINS", "FDUSD",
-            "ON", "AT", "BY", "IF", "SO", "ME", "IT", "IS", "AS", "BE", "AN", "OR", "OF", "TO", "IN"
+            "FORM", "ON", "AT", "BY", "IF", "SO", "ME", "IT", "IS", "AS", "BE", "AN", "OR", "OF", "TO", "IN"
         }
         return t not in FETCH_BLACKLIST
 
@@ -161,15 +168,8 @@ class SovereignIntelligenceEngine:
         except: return False
 
     def is_market_active(self):
-        # V22.7: Expanded Market Session (Premarket/Afterhours/Futures)
-        hr = self.now.hour; day = self.now.weekday()
-        # Sunday Night Futures (6 PM EST+)
-        if day == 6 and hr >= 18: return True
-        # Saturday / Sunday Day (Stasis)
-        if day >= 5: return False 
-        # Weekday Window: Premarket (4 AM) thru Afterhours (8 PM)
-        if 4 <= hr < 20: return True
-        return False
+        # V26.14: Defer to Hierarchy Leader
+        return self.market_session.is_market_active()
 
     def is_entity_fresh(self, t, prices):
         """Global 15-minute TTL check (V22.7)"""
@@ -372,56 +372,10 @@ class SovereignIntelligenceEngine:
         return priority_headlines[:10]
 
     def get_market_session(self, symbol=None, dt_override=None):
-        # V22.93: Precise Session Detection + Overnight Awareness
-        # V23.47: Suffix-Aware Global Exchange Logic
-        # V23.90: Testable dt_override
-        target_dt = dt_override if dt_override else self.now
-        hr = target_dt.hour; mn = target_dt.minute
-        tm = hr * 100 + mn
-        day = target_dt.weekday()
-        
-        # 1. Crypto & Sunday Futures Override
-        if symbol and symbol.endswith("-USD"): return "LIVE"
-        if day == 6 and hr >= 18: return "OVN"
-        if day >= 5: return "" # Weekend Stasis
-        
-        # 2. Exchange Hour Mapping (Normalization to EST)
-        # Default: US (09:30 - 16:00)
-        open_m, close_m = 930, 1600
-        
-        if symbol:
-            s_up = symbol.upper()
-            # Europe (DE/ST/L/PA/MI/MC/AS): ~03:00 - 11:30 EST
-            if any(s_up.endswith(s) for s in [".DE", ".ST", ".L", ".PA", ".MI", ".MC", ".AS"]):
-                open_m, close_m = 300, 1130 
-            # Asia (HK/N225): ~21:30 - 04:00 EST
-            elif any(s_up.endswith(s) for s in [".HK", ".N225", ".TW", ".KS", "HSI", "N225"]):
-                open_m, close_m = 2130, 400 # Spans midnight
-            # Australia / UK / EU Index Anchors
-            elif any(s_up.endswith(s) or s_up in ["^FTSE", "^GDAXI"] for s in [".AX", ".CX", ".L", ".DE"]):
-                if s_up in ["^FTSE", "^GDAXI", ".L", ".DE"]:
-                    open_m, close_m = 300, 1130
-                else:
-                    open_m, close_m = 1900, 100  # Spans midnight
-
-        # 3. Session Classification
-        is_live = False
-        if open_m < close_m:
-            is_live = (open_m <= tm < close_m)
-        else: # Overnight markets (Asia/Australia)
-            is_live = (tm >= open_m or tm < close_m)
-            
-        if is_live: return "LIVE"
-        
-        # US-Centric Extended Hours (V23.58 Labels: PRE/AH)
-        if day < 5:
-            # Morning Session: 4AM - 9:30AM EST
-            if 400 <= tm < open_m: return "PRE"
-            # Evening Session: 4PM - 8PM EST
-            if close_m <= tm < 2000: return "AH"
-            # Overnight / Late Night
-            if tm >= 2000 or tm < 400: return "OVN"
-        return ""
+        # V26.14: Defer to Hierarchy Leader
+        label = self.market_session.get_market_session_label(symbol, dt_override)
+        # Convert 'CLOSED' back to empty string for legacy compatibility in email logic
+        return label if label != "CLOSED" else ""
 
     def get_session_data(self, p_data, symbol=None):
         """Unified session logic: extract correct price/pct from live_prices schema."""
@@ -710,7 +664,12 @@ class SovereignIntelligenceEngine:
         topic_counts = {'oil': 0, 'energy': 0, 'apple': 0, 'tesla': 0, 'fed': 0, 'rate': 0, 'rates': 0, 'china': 0, 'iran': 0, 'israel': 0}
         
         for i, res in enumerate(rotated_news):
-             f_title = self.inject_price_flair(res["title"], prices, master_data)
+             raw_title = res.get("title", "")
+             cleaned_title = re.sub(r'\s+[-|•|–]\s+.*$', '', raw_title).strip()
+             # V26.9: Purge lame 📊 emojis from headlines and replace with crisp »
+             cleaned_title = cleaned_title.replace("📊", "»").strip()
+             
+             f_title = self.inject_price_flair(cleaned_title, prices, master_data)
              
              # V24.1: Separate Earnings Area Logic
              is_earn = res.get('is_earnings') or "EARNINGS" in res.get('raw_title', '').upper() or res.get('source') == "CNBC Earnings"
@@ -734,8 +693,35 @@ class SovereignIntelligenceEngine:
                  
              # Truncate to keep badge tight
              if len(src_label) > 22: src_label = src_label[:22]
-             src_label = src_label.upper().replace(" ", "")
              
+             # V26.9: Strip TLDs from source labels (AOL.COM -> AOL, BLOOMBERG.COM -> BLOOMBERG)
+             src_label = re.sub(r'\.(COM|NET|ORG|CO|UK|IO|AI|INFO|EDU|GOV|US|BIZ|ME)$', '', src_label, flags=re.IGNORECASE)
+             
+             # V28: Config-First source badge resolution (Case-Insensitive)
+             space_map = getattr(agg, 'SOURCE_SPACE_MAP', {})
+             lookup_key = src_label.upper().replace(" ", "")
+             if lookup_key in space_map:
+                 src_label = space_map[lookup_key]
+
+             else:
+                 # Step 2: Auto-formatter reads rules from YAML auto_badge_rules via agg
+                 _acronym_max = getattr(agg, 'BADGE_ACRONYM_MAX', 5)
+                 _camel_split = getattr(agg, 'BADGE_CAMEL_SPLIT', True)
+                 def _fmt_badge(label, max_len=_acronym_max, do_split=_camel_split):
+                     label = label.strip()
+                     if ' ' in label:
+                         return label.title()
+                     if do_split:
+                         split = re.sub(r'([a-z])([A-Z])', r'\1 \2', label)
+                         if ' ' in split:
+                             return split.title()
+                     if len(label) <= max_len:
+                         return label.upper()
+                     return label.title()
+                 src_label = _fmt_badge(src_label)
+
+
+
              # monospaced badge
              SRC_BADGE = f'&nbsp;<span class="src-badge">[{src_label}]</span>'
              if is_earn:
@@ -743,7 +729,7 @@ class SovereignIntelligenceEngine:
                      # V25.7: Institutional Blue Glassmorphism for Earnings
                      row_class = "earn-row-even" if earn_count % 2 == 0 else "earn-row-odd"
                      earnings_intel_rows += (f'<div class="{row_class}">'
-                                             f'<span style="font-size:14px;">📊</span>&nbsp;'
+                                             f'<span style="font-size:14px; color:#38bdf8;">◈</span>&nbsp;'
                                              f'<a href="{res["link"]}" class="news-link">'
                                              f'{f_title}</a>{SRC_BADGE}</div>')
                      earn_count += 1
@@ -752,16 +738,20 @@ class SovereignIntelligenceEngine:
                  if row_count < 15:
                      # Check saturation for MACRO news
                      tl = res.get('title', '').lower()
+                     score = res.get('final_score', res.get('score', 0))
+                     
+                     # V27: Alpha Override - bypass saturation if score is high conviction
+                     is_alpha = isinstance(score, (int, float)) and score > 120
+                     
                      is_saturated = False
                      matched_kws = []
                      for kw in topic_counts:
                          if re.search(r'\b' + kw + r'\b', tl):
                              if topic_counts[kw] >= 2:
                                  is_saturated = True
-                                 break
                              matched_kws.append(kw)
                              
-                     if is_saturated:
+                     if is_saturated and not is_alpha:
                          print(f"[DEBUG] Skipped (Saturation) -> {res.get('title', 'Unknown')}")
                          continue
                          
@@ -850,8 +840,8 @@ class SovereignIntelligenceEngine:
                         # V24.9: Explicitly include indices, global markets, and crypto to prevent 0.00% Pulse errors
                         pulse_anchors = ['^GSPC', '^IXIC', '^DJI', 'ES=F', 'NQ=F', 'YM=F', 'BTC-USD', 'ETH-USD', 'SOL-USD', '^HSI', '^N225', '^GDAXI', '^FTSE']
                         all_to_fetch = list(set(master.keys()) | set([t.upper() for t in (custom_tickers or [])]) | set(movers_list) | set(pulse_anchors))
-                        # V24.4: Force Freshness for Email Dossier (Ignore 15m Cache)
-                        prices = asyncio.run(async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True, force=True))
+                        # V26.9: Respect 15m Cache Mandate (Remove force=True)
+                        prices = asyncio.run(async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True, force=False))
                         print(f"[INFO] [LIVE] JIT Refresh Complete: {len(prices)} tickers.")
                     except Exception as e:
                         print(f"[WARN] Price refresh failed: {e}. Falling back to disk.")
@@ -1069,35 +1059,48 @@ class SovereignIntelligenceEngine:
         def render_perf_list(movers, title, color):
             items_html = []
             for s in movers:
-                pct_val = s.get('change_pct', 0)
-                price_val = s.get('price', 0)
                 sym = s['symbol']
                 p_entry = prices.get(sym, {})
-                sess = s.get('session', 'LIVE')
                 
-                color_movers = bull if pct_val >= 0 else bear
-                pct_str = f"{'+' if pct_val >= 0 else ''}{pct_val:.2f}%"
-                price_str = f"${price_val:,.2f}" if price_val > 0 else ""
+                # V26.8: Decoupled Price Logic (Closing vs Extended)
+                reg_price = p_entry.get('price', 0)
+                reg_pct = p_entry.get('change_pct', 0)
+                ext_price = p_entry.get('ext_price')
+                ext_pct = p_entry.get('ext_pct')
+                sess = p_entry.get('ext_type', 'LIVE')
                 
-                ovn_delta_html = ""
-                if sess in ["PRE", "AH", "OVN", "POST"]:
-                    c_p = p_entry.get("close_price") or p_entry.get("price")
-                    if c_p and price_val > 0:
-                        delta_pct = (price_val - c_p) / c_p * 100
-                        d_color = "#22c55e" if delta_pct >= 0 else "#ef4444"
-                        ovn_delta_html = f'<br/><span style="font-size:9px; color:{d_color}; font-weight:bold; margin-top:2px; display:inline-block;">({sess} {delta_pct:+.1f}%)</span>'
+                # Fallbacks for movers data if p_entry is missing
+                if not reg_price:
+                    reg_price = s.get('price', 0)
+                    reg_pct = s.get('change_pct', 0)
+                    sess = s.get('session', 'LIVE')
 
-                badge = self.get_session_tag_html(fs="7px", sess_override=sess)
-                symbol_link = f'<a href="https://finance.yahoo.com/quote/{sym}" style="color:#f59e0b; text-decoration:none;">${sym}</a>'
+                color_movers = bull if reg_pct >= 0 else bear
+                pct_str = f"{'+' if reg_pct >= 0 else ''}{reg_pct:.2f}%"
+                price_str = f"${reg_price:,.2f}" if reg_price > 0 else ""
                 
+                # C = Closed (Gold), L = Live (Green)
+                session_key = f'<span style="color:{gold}; font-weight:900; font-size:10px;">C</span>' if sess in ["POST", "AH", "OVN", "CLOSED"] else f'<span style="color:{bull}; font-weight:900; font-size:10px;">L</span>'
+
+                ext_html = ""
+                if ext_price and sess in ["PRE", "AH", "OVN", "POST", "PM"]:
+                    d_color = bull if (ext_pct or 0) >= 0 else bear
+                    # Use institutional label (AH/PM/OVN)
+                    disp_sess = sess
+                    if disp_sess == "POST": disp_sess = "AH"
+                    if disp_sess == "PRE": disp_sess = "PM"
+                    
+                    ext_html = f'<span style="color:{text_dim}; margin:0 4px;">|</span><span style="font-size:10px; color:{d_color}; font-weight:bold;">{disp_sess} ${ext_price:,.2f} {ext_pct:+.1f}%</span>'
+
+                symbol_link = f'<a href="https://finance.yahoo.com/quote/{sym}" style="color:#f59e0b; text-decoration:none;">${sym}</a>'
+
                 items_html.append(f'''
                     <div class="perf-item-wrap">
-                        <div class="perf-item">
-                            <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                                <td width="30%" class="perf-sym">{symbol_link}</td>
-                                <td width="30%" class="perf-price">{price_str}</td>
-                                <td width="40%" class="perf-pct" style="color:{color_movers};">{pct_str}&nbsp;{badge}{ovn_delta_html}</td>
-                            </tr></table>
+                        <div class="perf-item u-nowrap">
+                            <span class="perf-sym">{symbol_link}</span>
+                            <span class="perf-price" style="margin-left:8px;">{price_str}</span>
+                            <span class="perf-pct" style="color:{color_movers}; margin-left:6px;">{session_key} {pct_str}</span>
+                            {ext_html}
                         </div>
                     </div>''')
 
@@ -1158,15 +1161,17 @@ class SovereignIntelligenceEngine:
                     clr = text_dim
                 else:
                     clr = bull if pct >= 0 else bear
-                    sess_tag = self.get_session_tag_html(fs="8px", sess_override=sess)
+                    
+                    # V26.7: Watchlist Row Hardening
+                    session_key = f'<span style="color:{gold}; font-weight:900;">C</span>' if sess in ["POST", "AH", "OVN", "CLOSED"] else f'<span style="color:{bull}; font-weight:900;">L</span>'
                     
                     anchor = ""
                     if sess in ["PRE", "AH", "OVN", "POST"]:
                         c_p = p_entry.get("close_price") or p_entry.get("price")
-                        if c_p: anchor = f'<span style="font-size:9px; color:#94a3b8; font-weight:normal;">&nbsp;| C: ${c_p:,.2f}</span>'
+                        if c_p: anchor = f'<span style="font-size:10px; color:{text_dim}; font-weight:normal;"> | C: ${c_p:,.2f}</span>'
                     
-                    price_str = f'<span style="color:#cbd5e1; font-size:13px; margin-right:8px;">${price:,.2f}</span>'
-                    pct_display = f'{price_str}<span style="color:{clr}; font-weight:bold; font-size:14px;">{pct:+.2f}%{sess_tag}{anchor}</span>'
+                    price_str = f'<span style="color:#cbd5e1; font-size:13px; margin-right:6px;">${price:,.2f}</span>'
+                    pct_display = f'{price_str}<span style="color:{clr}; font-weight:bold; font-size:14px;">{session_key} {pct:+.2f}%{anchor}</span>'
 
                 notes = "" if hide_notes else t.get('notes', '').strip()
                 flaired_notes = self.inject_price_flair(notes, prices, link=False)
@@ -1219,7 +1224,7 @@ class SovereignIntelligenceEngine:
                 
                 /* Typography & Headers */
                 .section-hdr {{ font-size:20px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-top:20px; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border}; }}
-                .news-link {{ text-decoration:none !important; font-size:14px; font-weight:600; }}
+                .news-link {{ text-decoration:none !important; font-size:14px; font-weight:600; color:inherit !important; }}
                 .src-badge {{ font-family:'Courier New',Courier,monospace; color:#f97316; font-size:11px; font-weight:900; letter-spacing:1px; text-transform:uppercase; }}
                 .earn-hdr {{ color:#38bdf8; font-size:18px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }}
 
@@ -1232,10 +1237,12 @@ class SovereignIntelligenceEngine:
 
                 /* Performance Movers */
                 .perf-item-wrap {{ margin-bottom:4px; text-align:center; width:100%; }}
-                .perf-item {{ display:block; width:100%; box-sizing:border-box; background:rgba(255,255,255,0.02); padding:6px 12px; border-radius:3px; font-family:monospace; font-size:16px; text-align:left; overflow:hidden; }}
+                .perf-item {{ display:block; width:100%; box-sizing:border-box; background:rgba(255,255,255,0.02); padding:8px 10px; border-radius:3px; font-family:monospace; font-size:15px; text-align:left; overflow:hidden; }}
+                .perf-sym {{ font-weight:bold; min-width:50px; display:inline-block; }}
                 .perf-sym a {{ color:#f59e0b; text-decoration:none; font-weight:bold; }}
-                .perf-price {{ color:#cbd5e1; font-size:12px; opacity:0.8; text-align:right; padding-right:10px; vertical-align:middle; }}
-                .perf-pct {{ font-weight:900; font-size:16px; vertical-align:middle; text-align:right; }}
+                .perf-price {{ color:#cbd5e1; font-size:12px; opacity:0.8; }}
+                .perf-pct {{ font-weight:900; font-size:15px; }}
+                .u-nowrap {{ white-space:nowrap !important; overflow:hidden !important; text-overflow:ellipsis; }}
 
                 /* Watchlist & Intelligence */
                 .bucket-item {{ background:rgba(255,255,255,0.03); padding:5px 12px; border-radius:4px; margin-bottom:4px; }}
@@ -1243,9 +1250,10 @@ class SovereignIntelligenceEngine:
                 .sec-pct-cell {{ text-align:right; font-family:monospace; }}
                 .bucket-notes {{ font-size:12px; color:#8f9bb3; margin-top:6px; line-height:1.6; overflow:hidden; max-height:80px; }}
 
-                /* News Alternates */
-                .news-row-even, .news-row-odd {{ padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:#60a5fa; }}
-                .news-row-odd {{ color:#4ade80; }}
+                /* News Alternates (V26.9: Subtle Tile-Style Backgrounds) */
+                .news-row-even, .news-row-odd {{ padding:8px 12px; margin-bottom:4px; border-radius:6px; border:1px solid transparent; }}
+                .news-row-even {{ background:rgba(56,189,248,0.07); border:1px solid rgba(56,189,248,0.15); color:#e0f2fe; }}
+                .news-row-odd {{ background:rgba(74,222,128,0.07); border:1px solid rgba(74,222,128,0.15); color:#f0fdf4; }}
                 .earn-row-even, .earn-row-odd {{ padding:6px 8px; margin-bottom:4px; border-radius:6px; background:rgba(56,189,248,0.05); border:1px solid rgba(56,189,248,0.1); color:#38bdf8; font-weight:600; }}
                 .earn-row-odd {{ background:rgba(125,211,252,0.08); color:#7dd3fc; }}
 
@@ -1419,7 +1427,7 @@ if __name__ == "__main__":
 
     def ts(): return datetime.datetime.now().strftime("%H%M")
 
-    print(f"[{ts()}] # V23.87: Sovereign Intelligence Engine — Unified Session Pulse (EST)")
+    print(f"[{ts()}] # V26.14: Sovereign Intelligence Engine — Temporal Hierarchy (EST)")
     engine = SovereignIntelligenceEngine()
     print(f"[{ts()}] [DEBUG] Engine initialized.")
     

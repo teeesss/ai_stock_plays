@@ -8,9 +8,10 @@ from pathlib import Path
 from curl_cffi import requests
 from datetime import datetime, timezone, timedelta
 import re
+import yaml
 
-# V23.60: Macro Aggregator for GIGACPO Cockpit
-# High-density filtration of tech/semi/photonics intelligence.
+# V27: Macro Aggregator for GIGACPO Cockpit
+# Config-First Architecture — all scoring data lives in config/macro_config.yaml
 import urllib.parse
 from curl_cffi.requests import AsyncSession
 
@@ -21,63 +22,132 @@ ROOT = Path(__file__).parent.parent
 LIVE_PRICES_JSON = ROOT / 'database' / 'live_prices.json'
 MACRO_NEWS_CACHE = ROOT / 'database' / 'macro_news_cache.json'
 VELOCITY_PULSE_DB = ROOT / 'database' / 'macro_velocity_metrics.json'
+MACRO_CONFIG_PATH = ROOT / 'config' / 'macro_config.yaml'
 
 class MacroAggregator:
     def __init__(self):
-        self.velocity_pulse = {} # Tracks keyword frequency rolling window
-        self.priority_keywords = [
-            "PHOTONICS", "SEMI", "CXL", "BLACKWELL", "NVIDIA", "SUPPLY CHAIN", 
-            "CHIP", "AI REVENUE", "WAFER", "HBM", "CPO", "SILICON",
-            "MARKET OVERVIEW", "WALL ST", "CLOSING BELL", "OPENING BELL", "RECAP", "STOCKS FALL", "STOCKS RISE",
-            "CRUDE", "OIL", "CEASEFIRE", "GEOPOLITICAL", "DEFENSE", "ENERGY", "HORMUZ", "OPEC", "BRENT",
-            "EARNINGS", "PROFIT", "QUARTERLY", "REVENUE", "GUIDANCE"
-        ]
-        self.priority_tickers = [
-            "NVDA", "AMD", "AVGO", "ALAB", "ARM", "MRVL", "LITE", "FN", 
-            "COHR", "LUNA", "PII", "RMBS", "INTC", "TSM", "HIVE"
-        ]
-        # V25.3: Hardened 19 High-Fidelity Sources + Google News RSS for source diversity
-        # NOTE: CNBC feeds are kept but the source cap (MAX_PER_SOURCE) prevents any single
-        # outlet from dominating the final 15-article pool.
-        self.feeds = {
+        self.velocity_pulse = {}
+        
+        # V27: Config-First Architecture — load from YAML, fallback to defaults
+        cfg = self._load_config()
+        
+        self.priority_keywords = cfg.get('priority_keywords', [
+            "SEMICONDUCTOR", "SEMI", "CHIP", "NVIDIA", "BLACKWELL", "PHOTONICS",
+            "CPO", "HBM", "EARNINGS", "REVENUE", "IPO",
+        ])
+        self.institutional_keywords = cfg.get('institutional_keywords', [
+            "GOLDMAN SACHS", "JPMORGAN", "MORGAN STANLEY", "BLACKROCK",
+        ])
+        self.priority_keywords.extend(self.institutional_keywords)
+        
+        # V27: Bonus Keywords — variable-point high-signal terms
+        self.bonus_keywords = cfg.get('bonus_keywords', {})
+        
+        # V27: Cluster Bonus — multiplicative boost for multi-signal headlines
+        self.cluster_terms = cfg.get('cluster_terms', [
+            "CPO", "PHOTONICS", "1.6T", "NVIDIA", "HBM", "BLACKWELL",
+        ])
+        # V28: Unified Scoring Rules
+        self.scoring_rules = cfg.get('scoring_rules', {})
+        self.priority_keyword_weight = self.scoring_rules.get('priority_keyword_weight', 50)
+        self.anchor_word_weight = self.scoring_rules.get('anchor_word_weight', 200)
+        self.blacklist_penalty = self.scoring_rules.get('blacklist_penalty', -1000)
+        self.relevance_floor_penalty = self.scoring_rules.get('relevance_floor_penalty', 0)
+        self.billion_scale_bonus = self.scoring_rules.get('billion_scale_bonus', 45)
+        self.cluster_multiplier = self.scoring_rules.get('cluster_multiplier', 1.55)
+        
+        # Safe Regex Compilation
+        regex_pattern = self.scoring_rules.get('billion_scale_regex', r'\$?\s?\d+(\.\d+)?\s?(B|BN|BILLION|TRILLION)')
+        try:
+            self.billion_regex = re.compile(regex_pattern, re.IGNORECASE)
+        except re.error:
+            log.warning(f"[CONFIG ERROR] Invalid billion_scale_regex in YAML. Falling back to default.")
+            self.billion_regex = re.compile(r'\$?\s?\d+(\.\d+)?\s?(B|BN|BILLION|TRILLION)', re.IGNORECASE)
+
+        self.untrusted_aggregators = cfg.get('untrusted_aggregators', ["Google News"])
+        
+        # V27: Anchor Words — massive macro anchors (+200)
+        self.anchor_words = cfg.get('anchor_words', [
+            "MARKET OVERVIEW", "WALL ST", "CLOSING BELL", "OPENING BELL",
+            "RECAP", "STOCKS FALL", "STOCKS RISE", "STOCK MARKET TODAY",
+        ])
+
+        self.priority_tickers = cfg.get('priority_tickers', [
+            "NVDA", "AMD", "AVGO", "ALAB", "ARM", "MRVL", "LITE", "FN",
+            "COHR", "LUNA", "PII", "RMBS", "INTC", "TSM", "HIVE",
+        ])
+        
+        self.feeds = cfg.get('feeds', {
             "WSJ Markets": {"url": "https://feeds.content.dowjones.io/public/rss/RSSMarketsMain", "type": "rss", "weight": 150},
-            "CNBC Top News": {"url": "https://www.cnbc.com/id/100003114/device/rss/rss.html", "type": "rss", "weight": 140},
-            "CNBC World": {"url": "https://www.cnbc.com/id/100727362/device/rss/rss.html", "type": "rss", "weight": 130},
-            "IBD Market News": {"url": "https://www.investors.com/rss.axd?path=InvestingRSS.xml", "type": "rss", "weight": 120},
-            "CNBC Markets": {"url": "https://www.cnbc.com/id/10000664/device/rss/rss.html", "type": "rss", "weight": 110},
-            "MarketWatch Pulse": {"url": "https://feeds.content.dowjones.io/public/rss/mw_marketpulse", "type": "rss", "weight": 100},
-            "Seeking Alpha": {"url": "https://seekingalpha.com/feed.xml", "type": "rss", "weight": 90},
-            "Business Insider": {"url": "https://markets.businessinsider.com/rss/news", "type": "rss", "weight": 80},
             "CNBC Earnings": {"url": "https://www.cnbc.com/id/15839135/device/rss/rss.html", "type": "rss", "weight": 170},
-            "Yahoo Finance Tech": {"url": "https://finance.yahoo.com/topic/tech/", "type": "scrape", "weight": 60},
-            "CNBC Tech": {"url": "https://www.cnbc.com/id/19854910/device/rss/rss.html", "type": "rss", "weight": 50},
-            "OilPrice Macro": {"url": "https://oilprice.com/feed/rss.html", "type": "rss", "weight": 115},
-            "CNBC Energy": {"url": "https://www.cnbc.com/id/19836768/device/rss/rss.html", "type": "rss", "weight": 35},
-            "ZeroHedge": {"url": "http://feeds.feedburner.com/zerohedge/feed", "type": "rss", "weight": 20},
-            "Investing Tech": {"url": "https://www.investing.com/rss/news_25.rss", "type": "rss", "weight": 10},
-            # V25.3: Google News RSS — diverse multi-outlet source; each article carries the
-            # ACTUAL publisher name so source-cap still applies per-outlet.
-            "Google News Markets": {"url": "https://news.google.com/rss/search?q=stock+market+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 95},
-            "Google News AI Tech": {"url": "https://news.google.com/rss/search?q=AI+semiconductor+nvidia+earnings+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 105},
-            "Google News Finance": {"url": "https://news.google.com/rss/search?q=fed+rate+inflation+macro+economy+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 85},
-            # V25.6: Premium Stealth Bypasses via Google News
-            "Google News Reuters": {"url": "https://news.google.com/rss/search?q=site:reuters.com+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 145},
-            "Google News Bloomberg": {"url": "https://news.google.com/rss/search?q=site:bloomberg.com+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 140},
-            "Google News FT": {"url": "https://news.google.com/rss/search?q=site:ft.com+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 135},
-            "Google News Barrons": {"url": "https://news.google.com/rss/search?q=site:barrons.com+when:1d&hl=en-US&gl=US&ceid=US:en", "type": "rss", "weight": 130},
-        }
-        # V25.4: Max articles any single outlet (by root domain) can contribute.
-        # Scoring still determines rank — this just prevents a single firehose outlet from
-        # flooding the final pool. 5 is generous; real diversity comes from source count.
-        self.MAX_PER_SOURCE = 5
-        # Junk nav / site-section strings that scrape targets sometimes emit
+        })
+        
+        self.MAX_PER_SOURCE = cfg.get('max_per_source', 5)
+        
         self.SCRAPE_JUNK_TITLES = frozenset([
             "entertainment", "news", "life", "sports", "opinion", "politics",
             "technology", "science", "health", "travel", "food", "style",
             "videos", "photos", "podcasts", "newsletters", "subscribe",
             "sign in", "log in", "markets", "finance", "more",
         ])
-        self.blacklist = ["DAVE RAMSEY", "PR NEWSWIRE", "BUSINESS WIRE", "GLOBE NEWSWIRE"]
+        
+        self.blacklist = cfg.get('blacklist', [
+            "DAVE RAMSEY", "PR NEWSWIRE", "BUSINESS WIRE", "GLOBE NEWSWIRE",
+            "NANCY PELOSI", "JIM CRAMER", "WARREN BUFFETT", "WARREN BUFFET",
+            "TERRY SAVAGE",
+        ])
+        
+        self.forbidden_domains = set(cfg.get('forbidden_domains', [
+            "aol.com", "msn.com", "fool.com", "motleyfool.com",
+            "bloomberg.com", "wsj.com", "seekingalpha.com", "barrons.com",
+        ]))
+        
+        # V28: source_space_map loaded from YAML — Normalized to uppercase for case-insensitive lookup
+        raw_map = cfg.get('source_space_map', {})
+        self.SOURCE_SPACE_MAP = {str(k).upper().replace(" ", ""): v for k, v in raw_map.items()}
+
+
+        # V28: Auto-badge formatting rules (fallback when source not in SOURCE_SPACE_MAP)
+        badge_rules = cfg.get('auto_badge_rules', {})
+        self.BADGE_ACRONYM_MAX = badge_rules.get('acronym_max_length', 5)
+        self.BADGE_CAMEL_SPLIT = badge_rules.get('camel_split', True)
+
+        # V28: Pre-extract domain fragments for fast source-name blocking
+        self.forbidden_source_frags = {d.split('.')[0].lower() for d in self.forbidden_domains}
+
+        # V28: Initialize Hierarchy Leader for temporal logic
+        try:
+            from market_session import MarketSession
+            self.market_session = MarketSession()
+        except ImportError:
+            from engine.market_session import MarketSession
+            self.market_session = MarketSession()
+
+        log.info(f"[V28] Config loaded: {len(self.priority_keywords)} keywords, {len(self.bonus_keywords)} bonus terms, {len(self.feeds)} feeds, {len(self.priority_tickers)} tickers, {len(self.SOURCE_SPACE_MAP)} source overrides")
+
+
+
+    def _load_config(self):
+        """V27: Loads config/macro_config.yaml with robust fallback to empty dict."""
+        if not MACRO_CONFIG_PATH.exists():
+            log.warning(f"[CONFIG] {MACRO_CONFIG_PATH} not found. Using hardcoded defaults.")
+            return {}
+        try:
+            with open(MACRO_CONFIG_PATH, 'r', encoding='utf-8') as f:
+                cfg = yaml.safe_load(f)
+            if not isinstance(cfg, dict):
+                log.warning("[CONFIG] YAML parsed but is not a dict. Using defaults.")
+                return {}
+            log.info(f"[CONFIG] Loaded macro_config.yaml ({MACRO_CONFIG_PATH.stat().st_size} bytes)")
+            return cfg
+        except Exception as e:
+            log.error(f"[CONFIG] YAML parse error: {e}. Using hardcoded defaults.")
+            return {}
+
+    def normalize_source(self, name):
+        """V26.13: Normalizes source badges with proper spacing and branding."""
+        s_upper = name.upper().replace(".COM", "").replace(" ", "")
+        return self.SOURCE_SPACE_MAP.get(s_upper, name.upper())
 
     def _load_prices(self):
         if not LIVE_PRICES_JSON.exists():
@@ -88,52 +158,168 @@ class MacroAggregator:
         except:
             return {}
 
+    def is_article_safe(self, title, link, source, summary=""):
+        """V26.10: Central gate for domain, personality, and language filtering."""
+        t_upper = title.upper()
+        l_lower = link.lower()
+        s_upper = source.upper()
+        sum_upper = summary.upper()
+
+        # 1. Domain Hard Blacklist — direct URL check
+        if any(d in l_lower for d in self.forbidden_domains):
+            return False
+
+        # 1b. V28: Source-Name Domain Fragment Check (catches Google News proxied URLs)
+        # Google News wraps links as news.google.com/rss/... hiding the real publisher domain.
+        # Cross-check display_source against forbidden domain fragments (bloomberg.com -> bloomberg).
+        src_lower = source.lower()
+        if any(frag in src_lower for frag in self.forbidden_source_frags):
+            log.debug(f"  [BLOCKED] Forbidden source via display_source: '{source}'")
+            return False
+            
+        # 2. Personality/Source Metadata Blacklist
+        forbidden_terms = self.blacklist + ["MOTLEY FOOL", "AOL", "MSN"]
+        for term in forbidden_terms:
+            if term in t_upper or term in s_upper or term in sum_upper:
+                return False
+
+                
+        # 3. Language Gate (English Only Heuristic)
+        if not self.is_english(title):
+            return False
+            
+        # 4. Length Gate (V26.13 Architect Mandate)
+        # Purge nav items or low-context fragments (e.g., "Macroscope")
+        words = title.split()
+        if len(words) < 4:
+            return False
+
+        # 5. Opinion / Clickbait Gate (V26.13)
+        # Purge interrogative/instructional filler (Why/How/Should/Can)
+        # Institutional news is declarative.
+        if title.endswith("?"):
+            return False
+            
+        opinion_markers = ["WHY ", "HOW TO ", "SHOULD I ", "CAN YOU ", "WHAT TO KNOW"]
+        if any(t_upper.startswith(m) for m in opinion_markers):
+            return False
+
+        # 6. Video Purge (V26.11 Architect Mandate)
+        # Avoid blocking articles *about* video tech by checking for path/param markers
+        if any(v in l_lower for v in ["/video/", "video.html", "?video="]):
+            return False
+            
+        # 7. Geographic/Niche Noise Filter (V26.11)
+        # Purge niche local news unless it carries global tech alpha (TSMC, ASML, etc.)
+        niche_markers = ["INDIA", "RBL BANK", "NIGERIA", "PAKISTAN", "LOCAL BANK"]
+        tech_anchors = ["NVIDIA", "CHIP", "SEMI", "ASML", "AI", "TSMC", "INTEL", "AMD", "BLACKWELL"]
+        if any(m in t_upper for m in niche_markers):
+            if not any(a in t_upper for a in tech_anchors):
+                return False
+                
+        return True
+
+    def is_fresh_enough(self, ts):
+        """V28 Hardened: articles older than 36h (Weekday) or 60h (Weekend Stasis)."""
+        age_hours = (time.time() - ts) / 3600
+        limit = 60 if self.market_session.is_market_stasis() else 36
+        return age_hours <= limit
+
+    def apply_freshness_decay(self, score, ts):
+        """V28 Hardened: 50% penalty for articles older than 24h (Weekday) or 48h (Weekend)."""
+        age_hours = (time.time() - ts) / 3600
+        decay_limit = 48 if self.market_session.is_market_stasis() else 24
+        if age_hours > decay_limit:
+            return score * 0.5
+        return score
+
+    def is_english(self, text):
+        """Lightweight heuristic to detect non-English/Foreign scripts."""
+        if not text: return True
+        
+        # 1. Check for common English "anchor" words
+        common_english = {" THE ", " AND ", " FOR ", " WITH ", " IN ", " ON ", " TO ", " IS ", " OF ", " AT "}
+        t_pad = f" {text.upper()} "
+        has_anchors = any(w in t_pad for w in common_english)
+        
+        # 2. Check for technical tickers or keywords that imply English finance news
+        finance_anchors = {"STOCK", "MARKET", "NVIDIA", "TECH", "PRICE", "SURGE", "FALL", "GAIN", "CHIP", "SEMI"}
+        has_finance = any(w in t_pad for w in finance_anchors)
+
+        # 3. Unicode script check
+        try:
+            text.encode('ascii')
+            # If it's ASCII but has zero English or Finance anchors, it's likely a foreign Latin language (French, etc.)
+            if not has_anchors and not has_finance and len(text.split()) > 2:
+                return False
+            return True
+        except UnicodeEncodeError:
+            # Contains non-ASCII (CJK, Cyrillic, etc.)
+            non_ascii = [c for c in text if ord(c) > 127]
+            # If more than 10% is non-ASCII, it's definitely foreign
+            if len(non_ascii) / len(text) > 0.1:
+                return False
+            # If it has some accents but also English anchors, we allow it (e.g. "Nvidia's rôle")
+            return has_anchors or has_finance
+
+    async def resolve_redirect(self, url):
+        """V26.10: Lightweight HEAD request to resolve tracking links (Approach C-Lite)."""
+        # Targeted resolution only for known aggregators to minimize latency
+        if not any(d in url.lower() for d in ["google.com/url", "aol.com"]):
+            return url
+        try:
+            # V26.10 Architect Mandate: Strict 1.5s timeout, max 5 concurrent elsewhere
+            async with AsyncSession(impersonate='chrome124') as s:
+                res = await s.head(url, timeout=1.5, allow_redirects=True)
+                return str(res.url)
+        except Exception as e:
+            log.debug(f"  [!] Redirect resolution failed for {url}: {e}")
+            return url
+
     def score_headline(self, title, source_name):
-        """Calculates 'Intel Significance' based on tech/semi focus and source weight."""
+        """V27: Config-driven scoring - priority, bonus, cluster, anchor, billion-scale."""
         t_upper = title.upper()
         
         # Blacklist enforcement
         for bl in self.blacklist:
             if bl in t_upper:
-                return -1000
+                return self.blacklist_penalty
         
-        # Base weight from source
+        # Base weight from source feed
         score = self.feeds.get(source_name, {}).get("weight", 10)
         
-        # Keyword bonuses
+        # Standard keyword bonus
         for kw in self.priority_keywords:
-            if kw in t_upper:
-                score += 50
+            if re.search(r'\b' + re.escape(kw) + r'\b', t_upper):
+                score += self.priority_keyword_weight
         
-        # Market Overview / Macro Anchor bonuses
-        anchor_words = ["MARKET OVERVIEW", "WALL ST", "CLOSING BELL", "OPENING BELL", "RECAP", "STOCKS FALL", "STOCKS RISE", "STOCK MARKET TODAY"]
-        for aw in anchor_words:
-            if aw in t_upper:
-                score += 200
+        # V27: Bonus Keywords - variable points from config
+        for kw, points in self.bonus_keywords.items():
+            if re.search(r'\b' + re.escape(kw.upper()) + r'\b', t_upper):
+                score += points
         
-        return score
+        # Anchor word bonus
+        for aw in self.anchor_words:
+            if re.search(r'\b' + re.escape(aw) + r'\b', t_upper):
+                score += self.anchor_word_weight
+        
+        # V28: Configurable Billion-Scale Detection
+        if self.billion_regex.search(t_upper):
+            score += self.billion_scale_bonus
+        
+        # V27: Cluster Bonus - multiplicative boost when 2+ high-signal terms co-occur
+        cluster_hits = sum(1 for term in self.cluster_terms if re.search(r'\b' + re.escape(term) + r'\b', t_upper))
+        if cluster_hits >= 2:
+            score = score * self.cluster_multiplier
 
-    def enrich_headline(self, title, prices):
-        """Appends real-time price info if a known ticker is detected."""
-        enriched = title
-        detected_ticker = None
-        
-        import re
-        for tick in self.priority_tickers:
-            if re.search(rf'\b{tick}\b', title.upper()):
-                detected_ticker = tick
-                break
-        
-        if detected_ticker and detected_ticker in prices:
-            p_data = prices[detected_ticker]
-            if p_data.get('price'):
-                p = p_data['price']
-                chg = p_data.get('change_pct', 0)
-                color = "green" if chg >= 0 else "red"
-                sign = "+" if chg >= 0 else ""
-                enriched = f"<strong>{detected_ticker}</strong>&nbsp;(${p:.2f}&nbsp;{sign}{chg:.1f}%):&nbsp;{title}"
-        
-        return enriched
+        # V28: Configurable Relevance Floor (Hard Gate)
+        base_score = self.feeds.get(source_name, {}).get("weight", 10)
+        if score == base_score:
+            if any(agg in source_name for agg in self.untrusted_aggregators):
+                return self.relevance_floor_penalty
+
+        return round(score, 1)
+
 
     def _update_velocity_pulse(self, title, now_ts):
         """V24.2 SVM: Tracks frequency of keywords to identify velocity shifts."""
@@ -291,27 +477,33 @@ class MacroAggregator:
                                 entry_ts = now_ts
                                 if hasattr(entry, 'published_parsed') and entry.published_parsed:
                                     entry_ts = time.mktime(entry.published_parsed)
-                                    if (now_ts - entry_ts) > (48 * 3600):
-                                        continue
+                                
+                                summary = entry.get('summary', entry.get('description', ''))
+                                summary = re.sub(r'<[^>]+>', '', summary).strip()
+                                
+                                # V26.10: News Hardening Gate Integration
+                                final_link = await self.resolve_redirect(link)
+                                if not self.is_article_safe(title, final_link, display_source, summary):
+                                    continue
+
+                                # V24.2: Signal Decay Engine (5% per hour after 1h, floor at 50%)
+                                # V26.10 Hardening: 24h Decay Gate + 36h Hard Limit
+                                if not self.is_fresh_enough(entry_ts):
+                                    continue
                                 
                                 score = self.score_headline(title, name)
-                                if score < 0: continue
+                                score = self.apply_freshness_decay(score, entry_ts)
                                 
                                 # Flag Earnings (V24.1)
                                 is_earnings = "EARNINGS" in title.upper() or name == "CNBC Earnings"
                                 if is_earnings: score += 100 # Boost earnings
                                 
-                                enriched_title = self.enrich_headline(title, prices)
+                                # V28: DEPRECATED enrichment here to prevent Double-Enrichment HTML corruption
+                                # The UI/Email layer (email_market_synopsis.py) handles flair injection.
+                                enriched_title = title 
                                 
-                                summary = entry.get('summary', entry.get('description', ''))
-                                summary = re.sub(r'<[^>]+>', '', summary).strip()
                                 summary = re.sub(r'(?i)[T]?he post .*? appeared first on .*?(?:\.|$)', '', summary).strip()
                                 summary = re.sub(r'(?i)Read more on Yahoo Finance.*', '', summary).strip()
-                                
-                                # V24.2: Signal Decay Engine (5% per hour after 1h, floor at 50%)
-                                hours_old = (now_ts - entry_ts) / 3600
-                                decay = max(0.5, 1.0 - (max(0, hours_old - 1) * 0.05))
-                                score = score * decay
                                 
                                 # V24.2: Sentiment Velocity Monitor (SVM) Update
                                 self._update_velocity_pulse(title, now_ts)
@@ -320,9 +512,9 @@ class MacroAggregator:
                                     "title": enriched_title,
                                     "raw_title": title,
                                     "summary": summary,
-                                    "link": link,
+                                    "link": final_link,
                                     "source": name,
-                                    "display_source": display_source,
+                                    "display_source": self.normalize_source(display_source),
                                     "score": round(score, 1),
                                     "date": pub_date,
                                     "is_earnings": is_earnings
@@ -372,8 +564,11 @@ class MacroAggregator:
                                 if is_dup: continue
                                 seen_titles.add(tokens)
                                 
+                                # V26.10: Scrape Gate Integration
+                                if not self.is_article_safe(title, it['link'], name):
+                                    continue
+                                    
                                 score = self.score_headline(title, name)
-                                if score < 0: continue
                                 
                                 # Flag Earnings (V24.1)
                                 is_earnings = "EARNINGS" in title.upper() or name == "CNBC Earnings"
@@ -390,7 +585,7 @@ class MacroAggregator:
                                     "summary": "",
                                     "link": it['link'],
                                     "source": name,
-                                    "display_source": name,
+                                    "display_source": self.normalize_source(name),
                                     "score": score,
                                     "date": "Just now",
                                     "is_earnings": is_earnings

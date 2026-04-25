@@ -1,27 +1,36 @@
 # Project Status: Market Intelligence Engine
 
-## 🚀 Current Milestone: V26.0 (Sovereign Intelligence Payload Hardening)
-**Status**: 🟢 PRODUCTION-READY // **UI Integrity**: Optimized (42% Leaner) // **Logic Integrity**: Hardened
+## 🚀 Current Milestone: V28 (Config-First & FinVADER Architecture)
+**Status**: 🟢 PRODUCTION-READY // **Aesthetic**: Subtle Tile Mandate // **Logic**: NLP Sentiment Steering
 ---
 ### 🧩 Core Accomplishments
-- **[NEW] Extreme Payload Optimization (V26.0)**: Slashed HTML payload from 109KB to 63KB by implementing a centralized CSS architecture in the <head>. This prevents Gmail from clipping the institutional dossier and ensures 100% visibility of the intelligence payload.
-- **[NEW] CSS Class Unification (V26.0)**: Eliminated thousands of redundant inline style attributes across all dashboard components (Pulse, News, Watchlist, Movers). Performance and scannability are significantly improved.
-- **[NEW] Institutional Source Hardening (V26.0)**: Implemented a strict blacklist for "The Motley Fool" and normalized source badges (removing GOOG/ prefixes) to maintain a professional, institutional-grade narrative.
-- **[NEW] Global Markets Data Restoration (V24.99)**: Resolved "Zero-Value" bugs for HSI, NIKKEI, DAX, and FTSE by explicitly including them in the JIT refresh pipeline within `engine/email_market_synopsis.py`.
-- **[NEW] UI Mirror Architecture (V24.99)**: Unified the visual language of the dashboard. Sovereign Index Pulse and Crypto tiles now mirror the Global Markets design, featuring background-colored percentage chips, integrated point deltas, and live session badges.
-- **[NEW] Desktop Density Scaling (V24.98)**: Implemented a global +20% font-size bump for all high-resolution desktop viewports (600px+) across all dashboard components (Pulse, F&G, Global Markets).
-- **[NEW] Mobile-Fluid Architecture (V24.97)**: Fully optimized for the 320px-600px mobile spectrum. Implemented adaptive font scaling for 3-column layouts and consolidated media queries for cross-device consistency.
-- **[NEW] Ticker Flair Positional Reconstruction**: Resolved word-internal corruption bugs (e.g., "semiconductor" vs "ON") by implementing exact index-based string replacement in news headlines.
-- **[NEW] Performance Movers Vertical Stack**: Hardened mobile layouts by locking gainers/losers into a single-column vertical stack, ensuring zero clipping of prices or session badges.
-- **[NEW] Data-Driven Session Detection (V24.7)**: Replaced clock-based labeling with data-driven verification. Labels (AH, OVN, PRE) now accurately match the trading source.
+- **[NEW] Weekend Freshness Mandate (V28)**: Integrated `MarketSession` stasis detection into `MacroAggregator`. Automatically expands the lookback window from 36h to **60h** during weekends.
+- **[NEW] Case-Insensitive Badge Logic (V28)**: Hardened `source_space_map` lookups with uppercase normalization for robust feed mapping.
+- **[NEW] FinVADER Sentiment Injection (V28)**: Integrated `finvader` to supercharge Wall Street term awareness ("beat", "miss", "bullish").
+- **[NEW] Config-First Lexicon Overrides (V28)**: Added `vader_financial_lexicon` to `macro_config.yaml` for sentiment steering.
+- **[NEW] Global Relevance Floor (V28)**: Added hard gate in `local_nlp.py` (`final_score < 15.0`) to drop noise.
+- **[NEW] Double-Enrichment Prevention (V28)**: Removed redundant headline tagging in `MacroAggregator` to prevent HTML corruption.
+- **[NEW] High-Fidelity Noise Shield (V28)**: Blacklisted `FORM` from ticker discovery to prevent "form coalition" false positives.
+- **[NEW] Config-First Scoring Architecture (V27)**: Migrated ALL scoring data (keywords, feeds, tickers, bonus terms, cluster multipliers) from hardcoded Python to `config/macro_config.yaml`.
+- **[NEW] Ticker Suffix Recovery (V26.12)**: Implemented automated `.TW` -> `.TWO` retry logic.
+
+## 🚀 Version: V28 (Config-First & FinVADER Architecture)
+Status: **PRODUCTION DEPLOYED — HARDENED**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V26.0 (Payload Optimization & Source Hardening)
-- **Critical Progress**: Slashed email payload from 109KB to 63KB (42% reduction) using a unified CSS class architecture. Blacklisted "The Motley Fool" and normalized news source badges for professional institutional scannability.
-- **Next Milestone**: Sentiment-weighted multi-source deduplication.
+- **Current Tier**: V28 (NLP Sentiment Steering & Config-First)
+- **Critical Progress**: Deployed **Weekend Freshness Mandate** (60h window) and **Case-Insensitive Badge Mapping**. Unified all scoring and lexicon rules into `macro_config.yaml`. Fixed the "Double-Enrichment" HTML bug. Blacklisted `FORM` to stop common-word ticker collisions.
+- **Next Milestone**: Monitor weekend news saturation and validate new `SIVEF` / `GFS` ticker coverage.
 
-Date: 2026-04-24
-Tests: **55 passing / 0 failing**
+Date: 2026-04-25
+Tests: **58 passing / 0 failing**
+
+---
+
+### 🚀 Previous Status: V26.11 — Subscription-Free & Relevance Hardening
+- [x] **Subscription-Free Hardening**: 100% block on Bloomberg, WSJ, Seeking Alpha, and Barron's.
+- [x] **Geographic Relevance Gate**: Integrated Tech-Anchor relevance gate to prioritize NASDAQ/S&P 500 alpha.
+- Date: 2026-04-24
 
 ---
 

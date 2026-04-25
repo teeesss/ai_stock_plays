@@ -8,6 +8,13 @@ try:
     from sumy.nlp.tokenizers import Tokenizer
     from sumy.summarizers.lsa import LsaSummarizer
     from sklearn.feature_extraction.text import TfidfVectorizer
+    import yaml
+    from pathlib import Path
+    try:
+        from finvader import lexicon1, lexicon2, Merge
+        HAS_FINVADER = True
+    except ImportError:
+        HAS_FINVADER = False
 except ImportError:
     pass
 
@@ -16,9 +23,31 @@ class LocalIntelligenceSynthesizer:
         try:
             self.analyzer = SentimentIntensityAnalyzer()
             self.is_active = True
+            
+            # V28: Inject FinVADER Lexicons
+            if HAS_FINVADER:
+                # Merge SentiBignomics and Henry lexicons
+                fin_lexicon = Merge(lexicon1(), lexicon2())
+                self.analyzer.lexicon.update(fin_lexicon)
+                print(f"[INFO] [NLP] FinVADER Financial Lexicons Injected ({len(fin_lexicon)} terms)")
+                
+            # V28: Inject Config-First Lexicon Overrides
+            try:
+                root_path = Path(__file__).parent.parent
+                cfg_path = root_path / 'config' / 'macro_config.yaml'
+                if cfg_path.exists():
+                    with open(cfg_path, 'r', encoding='utf-8') as f:
+                        cfg = yaml.safe_load(f) or {}
+                        custom_lexicon = cfg.get('scoring_rules', {}).get('vader_financial_lexicon', {})
+                        if custom_lexicon:
+                            self.analyzer.lexicon.update(custom_lexicon)
+            except Exception as e:
+                print(f"[NLP CONFIG ERR] Failed to load custom lexicon: {e}")
+
             # Base stopwords
             self.base_stops = ['stock', 'stocks', 'market', 'need', 'know', 'buy', 'investor', 'investors', 'today', 'company', 'shares', 'wall', 'street', 'year', 'announced', 'report', 'results', 'quarter', 'q1', 'q2', 'q3', 'q4']
-        except:
+        except Exception as e:
+            print(f"[NLP INIT ERR] {e}")
             self.is_active = False
 
     def update_vibe_lexicon(self, sentiment_data: dict):
@@ -289,11 +318,19 @@ class LocalIntelligenceSynthesizer:
                 tone_score = abs(sentiment['compound']) * 2.0
                 
                 final_score = a.get('score', 0) + length_score + alpha_score + tone_score
+                
+                # V28: Global Relevance Floor 
+                # If an article has a final score below 15, it is absolute garbage.
+                # Do not let the Rotation Engine use it to fill the quota.
+                if final_score < 15.0:
+                    continue
+                    
                 a['final_score'] = final_score
                 scored.append((a, final_score))
             
             # Sort by score descending
             ranked = [s[0] for s in sorted(scored, key=lambda x: x[1], reverse=True)]
             return ranked[:top_n]
-        except:
+        except Exception as e:
+            print(f"[NLP ERR] Ranking failed: {e}")
             return articles[:top_n]

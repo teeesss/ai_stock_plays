@@ -1,26 +1,39 @@
-### 🚀 Current Status: V26.0 — Sovereign Intelligence Payload Hardening (Locked)
-1. - [x] **Extreme Payload Optimization (V26.0)**: Slashed HTML size from 109KB to 63KB by implementing a class-based CSS architecture in the <head>.
-2. - [x] **CSS Unification (V26.0)**: Eliminated thousands of redundant inline style attributes across Pulse, News, and Watchlist rows.
-3. - [x] **Institutional Source Hardening (V26.0)**: Blacklisted "The Motley Fool" and normalized source badges (removing GOOG/ prefixes) for institutional clarity.
-4. - [x] **Global Markets Data Restoration (V24.99)**: Restored HSI, NIKKEI, DAX, FTSE pricing by hardening JIT fetch pipeline.
-5. - [x] **UI Mirror Architecture (V24.99)**: Unified Index Pulse and Crypto tiles with Global Markets visual design (colored boxes + session badges).
-6. - [x] **Desktop Density Upscaling (V24.98)**: Implemented +20% font-size increase for all high-res desktop dashboard metrics.
-7. - [x] **Mobile-Fluid Architecture (V24.97)**: Fully optimized for 320px-600px mobile spectrum with adaptive scaling.
-8. - [x] **Overnight Delta Sync (V24.7)**: Performance movers now show precise session deltas (e.g., "+0.7% AH") anchored to previous close.
-9. - [x] **Ghost Ticker Purge (V24.6)**: Implemented 24h TTL database purge to eliminate stale movers (PEGA/CNQ confirmed purged).
-10. - [x] **JIT Narrative Synthesis (V23.95)**: Automated scraping of Edward Jones, Briefing.com, and CNBC Live for high-fidelity executive summaries.
-11. - Date: 2026-04-24
+1. - [x] **Weekend Freshness Mandate (V28)**: Integrated `MarketSession` stasis detection into `MacroAggregator`. Automatically expands the lookback window from 36h to **60h** during weekends to ensure the intelligence cockpit remains saturated despite low news flow.
+2. - [x] **Double-Enrichment Prevention (V28)**: Removed redundant headline tagging in `MacroAggregator`. UI enrichment is now exclusively handled by the `email_market_synopsis` layer, preventing HTML corruption and double-escaping.
+3. - [x] **Case-Insensitive Badge Logic (V28)**: Hardened `source_space_map` lookups with uppercase normalization. Ensures that 'DailyHunt', 'dailyhunt', and 'DAILYHUNT' all correctly resolve to 'Daily Hunt'.
+4. - [x] **High-Fidelity Noise Shield (V28)**: Added `FORM` to the global legitimate ticker blacklist to stop "form coalition" matches from polluting FormFactor ($FORM) pricing data.
+5. - [x] **FinVADER Sentiment Injection (V28)**: Integrated `finvader` pip package to permanently inject the Loughran-McDonald financial dictionary directly into the engine's VADER instance, supercharging Wall Street term awareness ("beat", "miss", "bullish").
+6. - [x] **Config-First Lexicon Overrides (V28)**: Added `vader_financial_lexicon` block to `macro_config.yaml` to mathematically override and control NLP sentiment scores directly from the config.
+7. - [x] **Global Relevance Floor (V28)**: Added hard gate in `local_nlp.py` (`final_score < 15.0`) to drop noise articles entirely, preventing the Rotation Engine from starving and filling its quota with garbage.
+4. - [x] **Config-First Scoring Architecture (V27)**: Migrated ALL scoring data (keywords, feeds, tickers, bonus terms, cluster multipliers) from hardcoded Python to `config/macro_config.yaml`. Implemented bonus keywords (variable-point), cluster multiplier (1.4x for 2+ co-occurring terms), and billion-scale regex detection (+45). Added 3 new niche feeds (SemiEngineering, Google News CPO/Transceiver). 132 keywords, 18 bonus terms, 25 feeds, 30 tickers now config-driven.
+2. - [x] **Temporal Hierarchy Mandate (V26.14)**: Established `engine/market_session.py` as the absolute authority for market calendar/session logic. Refactored `live_prices.py` and `email_market_synopsis.py` to use hierarchy gates, effectively stopping "Zombie Fetches" on weekends.
+3. - [x] **News Signal Hardening (V26.13)**: Implemented institutional source normalizer, 4-word title floor, and opinion/clickbait gate. Expanded blacklist (Buffett, Savage).
+4. - [x] **Subscription & Relevance Hardening (V26.11)**: 100% block on Bloomberg, WSJ, Seeking Alpha, and Barron's. Implemented Video Purge and Geographic Relevance Gate.
+5. - [x] **News Hardening Mandate (V26.10)**: Implemented 100% block on AOL/MSN/Motley Fool domains. Added 36h hard freshness gate and 24h score decay.
+6. - [x] **Language & Personality Filtration (V26.10)**: Hardened blacklist for Pelosi, Cramer, Ramsey and implemented non-English news gate.
+7. - [x] **News Aesthetic Mandate (V26.9)**: Implemented alternating blue/green tile backgrounds for the news dossier.
+8. - [x] **Cache Mandate (V26.9)**: Enforced 15-minute global TTL by removing `force=True` in synopsis engine and adding countdown telemetry to `live_prices.py`.
+9. - [x] **Technical Documentation (V26.9)**: Generated `ARCHITECTURE_DEEP_DIVE.md` and `INTELLIGENCE_SCORING.md` technical references.
+10. - [x] **Decoupled Pricing Math (V26.8)**: Separated `close_price` and `ext_price` in the Performance Movers list to prevent clobbering.
+11. - [x] **Pricing Math Test Suite (V26.8)**: Deployed `tests/test_pricing_math.py` to ensure math fidelity in session-aware rendering.
+12. - [x] **Unified Test Runner (V26.8)**: Created `run_all_tests.py` to aggregate logic, layout, and integration tests.
+13. - [x] **"Always Run" Mandate (V26.8)**: Integrated mandatory test gating into `start.bat`.
+14. - [x] **Test Suite Repair (V26.8)**: Restored 33+ failing tests and fixed AH/PM label consistency.
+15. - [x] **Single-Line Row Protocol (V26.7)**: Enforced `white-space: nowrap` and purged `<br/>` tags.
+16. - [x] **Ticker Suffix Recovery (V26.12)**: Implemented automated `.TW` -> `.TWO` retry logic in `live_prices.py` to resolve Taiwan exchange data gaps.
+17. - [x] **Universe Expansion (V26.12)**: Integrated 57 new high-conviction tickers from `research/additional_plays.md` into the master CSV and JSON databases.
+18. - Date: 2026-04-25
 
-# Project Status — April 24, 2026
-## 🚀 Version: V26.0 (Sovereign Intelligence Payload Hardening)
+# Project Status — April 25, 2026
+## 🚀 Version: V28 (Config-First & FinVADER Architecture)
 
 Status: **PRODUCTION DEPLOYED — HARDENED**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V26.0 (Payload Optimization & Source Hardening)
-- **Critical Progress**: Slashed email payload from 109KB to 63KB (42% reduction) using a unified CSS class architecture. Blacklisted "The Motley Fool" and normalized news source badges for professional institutional scannability.
-- **Next Milestone**: Sentiment-weighted multi-source deduplication.
-- Date: 2026-04-24
+- **Current Tier**: V28 (Config-First & FinVADER Architecture)
+- **Critical Progress**: Injected `FinVADER` financial lexicons into the NLP engine. Relocated all remaining Python hardcoded variables (anchor weights, cluster multipliers, regex patterns) directly into `macro_config.yaml` `scoring_rules`. Established **Global Relevance Floor** to prevent Rotation Engine quota starvation from injecting garbage (score < 15.0) on slow weekend cycles.
+- **Next Milestone**: Validate the new FinVADER sentiment bounds on active Monday market data.
+- Date: 2026-04-25
 
 ### 🚀 Previous Status: V22.51 — Sovereign Intelligence Hardening (Futures Divergence)
 - [x] **Index Divergence Pulse**: Integrated comparative row-tracking for all major US indices. Shows **Friday Cash Close** vs. **Sunday Night Futures** side-by-side to highlight market opening sentiment.

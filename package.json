@@ -1,7 +1,8 @@
 {
   "scripts": {
     "build": "python engine/build_dist.py",
-    "deploy": "python engine/remote_sync.py --dist"
+    "deploy": "python engine/remote_sync.py --dist",
+    "test": "python run_all_tests.py"
   },
   "dependencies": {
     "@playwright/test": "^1.59.1",

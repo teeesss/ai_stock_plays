@@ -28,6 +28,10 @@ from yahoo_auth import get_valid_auth
 import random
 
 from ticker_utils import load_master_tickers
+try:
+    from market_session import MarketSession
+except ImportError:
+    from engine.market_session import MarketSession
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
 log = logging.getLogger(__name__)
@@ -57,29 +61,29 @@ def calculate_session_data(item: dict, tm: int) -> tuple:
     m_state = item.get('marketState', 'REGULAR')
     
     # Standard Fields
-    p_p, p_pct = item.get("preMarketPrice"), item.get("preMarketChangePercent")
-    a_p, a_pct = item.get("postMarketPrice"), item.get("postMarketChangePercent")
-    o_p, o_pct = item.get("overnightMarketPrice"), item.get("overnightMarketChangePercent")
+    a_p, a_pct = item.get('postMarketPrice'), item.get('postMarketChangePercent')
+    p_p, p_pct = item.get('preMarketPrice'), item.get('preMarketChangePercent')
+    o_p, o_pct = item.get('overnightMarketPrice'), item.get('overnightMarketChangePercent')
     
     ext_price, ext_pct, ext_type = None, None, "REG"
 
     # Session Priority Logic
     if 400 <= tm < 930: # PRE-MARKET (4:00 AM - 9:30 AM)
-        if p_p is not None: ext_price, ext_pct, ext_type = p_p, p_pct, "PRE"
-        elif o_p is not None: ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
+        if p_p is not None: ext_price, ext_pct, ext_type = p_p, p_pct, 'PM'
+        elif o_p is not None: ext_price, ext_pct, ext_type = o_p, o_pct, 'OVN'
         elif a_p is not None and tm < 700: # Early morning AH residue
-            ext_price, ext_pct, ext_type = a_p, a_pct, "POST"
+            ext_price, ext_pct, ext_type = a_p, a_pct, 'AH'
             
     elif 1600 <= tm < 2000: # AFTER-HOURS (4:00 PM - 8:00 PM)
-        if a_p is not None: ext_price, ext_pct, ext_type = a_p, a_pct, "POST"
-        elif o_p is not None: ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
+        if a_p is not None: ext_price, ext_pct, ext_type = a_p, a_pct, 'AH'
+        elif o_p is not None: ext_price, ext_pct, ext_type = o_p, o_pct, 'OVN'
         elif p_p is not None and tm < 1630: # Stale PRE residue? Only if close
-            ext_price, ext_pct, ext_type = p_p, p_pct, "PRE"
+            ext_price, ext_pct, ext_type = p_p, p_pct, 'PM'
 
     elif tm >= 2000 or tm < 400: # OVERNIGHT (8:00 PM - 4:00 AM)
-        if o_p is not None: ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
-        elif a_p is not None: ext_price, ext_pct, ext_type = a_p, a_pct, "POST"
-        elif p_p is not None: ext_price, ext_pct, ext_type = p_p, p_pct, "PRE"
+        if o_p is not None: ext_price, ext_pct, ext_type = o_p, o_pct, 'OVN'
+        elif a_p is not None: ext_price, ext_pct, ext_type = a_p, a_pct, 'AH'
+        elif p_p is not None: ext_price, ext_pct, ext_type = p_p, p_pct, 'PM'
 
     # Midpoint Fallback for ALL extended sessions if Price is missing but Bid/Ask exist
     if ext_price is None and bid and ask and not (930 <= tm < 1600):
@@ -89,9 +93,9 @@ def calculate_session_data(item: dict, tm: int) -> tuple:
             ext_price = mid
             ext_pct = ((ext_price / price) - 1) * 100 if price else 0
             # Label based on time
-            if 400 <= tm < 930: ext_type = "PRE"
-            elif 1600 <= tm < 2000: ext_type = "POST"
-            else: ext_type = "OVN"
+            if 400 <= tm < 930: ext_type = 'PM'
+            elif 1600 <= tm < 2000: ext_type = 'AH'
+            else: ext_type = 'OVN'
 
     # Percent calculation fallback
     if ext_price is not None and ext_pct is None and price:
@@ -99,7 +103,7 @@ def calculate_session_data(item: dict, tm: int) -> tuple:
 
     # V23.87 Guard: Force LIVE if in regular hours
     if m_state.startswith("REGULAR") and (930 <= tm < 1600):
-        ext_type = "LIVE"
+        ext_type = 'LIVE'
     
     return ext_price, ext_pct, ext_type
 
@@ -148,7 +152,7 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
     all_symbols = list(primary_map.keys())
     symbols_str = ','.join(all_symbols)
     # V22.94: Request explicit fields including Overnight (BOATS) data
-    fields = "regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketVolume,averageDailyVolume10Day,marketState,preMarketPrice,preMarketChange,preMarketChangePercent,postMarketPrice,postMarketChange,postMarketChangePercent,overnightMarketPrice,overnightMarketChange,overnightMarketChangePercent,bid,ask,fullExchangeName,exchangeName,exchange"
+    fields = "regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketVolume,averageDailyVolume10Day,marketState,postMarketPrice,postMarketChange,postMarketChangePercent,preMarketPrice,preMarketChange,preMarketChangePercent,overnightMarketPrice,overnightMarketChange,overnightMarketChangePercent,bid,ask,fullExchangeName,exchangeName,exchange"
     url = f'https://query1.finance.yahoo.com/v7/finance/quote?symbols={symbols_str}&fields={fields}&overnightPrice=true&crumb={crumb}'
     
     log.debug(f"Fetching {len(all_symbols)} tickers from Yahoo...")
@@ -231,6 +235,69 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
     except Exception as ex:
         log.error(f"Error fetching batch: {ex}")
         
+    # V26.9: Retry Logic for Taiwan tickers (.TW -> .TWO)
+    # If a ticker ending in .TW failed, try .TWO (Taipei Exchange)
+    found_symbols = {item.get('symbol').upper() for item in items}
+    missing_tw = [s for s in all_symbols if s.upper().endswith('.TW') and s.upper() not in found_symbols]
+    
+    if missing_tw:
+        retry_map = {s.upper().replace('.TW', '.TWO'): s for s in missing_tw}
+        retry_symbols = ','.join(retry_map.keys())
+        log.info(f"  Retrying {len(retry_map)} Taiwan tickers with .TWO suffix: {retry_symbols}")
+        
+        try:
+            url_retry = f'https://query1.finance.yahoo.com/v7/finance/quote?symbols={retry_symbols}&fields={fields}&overnightPrice=true&crumb={crumb}'
+            res_retry = client.get(url_retry, timeout=10)
+            if res_retry.status_code == 200:
+                data_retry = res_retry.json()
+                items_retry = data_retry.get('quoteResponse', {}).get('result', [])
+                log.info(f"  Got {len(items_retry)} retry responses.")
+                
+                for item in items_retry:
+                    symbol = item.get('symbol').upper()
+                    original_ticker = retry_map.get(symbol)
+                    if not original_ticker: continue
+                    
+                    tm = now.hour * 100 + now.minute
+                    exch_res   = item.get('fullExchangeName') or item.get('exchangeName') or item.get('exchange') or '???'
+                    
+                    price      = item.get('regularMarketPrice')
+                    if price is None: price = item.get('postMarketPrice')
+                    if price is None: price = item.get('preMarketPrice')
+                    if price is None: price = item.get('previousClose')
+                    
+                    price_chg  = item.get('regularMarketChange') or 0
+                    change_pct = item.get('regularMarketChangePercent') or 0
+                    volume     = item.get('regularMarketVolume') or 0
+                    avg_vol    = item.get('averageDailyVolume10Day') or 0
+                    
+                    ext_price, ext_pct, ext_type = calculate_session_data(item, tm)
+                    vol_spike = round(volume / avg_vol, 2) if avg_vol and avg_vol > 0 else 0
+                    
+                    close_price = item.get('regularMarketPrice') or item.get('previousClose')
+                    prev_close  = item.get('regularMarketPreviousClose') or item.get('previousClose')
+
+                    entry = {
+                        'price':      round(price, 2) if price is not None else None,
+                        'close_price': round(close_price, 2) if close_price is not None else None,
+                        'price_chg':  round(price_chg, 2) if price_chg is not None else None,
+                        'change_pct': round(change_pct, 2) if change_pct is not None else None,
+                        'volume':     int(volume) if volume else None,
+                        'avg_volume': int(avg_vol) if avg_vol else None,
+                        'vol_spike':  vol_spike,
+                        'exchange':   exch_res,
+                        'updated':    now.strftime('%Y-%m-%d %H:%M EST'),
+                        'timestamp':  time.time(),
+                        'ext_price':  ext_price,
+                        'ext_pct':    ext_pct,
+                        'ext_type':   ext_type,
+                        'prev_close': prev_close
+                    }
+                    results[original_ticker] = entry
+                    log.info(f'  {original_ticker:12s} ${entry["price"]:.2f} (via {symbol})')
+        except Exception as ex_retry:
+            log.error(f"Error in Taiwan retry: {ex_retry}")
+
     # Fill missing
     for t in tickers:
         if t not in results:
@@ -278,6 +345,18 @@ async def async_run_fetch(tickers: list = None, force: bool = False, dry_run: bo
     if tickers is None:
         tickers = load_tickers()
 
+    # V26.14: Hierarchy-Driven Weekend Stasis Gate
+    session = MarketSession()
+    if not force and session.is_market_stasis():
+        log.info("[STASIS] Market is currently closed (Weekend). Skipping fetch to preserve cache.")
+        # Load existing for the return, but don't fetch anything new
+        if OUT_JSON.exists():
+            try:
+                with open(OUT_JSON, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except: pass
+        return {}
+
     # Load existing prices for TTL check
     existing_all = {}
     if OUT_JSON.exists():
@@ -286,18 +365,29 @@ async def async_run_fetch(tickers: list = None, force: bool = False, dry_run: bo
                 existing_all = json.load(f)
         except: pass
 
-    # V22.95: Granular 15-Minute Lock (Per-Ticker TTL)
+    # V26.9: Granular 15-Minute Lock (Per-Ticker TTL) with improved logging
     if not force:
         now_ts = time.time()
         stale = []
+        min_remaining = 999999
+        
         for t in tickers:
-            ts = existing_all.get(t, {}).get('timestamp', 0)
-            if (now_ts - ts) >= 900: # 15 minutes
+            # V26.9: Clean ticker before cache check to ensure match (4062.T / IBIDY -> 4062.T)
+            clean_t = clean_ticker(t)
+            ts = existing_all.get(t, {}).get('timestamp') or existing_all.get(clean_t, {}).get('timestamp', 0)
+            
+            diff = now_ts - ts
+            if diff >= 900: # 15 minutes
                 stale.append(t)
+            else:
+                rem = 900 - diff
+                if rem < min_remaining: min_remaining = rem
         
         skipped = len(tickers) - len(stale)
         if skipped > 0:
-            log.info(f"[CACHE] {skipped} tickers are within 15m TTL. Only fetching {len(stale)} stale assets.")
+            m, s = divmod(int(min_remaining), 60)
+            log.info(f"[CACHE] {skipped} tickers are within 15m TTL. Next refresh in {m}m {s}s.")
+            log.info(f"[CACHE] Only fetching {len(stale)} stale assets.")
             if not stale:
                 log.info("All requested tickers are fresh. Run aborted.")
                 return existing_all
