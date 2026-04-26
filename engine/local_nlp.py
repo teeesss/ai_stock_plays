@@ -251,7 +251,14 @@ class LocalIntelligenceSynthesizer:
         elif articles:
             anchor = articles[0]
             used_links.add(anchor.get("link"))
-            lead_para = anchor.get("summary", "").strip()
+
+            # V29.0: Deep Content Priority
+            deep = anchor.get("deep_content", "").strip()
+            if deep and len(deep) > 100:
+                lead_para = deep[:1200]  # Use first 1200 chars for context
+            else:
+                lead_para = anchor.get("summary", "").strip()
+
             if len(lead_para) < 40:
                 lead_para = anchor.get("raw_title", "").strip()
             anchor_words = set(re.findall(r"\b\w{4,}\b", lead_para.lower()))
@@ -267,6 +274,10 @@ class LocalIntelligenceSynthesizer:
         # 2. Extract Top Themes
         themes = self.get_top_themes(articles, top_n=2)
         top_theme = themes[0] if themes else "Sector Rotation"
+        if top_theme.upper() == "AI":
+            top_theme = "AI"
+        else:
+            top_theme = top_theme.title()
 
         # 3. Extract Secondary Insights (avoiding stutter)
         dense_points_with_meta = self.synthesize_macro_overview_with_meta(
@@ -289,14 +300,21 @@ class LocalIntelligenceSynthesizer:
                 used_links.add(link)
             break
 
-        # 4. Final Institutional Construction
-        narrative = f"{lead_para}"
+        # 4. Final Institutional Construction (V28: Priority Ordering)
+        # Lead with the high-level cycle status and primary focal point
+        lead_vibe = (
+            f"<strong>Sovereign Cycle: {vibe}</strong>. <em>Primary focal point: {top_theme}.</em>"
+        )
+
+        # Build the secondary detail paragraph
+        detail_para = f"{lead_para}"
         if dense_text:
             if not dense_text.endswith((".", "!", "?")):
                 dense_text += "."
-            narrative += f" {dense_text}"
+            detail_para += f" {dense_text}"
 
-        narrative += f" This reinforces <strong>{top_theme}</strong> as the primary focal point during this {vibe} cycle."
+        # Combine into two distinct blocks for readability
+        narrative = f"{lead_vibe}<br/><br/>{detail_para}"
 
         return narrative, used_links
 
@@ -475,8 +493,8 @@ class LocalIntelligenceSynthesizer:
                     if lk in text:
                         legal_penalty -= 200.0  # Nuclear Penalty
 
-                # V28: Consumer / Social Fluff Penalty
-                # Suppress news about social trends, kids, or lifestyle noise
+                # V28: Consumer / Social Fluff Penalty (Nuclear Filter)
+                # Suppress news about shopping, social trends, kids, or lifestyle noise
                 social_penalty = 0
                 social_keywords = [
                     "american teens",
@@ -484,13 +502,24 @@ class LocalIntelligenceSynthesizer:
                     "kids",
                     "social media trends",
                     "lifestyle",
-                    "most surveilled",
-                    "teenagers",
                     "vacation",
+                    "shopping",
+                    "retail",
+                    "shoppers",
+                    "fashion",
+                    "luxury",
+                    "products",
+                    "memos",
+                    "bags",
+                    "earrings",
+                    "hats",
+                    "mid-priced",
+                    "young shoppers",
+                    "status symbol",
                 ]
                 for sk in social_keywords:
                     if sk in text:
-                        social_penalty -= 200.0  # Nuclear Penalty
+                        social_penalty -= 600.0  # Extreme Nuclear Penalty
 
                 # Hard Alpha Keywords (Investment-Grade Signal)
                 alpha_words = [
@@ -524,6 +553,9 @@ class LocalIntelligenceSynthesizer:
                     "hedge fund",
                     "tech stocks",
                     "prime brokerage",
+                    "magnificent 7",
+                    "mag 7",
+                    "earnings",
                 ]
                 for sk in sector_keywords:
                     if sk in text:
@@ -549,6 +581,26 @@ class LocalIntelligenceSynthesizer:
                     + social_penalty
                 )
 
+                # V29.7.1: Macro Catalyst Bonus
+                macro_keywords = [
+                    "oil",
+                    "fed",
+                    "inflation",
+                    "rates",
+                    "economic",
+                    "treasury",
+                    "yield",
+                    "prices",
+                    "gdp",
+                ]
+                for mk in macro_keywords:
+                    if mk in text:
+                        content_score += 12.0
+
+                # V29.7.1: Earnings Integrity Bonus
+                if a.get("is_earn"):
+                    content_score += 30.0
+
                 # V28: Decoupled Global Relevance Floor
                 # An article MUST earn its way in via financial signal, regardless of source authority.
                 # Specialized sources have a lower floor (-50.0) but are STILL subject to Nuclear Hard Gates.
@@ -558,7 +610,7 @@ class LocalIntelligenceSynthesizer:
                     continue
 
                 if not is_specialized:
-                    if content_score < 15.0:
+                    if content_score < self.relevance_floor:
                         continue
                 else:
                     # Specialized (ZH Tech/Markets) can have lower scores but still need some signal

@@ -48,6 +48,8 @@ try:
     from local_nlp import LocalIntelligenceSynthesizer
     from macro_aggregator import MacroAggregator
     from market_session import MarketSession
+    from paywall_guardian import PaywallGuardian
+    from paywall_intelligence import DeepScraper, PaywallIntelligence
 except ImportError:
     from engine.email_spark_fetcher import run_spark_fetch
     from engine.live_blog_scraper import LiveBlogScraper
@@ -55,6 +57,8 @@ except ImportError:
     from engine.local_nlp import LocalIntelligenceSynthesizer
     from engine.macro_aggregator import MacroAggregator
     from engine.market_session import MarketSession
+    from engine.paywall_guardian import PaywallGuardian
+    from engine.paywall_intelligence import DeepScraper, PaywallIntelligence
 
 logging.basicConfig(
     level=logging.INFO,
@@ -1076,7 +1080,7 @@ class SovereignIntelligenceEngine:
         # Real-world NLP Intelligence Synthesis for Executive Summary
         # V24.9: mandatory 15 articles in list, increase ranking depth
         best_headlines = nlp.rank_news_relevance(
-            macro_headlines, top_n=200, specialized_sources=semi_sources
+            macro_headlines, top_n=400, specialized_sources=semi_sources
         )
 
         if best_headlines:
@@ -1100,12 +1104,40 @@ class SovereignIntelligenceEngine:
             best_headlines, vibe_status, scraped_lead=scraped_lead
         )
 
+        # V29.0: Institutional Deep-Fetch (Top 5 Alpha Articles)
+        paywall_sources = ["bloomberg.com", "wsj.com", "barrons.com", "seekingalpha.com", "ft.com"]
+        deep_fetch_tasks = []
+        for i, art in enumerate(best_headlines[:5]):
+            domain = PaywallIntelligence.get_domain(art.get("link", ""))
+            if domain in paywall_sources:
+                print(f"[INFO] [DEEP-FETCH] Harvesting full intelligence: {domain}")
+                deep_fetch_tasks.append(art)
+
+        if deep_fetch_tasks:
+
+            async def do_deep_fetches(tasks):
+                for art in tasks:
+                    full_text = await DeepScraper.fetch_full_content(art.get("link"))
+                    if full_text:
+                        art["deep_content"] = full_text
+
+            asyncio.run(do_deep_fetches(deep_fetch_tasks))
+
         # Institutional Summary Layout - Standardized with primary header classes (V23.72)
         summary_hdr_style = f"color:{text_bright}; font-size:42px; font-weight:900; letter-spacing:-1.5px; text-transform:uppercase; line-height:1.1; margin-bottom:12px;"
+
+        # V29.0: Access Tip Header
+        access_tip = (
+            '<div style="text-align:center; margin-bottom:20px; font-size:12px; color:#94a3b8; border:1px solid rgba(148,163,184,0.2); padding:8px; border-radius:4px;">'
+            "🚀 <strong>Intelligence Upgrade:</strong> To bypass institutional paywalls on the links below, install the "
+            '<a href="https://gitflic.ru/project/magnolia1234/bypass-paywalls-chrome-clean" style="color:#38bdf8; text-decoration:none;">Bypass Paywalls Extension</a>.'
+            "</div>"
+        )
+
         if intel_text:
-            exec_summary = f'<div class="hdr-title" style="{summary_hdr_style}">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL SUMMARY</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6;">{intel_text}</div>'
+            exec_summary = f'{access_tip}<div class="hdr-title" style="{summary_hdr_style}">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6;">{intel_text}</div>'
         else:
-            exec_summary = f'<div class="hdr-title" style="{summary_hdr_style}">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL SUMMARY</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6;">The session is carving out a {vibe_status} posture (F&G: {m_fg}). Liquidity is shifting across tech sectors.</div>'
+            exec_summary = f'{access_tip}<div class="hdr-title" style="{summary_hdr_style}">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6;">The session is carving out a {vibe_status} posture (F&G: {m_fg}). Liquidity is shifting across tech sectors.</div>'
 
         # V23.91: Cross-Section Deduplication
         # 4. Prune corpus for the supporting list (remove items used in narrative)
@@ -1116,7 +1148,7 @@ class SovereignIntelligenceEngine:
                     used_links.add(lead_url)
 
         # V24.9: Increased capacity to ensure 15+ articles
-        pruned_news = [art for art in best_headlines if art.get("link") not in used_links][:200]
+        pruned_news = [art for art in best_headlines if art.get("link") not in used_links][:400]
 
         # V25.0: Rotation Engine - Prioritize fresh news, fallback to stale
         sent_news_path = Path("database/sent_news_history.json")
@@ -1193,7 +1225,25 @@ class SovereignIntelligenceEngine:
             display_src = res.get("display_source", feed_name)
 
             # V28: Deep Semi Intelligence logic (High Fidelity trade news)
-            is_semi_trade = feed_name in semi_sources
+            is_semi_trade = feed_name in semi_sources or res.get("is_semi", False)
+
+            # V29.7.1: Cross-Categorization for Semi Integrity
+            is_semi_topic = any(
+                kw in f_title.upper()
+                for kw in [
+                    "NVIDIA",
+                    "CHIP",
+                    "SEMI",
+                    "INTEL",
+                    "AMD",
+                    "TSMC",
+                    "ASML",
+                    "ARM",
+                    "BROADCOM",
+                ]
+            )
+            if is_semi_topic and not is_semi_trade and not is_earn:
+                is_semi_trade = True  # Allow high-signal macro chips to fill semi slots
 
             if "Google News" in feed_name and display_src != feed_name:
                 # Clean up common long publishers
@@ -1284,7 +1334,9 @@ class SovereignIntelligenceEngine:
                     matched_kws = []
                     for kw in topic_counts:
                         if re.search(r"\b" + kw + r"\b", tl):
-                            if topic_counts[kw] >= 2:
+                            if (
+                                topic_counts[kw] >= 5
+                            ):  # V29.7.1: Relaxed from 2 to 5 for hierarchy integrity
                                 is_saturated = True
                             matched_kws.append(kw)
 
@@ -1338,7 +1390,7 @@ class SovereignIntelligenceEngine:
 
         # V24.9: Reordered - Earnings Intelligence comes AFTER general news URLs
         if earnings_intel_rows:
-            earnings_area = f'<div style="margin-top:20px; margin-bottom:20px;"><div class="earn-hdr">🚨 Earnings Intelligence</div>{earnings_intel_rows}</div>'
+            earnings_area = f'<div style="margin-top:20px; margin-bottom:20px;"><div class="earn-hdr" style="color:{accent}; border-bottom:1px solid rgba(99,102,241,0.2); display:inline-block; margin-bottom:12px; width:100%; text-align:center;">EARNINGS INTELLIGENCE</div>{earnings_intel_rows}</div>'
             macro_intel_rows = macro_intel_rows + earnings_area
 
         # Watchlist Intel Logic (V23.55)
@@ -1825,11 +1877,11 @@ class SovereignIntelligenceEngine:
                 {render_fg_tile("MARKET F&G", market_fg, fg_color_total, "FEAR & GREED", "50%")}
                 {render_fg_tile("CRYPTO F&G", crypto_fg, fg_color_crypto, "COIN GLASS", "50%")}
             </tr></table>
-            <div class="section-hdr" style="font-size:20px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-top:20px; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border};">Global Markets</div>
+            <div class="section-hdr" style="text-align:center;">GLOBAL MARKETS</div>
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">
                 {global_grid_html}
             </table>
-            <div class="section-hdr" style="font-family:monospace; font-size:20px; letter-spacing:5px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; color:{text_bright};">Session Performance Movers</div>
+            <div class="section-hdr" style="text-align:center; color:{text_bright};">SESSION PERFORMANCE</div>
             <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td class="mover-col" width="50%" style="vertical-align:top; padding-right:5px;">
                     <div class="perf-hdr" style="font-size:16px; color:{bull}; font-weight:900; text-align:center; padding-bottom:12px; text-transform:uppercase; letter-spacing:2px;">▲ Top Gainers</div>
@@ -1923,12 +1975,12 @@ class SovereignIntelligenceEngine:
 
             return (
                 f'<div style="margin-top:10px;">'
-                f'<div class="section-hdr" style="color:{text_dim}; font-family:monospace; font-size:20px; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #1e2130;">— {title} —</div>'
+                f'<div class="section-hdr">{title}</div>'
                 f"{content}</div>"
             )
 
         watchlist_html = render_bucket(
-            "Real-time Watchlist",
+            "REAL-TIME WATCHLIST",
             tradeable.get("watchlist", []),
             hide_notes=True,
             columns=2,
@@ -1936,9 +1988,7 @@ class SovereignIntelligenceEngine:
         # Merge Semi and AI, then sort by highest momentum to ensure dynamic rotation
         merged_intel = tradeable.get("semi", []) + tradeable.get("ai", [])
         merged_intel = sorted(merged_intel, key=lambda x: x.get("pct", 0), reverse=True)[:25]
-        intelligence_html = render_bucket(
-            "Sovereign Intelligence Dashboard", merged_intel, columns=1
-        )
+        intelligence_html = render_bucket("INTEL DASHBOARD", merged_intel, columns=1)
 
         # Master Template Assembly — Responsive Single-Surface Design
         html = f"""
@@ -1951,14 +2001,30 @@ class SovereignIntelligenceEngine:
                 /* Base & Layout */
                 body {{ margin:0; padding:0; background-color:{bg_main}; font-family:sans-serif; }}
                 table {{ border-collapse:collapse; border-spacing:0; border:0; }}
-                .wrap {{ background-color:{bg_main}; padding:20px 16px; }}
+                .wrap {{
+                    background: #0f172a;
+                    background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+                    padding:20px 16px;
+                }}
                 .main-table {{ max-width:600px; width:100%; margin:0 auto; }}
 
                 /* Typography & Headers */
-                .section-hdr {{ font-size:20px; font-family:monospace; color:{text_dim}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-top:20px; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid {border}; }}
+                .section-hdr {{
+                    font-size:20px;
+                    font-family:monospace;
+                    color:{gold};
+                    letter-spacing:4px;
+                    text-transform:uppercase;
+                    font-weight:900;
+                    margin-top:25px;
+                    margin-bottom:12px;
+                    padding-bottom:8px;
+                    border-bottom:1px solid rgba(245,158,11,0.3);
+                    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+                }}
                 .news-link {{ text-decoration:none !important; font-size:14px; font-weight:600; color:inherit !important; }}
                 .src-badge {{ font-family:'Courier New',Courier,monospace; color:#f97316; font-size:11px; font-weight:900; letter-spacing:1px; text-transform:uppercase; }}
-                .earn-hdr {{ color:#38bdf8; font-size:18px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }}
+                .earn-hdr {{ color:#f59e0b; font-size:18px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:2px; }}
 
                 /* Pulse Grid Components */
                 .pulse-tile {{ background:{bg_deep}; border-radius:5px; padding:12px 10px; text-align:center; }}
@@ -1982,12 +2048,25 @@ class SovereignIntelligenceEngine:
                 .sec-pct-cell {{ text-align:right; font-family:monospace; }}
                 .bucket-notes {{ font-size:12px; color:#8f9bb3; margin-top:6px; line-height:1.6; overflow:hidden; max-height:80px; }}
 
-                /* News Alternates (V26.9: Subtle Tile-Style Backgrounds) */
-                .news-row-even, .news-row-odd {{ padding:8px 12px; margin-bottom:4px; border-radius:6px; border:1px solid transparent; }}
-                .news-row-even {{ background:rgba(56,189,248,0.07); border:1px solid rgba(56,189,248,0.15); color:#e0f2fe; }}
-                .news-row-odd {{ background:rgba(74,222,128,0.07); border:1px solid rgba(74,222,128,0.15); color:#f0fdf4; }}
-                .earn-row-even, .earn-row-odd {{ padding:6px 8px; margin-bottom:4px; border-radius:6px; background:rgba(56,189,248,0.05); border:1px solid rgba(56,189,248,0.1); color:#38bdf8; font-weight:600; }}
-                .earn-row-odd {{ background:rgba(125,211,252,0.08); color:#7dd3fc; }}
+                /* News Alternates (V28: Institutional Dark Theme) */
+                .news-row-even, .news-row-odd {{
+                    padding:10px 14px;
+                    margin-bottom:6px;
+                    border-radius:4px;
+                    border-left:3px solid rgba(255,255,255,0.1);
+                    color:#f8fafc !important;
+                }}
+                .news-row-even {{
+                    background:rgba(30,41,59,0.4);
+                    border-bottom:1px solid rgba(255,255,255,0.03);
+                }}
+                .news-row-odd {{
+                    background:rgba(15,23,42,0.6);
+                    border-bottom:1px solid rgba(255,255,255,0.05);
+                    border-left:3px solid {accent};
+                }}
+                .earn-row-even, .earn-row-odd {{ padding:6px 8px; margin-bottom:4px; border-radius:6px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); color:#64748b; font-weight:600; }}
+                .earn-row-odd {{ background:rgba(255,255,255,0.03); color:#8f9bb3; }}
 
                 /* Session Badges */
                 .sess-badge {{ padding:1px 3px; border-radius:3px; font-weight:bold; margin-left:4px; border:1px solid rgba(255,255,255,0.05); vertical-align:middle; display:inline-block; }}
@@ -1996,41 +2075,65 @@ class SovereignIntelligenceEngine:
                 .sess-ah    {{ color:#ef4444; background:rgba(239,68,68,0.1); }}
                 .sess-closed {{ color:#94a3b8; background:rgba(148,163,184,0.1); }}
 
-                /* Mobile overrides */
+                /* V29.7.1: Mobile Header Refinement (30% Reduction & Center) */
                 @media only screen and (max-width:599px) {{
                     .wrap {{ padding:8px !important; }}
+                    .header-cell {{ text-align:center !important; }}
+                    .hdr-title {{
+                        font-size:24px !important;
+                        text-align:center !important;
+                        width: 100% !important;
+                        display: block !important;
+                    }}
+                    .hdr-sub {{ text-align:center !important; }}
                     .global-col {{ display:inline-block !important; width:50% !important; box-sizing:border-box !important; margin:0 !important; }}
                     .mover-col {{ display:block !important; width:100% !important; padding-left:0 !important; padding-right:0 !important; padding-top:15px !important; }}
                     .pulse-idx-name {{ font-size:12px !important; margin-bottom:4px !important; }}
-                    .pulse-val {{ font-size:22px !important; font-weight:900 !important; }}
+                    .pulse-val {{ font-size:20px !important; font-weight:900 !important; }}
                     .pulse-chg-box {{ font-size:14px !important; }}
-                    .section-hdr {{ font-size:24px !important; font-weight:900 !important; letter-spacing:1px !important; }}
+
+                    .section-hdr {{
+                        font-size:14px !important;
+                        font-weight:900 !important;
+                        letter-spacing:2px !important;
+                        text-align:center !important;
+                        border-bottom: 1px solid rgba(245,158,11,0.2) !important;
+                    }}
+                    .perf-hdr {{ font-size:14px !important; text-align:center !important; }}
+                    .earn-hdr {{ font-size:14px !important; text-align:center !important; }}
+                    .summary-hdr {{ font-size:14px !important; text-align:center !important; }}
+
                     .perf-item {{ padding:10px !important; }}
                     .bucket-col {{ display:block !important; width:100% !important; padding:0 !important; }}
-                    .hdr-title {{ font-size:27px !important; }}
                 }}
 
                 /* Desktop Density */
                 @media only screen and (min-width:600px) {{
                     .main-table {{ max-width:850px !important; }}
-                    .section-hdr {{ font-size:16px !important; font-weight:900 !important; letter-spacing:3px !important; color:{text_bright} !important; }}
+                    .section-hdr {{
+                        font-size:18px !important;
+                        font-weight:900 !important;
+                        letter-spacing:5px !important;
+                        color:{gold} !important;
+                        padding-bottom:10px !important;
+                    }}
                     .pulse-idx-name {{ font-size:19px !important; letter-spacing:1.5px !important; margin-bottom:8px !important; }}
                     .pulse-val {{ font-size:22px !important; }}
                     .pulse-chg-box {{ font-size:29px !important; padding:4px 0 !important; }}
                     .pulse-diff {{ font-size:14px !important; margin-top:2px !important; }}
-                    .fg-val       {{ font-size:38px !important; }}
-                    .fg-label     {{ font-size:16px !important; }}
+                    .fg-val {{ font-size:38px !important; }}
+                    .fg-label {{ font-size:16px !important; }}
                     .sec-ticker {{ font-size:18px !important; }}
-                    .sec-name   {{ font-size:16px !important; }}
-                    .sec-pct    {{ font-size:18px !important; }}
-                    .sec-notes  {{ font-size:13px !important; line-height:1.6 !important; color:#8f9bb3 !important; }}
+                    .sec-name {{ font-size:16px !important; }}
+                    .sec-pct {{ font-size:18px !important; }}
+                    .sec-notes {{ font-size:13px !important; line-height:1.6 !important; color:#8f9bb3 !important; }}
                     .sec-price {{ font-size:15px !important; font-weight:bold !important; color:{text_bright} !important; }}
                     .perf-item {{ font-size:18px !important; margin-bottom:6px !important; }}
                     .perf-hdr {{ font-size:18px !important; margin-bottom:15px !important; letter-spacing:3px !important; }}
                     .perf-cell {{ padding:0 4px !important; }}
                     .sector-card {{ padding:14px 18px !important; }}
                     .hdr-title {{ font-size:28px !important; }}
-                    .hdr-sub   {{ font-size:15px !important; }}
+                    .hdr-sub {{ font-size:15px !important; }}
                 }}
             </style>
         </head>
@@ -2055,17 +2158,17 @@ class SovereignIntelligenceEngine:
             <!-- ═══ PULSE BLOCK ═══ -->
             <tr><td class="narrative-box" style="background:{bg_surface}; padding:20px 0; border-radius:6px;">
 
-                <div class="section-hdr" style="font-size:20px; font-family:monospace; color:{gold}; letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid rgba(245,158,11,0.2);">Sovereign Index Pulse // Divergence</div>
+                <div class="section-hdr">INDEX PULSE</div>
 
                 <!-- Unified View Assembly -->
                 {unified_pulse}
 
                 <!-- Macro Intelligence leads the news flow -->
                 <div style="margin-top:25px;">
-                    <div class="section-hdr" style="font-family:monospace; font-size:20px; letter-spacing:3px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; display:inline-block; border-bottom:2px solid {accent}; padding-bottom:4px; color:{accent};">I. MACRO // GLOBAL PULSE</div>
-                    <div style="background:rgba(30,41,59,0.3); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:4px; margin-bottom:20px;">
-                        {exec_summary}
-                        <div style="font-size:13px; font-family:monospace; color:{text_bright}; margin-top:20px;">
+                    <div class="section-hdr" style="display:inline-block; color:{accent}; border-bottom:2px solid {accent}; width:100%; text-align:center;">GLOBAL PULSE</div>
+                    <div style="background:rgba(15,23,42,0.4); border:1px solid rgba(255,255,255,0.05); padding:18px; border-radius:4px; margin-bottom:20px; line-height:1.6;">
+                        <div style="color:#f8fafc; font-size:15px; margin-bottom:15px;">{exec_summary}</div>
+                        <div style="font-size:13px; font-family:monospace; color:{text_bright}; margin-top:10px;">
                             {macro_intel_rows}
                         </div>
                     </div>
@@ -2073,8 +2176,8 @@ class SovereignIntelligenceEngine:
 
                 <!-- DEEP SEMI INTELLIGENCE (V28 Trade News) -->
                 {f'''<div style="margin-top:25px;">
-                    <div class="section-hdr" style="font-family:monospace; font-size:20px; letter-spacing:3px; text-transform:uppercase; font-weight:bold; margin-bottom:12px; display:inline-block; border-bottom:2px solid {gold}; padding-bottom:4px; color:{gold};">II. HIGH-FIDELITY SEMI INTELLIGENCE</div>
-                    <div style="background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.15); padding:15px; border-radius:4px; margin-bottom:20px;">
+                    <div class="section-hdr" style="display:inline-block; color:{gold}; border-bottom:2px solid {gold}; width:100%; text-align:center;">SEMI INSIGHT</div>
+                    <div style="background:rgba(245,158,11,0.03); border:1px solid rgba(245,158,11,0.15); padding:15px; border-radius:4px; margin-bottom:20px;">
                         <div style="font-size:13px; font-family:monospace; color:{text_bright};">
                             {semi_trade_rows}
                         </div>
@@ -2187,6 +2290,12 @@ if __name__ == "__main__":
     print(f"[{ts()}] # V26.14: Sovereign Intelligence Engine — Temporal Hierarchy (EST)")
     engine = SovereignIntelligenceEngine()
     print(f"[{ts()}] [DEBUG] Engine initialized.")
+
+    # V29.5: Paywall Intelligence Guardian (Daily Refresh)
+    try:
+        PaywallGuardian.check_for_updates(force=False)
+    except Exception as e:
+        print(f"[{ts()}] [WARN] [GUARDIAN] Intelligence sync skipped: {e}")
 
     # Filter custom tickers to legit ones
     print(f"[{ts()}] [DEBUG] Filtering custom tickers...")

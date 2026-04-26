@@ -59,7 +59,8 @@
 37. - [x] **Unified Intelligence Sort (V28)**: Decommissioned binary rotation engine. Deployed a **Unified Sort with Freshness Bonus (+10.0)** to prevent fresh junk from displacing stale alpha.
 38. - [x] **SemiAnalysis 403 Bypass (V28)**: Resolved HTTP 403 blocking on SemiAnalysis Substack by deploying a Google News search RSS fallback with a 7-day lookback window.
 39. - [x] **Stability Fix (V28)**: Resolved `NameError` in `email_market_synopsis.py` by aligning status logic with the Unified Sort architecture.
-40. - Date: 2026-04-25
+41. - [x] **Institutional Aesthetic Upgrade (V28)**: Complete visual redesign of the Market Intelligence dossier. Implemented an institutional-grade header system with `letter-spacing: 4px`, `font-weight: 900`, and gold accents. Transitioned to a premium linear gradient background (`#0f172a` to `#020617`) matching the user's "View I love" reference. Verified via `tests/test_header_aesthetic.py`. ✅
+42. - Date: 2026-04-26
 
 # Project Status — April 25, 2026
 ## 🚀 Version: V28 (Config-First & FinVADER Architecture)

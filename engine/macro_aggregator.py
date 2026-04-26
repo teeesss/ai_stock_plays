@@ -20,6 +20,10 @@ import re
 import urllib.parse
 from pathlib import Path
 
+try:
+    from paywall_intelligence import PaywallIntelligence
+except ImportError:
+    from engine.paywall_intelligence import PaywallIntelligence
 import yaml
 from curl_cffi.requests import AsyncSession
 
@@ -218,10 +222,6 @@ class MacroAggregator:
                     "msn.com",
                     "fool.com",
                     "motleyfool.com",
-                    "bloomberg.com",
-                    "wsj.com",
-                    "seekingalpha.com",
-                    "barrons.com",
                 ],
             )
         )
@@ -391,6 +391,13 @@ class MacroAggregator:
             return age_hours <= 336  # 14 days
 
         limit = 60 if self.market_session.is_market_stasis() else 36
+
+        # V29.7: Sunday/Monday Lenience (72h limit)
+        now_est = self.market_session.get_est_now()
+        day = now_est.weekday()  # Mon=0, Sun=6
+        if day == 6 or day == 0:
+            limit = 72
+
         return age_hours <= limit
 
     def apply_freshness_decay(self, score, ts, is_semi=False):
@@ -481,13 +488,17 @@ class MacroAggregator:
             # If it has some accents but also English anchors, we allow it (e.g. "Nvidia's rôle")
             return has_anchors or has_finance
 
-    async def resolve_redirect(self, url):
+    async def resolve_redirect(self, url, session=None):
         """V26.10: Lightweight HEAD request to resolve tracking links (Approach C-Lite)."""
         # Targeted resolution only for known aggregators to minimize latency
         if not any(d in url.lower() for d in ["google.com/url", "aol.com"]):
             return url
         try:
-            # V26.10 Architect Mandate: Strict 1.5s timeout, max 5 concurrent elsewhere
+            # V29.7.1: Reuse existing session to avoid handshake overhead
+            if session:
+                res = await session.head(url, timeout=1.5, allow_redirects=True)
+                return str(res.url)
+
             async with AsyncSession(impersonate="chrome124") as s:
                 res = await s.head(url, timeout=1.5, allow_redirects=True)
                 return str(res.url)
@@ -667,7 +678,13 @@ class MacroAggregator:
                         for attempt in range(3):
                             try:
                                 current_imp = impersonations[attempt % len(impersonations)]
-                                res = await client.get(url, timeout=15, impersonate=current_imp)
+                                # Apply Paywall Bypass Headers
+                                fetch_headers = PaywallIntelligence.apply_stealth_headers(
+                                    url, client.headers.copy()
+                                )
+                                res = await client.get(
+                                    url, timeout=15, impersonate=current_imp, headers=fetch_headers
+                                )
                                 if res.status_code == 200:
                                     break
                                 log.warning(
@@ -740,7 +757,7 @@ class MacroAggregator:
                                 summary = re.sub(r"<[^>]+>", "", summary).strip()
 
                                 # V26.10: News Hardening Gate Integration
-                                final_link = await self.resolve_redirect(link)
+                                final_link = await self.resolve_redirect(link, session=client)
                                 if not self.is_article_safe(
                                     title, final_link, display_source, summary, name
                                 ):
@@ -794,6 +811,8 @@ class MacroAggregator:
                                         ),  # Legacy total
                                         "date": pub_date,
                                         "is_earnings": is_earnings,
+                                        "is_earn": is_earnings,
+                                        "is_semi": is_semi_feed,
                                     }
                                 )
                                 source_item_count += 1
@@ -1052,6 +1071,9 @@ if __name__ == "__main__":
         agg = MacroAggregator()
         results = await agg.fetch_agg()
         for i, res in enumerate(results):
-            print(f"{i+1}. [{res['score']}] {res['title']}")
+            try:
+                print(f"{i+1}. [{res['score']}] {res['title']}")
+            except:
+                print(f"{i+1}. [{res['score']}] {res['title'].encode('ascii', 'ignore').decode()}")
 
     asyncio.run(test())

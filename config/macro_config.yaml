@@ -28,7 +28,7 @@ scoring_rules:
   anchor_word_weight: 200
   blacklist_penalty: -2000
   relevance_floor_penalty: -100
-  relevance_floor: 28.0
+  relevance_floor: 10.0
   billion_scale_bonus: 45
   billion_scale_regex: '\$?\s?\d+(\.\d+)?\s?(B|BN|BILLION|TRILLION)'
   cluster_multiplier: 1.55
@@ -700,7 +700,6 @@ feeds:
 # ---------------------------------------------------------------------------
 blacklist:
   - "CHOSUNBIZ"
-  - "BLOOMBERG"
   - "TELEVISION"
   - "DAVE RAMSEY"
   - "PR NEWSWIRE"
@@ -712,7 +711,6 @@ blacklist:
   - "WARREN BUFFET"
   - "TERRY SAVAGE"
   - "MOTLEY FOOL"
-  - "SEEKING ALPHA"
   - "SHUTOUT"
   - "ERA "
   - "BASEBALL"
@@ -781,7 +779,6 @@ blacklist:
   - "TREATMENT FOR"
   - "ROBLOX"
   - "AMERICAN TEENS"
-  - "MOST SURVEILLED"
   - "TEENAGERS"
   - "CHILDREN"
 
@@ -793,10 +790,6 @@ forbidden_domains:
   - "msn.com"
   - "fool.com"
   - "motleyfool.com"
-  - "bloomberg.com"
-  - "wsj.com"
-  - "seekingalpha.com"
-  - "barrons.com"
   - "investing.com"
   - "chosunbiz.com"
   - "simplywall.st"

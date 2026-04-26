@@ -1,0 +1,61 @@
+{
+  "Bloomberg": {
+    "domain": "bloomberg.com",
+    "allow_cookies": 1,
+    "block_regex": "\\.bwbx\\.io\\/s3\\/fence\\/",
+    "add_ext_link": "article.first-story div[class*='Placeholder_placeholderParagraphWrapper-']|main",
+    "add_ext_link_type": "archive.is",
+    "cs_code": "[{\"cond\":\"div[class^='summary_contentBlur_']\", \"rm_attrib\":\"class\"}]",
+    "upd_version": "4.3.5.1"
+  },
+  "Corriere della Sera": {
+    "domain": "corriere.it",
+    "allow_cookies": 1,
+    "block_regex": "(\\.tinypass\\.com\\/|\\.ith9ueyuhu\\.it\\/|\\.ampproject\\.org\\/v0\\/amp-subscriptions-.+\\.js)",
+    "block_host_perm_add": "ith9ueyuhu.it",
+    "upd_version": "4.3.5.2"
+  },
+  "Daily Mail Group UK": {
+    "domain": "###_uk_dmg_media",
+    "group": [
+      "dailymail.com",
+      "thisismoney.co.uk"
+    ],
+    "allow_cookies": 1,
+    "block_regex": "\\.{domain}\\/zephr\\/feature",
+    "upd_version": "4.3.5.4"
+  },
+  "Die Welt": {
+    "domain": "welt.de",
+    "allow_cookies": 1,
+    "ld_archive_is": "div.contains_walled_content,div.c-article-paywall|main header + div",
+    "cs_code": "[{\"add_style\":\"div.page-content-wrapper {overflow: auto !important; height: auto !important;}\"}, {\"hide_elem\":\"div.q-grey-background\"}]",
+    "upd_version": "4.3.4.9"
+  },
+  "Franc-Tireur.fr": {
+    "domain": "franc-tireur.fr",
+    "allow_cookies": 1,
+    "block_regex": "\\.poool\\.fr",
+    "ld_json": "div#poool-widget-content|section.article-body>p|1",
+    "cs_code": "[{\"hide_elem\":\"div.js-poool-wrapper>section.article-body>p:not(:has(>div))\"}]",
+    "upd_version": "4.3.5.3"
+  },
+  "Leaky Paywall": {
+    "domain": "###_wp_leaky_paywall",
+    "group": [],
+    "block_regex_general": "\\/(wp-content\\/plugins\\/leaky-paywall\\/js\\/leaky-paywall-cookie\\.js|wp-json\\/leaky-paywall\\/v1\\/check-restrictions)",
+    "upd_version": "4.3.4.8"
+  },
+  "Mexico News Daily": {
+    "domain": "mexiconewsdaily.com",
+    "allow_cookies": 1,
+    "block_regex": "\\/mexiconewsdaily\\.com\\/wp-json\\/leaky-paywall\\/v1\\/check-restrictions",
+    "upd_version": "4.3.4.8"
+  },
+  "Tom's Hardware": {
+    "domain": "tomshardware.com",
+    "allow_cookies": 1,
+    "cs_code": "[{\"cond\":\"div.paywall-locker\", \"rm_class\":\"paywall-locker\"}, {\"hide_elem\":\"div#kiosq-app-paywall-js\"}]",
+    "upd_version": "4.3.4.8"
+  }
+}

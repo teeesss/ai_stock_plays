@@ -4,6 +4,7 @@
 **Status**: 🟢 PRODUCTION-READY // **Aesthetic**: Subtle Tile Mandate // **Logic**: NLP Sentiment Steering
 ---
 ### 🧩 Core Accomplishments
+- **[NEW] Institutional Aesthetic Upgrade (V28)**: Complete visual redesign of the Market Intelligence dossier. Implemented an institutional-grade header system with `letter-spacing: 4px`, `font-weight: 900`, and gold accents. Transitioned to a premium linear gradient background (`#0f172a` to `#020617`) matching the user's "View I love" reference.
 - **[NEW] Deep Semi Intelligence Mandate (V28)**: Hardened semiconductor industry coverage by adding direct scrape targets for technical sub-sections (Opto, PV, Markets, Micro) and Semiconductor Packaging News. Increased the mandatory section quota to **15 articles** (up to 20 available) and expanded the source ecosystem with site-specific Google News hardening.
 - **[NEW] Weekend Freshness Mandate (V28)**: Integrated `MarketSession` stasis detection into `MacroAggregator`. Automatically expands the lookback window from 36h to **60h** during weekends.
 - **[NEW] Case-Insensitive Badge Logic (V28)**: Hardened `source_space_map` lookups with uppercase normalization for robust feed mapping.
@@ -20,8 +21,8 @@ Status: **PRODUCTION DEPLOYED — HARDENED**
 
 📊 **Project Status: Sovereign Intel**
 - **Current Tier**: V28 (NLP Sentiment Steering & Config-First)
-- **Critical Progress**: Hardened Sovereign Intelligence Engine (V28) by resolving recursive `ModuleNotFoundError` across core scripts. Deployed direct scrape targets for technical semiconductor industry news. Increased mandatory technical quota to **15 articles** for the daily dossier. Restored the `Regression Suite (Pytest)` to 100% pass rate.
-- **Next Milestone**: Validate the 15-article technical density and new scrape source fidelity during Monday's market opening run.
+- **Critical Progress**: Hardened Sovereign Intelligence Engine (V28) by resolving recursive `ModuleNotFoundError` across core scripts. Deployed direct scrape targets for technical semiconductor industry news. Increased mandatory technical quota to **15 articles** for the daily dossier. Restored the `Regression Suite (Pytest)` to 100% pass rate. **Aesthetic Upgrade Complete**: Implemented premium dark-mode gradients and institutional headers across all sections.
+- **Next Milestone**: Finalize visual parity for the remaining stock terminal dashboards and validate the 15-article technical density during Monday's market opening run.
 
 Date: 2026-04-25
 Tests: **158 passing / 0 failing ✅ FULLY RESTORED**
