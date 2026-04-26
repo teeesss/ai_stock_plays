@@ -12,21 +12,19 @@ Covers:
   - Legacy posts (no raw_text) are back-filled correctly
 """
 
-import sys
-import re
 import json
-import unittest
+import sys
 import tempfile
+import unittest
 from pathlib import Path
 
 # Add engine directory to path so we can import translate_intel
 sys.path.insert(0, str(Path(__file__).parent.parent / "engine"))
 
-from translate_intel import FOREIGN_REGEX, apply_cache_to_files, load_cache
+from translate_intel import FOREIGN_REGEX
 
 
 class TestForeignRegex(unittest.TestCase):
-
     def test_detects_korean_hangul(self):
         """Pure Korean text must match."""
         text = "항상 겸손하게, 있는 그대로의 기술을 공유드리며"
@@ -74,9 +72,12 @@ class TestApplyCacheToFiles(unittest.TestCase):
     def _make_temp_db(self, posts: list) -> Path:
         """Create a temp DB file with the given posts list. Returns the file path."""
         tmp = tempfile.NamedTemporaryFile(
-            mode="w", suffix=".json", delete=False,
-            prefix="x_intel_testuser_", encoding="utf-8",
-            dir=tempfile.gettempdir()
+            mode="w",
+            suffix=".json",
+            delete=False,
+            prefix="x_intel_testuser_",
+            encoding="utf-8",
+            dir=tempfile.gettempdir(),
         )
         json.dump(posts, tmp, ensure_ascii=False, indent=2)
         tmp.close()
@@ -85,12 +86,14 @@ class TestApplyCacheToFiles(unittest.TestCase):
     def setUp(self):
         """Patch DB_DIR to use temp directory for isolation."""
         import translate_intel
+
         self._orig_db_dir = translate_intel.DB_DIR
         translate_intel.DB_DIR = Path(tempfile.gettempdir())
         self.translate_intel = translate_intel
 
     def tearDown(self):
         import translate_intel
+
         translate_intel.DB_DIR = self._orig_db_dir
 
     def test_raw_text_used_for_detection_not_translated_text(self):
@@ -102,11 +105,13 @@ class TestApplyCacheToFiles(unittest.TestCase):
         korean_original = "항상 겸손하게, 있는 그대로의 기술을 공유드리며"
         translated_english = "Always be humble, share the technology as it is"
 
-        posts = [{
-            "id": "99999",
-            "text": translated_english,   # Already translated
-            "raw_text": korean_original,  # Original Korean preserved
-        }]
+        posts = [
+            {
+                "id": "99999",
+                "text": translated_english,  # Already translated
+                "raw_text": korean_original,  # Original Korean preserved
+            }
+        ]
         f = self._make_temp_db(posts)
 
         # Cache has a newer translation for this ID
@@ -115,8 +120,11 @@ class TestApplyCacheToFiles(unittest.TestCase):
 
         # Read back — text should be updated since raw_text has foreign chars
         result = json.loads(f.read_text(encoding="utf-8"))
-        self.assertEqual(result[0]["text"], "New translation version",
-                         "Should apply cache because raw_text still has Korean")
+        self.assertEqual(
+            result[0]["text"],
+            "New translation version",
+            "Should apply cache because raw_text still has Korean",
+        )
         f.unlink()
 
     def test_english_raw_text_not_overwritten(self):
@@ -124,11 +132,13 @@ class TestApplyCacheToFiles(unittest.TestCase):
         A post where raw_text is pure English should NOT be touched by apply_cache_to_files,
         even if it appears in the cache (stale cache entry scenario).
         """
-        posts = [{
-            "id": "88888",
-            "text": "Strong $LWLG momentum today",
-            "raw_text": "Strong $LWLG momentum today",  # English original
-        }]
+        posts = [
+            {
+                "id": "88888",
+                "text": "Strong $LWLG momentum today",
+                "raw_text": "Strong $LWLG momentum today",  # English original
+            }
+        ]
         f = self._make_temp_db(posts)
 
         # Stale cache entry — should not be applied
@@ -136,8 +146,11 @@ class TestApplyCacheToFiles(unittest.TestCase):
         self.translate_intel.apply_cache_to_files(cache)
 
         result = json.loads(f.read_text(encoding="utf-8"))
-        self.assertEqual(result[0]["text"], "Strong $LWLG momentum today",
-                         "English-only post must not be modified by cache apply")
+        self.assertEqual(
+            result[0]["text"],
+            "Strong $LWLG momentum today",
+            "English-only post must not be modified by cache apply",
+        )
         f.unlink()
 
     def test_legacy_post_without_raw_text_still_detected(self):
@@ -147,19 +160,24 @@ class TestApplyCacheToFiles(unittest.TestCase):
         """
         korean_text = "항상 겸손하게"
 
-        posts = [{
-            "id": "77777",
-            "text": korean_text,
-            # No raw_text — legacy post
-        }]
+        posts = [
+            {
+                "id": "77777",
+                "text": korean_text,
+                # No raw_text — legacy post
+            }
+        ]
         f = self._make_temp_db(posts)
 
         cache = {"77777": "Always be humble"}
         self.translate_intel.apply_cache_to_files(cache)
 
         result = json.loads(f.read_text(encoding="utf-8"))
-        self.assertEqual(result[0]["text"], "Always be humble",
-                         "Legacy post without raw_text should still be translated via text fallback")
+        self.assertEqual(
+            result[0]["text"],
+            "Always be humble",
+            "Legacy post without raw_text should still be translated via text fallback",
+        )
         f.unlink()
 
 
@@ -179,8 +197,11 @@ class TestScraperRawTextField(unittest.TestCase):
             "raw_text": "항상 겸손하게, 있는 그대로의 기술을 공유드리며",
             "timestamp": "2026-04-16T00:00:00+00:00",
         }
-        self.assertEqual(simulated_post["text"], simulated_post["raw_text"],
-                         "At scrape time, text and raw_text must be identical")
+        self.assertEqual(
+            simulated_post["text"],
+            simulated_post["raw_text"],
+            "At scrape time, text and raw_text must be identical",
+        )
 
     def test_raw_text_preserved_after_translation(self):
         """After translation, text changes but raw_text must remain unchanged."""
@@ -192,10 +213,16 @@ class TestScraperRawTextField(unittest.TestCase):
         # Simulate translation step updating text only
         post["text"] = "Always be humble"
 
-        self.assertEqual(post["raw_text"], "항상 겸손하게",
-                         "raw_text must remain the original Korean after translation")
-        self.assertEqual(post["text"], "Always be humble",
-                         "text must be updated to English translation")
+        self.assertEqual(
+            post["raw_text"],
+            "항상 겸손하게",
+            "raw_text must remain the original Korean after translation",
+        )
+        self.assertEqual(
+            post["text"],
+            "Always be humble",
+            "text must be updated to English translation",
+        )
         # FOREIGN_REGEX on raw_text should still detect it as foreign
         self.assertIsNotNone(FOREIGN_REGEX.search(post["raw_text"]))
         # But text is now English — would NOT detect as foreign
@@ -218,7 +245,10 @@ class TestIncrementalSaveDedup(unittest.TestCase):
         new_post = {"id": "12345", "text": "existing post"}
         is_new = str(new_post["id"]) not in existing_ids
 
-        self.assertFalse(is_new, "String '12345' must match existing int 12345 after str() normalization")
+        self.assertFalse(
+            is_new,
+            "String '12345' must match existing int 12345 after str() normalization",
+        )
 
     def test_genuinely_new_post_detected(self):
         """A post with a new ID must always be treated as new."""

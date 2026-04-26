@@ -642,7 +642,7 @@ How to find future plays before the "Whales" rerate them.
 ## Layer 16: Raw Precursors & Recyclers (The Indium Bottleneck)
 
 ### Sumitomo Metal Mining ($5713.T) — Japan
-- **Role**: World leader in high-purity Indium. 
+- **Role**: World leader in high-purity Indium.
 - **Thesis**: As laser volumes move from 800G to 3.2T, the demand for high-purity Indium Phosphide (InP) substrates explodes. 5713.T is the ultimate source at the very top of the funnel.
 - **Moat**: Refining expertise and global market share in photonic-grade metals.
 
@@ -679,7 +679,7 @@ How to find future plays before the "Whales" rerate them.
 
 ### 5. Catalyst Alert: The "Rubin Ultra" Communication Wall (2026-04-11)
 - **The Shortage**: As of April 2026, 1.6T optical transceivers are facing a **30% supply gap** due to 200G-per-lane InP laser (EML) bottlenecks.
-- **The Pivot**: This shortage is forcing hyperscalers to evaluate **CPO (Co-Packaged Optics)** earlier than the 2028 baseline. 
+- **The Pivot**: This shortage is forcing hyperscalers to evaluate **CPO (Co-Packaged Optics)** earlier than the 2028 baseline.
 - **Nvidia Rubin Ultra**: The upcoming NVL576 systems (H2 2026) are the primary demand anchor. Any delay in pluggable 1.6T optics makes CPO the "release valve" for the industry.
 - **Winner**: Companies that bypass EML shortages with Silicon Photonics engines (**$TSEM, $POET, $ASX**) or control the InP metallurgy (**$5713.T, $UMI.BR**).
 
@@ -732,7 +732,7 @@ How to find future plays before the "Whales" rerate them.
 - **Win Semiconductors (3105.TWO)**: World's largest pure-play Gallium Arsenide (GaAs) foundry sold a 4% stake (20M shares) to Avago (Broadcom) for .57M in a private placement.
 - **Sivers Semiconductors ()**: Runway effectively stretches to late 2026 (~SEK 43.5M cash, burning ~15M/qtr). This limited runway is viewed as a catalyst for either a US listing or an acquisition (speculation centers on Marvell  acquiring them to secure external laser supplies and block competitors).
 - **Browave (3163.TWO)**: A .4B MC supplier of fiber arrays and 'Fiber Shuffle Boxes' — the mechanical bridge organizing 1000+ fibers inside AI servers. Scaling production 10x from 1,000 units/mo to 10,000 units/mo by Q1 2027. Partnered with Corning ().
-- **Memory & InP Trends**: 
+- **Memory & InP Trends**:
   - Nanya Tech (2408.TW): Taiwanese memory maker receiving .5B capital raise from SanDisk/SK Hynix/Cisco to fund Taipei fabs and 10nm nodes.
   - AXT Inc () vs Soitec (): Soitec's patent monopoly on SOI wafers makes it the preferred core bet over AXTI which faces dilution risks, though both act as raw bottleneck plays.
 
@@ -745,7 +745,7 @@ How to find future plays before the "Whales" rerate them.
 **Key Architectural Hardening (V8.0)**:
 1. **The Pagination Fix**: Nitter/XCancel pages often display two `.show-more` items: "Load newest" at the top and "Load more" at the bottom. The scraper MUST select the **LAST** `.show-more a` element to advance backwards in time. Selecting the first one causes an infinite loop on the first two pages.
 2. **Crash Resilience**: Implemented `scraper_state.json` which tracks the `last_cursor` per username. The scraper saves data incrementally after every page. If the process crashes or is blocked, it can resume exactly where it left off.
-3. **Visual Archival System**: 
+3. **Visual Archival System**:
    - Images are archived locally under `images/<username>/<tweet_id>_<index>.jpg`.
    - The JSON database stores relative paths (`images/<username>/...`) allowing the dashboard to render local images without hitting external CDNs (improving privacy and reliability).
    - Downloads use `curl_cffi` with `chrome110` impersonation and randomized delays (0.5s–2.0s) to avoid IP flagging.
@@ -784,7 +784,7 @@ How to find future plays before the "Whales" rerate them.
 - **Dossier Aesthetics**: Liquid tables, clickable links, colorized ticker badges (`$AVGO 🟢 +2.0%`).
 
 ### 2026-04-19 - V22.44 Responsive Parity & Signal Governance
-- **Architecture**: Implemented `@media` independent definitions for Desktop vs Mobile. 
+- **Architecture**: Implemented `@media` independent definitions for Desktop vs Mobile.
 - **Desktop Strategy**: Upsized typography (Section Headers 14-24px, Tiles 20px) to maximize legibility on 4K monitors vs mobile lock (9-12px) for high-density phone viewing.
 - **Signal Governance**: Engineered `NEWS_BLACKLIST` protocol in the ingestion pipeline to purge low-value sensationalist sources (e.g., Jim Cramer / Mad Money) from the NLP synthesis pool.
 - **Asset Integrity**: Hardened `CRCL` (Circle Internet Financial) entity mapping and deployed a forced-fetch hydrating loop to eliminate price-data voids in the final intelligence dossier.
@@ -805,14 +805,14 @@ How to find future plays before the "Whales" rerate them.
 - **CLI Intelligence**: Deployed `--tickers file.txt` support to `email_market_synopsis.py`, allowing for massive (100+) custom ticker hydration without CLI character limits.
 
 ### 2026-04-21 - V23.58 Session Detection Timezone Protocol
-- **Architecture**: Implemented `_get_est_now()` to normalize all internal time calculations to **US/Eastern (EDT/EST)**. 
+- **Architecture**: Implemented `_get_est_now()` to normalize all internal time calculations to **US/Eastern (EDT/EST)**.
 - **The Problem**: Servers in CST (e.g., user VMs) or UTC (e.g., GitHub Actions) would misclassify sessions (e.g., seeing PRE-market at 10 AM EST because local time was 9 AM CST).
 - **The Protocol**: All market session classification must normalize to US/Eastern before comparing against market open/close constants (`open_m = 570`).
 - **UI Refinement**: Standardized badges: `PRE` (Orange), `AH` (Red), `PM` (Light Blue #60a5fa), and `LIVE` (Green #10b981 with `L⚡` badge).
 
 ### 2026-04-24 - V26.0 Sovereign Intelligence Payload Hardening
 - **Architecture**: Deployed "Extreme Payload Optimization" in `engine/email_market_synopsis.py`. Slashed HTML payload from **109KB to 63KB** (42% reduction).
-- **The CSS Shift**: Transitioned from thousands of redundant inline `style="..."` attributes to a centralized `<style>` block in the `<head>`. 
+- **The CSS Shift**: Transitioned from thousands of redundant inline `style="..."` attributes to a centralized `<style>` block in the `<head>`.
   - **Key Classes**: `.pulse-card`, `.news-item`, `.watchlist-row`, `.ticker-badge`, `.move-pct`.
   - **Significance**: This ensures the institutional dossier remains under Gmail's 102KB clipping threshold, even with expanded news coverage (15+ articles) and 50+ watchlist tickers.
 - **Institutional Source Hardening**:

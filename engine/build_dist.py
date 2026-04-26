@@ -1,13 +1,13 @@
-import os
 import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 DIST = ROOT / "dist"
 
+
 def build():
     print(f"Building production bundle in {DIST}...")
-    
+
     # 1. Clean/Create dist folder
     if DIST.exists():
         shutil.rmtree(DIST, ignore_errors=True)
@@ -16,19 +16,16 @@ def build():
     # 2. Copy Web Endpoints
     # Mapping: local_web_dir -> dist_dir
     web_endpoints = {
-        "web/semi": ".",      # Root /stocks/
-        "web/ai": "ai",       # /stocks/ai/
+        "web/semi": ".",  # Root /stocks/
+        "web/ai": "ai",  # /stocks/ai/
     }
 
-    shared_assets = [
-        "database/live_prices.js",
-        "database/YAHOO_NEWS_MODULE.js"
-    ]
+    shared_assets = ["database/live_prices.js", "database/YAHOO_NEWS_MODULE.js"]
 
     for web_rel, dist_rel in web_endpoints.items():
         src = ROOT / web_rel
         dst = DIST if dist_rel == "." else DIST / dist_rel
-        
+
         if src.exists():
             dst.mkdir(parents=True, exist_ok=True)
             # Copy all files in the web endpoint directory (index.html, dashboard_data.js)
@@ -49,6 +46,7 @@ def build():
             print(f"  Copied {asset} -> dist/{asset}")
 
     print("Build complete.")
+
 
 if __name__ == "__main__":
     build()

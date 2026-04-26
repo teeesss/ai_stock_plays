@@ -9,43 +9,44 @@ Also rebuilds intel.js to expose this data to the dashboard.
 Run after image_analyzer.py completes.
 Called automatically by x_intel_daily_sync.py.
 """
-import json
-import re
-import logging
-import sys
+
 import io
-from pathlib import Path
+import json
+import logging
+import re
+import sys
 from datetime import datetime, timezone
+from pathlib import Path
 
 # UTF-8 output
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
-logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
-log = logging.getLogger('visual_buzz')
+logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
+log = logging.getLogger("visual_buzz")
 
 ROOT = Path(__file__).parent.parent
-DB_DIR = ROOT / 'database'
+DB_DIR = ROOT / "database"
 
 USER_FILES = []
-USER_LIST_FILE = DB_DIR / 'monitored_users.json'
+USER_LIST_FILE = DB_DIR / "monitored_users.json"
 if USER_LIST_FILE.exists():
-    with open(USER_LIST_FILE, 'r', encoding='utf-8') as f:
+    with open(USER_LIST_FILE, "r", encoding="utf-8") as f:
         usernames = json.load(f)
-        USER_FILES = [f'x_intel_{u}.json' for u in usernames]
+        USER_FILES = [f"x_intel_{u}.json" for u in usernames]
 else:
     # Fallback to filesystem glob
-    USER_FILES = [f.name for f in DB_DIR.glob('x_intel_*.json') if f.name != 'x_intel_master.json']
+    USER_FILES = [f.name for f in DB_DIR.glob("x_intel_*.json") if f.name != "x_intel_master.json"]
 
-MASTER_TICKERS_PATH = DB_DIR / 'CPO_MASTER_DATA.json'
-MASTER_INTEL_PATH = DB_DIR / 'x_intel_master.json'
-INTEL_JS_PATH = DB_DIR / 'intel.js'
-ROOT_INTEL_JS = ROOT / 'intel.js'
+MASTER_TICKERS_PATH = DB_DIR / "CPO_MASTER_DATA.json"
+MASTER_INTEL_PATH = DB_DIR / "x_intel_master.json"
+INTEL_JS_PATH = DB_DIR / "intel.js"
+ROOT_INTEL_JS = ROOT / "intel.js"
 
 
 def load_master_tickers() -> set:
     """Load all known tickers from CPO_MASTER_DATA.json."""
     try:
-        with open(MASTER_TICKERS_PATH, 'r', encoding='utf-8') as f:
+        with open(MASTER_TICKERS_PATH, "r", encoding="utf-8") as f:
             data = json.load(f)
         return set(data.keys())
     except Exception as e:
@@ -73,26 +74,26 @@ def aggregate_visual_buzz() -> dict:
             log.warning(f"User file not found: {fname}")
             continue
 
-        with open(fpath, 'r', encoding='utf-8') as f:
+        with open(fpath, "r", encoding="utf-8") as f:
             posts = json.load(f)
 
-        user = fname.replace('x_intel_', '').replace('.json', '')
+        user = fname.replace("x_intel_", "").replace(".json", "")
         user_hits = 0
 
         for post in posts:
-            vi = post.get('visual_intel', [])
+            vi = post.get("visual_intel", [])
             for finding in vi:
                 total_images_scanned += 1
-                text = finding.get('text', '')
+                text = finding.get("text", "")
 
                 # Source 1: pre-extracted tickers list
-                found = set(finding.get('tickers', []))
+                found = set(finding.get("tickers", []))
 
                 # Source 2: regex on OCR text - cashtag style
-                found.update(re.findall(r'\$([A-Z]{2,10})', text.upper()))
+                found.update(re.findall(r"\$([A-Z]{2,10})", text.upper()))
 
                 # Source 3: whitelist match - bare uppercase words
-                for word in re.findall(r'\b([A-Z]{2,10})\b', text.upper()):
+                for word in re.findall(r"\b([A-Z]{2,10})\b", text.upper()):
                     if word in known_tickers:
                         found.add(word)
 
@@ -101,7 +102,7 @@ def aggregate_visual_buzz() -> dict:
                         ticker_buzz[ticker] = {
                             "count": 0,
                             "images": 0,
-                            "sample_texts": []
+                            "sample_texts": [],
                         }
                     ticker_buzz[ticker]["count"] += 1
                     ticker_buzz[ticker]["images"] += 1
@@ -128,26 +129,34 @@ def merge_into_master(visual_buzz: dict):
         log.error(f"Master intel not found: {MASTER_INTEL_PATH}")
         return
 
-    with open(MASTER_INTEL_PATH, 'r', encoding='utf-8') as f:
+    with open(MASTER_INTEL_PATH, "r", encoding="utf-8") as f:
         master = json.load(f)
 
     # Inject visual_mentions alongside existing buzz
-    master['visual_mentions'] = visual_buzz
-    master['visual_last_updated'] = datetime.now(timezone.utc).isoformat()
+    master["visual_mentions"] = visual_buzz
+    master["visual_last_updated"] = datetime.now(timezone.utc).isoformat()
 
     # Save master JSON
-    with open(MASTER_INTEL_PATH, 'w', encoding='utf-8') as f:
+    with open(MASTER_INTEL_PATH, "w", encoding="utf-8") as f:
         json.dump(master, f, ensure_ascii=True)
     log.info(f"Saved visual_mentions -> {MASTER_INTEL_PATH}")
 
     # Rebuild intel.js (dashboard bridge) - strip image arrays to prevent 404 storm
     def _strip(p):
-        c = p.copy(); c.pop("images", None); c.pop("visual_intel", None); return c
+        c = p.copy()
+        c.pop("images", None)
+        c.pop("visual_intel", None)
+        return c
+
     bridge = {**master, "posts": [_strip(p) for p in master.get("posts", [])]}
-    js_content = "// GIGACPO Intelligence Data - images stripped for performance\nwindow.X_INTEL_MODULE = " + json.dumps(bridge) + ";"
-    with open(INTEL_JS_PATH, 'w', encoding='utf-8') as f:
+    js_content = (
+        "// GIGACPO Intelligence Data - images stripped for performance\nwindow.X_INTEL_MODULE = "
+        + json.dumps(bridge)
+        + ";"
+    )
+    with open(INTEL_JS_PATH, "w", encoding="utf-8") as f:
         f.write(js_content)
-    with open(ROOT_INTEL_JS, 'w', encoding='utf-8') as f:
+    with open(ROOT_INTEL_JS, "w", encoding="utf-8") as f:
         f.write(js_content)
     log.info(f"Rebuilt intel.js ({INTEL_JS_PATH.stat().st_size / 1024:.0f} KB) [stripped]")
 
@@ -162,8 +171,10 @@ def run():
         return
     merge_into_master(visual_buzz)
     log.info("VISUAL BUZZ AGGREGATOR - Complete")
-    log.info(f"Top visual tickers: {sorted(visual_buzz.items(), key=lambda x: x[1]['count'], reverse=True)[:10]}")
+    log.info(
+        f"Top visual tickers: {sorted(visual_buzz.items(), key=lambda x: x[1]['count'], reverse=True)[:10]}"
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

@@ -1,22 +1,23 @@
-import unittest
-import re
 import os
+import re
+import unittest
 from pathlib import Path
+
 
 class TestLayoutIntegrity(unittest.TestCase):
     def setUp(self):
         self.root = Path(__file__).parent.parent
         self.preview_path = self.root / "database" / "synopsis_preview.html"
-        
+
         if not self.preview_path.exists():
-             # Try to generate it if missing (minimal run)
-             os.system("python engine/email_market_synopsis.py --tickers NVDA")
-             
+            # Try to generate it if missing (minimal run)
+            os.system("python engine/email_market_synopsis.py --tickers NVDA")
+
     def test_no_line_breaks_in_movers(self):
         """Rule: Performance mover rows must NEVER contain <br/> tags."""
         with open(self.preview_path, "r", encoding="utf-8") as f:
             content = f.read()
-            
+
         # Target the mover-col content
         mover_sections = re.findall(r'<td class="mover-col".*?>(.*?)</td>', content, re.DOTALL)
         for section in mover_sections:
@@ -30,8 +31,13 @@ class TestLayoutIntegrity(unittest.TestCase):
         """Rule: CSS must contain white-space:nowrap for ticker rows."""
         with open(self.preview_path, "r", encoding="utf-8") as f:
             content = f.read()
-        
-        self.assertIn("white-space:nowrap", content.replace(" ", ""), "CSS missing white-space:nowrap enforcement")
+
+        self.assertIn(
+            "white-space:nowrap",
+            content.replace(" ", ""),
+            "CSS missing white-space:nowrap enforcement",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

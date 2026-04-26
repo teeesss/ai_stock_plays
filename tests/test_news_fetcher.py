@@ -1,34 +1,39 @@
-import unittest
+import asyncio
 import os
 import sys
-import asyncio
+import unittest
 
 # Ensure engine path is visible
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Red - Expecting Import Error until implemented
 try:
     from engine.news_fetcher import YahooNewsFetcher
 except ImportError:
-    YahooNewsFetcher = None
+    try:
+        from news_fetcher import YahooNewsFetcher
+    except ImportError:
+        YahooNewsFetcher = None
+
 
 class TestYahooNewsFetcher(unittest.TestCase):
     def test_fetch_batch_structure(self):
         if YahooNewsFetcher is None:
             self.fail("YahooNewsFetcher module not found - implementation missing.")
-            
+
         fetcher = YahooNewsFetcher()
-        tickers = ["NVDA"] # High liquidity guaranteed news
+        tickers = ["NVDA"]  # High liquidity guaranteed news
         results = asyncio.run(fetcher.fetch_batch(tickers))
-        
+
         self.assertIn("NVDA", results)
         if len(results["NVDA"]) > 0:
             self.assertIn("vibe_score", results["NVDA"][0])
             self.assertIn("title", results["NVDA"][0])
             self.assertIn("link", results["NVDA"][0])
-            
+
         # Stealth check
         self.assertTrue(len(fetcher.current_ua) > 10)
+
 
 if __name__ == "__main__":
     unittest.main()

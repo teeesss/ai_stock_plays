@@ -8,40 +8,41 @@ PROVEN: Cursors are instance-specific - NEVER rotate mid-session.
 
 Strategy:
   - Playwright headless browser (StealthNavigator)
-  - Stick to ONE instance per user session  
+  - Stick to ONE instance per user session
   - Save after EVERY page (crash resilience)
   - State file tracks cursor so we can resume after interruption
   - Loop Detection: Track last 10 cursors to prevent pagination loops
   - Stale Detection: Stop if 3 consecutive pages yield 0 new/unseen posts
   - Images downloaded into subfolders: images/<username>/
 """
+
+import argparse
 import asyncio
 import json
-import re
-import random
 import logging
-import argparse
-from pathlib import Path
+import random
+import re
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
 try:
     from vx_rescue_fetcher import rescue_tweet
 except ImportError:
     from engine.vx_rescue_fetcher import rescue_tweet
 
-from bs4 import BeautifulSoup
 
 import sys
-sys.path.append(str(Path(__file__).parent))
-from stealth_navigator import StealthNavigator
 
+sys.path.append(str(Path(__file__).parent))
 # V16.2 Refactor: Modular Domain Logic
-from scraper.dom_parser import parse_tweet, garbage_purge, clean_text_spacing
+from scraper.dom_parser import clean_text_spacing, garbage_purge, parse_tweet
 from scraper.pagi_engine import scrape_pagination_loop
+from stealth_navigator import StealthNavigator
 
 if sys.platform == "win32":
     try:
-        sys.stdout.reconfigure(encoding='utf-8')
-        sys.stderr.reconfigure(encoding='utf-8')
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
     except AttributeError:
         pass
 
@@ -59,25 +60,25 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
     handlers=[
         logging.FileHandler(log_file, encoding="utf-8"),
-        logging.StreamHandler(sys.stdout)
-    ]
+        logging.StreamHandler(sys.stdout),
+    ],
 )
 log = logging.getLogger("x_intel")
 
 # Verified healthy instances - sorted by points (source: nitter status tracker)
 # Session auto-eviction: 2 consecutive failures removes from pool until next run
 ALL_MIRRORS = [
-    "https://nitter.tiekoetter.com",        # 🇩🇪 42% uptime | 77pts 
-    "https://nitter.net",                   # 🇳🇱 94% uptime | 76pts
-    "https://nitter.catsarch.com",          # 🇺🇸/🇩🇪 66% uptime | 76pts
-    "https://lightbrd.com",                 # 🇹🇷 96% uptime | 75pts
-    "https://xcancel.com",                  # 🇺🇸 97% uptime | 72pts 
-    "https://nitter.space",                 # 🇺🇸 96% uptime | 71pts 
-    "https://nitter.poast.org",             # 🇺🇸 86% uptime | 67pts
-    "https://nuku.trabun.org",              # 🇨🇱 95% uptime | 36pts
-    "https://nitter.privacyredirect.com",   # 🇫🇮 Let's Encrypt | NSFW
-    "https://nitter.us.catsarch.com",       # Subdomain node
-    "http://5.78.115.92:8081",              # Direct IP node
+    "https://nitter.tiekoetter.com",  # 🇩🇪 42% uptime | 77pts
+    "https://nitter.net",  # 🇳🇱 94% uptime | 76pts
+    "https://nitter.catsarch.com",  # 🇺🇸/🇩🇪 66% uptime | 76pts
+    "https://lightbrd.com",  # 🇹🇷 96% uptime | 75pts
+    "https://xcancel.com",  # 🇺🇸 97% uptime | 72pts
+    "https://nitter.space",  # 🇺🇸 96% uptime | 71pts
+    "https://nitter.poast.org",  # 🇺🇸 86% uptime | 67pts
+    "https://nuku.trabun.org",  # 🇨🇱 95% uptime | 36pts
+    "https://nitter.privacyredirect.com",  # 🇫🇮 Let's Encrypt | NSFW
+    "https://nitter.us.catsarch.com",  # Subdomain node
+    "http://5.78.115.92:8081",  # Direct IP node
     "https://nitter.aishiteiru.moe",
     "https://nitter.aosus.link",
     "https://nitter6.kabii.moe",
@@ -125,7 +126,7 @@ def mark_day_scanned(username: str, day_str: str):
 # ─────────────────────────────────────────────────────────────
 #  Date Parsing
 # ─────────────────────────────────────────────────────────────
-# DOM Parsing and Date Logic moved to engine/scraper/dom_parser.py 
+# DOM Parsing and Date Logic moved to engine/scraper/dom_parser.py
 # (V16.2 Refactor for technical hygiene)
 
 
@@ -148,7 +149,14 @@ def save_state(state: dict):
 # ─────────────────────────────────────────────────────────────
 #  Core Scraper
 # ─────────────────────────────────────────────────────────────
-async def scrape_user(username: str, max_days: int = 210, instance: str = None, since: str = None, until: str = None, search_query: str = ""):
+async def scrape_user(
+    username: str,
+    max_days: int = 210,
+    instance: str = None,
+    since: str = None,
+    until: str = None,
+    search_query: str = "",
+):
     """Scrape a single user's timeline - V9.2 Advanced Filtering."""
     user_file = DB_DIR / f"x_intel_{username}.json"
 
@@ -185,8 +193,8 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None, 
     done_days = scanned | post_dates
 
     start_date = datetime(2025, 10, 1).date()
-    end_date   = datetime.now(timezone.utc).date()
-    
+    end_date = datetime.now(timezone.utc).date()
+
     # ── V9.2 INTRA-DAY SYNC ───────────────────────────────────────────
     # Force the last 48 hours to always be treated as a gap. This allows
     # the script to be run every few hours - catching live updates while
@@ -269,10 +277,12 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None, 
                     query_part = f"from%3A{username}"
                     if search_query:
                         query_part += f"%20{search_query.replace(' ', '%20')}"
-                    
-                    h_url = (f"{inst}/search?f=tweets"
-                             f"&q={query_part}"
-                             f"%20since%3A{s_dt}%20until%3A{e_dt}")
+
+                    h_url = (
+                        f"{inst}/search?f=tweets"
+                        f"&q={query_part}"
+                        f"%20since%3A{s_dt}%20until%3A{e_dt}"
+                    )
                     log.info(f"  [W{worker_id}] {s_dt} via {inst}")
 
                     try:
@@ -281,7 +291,9 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None, 
                         if h_posts is None:  # connection/DNS failure
                             mirror_failures[inst] = mirror_failures.get(inst, 0) + 1
                             if mirror_failures[inst] >= 2:
-                                log.warning(f"  [WARN] Evicted {inst} ({mirror_failures[inst]} failures)")
+                                log.warning(
+                                    f"  [WARN] Evicted {inst} ({mirror_failures[inst]} failures)"
+                                )
                             inst_idx += 1
                             attempts += 1
                         else:  # success (0 or more posts found)
@@ -291,17 +303,22 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None, 
                                 rescued_posts = []
                                 for p in h_posts:
                                     # If text is truncated (ends in ...) or is very short, try VX
-                                    if p.get("text", "").endswith("...") or len(p.get("text", "")) < 20:
+                                    if (
+                                        p.get("text", "").endswith("...")
+                                        or len(p.get("text", "")) < 20
+                                    ):
                                         p = rescue_tweet(p)
                                     rescued_posts.append(p)
-                                
+
                                 _incremental_save(username, rescued_posts, existing_list)
                                 # Download images for NEW posts only - disk check
                                 await download_images(rescued_posts, username)
                                 # Sync shared list
                                 try:
                                     raw2 = json.loads(user_file.read_text(encoding="utf-8"))
-                                    new_data = raw2 if isinstance(raw2, list) else raw2.get("posts", [])
+                                    new_data = (
+                                        raw2 if isinstance(raw2, list) else raw2.get("posts", [])
+                                    )
                                     existing_list.clear()
                                     existing_list.extend(new_data)
                                 except Exception:
@@ -314,11 +331,13 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None, 
                         log.error(f"  [Worker {worker_id}] Loop Error: {e}")
                         inst_idx += 1
                         attempts += 1
-                
+
                 queue.task_done()
                 if not success:
                     # Don't mark scanned - day goes to rescue queue
-                    log.warning(f"  [W{worker_id}] All mirrors failed for {s_dt} - queued for rescue")
+                    log.warning(
+                        f"  [W{worker_id}] All mirrors failed for {s_dt} - queued for rescue"
+                    )
                     retry_days.append(day)
                 await asyncio.sleep(random.uniform(10, 18))
         finally:
@@ -348,10 +367,12 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None, 
                     query_part = f"from%3A{username}"
                     if search_query:
                         query_part += f"%20{search_query.replace(' ', '%20')}"
-                    
-                    h_url = (f"{inst}/search?f=tweets"
-                             f"&q={query_part}"
-                             f"%20since%3A{s_dt}%20until%3A{e_dt}")
+
+                    h_url = (
+                        f"{inst}/search?f=tweets"
+                        f"&q={query_part}"
+                        f"%20since%3A{s_dt}%20until%3A{e_dt}"
+                    )
                     log.info(f"  [RESCUE] {s_dt} via {inst}")
                     try:
                         h_posts = await scrape_search_block(nav_rescue, h_url, inst, username)
@@ -361,7 +382,9 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None, 
                                 await download_images(h_posts, username)
                                 total_new[0] += len(h_posts)
                             mark_day_scanned(username, s_dt)
-                            log.info(f"  [RESCUE] OK {s_dt} recovered ({len(h_posts) if h_posts else 0} posts)")
+                            log.info(
+                                f"  [RESCUE] OK {s_dt} recovered ({len(h_posts) if h_posts else 0} posts)"
+                            )
                             rescued = True
                             break
                     except Exception as e:
@@ -375,6 +398,7 @@ async def scrape_user(username: str, max_days: int = 210, instance: str = None, 
     log.info(f"--- PARALLEL DRILL COMPLETE: {total_new[0]} total new for @{username} ---")
     return []
 
+
 # ─────────────────────────────────────────────────────────────
 #  Incremental Save (after every page)
 # ─────────────────────────────────────────────────────────────
@@ -382,7 +406,7 @@ def _incremental_save(username: str, new_posts: list, existing: list):
     """Save user file after each page so nothing is lost on crash."""
     # Normalize IDs to strings for safe comparison (JSON may return int or str)
     existing_ids = {str(p["id"]) for p in existing}
-    
+
     # Strip internal helpers before saving
     clean_new = []
     for p in new_posts:
@@ -393,16 +417,16 @@ def _incremental_save(username: str, new_posts: list, existing: list):
     truly_new = [p for p in clean_new if str(p["id"]) not in existing_ids]
     if not truly_new:
         return
-     
+
     combined = truly_new + existing
     combined.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
-    
+
     # Preserve visual_intel from existing posts - merge into combined by ID
     existing_vi = {p["id"]: p.get("visual_intel") for p in existing if p.get("visual_intel")}
     for p in combined:
         if p["id"] in existing_vi and not p.get("visual_intel"):
             p["visual_intel"] = existing_vi[p["id"]]
-    
+
     user_file = DB_DIR / f"x_intel_{username}.json"
     user_file.write_text(json.dumps(combined, indent=2, ensure_ascii=True), encoding="utf-8")
     log.info(f"  [SAVE] {len(combined)} posts for @{username} ({len(truly_new)} new)")
@@ -410,10 +434,7 @@ def _incremental_save(username: str, new_posts: list, existing: list):
 
 async def scrape_search_block(nav, url, inst, username):
     """Scrapes a single search block with the standardized pagination engine."""
-    return await scrape_pagination_loop(
-        nav, url, inst, username, 
-        parse_fn=parse_tweet
-    )
+    return await scrape_pagination_loop(nav, url, inst, username, parse_fn=parse_tweet)
 
 
 def _deduplicate_file(username: str):
@@ -422,7 +443,7 @@ def _deduplicate_file(username: str):
     user_file = DB_DIR / f"x_intel_{username}.json"
     if not user_file.exists():
         return
-    
+
     try:
         posts = json.loads(user_file.read_text(encoding="utf-8"))
         seen = set()
@@ -436,20 +457,20 @@ def _deduplicate_file(username: str):
                 if "raw_text" not in p:
                     p["text"] = clean_text_spacing(p.get("text", ""))
                     p["raw_text"] = p["text"]  # Back-fill raw_text for legacy posts
-                
+
                 # GARBAGE PURGE (check raw_text if available, else text)
                 check_text = p.get("raw_text") or p.get("text", "")
                 if garbage_purge(check_text):
                     continue
-                
+
                 # Explicitly carry visual_intel forward
                 # (safety: ensure it's never silently dropped)
                 if "visual_intel" not in p:
                     p["visual_intel"] = []
-                    
+
                 deduped.append(p)
                 seen.add(pid)
-        
+
         deduped.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
         user_file.write_text(json.dumps(deduped, indent=2, ensure_ascii=True), encoding="utf-8")
         log.info(f"  Deduplicated @{username}: {len(posts)} -> {len(deduped)} posts.")
@@ -479,7 +500,7 @@ async def download_images(posts: list, username: str):
         for i, url in enumerate(p.get("image_urls", [])):
             local_name = f"{p['id']}_{i}.jpg"
             local_path = user_img_dir / local_name
-            rel_path   = f"images/{username}/{local_name}"
+            rel_path = f"images/{username}/{local_name}"
 
             if not local_path.exists():  # ← disk is the truth
                 to_download.append((url, local_path, local_name, p))
@@ -498,7 +519,7 @@ async def download_images(posts: list, username: str):
         try:
             # V26.1: Increased stealth delay (2.5s - 5.5s) to avoid instance banning
             await asyncio.sleep(random.uniform(2.5, 5.5))
-            
+
             resp = curlr.get(url, impersonate="chrome110", timeout=15)
             if resp.status_code == 200 and len(resp.content) > 500:
                 path.write_bytes(resp.content)
@@ -516,11 +537,13 @@ async def download_images(posts: list, username: str):
 
     # If any images failed, secondary VX rescue pass to get fresh URLs
     if failed_posts:
-        log.info(f"  RESCUE: Attempting VX rescue for {len(failed_posts)} posts with broken media...")
+        log.info(
+            f"  RESCUE: Attempting VX rescue for {len(failed_posts)} posts with broken media..."
+        )
         # Note: rescue_tweet now has internal 2.5-5.5s delays + 429 backoff
         for p in posts:
             if p["id"] in failed_posts:
-                rescue_tweet(p) 
+                rescue_tweet(p)
 
     if saved:
         log.info(f"  IMAGE: Saved {saved}/{len(to_download)} images for @{username}")
@@ -587,10 +610,10 @@ def rebuild_master():
                     buzz[t][k] += 1
 
     payload = {
-        "posts":               all_posts,
-        "buzz":                buzz,
-        "last_updated":        now.isoformat(),
-        "visual_mentions":     existing_visual_mentions,
+        "posts": all_posts,
+        "buzz": buzz,
+        "last_updated": now.isoformat(),
+        "visual_mentions": existing_visual_mentions,
         "visual_last_updated": existing_visual_ts,
     }
 
@@ -599,18 +622,24 @@ def rebuild_master():
 
     # Save intel.js for dashboard (images stripped - prevents 404 storm)
     def _strip_assets(p):
-        c = p.copy(); c.pop("images", None); c.pop("visual_intel", None); return c
+        c = p.copy()
+        c.pop("images", None)
+        c.pop("visual_intel", None)
+        return c
+
     bridge_payload = {**payload, "posts": [_strip_assets(p) for p in all_posts]}
-    js_content = ("// GIGACPO Intelligence Data - images stripped for performance\n"
-                  "window.X_INTEL_MODULE = " + json.dumps(bridge_payload, ensure_ascii=True) + ";")
+    js_content = (
+        "// GIGACPO Intelligence Data - images stripped for performance\n"
+        "window.X_INTEL_MODULE = " + json.dumps(bridge_payload, ensure_ascii=True) + ";"
+    )
     (DB_DIR / "intel.js").write_text(js_content, encoding="utf-8")
     (ROOT / "intel.js").write_text(js_content, encoding="utf-8")
 
-    log.info(f"Master rebuilt: {len(all_posts)} posts, {len(buzz)} tickers, "
-             f"{len(existing_visual_mentions)} visual tickers preserved. JS Bridge stripped.")
+    log.info(
+        f"Master rebuilt: {len(all_posts)} posts, {len(buzz)} tickers, "
+        f"{len(existing_visual_mentions)} visual tickers preserved. JS Bridge stripped."
+    )
     return payload
-
-
 
 
 # ─────────────────────────────────────────────────────────────
@@ -621,16 +650,21 @@ async def main():
         description="X Intelligence Scraper V9.1 - Single User | Smart Cache | Parallel Mirrors"
     )
     parser.add_argument(
-        "--username", type=str,
-        help="Single X handle to scrape. Example: --username aleabitoreddit"
+        "--username",
+        type=str,
+        help="Single X handle to scrape. Example: --username aleabitoreddit",
     )
     parser.add_argument("--all", action="store_true", help="Scrape ALL monitored users")
     parser.add_argument("--days", type=int, default=210)
     parser.add_argument("--since", type=str, help="Start date (YYYY-MM-DD)")
     parser.add_argument("--until", type=str, help="End date (YYYY-MM-DD)")
     parser.add_argument("--query", type=str, default="", help="Additional search keyword")
-    parser.add_argument("--instance", type=str, default=None,
-                        help="Force a specific mirror instance (optional)")
+    parser.add_argument(
+        "--instance",
+        type=str,
+        default=None,
+        help="Force a specific mirror instance (optional)",
+    )
     args = parser.parse_args()
 
     # Load shared user list
@@ -652,12 +686,12 @@ async def main():
         log.info(f"{'='*60}")
 
         await scrape_user(
-            user, 
-            max_days=args.days, 
+            user,
+            max_days=args.days,
             instance=args.instance,
             since=args.since,
             until=args.until,
-            search_query=args.query
+            search_query=args.query,
         )
 
         # Final dedup pass
@@ -666,6 +700,7 @@ async def main():
     # 1. Regex Cleanup (Repairs broken tickers like "$PG Y" -> "$PGY")
     try:
         from repair_tickers import repair_user
+
         log.info("Running ticker regex cleanup...")
         repair_user(user)
     except ImportError as e:
@@ -674,6 +709,7 @@ async def main():
     # 2. Foreign-to-English Translation Pass
     try:
         from translate_intel import translate
+
         log.info("Running foreign language translation pass...")
         translate()
     except ImportError as e:

@@ -3,9 +3,11 @@ engine/remote_sync_debug.py
 ===========================
 Debug pathing for SFTP.
 """
-import paramiko
+
 import json
 from pathlib import Path
+
+import paramiko
 
 ROOT = Path(__file__).parent.parent
 VAULT_PATH = ROOT / "credentials" / "vault.json"

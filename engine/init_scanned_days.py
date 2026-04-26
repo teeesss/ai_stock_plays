@@ -3,9 +3,10 @@ init_scanned_days.py - Bootstrap scanned_days.json from existing post timestamps
 Any day that has at least 1 post in the JSON is marked as "already scanned."
 Run ONCE after migrate_v9.py.
 """
+
 import json
+from datetime import datetime
 from pathlib import Path
-from datetime import datetime, timedelta
 
 DB_DIR = Path("z:/COS_Stock_Plays/database")
 SCANNED_FILE = DB_DIR / "scanned_days.json"
@@ -46,8 +47,10 @@ for user in USERS:
     merged = sorted(existing | post_dates)
     registry[user] = merged
 
-    print(f"  @{user}: {len(merged)} days marked as scanned "
-          f"({len(post_dates)} from posts, {len(existing)} pre-existing)")
+    print(
+        f"  @{user}: {len(merged)} days marked as scanned "
+        f"({len(post_dates)} from posts, {len(existing)} pre-existing)"
+    )
 
 # Save
 SCANNED_FILE.write_text(json.dumps(registry, indent=2), encoding="utf-8")

@@ -9,14 +9,14 @@ except ImportError:
     pass
 
 import argparse
-import time
 import asyncio
-import os
 import json
-from datetime import datetime
-import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import sys
+import time
+from datetime import datetime
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from engine.news_fetcher import YahooNewsFetcher
 
@@ -25,27 +25,30 @@ NEWS_DB = "database/YAHOO_NEWS_DB.json"
 
 FETCH_TTL_SECONDS = 3600  # 1 Hour Cooldown per ticker
 
+
 def get_all_tickers():
     """Extracts all monitored tickers from master data."""
     if not os.path.exists(MASTER_DATA):
         print(f"[ERR] Master data missing: {MASTER_DATA}")
         return []
     try:
-        with open(MASTER_DATA, "r", encoding='utf-8') as f:
+        with open(MASTER_DATA, "r", encoding="utf-8") as f:
             data = json.load(f)
         return list(data.keys())
     except Exception as e:
         print(f"[ERR] Failed to parse master data: {e}")
         return []
 
+
 def load_news_db():
     if not os.path.exists(NEWS_DB):
         return {"last_updated": "", "ticker_meta": {}, "news": {}}
     try:
-        with open(NEWS_DB, "r", encoding='utf-8') as f:
+        with open(NEWS_DB, "r", encoding="utf-8") as f:
             return json.load(f)
     except:
         return {"last_updated": "", "ticker_meta": {}, "news": {}}
+
 
 async def run_sync():
     """Main orchestration for ALL Yahoo News sync with TTL Caching."""
@@ -55,9 +58,10 @@ async def run_sync():
 
     print("============================================================")
     print(f"YAHOO NEWS UNIVERSE SYNC (V16.7) - {datetime.now().isoformat()}")
-    if args.force: print("[!] FORCE MODE ENABLED")
+    if args.force:
+        print("[!] FORCE MODE ENABLED")
     print("============================================================")
-    
+
     all_tickers = get_all_tickers()
     if not all_tickers:
         print("[ERR] No tickers found for sync.")
@@ -66,10 +70,10 @@ async def run_sync():
     db = load_news_db()
     current_news = db.get("news", {})
     ticker_meta = db.get("ticker_meta", {})
-    
+
     now_ts = time.time()
     tickers_to_fetch = []
-    
+
     for t in all_tickers:
         last_fetch = ticker_meta.get(t, {}).get("last_fetch", 0)
         if args.force or (now_ts - last_fetch > FETCH_TTL_SECONDS):
@@ -80,31 +84,35 @@ async def run_sync():
         return
 
     print(f"[INFO] Syncing {len(tickers_to_fetch)} monitored assets (7-day lookback)...")
-    
+
     fetcher = YahooNewsFetcher()
     fresh_results = await fetcher.fetch_batch(tickers_to_fetch, days=7)
-    
+
     for ticker, articles in fresh_results.items():
         if ticker not in current_news:
             current_news[ticker] = articles
         else:
-            existing_titles = {a['title'] for a in current_news[ticker]}
-            new_articles = [a for a in articles if a['title'] not in existing_titles]
+            existing_titles = {a["title"] for a in current_news[ticker]}
+            new_articles = [a for a in articles if a["title"] not in existing_titles]
             current_news[ticker] = new_articles + current_news[ticker]
             current_news[ticker] = current_news[ticker][:15]
-        
+
         ticker_meta[ticker] = {
             "last_fetch": now_ts,
-            "fetch_date": datetime.now().isoformat()
+            "fetch_date": datetime.now().isoformat(),
         }
-    
+
     try:
-        with open(NEWS_DB, "w", encoding='utf-8') as f:
-            json.dump({
-                "last_updated": datetime.now().isoformat(),
-                "ticker_meta": ticker_meta,
-                "news": current_news
-            }, f, indent=4)
+        with open(NEWS_DB, "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "last_updated": datetime.now().isoformat(),
+                    "ticker_meta": ticker_meta,
+                    "news": current_news,
+                },
+                f,
+                indent=4,
+            )
         print(f"[SUCCESS] News DB updated. Total universe coverage: {len(all_tickers)}")
     except Exception as e:
         print(f"[ERR] Failed to save news database: {e}")
@@ -112,73 +120,88 @@ async def run_sync():
     # Rebuild flat YAHOO_NEWS_MODULE.js for dashboard
     _rebuild_news_module(current_news)
 
+
 def _rebuild_news_module(news: dict):
     """Flatten ticker-keyed news into articles array for dashboard consumption."""
     from datetime import timezone
+
     ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    OUT_JS = os.path.join(ROOT, 'database', 'YAHOO_NEWS_MODULE.js')
+    OUT_JS = os.path.join(ROOT, "database", "YAHOO_NEWS_MODULE.js")
     seen_ids = set()
     flat = []
-    
+
     # 1. Ticker News
     for ticker, articles in news.items():
         for a in articles:
-            key = a.get('link') or a.get('url') or ''
+            key = a.get("link") or a.get("url") or ""
             if key and key in seen_ids:
                 for ex in flat:
-                    if ex.get('url') == key:
-                        if ticker not in ex['tickers']:
-                            ex['tickers'].append(ticker)
+                    if ex.get("url") == key:
+                        if ticker not in ex["tickers"]:
+                            ex["tickers"].append(ticker)
                 continue
             seen_ids.add(key)
-            raw = a.get('date') or a.get('published') or 0
+            raw = a.get("date") or a.get("published") or 0
             if isinstance(raw, (int, float)) and raw > 1_000_000_000:
                 from datetime import datetime, timezone
-                pub = datetime.fromtimestamp(raw, tz=timezone.utc).strftime('%Y-%m-%d %H:%M EST')
+
+                pub = datetime.fromtimestamp(raw, tz=timezone.utc).strftime("%Y-%m-%d %H:%M EST")
             else:
-                pub = str(raw)[:16] if raw else ''
-            
-            title = a.get('title', '')
-            flat.append({
-                'title': title,
-                'url':   a.get('link') or a.get('url') or '',
-                'source': a.get('provider') or a.get('source') or '',
-                'summary': a.get('summary') or '',
-                'published_est': pub,
-                'tickers': [ticker],
-                'vibe_score': a.get('vibe_score', 0),
-                'is_earnings': "EARNINGS" in title.upper(),
-                'is_macro': False
-            })
+                pub = str(raw)[:16] if raw else ""
+
+            title = a.get("title", "")
+            flat.append(
+                {
+                    "title": title,
+                    "url": a.get("link") or a.get("url") or "",
+                    "source": a.get("provider") or a.get("source") or "",
+                    "summary": a.get("summary") or "",
+                    "published_est": pub,
+                    "tickers": [ticker],
+                    "vibe_score": a.get("vibe_score", 0),
+                    "is_earnings": "EARNINGS" in title.upper(),
+                    "is_macro": False,
+                }
+            )
 
     # 2. V24.2: Merge Macro News into the JS Module
-    MACRO_CACHE = os.path.join(ROOT, 'database', 'macro_news_cache.json')
+    MACRO_CACHE = os.path.join(ROOT, "database", "macro_news_cache.json")
     if os.path.exists(MACRO_CACHE):
         try:
-            with open(MACRO_CACHE, 'r', encoding='utf-8') as f:
+            with open(MACRO_CACHE, "r", encoding="utf-8") as f:
                 m_data = json.load(f)
-                for a in m_data.get('headlines', []):
-                    key = a.get('link') or a.get('url') or ''
-                    if key in seen_ids: continue
+                for a in m_data.get("headlines", []):
+                    key = a.get("link") or a.get("url") or ""
+                    if key in seen_ids:
+                        continue
                     seen_ids.add(key)
-                    flat.append({
-                        'title': a.get('title', ''),
-                        'url':   a.get('link') or a.get('url') or '',
-                        'source': a.get('source') or 'Macro',
-                        'summary': a.get('summary') or '',
-                        'published_est': a.get('date') or 'Just now',
-                        'tickers': ['MACRO'],
-                        'is_earnings': a.get('is_earnings', False) or "EARNINGS" in a.get('title', '').upper(),
-                        'is_macro': True
-                    })
-        except: pass
+                    flat.append(
+                        {
+                            "title": a.get("title", ""),
+                            "url": a.get("link") or a.get("url") or "",
+                            "source": a.get("source") or "Macro",
+                            "summary": a.get("summary") or "",
+                            "published_est": a.get("date") or "Just now",
+                            "tickers": ["MACRO"],
+                            "is_earnings": a.get("is_earnings", False)
+                            or "EARNINGS" in a.get("title", "").upper(),
+                            "is_macro": True,
+                        }
+                    )
+        except:
+            pass
 
-    flat.sort(key=lambda x: x['published_est'], reverse=True)
-    payload = {'last_updated': datetime.now().isoformat(), 'total': len(flat), 'articles': flat}
-    js = 'window.YAHOO_NEWS_MODULE = ' + json.dumps(payload, ensure_ascii=True) + ';'
-    with open(OUT_JS, 'w', encoding='utf-8') as f:
+    flat.sort(key=lambda x: x["published_est"], reverse=True)
+    payload = {
+        "last_updated": datetime.now().isoformat(),
+        "total": len(flat),
+        "articles": flat,
+    }
+    js = "window.YAHOO_NEWS_MODULE = " + json.dumps(payload, ensure_ascii=True) + ";"
+    with open(OUT_JS, "w", encoding="utf-8") as f:
         f.write(js)
     print(f"[SUCCESS] YAHOO_NEWS_MODULE.js rebuilt: {len(flat)} articles")
+
 
 if __name__ == "__main__":
     asyncio.run(run_sync())

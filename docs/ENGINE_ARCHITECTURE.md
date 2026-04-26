@@ -23,5 +23,5 @@ The intelligence architecture is split into synchronized sub-engines that handle
 
 ### 5. `email_market_synopsis.py` (The Orchestrator)
 * **Goal**: Render the final payload.
-* **Architecture**: Merges sentiment metrics, live prices, macro text, and watchlist tracking into a single HTML stream. 
+* **Architecture**: Merges sentiment metrics, live prices, macro text, and watchlist tracking into a single HTML stream.
 * **Hardening (V23.86)**: Enforces **Atomic Session Overrides** (paired price/pct updates) and **Work Log Transparency** (verbose cache/NLP diagnostics). Minifies document to <102KB for Gmail compliance.

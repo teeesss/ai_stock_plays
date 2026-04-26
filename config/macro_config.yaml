@@ -24,16 +24,17 @@
 # SCORING RULES & MULTIPLIERS
 # ---------------------------------------------------------------------------
 scoring_rules:
-  priority_keyword_weight: 50
+  priority_keyword_weight: 45
   anchor_word_weight: 200
-  blacklist_penalty: -1000
-  relevance_floor_penalty: 0
+  blacklist_penalty: -2000
+  relevance_floor_penalty: -100
+  relevance_floor: 28.0
   billion_scale_bonus: 45
   billion_scale_regex: '\$?\s?\d+(\.\d+)?\s?(B|BN|BILLION|TRILLION)'
   cluster_multiplier: 1.55
 
   # V28: Custom FinVADER Sentiment Overrides
-  # These are mathematically injected into the NLP engine. 
+  # These are mathematically injected into the NLP engine.
   # Use positive for bullish/good, negative for bearish/bad.
   vader_financial_lexicon:
     "bullish": 2.5
@@ -47,15 +48,16 @@ scoring_rules:
     "rally": 2.0
     "plunge": -2.5
     "surge": 2.0
-    "plummet": -2.5
+    "recession": -2.5
+    "inflation": -1.5
+    "hyperinflation": -3.0
+    "stagflation": -3.0
+    "monopoly": 2.0
     "breakthrough": 2.5
     "bottleneck": -1.5
-
-# ---------------------------------------------------------------------------
-# UNTRUSTED AGGREGATORS (Trigger Relevance Floor)
-# ---------------------------------------------------------------------------
-untrusted_aggregators:
-  - "Google News"
+    "shortage": -2.0
+    "oversupply": -1.5
+    "plummet": -2.5
 
 # ---------------------------------------------------------------------------
 # BASE SCORING EXPLANATION
@@ -147,6 +149,11 @@ priority_keywords:
   - "INDIUM PHOSPHIDE"
   - "INP"
   - "GALLIUM"
+  - "PLASMONICS"
+  - "QUANTUM DOT"
+  - "ULTRARAM"
+  - "SOCAMM2"
+  - "TERAFAB"
 
   # AI Models & Platforms
   - "ANTHROPIC"
@@ -165,6 +172,34 @@ priority_keywords:
   - "WALL ST"
   - "CLOSING BELL"
   - "OPENING BELL"
+  # Geopolitical & Macro (Institutional Signal)
+  - "GDP"
+  - "INFLATION"
+  - "CPI"
+  - "PPI"
+  - "FOMC"
+  - "FED CHAIRMAN"
+  - "FEDERAL RESERVE"
+  - "INTEREST RATES"
+  - "RATE HIKES"
+  - "RATE CUTS"
+  - "TREASURY YIELD"
+  - "CONTAGION"
+  - "REAL ESTATE DEFAULTS"
+  - "BANKING CRISIS"
+  - "TRADE WAR"
+  - "SANCTIONS"
+  - "ENERGY CRISIS"
+  - "OIL DEMAND"
+  - "OPEC"
+
+  # Market Moves
+  - "STOCKS SURGE"
+  - "STOCKS PLUMMET"
+  - "MARKET CRASH"
+  - "ALL-TIME HIGH"
+  - "BEAR MARKET"
+  - "BULL MARKET"
   - "RECAP"
   - "STOCKS FALL"
   - "STOCKS RISE"
@@ -173,8 +208,20 @@ priority_keywords:
   - "QUARTERLY"
   - "REVENUE"
   - "GUIDANCE"
-  - "IPO"
   - "IPOS"
+  - "CONTRACT"
+  - "CONTRACTS"
+  - "PARTNERSHIP"
+  - "ORDER"
+  - "ORDERS"
+  - "FORECAST RAISE"
+  - "UPGRADE"
+  - "UNDERVALUED"
+  - "INVESTMENT"
+  - "ACQUISITION"
+  - "MERGER"
+  - "REVENUE BEAT"
+  - "GUIDANCE RAISE"
 
   # Macro / Geopolitical
   - "CRUDE"
@@ -275,6 +322,10 @@ bonus_keywords:
   "UCIe": 110
   "TPU": 110
   "Tensor Processing Units": 110
+  "PLASMONICS": 140
+  "ULTRARAM": 130
+  "SOCAMM2": 125
+  "TERAFAB": 120
 
   # Key Supply Chain & Photonics Players
   "ASML": 95
@@ -308,8 +359,6 @@ bonus_keywords:
   "AMD": 55
   "AVGO": 55
   "ARM": 55
-  "TSM": 55
-  "TSMC": 55
   "INTC": 50
   "MU": 50
   "AMAT": 50
@@ -423,10 +472,15 @@ priority_tickers:
   - "HIVE"
   - "RMBS"
   - "SIVEF"
-
   - "PII"
   - "LUNA"
   - "CIEN"
+  - "ONTO"
+  - "AXTI"
+  - "AELM"
+  - "CVV"
+  - "AIP"
+  - "RMBS"
 
 # ---------------------------------------------------------------------------
 # FEEDS  (RSS and Scrape sources with base weights)
@@ -482,7 +536,7 @@ feeds:
   "OilPrice Macro":
     url: "https://oilprice.com/feed/rss.html"
     type: "rss"
-    weight: 115
+    weight: 15
 
   "MarketWatch Pulse":
     url: "https://feeds.content.dowjones.io/public/rss/mw_marketpulse"
@@ -495,25 +549,103 @@ feeds:
     weight: 95
 
   # Tier 3: Niche Semiconductor / Photonics (high weight for core relevance)
-  "Google News CPO Photonics":
-    url: "https://news.google.com/rss/search?q=co-packaged+optics+OR+silicon+photonics+OR+CPO+OR+COUPE+OR+CO-WOS+when:1d&hl=en-US&gl=US&ceid=US:en"
-    type: "rss"
-    weight: 145
-
-  "Google News Semiconductors":
-    url: "https://news.google.com/rss/search?q=semiconductors+OR+advanced+packaging+OR+COUPE+OR+hybrid+bonding+when:1d&hl=en-US&gl=US&ceid=US:en"
-    type: "rss"
-    weight: 140
+  # SemiAnalysis removed per user request.
 
   "SemiEngineering":
     url: "https://semiengineering.com/feed/"
     type: "rss"
-    weight: 135
+    weight: 160
+    is_semi: true
 
   "Semiconductor Today":
-    url: "https://www.semiconductor-today.com/rss.shtml"
+    url: "https://news.google.com/rss/search?q=site:semiconductor-today.com+when:1d&hl=en-US&gl=US&ceid=US:en"
+    type: "rss"
+    weight: 160
+    is_semi: true
+
+  "Semi Today Markets":
+    url: "https://www.semiconductor-today.com/news-markets.shtml"
+    type: "scrape"
+    weight: 155
+    is_semi: true
+
+  "Semi Today Suppliers":
+    url: "https://www.semiconductor-today.com/news-suppliers.shtml"
+    type: "scrape"
+    weight: 150
+    is_semi: true
+
+  "Semi Today Opto":
+    url: "https://www.semiconductor-today.com/news-opto.shtml"
+    type: "scrape"
+    weight: 150
+    is_semi: true
+
+  "Semi Today PV":
+    url: "https://www.semiconductor-today.com/news-pv.shtml"
+    type: "scrape"
+    weight: 145
+    is_semi: true
+
+  "Semi Today Micro":
+    url: "https://www.semiconductor-today.com/news-micro.shtml"
+    type: "scrape"
+    weight: 150
+    is_semi: true
+
+  "Semi Today Archive":
+    url: "https://www.semiconductor-today.com/archive.shtml"
+    type: "scrape"
+    weight: 140
+    is_semi: true
+
+  "EE Times Semi":
+    url: "https://www.eetimes.com/feed/"
+    type: "rss"
+    weight: 155
+    is_semi: true
+
+  "Semiconductor Digest":
+    url: "https://news.google.com/rss/search?q=site:semiconductor-digest.com+(semiconductors+OR+packaging+OR+ai)+when:1d&hl=en-US&gl=US&ceid=US:en"
+    type: "rss"
+    weight: 155
+    is_semi: true
+
+  "SemiWiki":
+    url: "https://semiwiki.com/feed/"
+    type: "rss"
+    weight: 155
+    is_semi: true
+
+  "Google News Semiconductors":
+    url: "https://news.google.com/rss/search?q=semiconductors+OR+advanced+packaging+OR+COUPE+OR+hybrid+bonding+OR+TSMC+when:1d&hl=en-US&gl=US&ceid=US:en"
+    type: "rss"
+    weight: 140
+    is_semi: true
+
+  "Semi Packaging News":
+    url: "https://news.google.com/rss/search?q=site:semiconductorpackagingnews.com+when:2d&hl=en-US&gl=US&ceid=US:en"
+    type: "rss"
+    weight: 155
+    is_semi: true
+
+  "Semi Packaging Scrape":
+    url: "https://www.semiconductorpackagingnews.com/web/news.html"
+    type: "scrape"
+    weight: 150
+    is_semi: true
+
+  "Yahoo Semi":
+    url: "https://news.google.com/rss/search?q=site:finance.yahoo.com+semiconductors+when:1d&hl=en-US&gl=US&ceid=US:en"
     type: "rss"
     weight: 130
+    is_semi: true
+
+  "IEEE Spectrum Semi":
+    url: "https://spectrum.ieee.org/feeds/topic/semiconductors.rss"
+    type: "rss"
+    weight: 145
+    is_semi: true
 
   "Google News Transceiver":
     url: "https://news.google.com/rss/search?q=CPO+OR+1.6T+transceiver+when:1d&hl=en-US&gl=US&ceid=US:en"
@@ -529,7 +661,7 @@ feeds:
   "Business Insider":
     url: "https://markets.businessinsider.com/rss/news"
     type: "rss"
-    weight: 80
+    weight: 10
 
   "Yahoo Finance Tech":
     url: "https://finance.yahoo.com/topic/tech/"
@@ -546,10 +678,22 @@ feeds:
     type: "rss"
     weight: 35
 
-  "ZeroHedge":
-    url: "http://feeds.feedburner.com/zerohedge/feed"
-    type: "rss"
-    weight: 30
+  "ZH Markets":
+    url: "https://www.zerohedge.com/markets"
+    type: "scrape"
+    weight: 85
+  "ZH Tech":
+    url: "https://www.zerohedge.com/technology"
+    type: "scrape"
+    weight: 90
+  "ZH Economics":
+    url: "https://www.zerohedge.com/economics"
+    type: "scrape"
+    weight: 80
+  "ZH Energy":
+    url: "https://www.zerohedge.com/energy"
+    type: "scrape"
+    weight: 75
 
 # ---------------------------------------------------------------------------
 # BLACKLIST  (Hard reject — articles containing these are dropped)
@@ -586,7 +730,60 @@ blacklist:
   - "DODGERS"
   - "YANKEES"
   - "WOULD LOVE"
-
+  - "CHESTNUT"
+  - "TREES"
+  - "MALARIA"
+  - "EPIDEMIC"
+  - "DRONES"
+  - "CROP-SPRAYING"
+  - "VENEZUELA"
+  - "MADURO"
+  - "SLOVENIA"
+  - "CARACAS"
+  - "MIND CONTROL"
+  - "SPIRITUAL"
+  - "BATTLE FOR YOUR MIND"
+  - "WEEK IN REVIEW"
+  - "TALENT STRATEGY"
+  - "THOUGHT LEADERSHIP"
+  - "TRENDS TO WATCH"
+  - "CEO INTERVIEW"
+  - "INTERVIEW WITH"
+  - "OPINION:"
+  - "EDITORIAL:"
+  - "VENTURES PROGRAM"
+  - "HOW TO"
+  - "FOR SMARTER"
+  - "EXPOSED ABOUT"
+  - "CLASS ACTION"
+  - "SECURITIES CLASS ACTION"
+  - "SECURITIES FRAUD"
+  - "INVESTOR COUNSEL"
+  - "DEADLINE IN SECURITIES"
+  - "XBOX"
+  - "GAME PASS"
+  - "SUBSCRIPTION PRICES"
+  - "CANCER"
+  - "TREATED FOR"
+  - "DIAGNOSED WITH"
+  - "LITTLE-KNOWN ETF"
+  - "BETTER TRADE THAN"
+  - "VENTURES PROGRAM"
+  - "BUILD STARTUPS"
+  - "DEMOCRACY SHIELD"
+  - "FREEDOM IN EUROPE"
+  - "BEYOND THE DOMAIN"
+  - "CASH APP"
+  - "DEBT SPIRAL"
+  - "CLIMATE CAPITAL"
+  - "INFRASTRUCTURE FUNDS"
+  - "NETANYAHU"
+  - "TREATMENT FOR"
+  - "ROBLOX"
+  - "AMERICAN TEENS"
+  - "MOST SURVEILLED"
+  - "TEENAGERS"
+  - "CHILDREN"
 
 # ---------------------------------------------------------------------------
 # FORBIDDEN DOMAINS  (Hard reject — links to these domains are dropped)
@@ -612,6 +809,15 @@ forbidden_domains:
 # cannot infer automatically. Keys = raw feed name (as received).
 # ---------------------------------------------------------------------------
 source_space_map:
+  "CNBCTopNews": "CNBC Top News"
+  "CNBCWorld": "CNBC World"
+  "CNBCMarkets": "CNBC Markets"
+  "CNBCEarnings": "CNBC Earnings"
+  "CNBCTech": "CNBC Tech"
+  "CNBCEnergy": "CNBC Energy"
+  "TopNews": "CNBC Top News"
+  "World": "CNBC World"
+  "Benzinga": "Benzinga"
   "Yahoo Finance": "Yahoo Finance"
   "YahooFinance": "Yahoo Finance"
   "OilPriceMacro": "OilPrice"
@@ -621,8 +827,6 @@ source_space_map:
   "MarketWatch": "MarketWatch"
   "Investor's Business Daily": "IBD"
   "InvestorsBusiness": "IBD"
-  "SemiEngineering": "Semi Engineering"
-  "SemiconductorToday": "Semi Today"
   "BusinessInsider": "Biz Insider"
   "TheTechBuzz": "The Tech Buzz"
   "CryptoBriefing": "Crypto Briefing"
@@ -635,6 +839,14 @@ source_space_map:
   "NewYorkPost": "NY Post"
   "NewYorkTimes": "NY Times"
   "WashingtonPost": "WA Post"
+  "EETimes": "EE Times"
+  "Digitimes": "Digitimes"
+  "SemiconductorDigest": "Semi Digest"
+  "SemiWiki": "Semi Wiki"
+  "SemiEngineering": "Semi Engineering"
+  "SemiconductorToday": "Semi Today"
+  "IEEESpectrum": "IEEE Spectrum"
+  "SemiAnalysis": "SemiAnalysis"
 
 # ---------------------------------------------------------------------------
 # AUTO BADGE RULES  (Fallback formatter when source is not in source_space_map)
@@ -649,4 +861,43 @@ auto_badge_rules:
 # ---------------------------------------------------------------------------
 # MAX PER SOURCE  (Source diversity cap)
 # ---------------------------------------------------------------------------
-max_per_source: 5
+max_per_source: 15
+
+# ---------------------------------------------------------------------------
+# AGGREGATOR GATING
+# untrusted_aggregators: Sources that require whitelist verification.
+# ---------------------------------------------------------------------------
+untrusted_aggregators:
+  - "Google News"
+
+# ---------------------------------------------------------------------------
+# GOOGLE NEWS WHITELIST (Top 20 Institutional Gold Standard)
+# Only articles from these sources are allowed from broad aggregators.
+# ---------------------------------------------------------------------------
+google_news_whitelist:
+  - "REUTERS"
+  - "CNBC"
+  - "BENZINGA"
+  - "MARKETWATCH"
+  - "AXIOS"
+  - "TECHCRUNCH"
+  - "YAHOOFINANCE"
+  - "INVESTOPEDIA"
+  - "FORBES"
+  - "FORTUNE"
+  - "IBD"
+  - "INVESTORSBUSINESSDAILY"
+  - "SEMICONDUCTORENGINEERING"
+  - "SEMICONTODAY"
+  - "SEMICONDUCTORTODAY"
+  - "THEVERGE"
+  - "WIRED"
+  - "ARSTECHNICA"
+  - "NIKKEIASIA"
+  - "SCMP"
+  - "EETIMES"
+  - "SEMICONDUCTORDIGEST"
+  - "SEMIWIKI"
+  - "IEEESPECTRUM"
+  - "DIGITIMES"
+  - "SEMIANALYSIS"

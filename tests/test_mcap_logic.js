@@ -40,7 +40,7 @@ testCases.forEach(tc => {
         console.log(`[FAIL] ${tc.label.padEnd(30)} | Expected: ${tc.expected} | Actual: ${actual}`);
         failures++;
     }
-    
+
     // Check 7 char limit strictly
     if (actual.length > 7) {
         console.log(`[FAIL] ${tc.label} EXCEEDS 7 CHARS: ${actual}`);

@@ -13,8 +13,8 @@ Covers:
 These tests run without a browser — they validate the logic in isolation
 and scan the HTML source for structural issues.
 """
+
 import re
-import json
 import unittest
 from pathlib import Path
 
@@ -26,6 +26,7 @@ HTML_FILE = ROOT / "web" / "semi" / "index_template.html"
 # ---------------------------------------------------------------------------
 INF = float("inf")
 NEG_INF = float("-inf")
+
 
 def sfloat(val):
     """Mirror JS sfloat() — parse or return 0."""
@@ -44,8 +45,10 @@ def passes_filters(entry, state):
                 minBuzz, maxBuzz, minAlpha, maxAlpha, minRev
     """
     # mcap
-    if entry["mcapB"] < state.get("minMcap", NEG_INF): return False
-    if entry["mcapB"] > state.get("maxMcap", INF): return False
+    if entry["mcapB"] < state.get("minMcap", NEG_INF):
+        return False
+    if entry["mcapB"] > state.get("maxMcap", INF):
+        return False
 
     # P/E 26
     min_pe26 = state.get("minPe26", NEG_INF)
@@ -81,20 +84,26 @@ def passes_filters(entry, state):
     min_inst = state.get("minInst", NEG_INF)
     max_inst = state.get("maxInst", INF)
     if min_inst > NEG_INF or max_inst < INF:
-        if not has_inst: return False
-        if inst_pct < min_inst or inst_pct > max_inst: return False
+        if not has_inst:
+            return False
+        if inst_pct < min_inst or inst_pct > max_inst:
+            return False
 
     min_short = state.get("minShort", NEG_INF)
     max_short = state.get("maxShort", INF)
     if min_short > NEG_INF or max_short < INF:
-        if not has_short: return False
-        if short_pct < min_short or short_pct > max_short: return False
+        if not has_short:
+            return False
+        if short_pct < min_short or short_pct > max_short:
+            return False
 
     min_analysts = state.get("minAnalysts", NEG_INF)
     max_analysts = state.get("maxAnalysts", INF)
     if min_analysts > NEG_INF or max_analysts < INF:
-        if not has_analysts: return False
-        if analysts < min_analysts or analysts > max_analysts: return False
+        if not has_analysts:
+            return False
+        if analysts < min_analysts or analysts > max_analysts:
+            return False
 
     # Buzz (int parse)
     buzz_7d_raw = (entry.get("buzz") or {}).get("7d", "0")
@@ -106,7 +115,8 @@ def passes_filters(entry, state):
     min_buzz = state.get("minBuzz", NEG_INF)
     max_buzz = state.get("maxBuzz", INF)
     if min_buzz > NEG_INF or max_buzz < INF:
-        if buzz_count < min_buzz or buzz_count > max_buzz: return False
+        if buzz_count < min_buzz or buzz_count > max_buzz:
+            return False
 
     return True
 
@@ -115,11 +125,19 @@ def passes_filters(entry, state):
 # Test Cases
 # ---------------------------------------------------------------------------
 
+
 class TestPEFilterLogic(unittest.TestCase):
     """P/E sentinel (999 = no data) filtering logic."""
 
     def _entry(self, pe26=999, pe27=999):
-        return {"mcapB": 10, "pe26": pe26, "pe27": pe27, "obb": {}, "buzz": {}, "rev_num": 0}
+        return {
+            "mcapB": 10,
+            "pe26": pe26,
+            "pe27": pe27,
+            "obb": {},
+            "buzz": {},
+            "rev_num": 0,
+        }
 
     def test_no_filter_active_passes_all(self):
         """With no P/E filter, all stocks (even no-data 999) should pass."""
@@ -239,14 +257,23 @@ class TestOBBNullSafeFiltering(unittest.TestCase):
         """OBB fields set to empty string should be treated as no data."""
         entry = self._entry_with_obb(inst_ownership_pct="", short_interest_pct="", analyst_count="")
         state = {"minInst": 10}
-        self.assertFalse(passes_filters(entry, state), "Empty string OBB should be treated as no data")
+        self.assertFalse(
+            passes_filters(entry, state),
+            "Empty string OBB should be treated as no data",
+        )
 
 
 class TestBuzzFilterParsing(unittest.TestCase):
     """Buzz 7d count must be parsed as integer, not float."""
 
     def _entry(self, buzz_7d):
-        return {"mcapB": 5, "pe26": 999, "pe27": 999, "obb": {}, "buzz": {"7d": buzz_7d}}
+        return {
+            "mcapB": 5,
+            "pe26": 999,
+            "pe27": 999,
+            "obb": {},
+            "buzz": {"7d": buzz_7d},
+        }
 
     def test_buzz_integer_string_in_range(self):
         """Buzz count as string integer in range should pass."""
@@ -296,22 +323,31 @@ class TestHTMLStructuralIntegrity(unittest.TestCase):
         The second definition silently overrode the first (correct) one.
         Must have exactly ONE definition.
         """
-        matches = re.findall(r'\bfunction filterIntel\s*\(', self.html)
-        self.assertEqual(len(matches), 1,
+        matches = re.findall(r"\bfunction filterIntel\s*\(", self.html)
+        self.assertEqual(
+            len(matches),
+            1,
             f"Expected 1 filterIntel() definition, found {len(matches)}. "
-            "Duplicate definitions cause silent override bugs.")
+            "Duplicate definitions cause silent override bugs.",
+        )
 
     def test_no_duplicate_openIntelModal_definition(self):
         """openIntelModal() must be defined exactly once."""
-        matches = re.findall(r'\bfunction openIntelModal\s*\(', self.html)
-        self.assertEqual(len(matches), 1,
-            f"Expected 1 openIntelModal() definition, found {len(matches)}.")
+        matches = re.findall(r"\bfunction openIntelModal\s*\(", self.html)
+        self.assertEqual(
+            len(matches),
+            1,
+            f"Expected 1 openIntelModal() definition, found {len(matches)}.",
+        )
 
     def test_no_duplicate_renderBuzz_definition(self):
         """renderBuzz() must be defined exactly once."""
-        matches = re.findall(r'\bfunction renderBuzz\s*\(', self.html)
-        self.assertEqual(len(matches), 1,
-            f"Expected 1 renderBuzz() definition, found {len(matches)}.")
+        matches = re.findall(r"\bfunction renderBuzz\s*\(", self.html)
+        self.assertEqual(
+            len(matches),
+            1,
+            f"Expected 1 renderBuzz() definition, found {len(matches)}.",
+        )
 
     def test_passesFilters_uses_null_safe_obb_access(self):
         """
@@ -319,36 +355,49 @@ class TestHTMLStructuralIntegrity(unittest.TestCase):
         Old bad code: sfloat(e.obb.inst_ownership_pct) — crashes if obb is null.
         """
         # Check that the new code uses hasInst/hasShort/hasAnalysts pattern
-        self.assertIn("hasInst", self.html,
-            "passesFilters must define hasInst for null-safe OBB access")
-        self.assertIn("hasShort", self.html,
-            "passesFilters must define hasShort for null-safe OBB access")
-        self.assertIn("hasAnalysts", self.html,
-            "passesFilters must define hasAnalysts for null-safe OBB access")
+        self.assertIn(
+            "hasInst",
+            self.html,
+            "passesFilters must define hasInst for null-safe OBB access",
+        )
+        self.assertIn(
+            "hasShort",
+            self.html,
+            "passesFilters must define hasShort for null-safe OBB access",
+        )
+        self.assertIn(
+            "hasAnalysts",
+            self.html,
+            "passesFilters must define hasAnalysts for null-safe OBB access",
+        )
 
     def test_buzz_uses_parseInt_not_sfloat(self):
         """Buzz count must use parseInt() for buzz 7d, not sfloat()."""
         # Find the buzz filter section
-        buzz_section = re.search(
-            r'buzzCount.*?minBuzz.*?maxBuzz',
-            self.html,
-            re.DOTALL
-        )
+        buzz_section = re.search(r"buzzCount.*?minBuzz.*?maxBuzz", self.html, re.DOTALL)
         self.assertIsNotNone(buzz_section, "Could not find buzz filter section")
-        self.assertIn("parseInt", buzz_section.group(0),
-            "Buzz filter must use parseInt(), not sfloat()")
+        self.assertIn(
+            "parseInt",
+            buzz_section.group(0),
+            "Buzz filter must use parseInt(), not sfloat()",
+        )
 
     def test_pe_filter_uses_sentinel_logic(self):
         """P/E filter must reference 999 sentinel for no-data detection."""
-        self.assertIn("999", self.html,
-            "P/E filter logic must reference 999 sentinel for no-EPS stocks")
-        self.assertIn("pe26Active", self.html,
-            "P/E 26 filter must use pe26Active flag")
+        self.assertIn(
+            "999",
+            self.html,
+            "P/E filter logic must reference 999 sentinel for no-EPS stocks",
+        )
+        self.assertIn("pe26Active", self.html, "P/E 26 filter must use pe26Active flag")
 
     def test_passes_filters_defined(self):
         """passesFilters function must be present in HTML."""
-        self.assertIn("function passesFilters", self.html,
-            "passesFilters() function must be defined in cpo_plays.html")
+        self.assertIn(
+            "function passesFilters",
+            self.html,
+            "passesFilters() function must be defined in cpo_plays.html",
+        )
 
 
 if __name__ == "__main__":

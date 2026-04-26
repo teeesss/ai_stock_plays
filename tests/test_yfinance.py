@@ -1,12 +1,12 @@
 import yfinance as yf
-import pandas as pd
+
 
 def test_yfinance():
     tickers = ["NVDA", "CRDO", "BESIY", "COHR"]
     print(f"Testing yfinance for: {tickers}")
     try:
         # Try a simple download
-        data = yf.download(tickers, period="1d", group_by='ticker')
+        data = yf.download(tickers, period="1d", group_by="ticker")
         if data.empty:
             print("Download returned empty data.")
         else:
@@ -16,7 +16,7 @@ def test_yfinance():
                     print(f"  - {t}: {data[t]['Close'].iloc[-1]}")
                 else:
                     print(f"  - {t}: FAILED")
-                    
+
         # Try ticker info (often fails when download works)
         print("\nTesting info retrieval:")
         for t in tickers:
@@ -30,6 +30,7 @@ def test_yfinance():
 
     except Exception as e:
         print(f"Global yfinance failure: {e}")
+
 
 if __name__ == "__main__":
     test_yfinance()

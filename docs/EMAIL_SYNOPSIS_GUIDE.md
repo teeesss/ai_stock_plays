@@ -8,7 +8,7 @@
 ## 🚀 Usage & CLI Flags
 
 ### Base Commands
-- **Generate Local Preview Only**: 
+- **Generate Local Preview Only**:
   ```bash
   python engine/email_market_synopsis.py
   ```
@@ -38,10 +38,10 @@
 ## 🧩 Core Intelligence Modules
 
 ### 1. Sovereign Index Pulse (US & Global)
-- **Timezone Normalized (V23.58)**: All session detection is normalized to **US/Eastern (EST)**. 
+- **Timezone Normalized (V23.58)**: All session detection is normalized to **US/Eastern (EST)**.
 - **Time-Anchored Windows (V23.86)**: Forces correct session data even if Yahoo flags are stale.
 - **Index Futures (V23.86)**: Automatically switches to `ES=F`, `NQ=F`, `YM=F` during extended hours.
-- **Session Badges**: 
+- **Session Badges**:
   - `L⚡` (Green): Regular Market.
   - `PRE` (Orange): Pre-market (4 AM - 9:30 AM EST).
   - `AH` (Red): After-hours (4 PM - 8 PM EST).
@@ -68,7 +68,7 @@ The script now provides high-fidelity diagnostic output during execution:
 ## 🛡️ Environment & Security
 
 ### Auto-Dependency Guardian (V23.59)
-The script now automatically checks for mission-critical libraries (`bs4`, `playwright`, `curl-cffi`, etc.) on every startup. 
+The script now automatically checks for mission-critical libraries (`bs4`, `playwright`, `curl-cffi`, etc.) on every startup.
 - **Interactive**: If missing, it will prompt to auto-install via `sys.executable`.
 - **Non-Interactive**: Fails gracefully with a list of missing packages to prevent pipeline hangs.
 
@@ -86,12 +86,12 @@ GMAIL_DISPLAY_NAME="Sovereign Intel"
 ## ⚠️ Troubleshooting
 
 ### NAS/I/O Latency
-The script is designed to run from network-attached storage (`/mnt/projects`). 
+The script is designed to run from network-attached storage (`/mnt/projects`).
 - **Lag**: You may experience a 15-90s delay as the `ticker_name_map.json` is loaded.
 - **Heartbeat Logs**: High-resolution timestamps are enabled to profile which part of the ingestion is slow.
 
 ### Price Data-Void
-If an asset shows `N/A`, it usually means the symbol was recently added and hasn't been hydrated. 
+If an asset shows `N/A`, it usually means the symbol was recently added and hasn't been hydrated.
 - **Force Hydrate**: Run `python engine/live_prices.py --tickers SYMBOL` to populate the cache immediately.
 
 ---

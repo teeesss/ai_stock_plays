@@ -2,10 +2,11 @@
 migrate_v9.py - Step 1: Deduplicate + Backup all x_intel JSON files.
 Keeps bare array format. Removes duplicate IDs. Backs up originals.
 """
+
 import json
 import shutil
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 DB_DIR = Path("z:/COS_Stock_Plays/database")
 BACKUP_DIR = DB_DIR / "backup"
@@ -28,9 +29,9 @@ for user in USERS:
     # Load
     raw = json.loads(file.read_text(encoding="utf-8"))
     posts = raw if isinstance(raw, list) else raw.get("posts", [])
-    
+
     before = len(posts)
-    
+
     # Deduplicate by ID (keep first occurrence = newest due to sort order)
     seen = set()
     clean = []
@@ -39,13 +40,13 @@ for user in USERS:
         if pid and pid not in seen:
             seen.add(pid)
             clean.append(p)
-    
+
     # Sort newest first
     clean.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
-    
+
     after = len(clean)
     removed = before - after
-    
+
     # Save back as bare array
     file.write_text(json.dumps(clean, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"  @{user}: {before} -> {after} posts ({removed} dupes removed)")

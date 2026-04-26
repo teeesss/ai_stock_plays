@@ -38,14 +38,14 @@ describe('CPO Dashboard Integration', () => {
     // Click USA pill
     const usaButton = await page.$('div#regionFilters div.pill[data-filter="usa"]');
     await usaButton.click();
-    
+
     // Short wait for UI to update
     await new Promise(r => setTimeout(r, 200));
 
     // USA plays count
     const usaCountActiveFilter = await page.$eval('#stat-total', el => parseInt(el.textContent));
     const statUsa = await page.$eval('#stat-usa', el => parseInt(el.textContent));
-    
+
     // Total rows visible should equal the USA stat
     expect(usaCountActiveFilter).toEqual(statUsa);
   });
@@ -54,7 +54,7 @@ describe('CPO Dashboard Integration', () => {
     // Click Moonshot pill
     const moonButton = await page.$('div#bucketFilters div.pill[data-filter="Moonshot"]');
     await moonButton.click();
-    
+
     await new Promise(r => setTimeout(r, 200));
 
     // Stats
@@ -62,17 +62,17 @@ describe('CPO Dashboard Integration', () => {
     const moonCount = await page.$eval('#stat-moon', el => parseInt(el.textContent));
     expect(totalCount).toEqual(moonCount);
   });
-  
+
   it('ensures no horizontal scrolling on standard desktop resolution', async () => {
     // Set viewport to a standard large desktop
     await page.setViewport({ width: 1440, height: 900 });
-    
+
     // Evaluate if the body or any container is wider than the viewport
     const overflow = await page.evaluate(() => {
       const body = document.body;
       const html = document.documentElement;
       const width = window.innerWidth;
-      
+
       return {
         bodyScrollWidth: body.scrollWidth,
         htmlScrollWidth: html.scrollWidth,
@@ -80,7 +80,7 @@ describe('CPO Dashboard Integration', () => {
         hasHorizontalScroll: (body.scrollWidth > width) || (html.scrollWidth > width)
       };
     });
-    
+
     expect(overflow.hasHorizontalScroll).toBe(false);
   });
 });

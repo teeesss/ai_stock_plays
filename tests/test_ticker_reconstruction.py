@@ -4,9 +4,10 @@ test_ticker_reconstruction.py
 V14 - Tests for ticker reconstruction and forensic repair.
 Covers all known fragmentation patterns from real data.
 """
-import unittest
+
 import re
 import sys
+import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
@@ -14,31 +15,39 @@ sys.path.insert(0, str(ROOT / "engine"))
 
 # Import from deep scraper
 try:
-    from x_intel_deep_scraper import reconstruct_tickers, clean_text_spacing
+    from x_intel_deep_scraper import clean_text_spacing, reconstruct_tickers
 except ImportError:
+
     def reconstruct_tickers(text):
-        if not text: return ""
+        if not text:
+            return ""
         # 1. Collapse $ N V D A
-        text = re.sub(r'\$[A-Z](?:\s[A-Z]\b)+', lambda m: m.group(0).replace(" ", ""), text)
+        text = re.sub(r"\$[A-Z](?:\s[A-Z]\b)+", lambda m: m.group(0).replace(" ", ""), text)
         # 2. Collapse $AA O I
-        text = re.sub(r'\$([A-Z]{2,5})\s([A-Z]\b(?:\s[A-Z]\b)*)', 
-                      lambda m: "$" + m.group(1) + m.group(2).replace(" ", ""), text)
+        text = re.sub(
+            r"\$([A-Z]{2,5})\s([A-Z]\b(?:\s[A-Z]\b)*)",
+            lambda m: "$" + m.group(1) + m.group(2).replace(" ", ""),
+            text,
+        )
         # 3. Bare caps
-        text = re.sub(r'(?<!\w)[A-Z](?:\s[A-Z]\b)+', lambda m: m.group(0).replace(" ", ""), text)
+        text = re.sub(r"(?<!\w)[A-Z](?:\s[A-Z]\b)+", lambda m: m.group(0).replace(" ", ""), text)
         return text
 
     def clean_text_spacing(text):
         text = reconstruct_tickers(text)
-        text = re.sub(r'([a-z0-9])([\$@])', r'\1 \2', text)
-        text = re.sub(r'(\$[A-Z0-9]{2,12})([a-z]{2,})', r'\1 \2', text)
+        text = re.sub(r"([a-z0-9])([\$@])", r"\1 \2", text)
+        text = re.sub(r"(\$[A-Z0-9]{2,12})([a-z]{2,})", r"\1 \2", text)
         return text.strip()
+
 
 # Import V14 repair
 try:
     from forensic_repair_v14 import repair_text
+
     HAS_V14 = True
 except ImportError:
     HAS_V14 = False
+
     def repair_text(text):
         return text
 
@@ -70,7 +79,10 @@ class TestTickerReconstruction(unittest.TestCase):
     def test_full_pipeline(self):
         """Full clean_text_spacing pipeline."""
         self.assertEqual(clean_text_spacing("check $PG Y"), "check $PGY")
-        self.assertEqual(clean_text_spacing("up like 60% this week $OS S"), "up like 60% this week $OSS")
+        self.assertEqual(
+            clean_text_spacing("up like 60% this week $OS S"),
+            "up like 60% this week $OSS",
+        )
 
 
 class TestForensicRepairV14(unittest.TestCase):
@@ -179,9 +191,9 @@ class TestDatabaseIntegrity(unittest.TestCase):
     """Sanity check that repaired DB files don't contain known corruption patterns."""
 
     CORRUPTION_PATTERNS = [
-        r'\$[A-Z]{2,3} [a-z]{3,}',       # $CO inisPR, $NB isLA
-        r'\$[A-Z]{1,2}\s[A-Z]{1,2}\s',   # $N V alone
-        r'@[A-Za-z] [a-z] [a-z]',        # @Photo n aap style handles
+        r"\$[A-Z]{2,3} [a-z]{3,}",  # $CO inisPR, $NB isLA
+        r"\$[A-Z]{1,2}\s[A-Z]{1,2}\s",  # $N V alone
+        r"@[A-Za-z] [a-z] [a-z]",  # @Photo n aap style handles
     ]
 
     def _check_file(self, file_path):
@@ -202,7 +214,7 @@ class TestDatabaseIntegrity(unittest.TestCase):
 
     def test_no_known_corruption_in_db(self):
         """Check that the main DB files don't have known bad patterns after repair."""
-        import json
+
         files = [
             DB_DIR / "x_intel_aleabitoreddit.json",
             DB_DIR / "x_intel_PhotonCap.json",
@@ -230,9 +242,10 @@ class TestDatabaseIntegrity(unittest.TestCase):
 # Make DB_DIR available for integrity test
 DB_DIR = ROOT / "database"
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import json
-    print(f"Running V14 Ticker Reconstruction Tests")
+
+    print("Running V14 Ticker Reconstruction Tests")
     print(f"V14 Repair Available: {HAS_V14}")
     print("-" * 60)
     unittest.main(verbosity=2)

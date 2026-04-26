@@ -1,5 +1,6 @@
-import nltk
 import ssl
+
+import nltk
 
 try:
     _create_unverified_https_context = ssl._create_unverified_context
@@ -9,11 +10,11 @@ else:
     ssl._create_default_https_context = _create_unverified_https_context
 
 print("Downloading NLTK data...")
-nltk.download('punkt')
-nltk.download('punkt_tab')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('averaged_perceptron_tagger_eng')
-nltk.download('maxent_ne_chunker')
-nltk.download('maxent_ne_chunker_tab')
-nltk.download('words')
+nltk.download("punkt")
+nltk.download("punkt_tab")
+nltk.download("averaged_perceptron_tagger")
+nltk.download("averaged_perceptron_tagger_eng")
+nltk.download("maxent_ne_chunker")
+nltk.download("maxent_ne_chunker_tab")
+nltk.download("words")
 print("NLTK data download complete.")

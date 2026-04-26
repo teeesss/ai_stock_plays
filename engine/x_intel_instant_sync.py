@@ -1,20 +1,28 @@
 """
-x_intel_instant_sync.py
+x_intel_instant_sync.py [V28]
 =======================
 Immediate, sequential sync for all users.
 Bypasses the random jitter of the daily sync script.
 Use this for manual 'refresh-now' operations.
 """
 
-import sys
 import logging
 import subprocess
+import sys
+
+# V28: Hierarchy Leader Error Monitoring
+try:
+    from error_monitor import init_error_monitor
+except ImportError:
+    from engine.error_monitor import init_error_monitor
+init_error_monitor()
+
 from pathlib import Path
 
 if sys.platform == "win32":
     try:
-        sys.stdout.reconfigure(encoding='utf-8')
-        sys.stderr.reconfigure(encoding='utf-8')
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
     except AttributeError:
         pass
 
@@ -29,51 +37,54 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
     handlers=[
         logging.FileHandler(log_file, encoding="utf-8"),
-        logging.StreamHandler(sys.stdout)
-    ]
+        logging.StreamHandler(sys.stdout),
+    ],
 )
 log = logging.getLogger("x_intel_instant")
 
 USERS = ["aleabitoreddit", "PhotonCap", "KawzInvests"]
+
 
 def run_step(name, command, specific_log=None):
     """Runs a command as a subprocess and logs its output in real-time."""
     log.info(f"--- STARTING: {name} ---")
     if specific_log:
         log.info(f"    (Detailed output in logs/{specific_log.name})")
-    
+
     try:
         process = subprocess.Popen(
             command,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
-            encoding='utf-8',
-            errors='replace',
+            encoding="utf-8",
+            errors="replace",
             bufsize=1,
-            cwd=str(ROOT)
+            cwd=str(ROOT),
         )
-        
+
         # We'll write to the main log AND the specific log if provided
-        with open(log_file, 'a', encoding='utf-8') as main_f:
-            spec_f = open(specific_log, 'w', encoding='utf-8') if specific_log else None
+        with open(log_file, "a", encoding="utf-8") as main_f:
+            spec_f = open(specific_log, "w", encoding="utf-8") if specific_log else None
             try:
                 for line in process.stdout:
-                    print(line, end='', flush=True)
+                    print(line, end="", flush=True)
                     main_f.write(line)
                     if spec_f:
                         spec_f.write(line)
             finally:
                 if spec_f:
                     spec_f.close()
-        
+
         process.wait()
         return process.returncode == 0
     except Exception as e:
         log.error(f"Error running {name}: {e}")
         return False
 
+
 from ticker_utils import get_ticker_count_report
+
 
 def instant_sync():
     log.info("=" * 60)
@@ -130,7 +141,7 @@ def instant_sync():
 
     # 6. Build and Deploy
     log.info("\n" + "=" * 60)
-    
+
     # On Windows, npm is a .cmd file. subprocess.Popen(shell=True) or npm.cmd is needed.
     npm_cmd = "npm.cmd" if sys.platform == "win32" else "npm"
 

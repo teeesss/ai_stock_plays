@@ -1,7 +1,7 @@
 # BetterTwitFix (vxtwitter) Rescue Plan
 
 ## Approach
-BetterTwitFix is **not** a timeline or search replacement for Nitter (it only resolves single Tweet IDs). It cannot discover tweets across date gaps. However, it is perfect as a **High-Fidelity Rescue Layer**. By querying `api.vxtwitter.com`, we can retrieve robust JSON (full text, media, stats) for specific tweet IDs whenever Nitter scrapes truncate text or fail to load media nodes. 
+BetterTwitFix is **not** a timeline or search replacement for Nitter (it only resolves single Tweet IDs). It cannot discover tweets across date gaps. However, it is perfect as a **High-Fidelity Rescue Layer**. By querying `api.vxtwitter.com`, we can retrieve robust JSON (full text, media, stats) for specific tweet IDs whenever Nitter scrapes truncate text or fail to load media nodes.
 
 ## Scope
 - **In**: Using `xtwitter.com` to repair/enrich known tweet IDs that have malformed data.

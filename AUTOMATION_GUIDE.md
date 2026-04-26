@@ -71,7 +71,7 @@ To prevent code duplication and inconsistent state across scripts (e.g., fetchin
 *   **Leader**: `engine/market_session.py` (`MarketSession` class).
 *   **Rules**:
     1.  **NO LOCAL CALCULATIONS**: Individual scripts are strictly forbidden from calculating their own `weekday()` or `hour()` to decide if markets are open.
-    2.  **STASIS GATE**: All data-fetch scripts must call `session.is_market_stasis()` before starting a run. 
+    2.  **STASIS GATE**: All data-fetch scripts must call `session.is_market_stasis()` before starting a run.
     3.  **WEEKEND STASIS**: Defined as Saturday (all day) and Sunday (until 6 PM EST). During this window, all runs skip network fetches unless the `--force` flag is used.
     4.  **TIMEZONE ANCHOR**: All logic is anchored to **US/Eastern** via the hierarchy leader to ensure consistency across local and cloud environments.
 

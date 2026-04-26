@@ -44,7 +44,7 @@ function sortFn(a, b) {
     else if (col === 'todayPct') { av = a.todayPct??-9999; bv = b.todayPct??-9999; } // FIXED: Added case
     else if (col === 'ext')   { av = a.extPct??-9999;   bv = b.extPct??-9999; }
     else { av = (a.h.Role||'')+(a.h.Notes||''); bv = (b.h.Role||'')+(b.h.Notes||''); }
-    
+
     if (typeof av === 'string' && typeof bv === 'string') return av.localeCompare(bv) * state.sortDir;
     return (av < bv ? -1 : (av > bv ? 1 : 0)) * state.sortDir;
 }
@@ -102,7 +102,7 @@ Inject the `visual_last_updated` value from the module.
 function filterIntel() {
     // ...existing code...
     const module = window.X_INTEL_MODULE || { posts: [] };
-    
+
     // ADD THIS:
     const syncTimeEl = document.getElementById('intel-sync-time');
     if (syncTimeEl && module.visual_last_updated) {

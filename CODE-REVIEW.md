@@ -4,7 +4,7 @@
 
 ## 🛡️ Defensive Engineering Principles
 
-1. **Modular Orchestration**: 
+1. **Modular Orchestration**:
    - *Rule*: No script should both "find data" and "generate UI."
    - *Ideal State*: `global_orchestrator.py` conducts; `PipelineOrchestrator` processes.
 2. **Idempotency (The "No Duplicate" Law)**:
@@ -22,7 +22,7 @@
 
 ## 🚫 The Anti-Pattern Hall of Fame (Do Not Repeat)
 
-- **Ticker Fragmentation ($ N V D A$)**: 
+- **Ticker Fragmentation ($ N V D A$)**:
   - *Symptom*: Scrapers or UI logic splitting tickers due to greedy regex.
   - *Fix*: Use `\b` word boundaries and surgical regex in `DataStandardizer`.
 - **Function Shadowing (DASHBOARD_DATA DUPLICATION)**:

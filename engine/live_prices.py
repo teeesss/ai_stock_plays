@@ -1,10 +1,10 @@
 """
-engine/live_prices.py [V23.86]
+engine/live_prices.py [V28]
 ======================
 Real-time price fetcher for the GIGACPO terminal.
 
-Refactored to use StealthNavigator + curl_cffi directly, completely 
-avoiding the unstable yfinance module and its 401 Unauthorized errors 
+Refactored to use StealthNavigator + curl_cffi directly, completely
+avoiding the unstable yfinance module and its 401 Unauthorized errors
 caused by Yahoo's 2026-grade anti-bot protections.
 
 OUTPUT: database/live_prices.js
@@ -16,86 +16,124 @@ OUTPUT: database/live_prices.js
 """
 
 import json
-import time
 import logging
+import time
+
+# V28: Hierarchy Leader Error Monitoring
+try:
+    from error_monitor import init_error_monitor
+except ImportError:
+    from engine.error_monitor import init_error_monitor
+init_error_monitor()
 import argparse
 import asyncio
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from curl_cffi import requests
-from yahoo_auth import get_valid_auth
+
+try:
+    from yahoo_auth import get_valid_auth
+except ImportError:
+    from engine.yahoo_auth import get_valid_auth
+
 import random
 
-from ticker_utils import load_master_tickers
+try:
+    from ticker_utils import load_master_tickers
+except ImportError:
+    from engine.ticker_utils import load_master_tickers
 try:
     from market_session import MarketSession
 except ImportError:
     from engine.market_session import MarketSession
 
-logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
+logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 log = logging.getLogger(__name__)
 
+# V28: Hierarchy Leader Error Monitoring
+try:
+    from error_monitor import init_error_monitor
+except ImportError:
+    from engine.error_monitor import init_error_monitor
+init_error_monitor()
+
 ROOT = Path(__file__).parent.parent
-OUT_JS  = ROOT / 'database' / 'live_prices.js'
-OUT_JSON = ROOT / 'database' / 'live_prices.json'
+OUT_JS = ROOT / "database" / "live_prices.js"
+OUT_JSON = ROOT / "database" / "live_prices.json"
 
 BATCH_SIZE = 25
+
 
 def load_tickers() -> list[str]:
     """Load only the static terminal tickers (Root + AI)."""
     return load_master_tickers("static")
 
+
 def clean_ticker(ticker: str) -> str:
     """Extract primary ticker from compound 'A.XX / B' format."""
-    return ticker.split(' / ')[0].strip()
+    return ticker.split(" / ")[0].strip()
+
 
 def calculate_session_data(item: dict, tm: int) -> tuple:
     """
-    V24.5: Greedy Session Extraction Logic
+    V28: Greedy Session Extraction Logic
     Exhaustively searches for AH/PRE/OVN prices based on time, even if primary fields are missing.
     """
-    price   = item.get('regularMarketPrice')
-    bid     = item.get('bid')
-    ask     = item.get('ask')
-    m_state = item.get('marketState', 'REGULAR')
-    
+    price = item.get("regularMarketPrice")
+    bid = item.get("bid")
+    ask = item.get("ask")
+    m_state = item.get("marketState", "REGULAR")
+
     # Standard Fields
-    a_p, a_pct = item.get('postMarketPrice'), item.get('postMarketChangePercent')
-    p_p, p_pct = item.get('preMarketPrice'), item.get('preMarketChangePercent')
-    o_p, o_pct = item.get('overnightMarketPrice'), item.get('overnightMarketChangePercent')
-    
+    a_p, a_pct = item.get("postMarketPrice"), item.get("postMarketChangePercent")
+    p_p, p_pct = item.get("preMarketPrice"), item.get("preMarketChangePercent")
+    o_p, o_pct = (
+        item.get("overnightMarketPrice"),
+        item.get("overnightMarketChangePercent"),
+    )
+
     ext_price, ext_pct, ext_type = None, None, "REG"
 
     # Session Priority Logic
-    if 400 <= tm < 930: # PRE-MARKET (4:00 AM - 9:30 AM)
-        if p_p is not None: ext_price, ext_pct, ext_type = p_p, p_pct, 'PM'
-        elif o_p is not None: ext_price, ext_pct, ext_type = o_p, o_pct, 'OVN'
-        elif a_p is not None and tm < 700: # Early morning AH residue
-            ext_price, ext_pct, ext_type = a_p, a_pct, 'AH'
-            
-    elif 1600 <= tm < 2000: # AFTER-HOURS (4:00 PM - 8:00 PM)
-        if a_p is not None: ext_price, ext_pct, ext_type = a_p, a_pct, 'AH'
-        elif o_p is not None: ext_price, ext_pct, ext_type = o_p, o_pct, 'OVN'
-        elif p_p is not None and tm < 1630: # Stale PRE residue? Only if close
-            ext_price, ext_pct, ext_type = p_p, p_pct, 'PM'
+    if 400 <= tm < 930:  # PRE-MARKET (4:00 AM - 9:30 AM)
+        if p_p is not None:
+            ext_price, ext_pct, ext_type = p_p, p_pct, "PM"
+        elif o_p is not None:
+            ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
+        elif a_p is not None and tm < 700:  # Early morning AH residue
+            ext_price, ext_pct, ext_type = a_p, a_pct, "AH"
 
-    elif tm >= 2000 or tm < 400: # OVERNIGHT (8:00 PM - 4:00 AM)
-        if o_p is not None: ext_price, ext_pct, ext_type = o_p, o_pct, 'OVN'
-        elif a_p is not None: ext_price, ext_pct, ext_type = a_p, a_pct, 'AH'
-        elif p_p is not None: ext_price, ext_pct, ext_type = p_p, p_pct, 'PM'
+    elif 1600 <= tm < 2000:  # AFTER-HOURS (4:00 PM - 8:00 PM)
+        if a_p is not None:
+            ext_price, ext_pct, ext_type = a_p, a_pct, "AH"
+        elif o_p is not None:
+            ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
+        elif p_p is not None and tm < 1630:  # Stale PRE residue? Only if close
+            ext_price, ext_pct, ext_type = p_p, p_pct, "PM"
+
+    elif tm >= 2000 or tm < 400:  # OVERNIGHT (8:00 PM - 4:00 AM)
+        if o_p is not None:
+            ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
+        elif a_p is not None:
+            ext_price, ext_pct, ext_type = a_p, a_pct, "AH"
+        elif p_p is not None:
+            ext_price, ext_pct, ext_type = p_p, p_pct, "PM"
 
     # Midpoint Fallback for ALL extended sessions if Price is missing but Bid/Ask exist
     if ext_price is None and bid and ask and not (930 <= tm < 1600):
         # Only use midpoint if it differs from regular price (implies active session)
         mid = (bid + ask) / 2
-        if price and abs(mid - price) / price > 0.0005: 
+        if price and abs(mid - price) / price > 0.0005:
             ext_price = mid
             ext_pct = ((ext_price / price) - 1) * 100 if price else 0
             # Label based on time
-            if 400 <= tm < 930: ext_type = 'PM'
-            elif 1600 <= tm < 2000: ext_type = 'AH'
-            else: ext_type = 'OVN'
+            if 400 <= tm < 930:
+                ext_type = "PM"
+            elif 1600 <= tm < 2000:
+                ext_type = "AH"
+            else:
+                ext_type = "OVN"
 
     # Percent calculation fallback
     if ext_price is not None and ext_pct is None and price:
@@ -103,34 +141,36 @@ def calculate_session_data(item: dict, tm: int) -> tuple:
 
     # V23.87 Guard: Force LIVE if in regular hours
     if m_state.startswith("REGULAR") and (930 <= tm < 1600):
-        ext_type = 'LIVE'
-    
+        ext_type = "LIVE"
+
     return ext_price, ext_pct, ext_type
 
 
 def get_exchange_abbr(exchange: str) -> str:
     """Standardizes exchange names into clean abbreviations."""
-    if not exchange: return "???"
-    
+    if not exchange:
+        return "???"
+
     mapping = {
         "NasdaqGS": "NASDAQ",
         "NasdaqGM": "NASDAQ",
         "NasdaqCM": "NASDAQ",
-        "Nasdaq":   "NASDAQ",
-        "NMS":      "NASDAQ",
+        "Nasdaq": "NASDAQ",
+        "NMS": "NASDAQ",
         "National Market System": "NASDAQ",
         "New York Stock Exchange": "NYSE",
-        "NYSE":     "NYSE",
+        "NYSE": "NYSE",
         "NYSEArca": "NYSE",
         "OTC Markets OTCPK": "OTC",
         "Other OTC": "OTC",
-        "PNK":      "OTC",
+        "PNK": "OTC",
         "Pink Sheets": "OTC",
-        "YHD":      "HKG",
-        "SES":      "SGP",
-        "ASX":      "AUS"
+        "YHD": "HKG",
+        "SES": "SGP",
+        "ASX": "AUS",
     }
-    return mapping.get(exchange, exchange) # Fallback to original if not in map
+    return mapping.get(exchange, exchange)  # Fallback to original if not in map
+
 
 def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
     """
@@ -141,157 +181,199 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
     now_utc = datetime.now(timezone.utc)
     try:
         from zoneinfo import ZoneInfo
+
         now = now_utc.astimezone(ZoneInfo("US/Eastern"))
     except Exception:
         now = now_utc - timedelta(hours=4)
-    
+
     # Extract primary tickers
     primary_map = {clean_ticker(t): t for t in tickers}
-    symbols = ','.join(primary_map.keys())
-    
+    symbols = ",".join(primary_map.keys())
+
     all_symbols = list(primary_map.keys())
-    symbols_str = ','.join(all_symbols)
+    symbols_str = ",".join(all_symbols)
     # V22.94: Request explicit fields including Overnight (BOATS) data
     fields = "regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketVolume,averageDailyVolume10Day,marketState,postMarketPrice,postMarketChange,postMarketChangePercent,preMarketPrice,preMarketChange,preMarketChangePercent,overnightMarketPrice,overnightMarketChange,overnightMarketChangePercent,bid,ask,fullExchangeName,exchangeName,exchange"
-    url = f'https://query1.finance.yahoo.com/v7/finance/quote?symbols={symbols_str}&fields={fields}&overnightPrice=true&crumb={crumb}'
-    
+    url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={symbols_str}&fields={fields}&overnightPrice=true&crumb={crumb}"
+
     log.debug(f"Fetching {len(all_symbols)} tickers from Yahoo...")
     try:
         res = client.get(url, timeout=15)
         if res.status_code != 200:
             log.error(f"Failed to fetch batch. Status {res.status_code}: {res.text[:100]}")
             return results
-            
+
         data = res.json()
-        items = data.get('quoteResponse', {}).get('result', [])
+        items = data.get("quoteResponse", {}).get("result", [])
         log.info(f"  Got {len(items)} responses from Yahoo for {len(all_symbols)} requested.")
-        
+
         # Track missing tickers for logging
-        found_symbols = {item.get('symbol') for item in items}
+        found_symbols = {item.get("symbol") for item in items}
         missing = [s for s in all_symbols if s not in found_symbols]
         if missing:
-            log.warning(f"  Missing from Yahoo: {', '.join(missing[:5])}{'...' if len(missing)>5 else ''}")
+            log.warning(
+                f"  Missing from Yahoo: {', '.join(missing[:5])}{'...' if len(missing)>5 else ''}"
+            )
 
         for item in items:
-            symbol = item.get('symbol')
+            symbol = item.get("symbol")
             if not symbol or (symbol not in primary_map and symbol.upper() not in primary_map):
                 continue
 
             original_ticker = primary_map.get(symbol) or primary_map.get(symbol.upper())
-            
+
             tm = now.hour * 100 + now.minute
-            exch_res   = item.get('fullExchangeName') or item.get('exchangeName') or item.get('exchange') or '???'
-            m_state    = item.get('marketState', 'REGULAR')
-            
+            exch_res = (
+                item.get("fullExchangeName")
+                or item.get("exchangeName")
+                or item.get("exchange")
+                or "???"
+            )
+            m_state = item.get("marketState", "REGULAR")
+
             # Triple-fallback for prices (Critical for ADRs/OTC)
-            price      = item.get('regularMarketPrice')
-            if price is None: price = item.get('postMarketPrice')
-            if price is None: price = item.get('preMarketPrice')
-            if price is None: price = item.get('previousClose')
-            
-            price_chg  = item.get('regularMarketChange') if item.get('regularMarketChange') is not None else (item.get('postMarketChange') if item.get('postMarketChange') is not None else 0)
-            change_pct = item.get('regularMarketChangePercent') or 0
-            volume     = item.get('regularMarketVolume') if item.get('regularMarketVolume') is not None else 0
-            avg_vol    = item.get('averageDailyVolume10Day') if item.get('averageDailyVolume10Day') is not None else 0
-            bid        = item.get('bid')
-            ask        = item.get('ask')
+            price = item.get("regularMarketPrice")
+            if price is None:
+                price = item.get("postMarketPrice")
+            if price is None:
+                price = item.get("preMarketPrice")
+            if price is None:
+                price = item.get("previousClose")
+
+            price_chg = (
+                item.get("regularMarketChange")
+                if item.get("regularMarketChange") is not None
+                else (
+                    item.get("postMarketChange") if item.get("postMarketChange") is not None else 0
+                )
+            )
+            change_pct = item.get("regularMarketChangePercent") or 0
+            volume = (
+                item.get("regularMarketVolume")
+                if item.get("regularMarketVolume") is not None
+                else 0
+            )
+            avg_vol = (
+                item.get("averageDailyVolume10Day")
+                if item.get("averageDailyVolume10Day") is not None
+                else 0
+            )
+            bid = item.get("bid")
+            ask = item.get("ask")
 
             # V23.90: Centralized Session Extraction
             ext_price, ext_pct, ext_type = calculate_session_data(item, tm)
 
             vol_spike = round(volume / avg_vol, 2) if avg_vol and avg_vol > 0 else 0
-            
+
             # V24.2: Anchor Price Logic
-            close_price = item.get('regularMarketPrice') or item.get('previousClose')
-            prev_close  = item.get('regularMarketPreviousClose') or item.get('previousClose')
+            close_price = item.get("regularMarketPrice") or item.get("previousClose")
+            prev_close = item.get("regularMarketPreviousClose") or item.get("previousClose")
 
             entry = {
-                'price':      round(price, 2) if price is not None else None,
-                'close_price': round(close_price, 2) if close_price is not None else None,
-                'price_chg':  round(price_chg, 2) if price_chg is not None else None,
-                'change_pct': round(change_pct, 2) if change_pct is not None else None,
-                'volume':     int(volume) if volume else None,
-                'avg_volume': int(avg_vol) if avg_vol else None,
-                'vol_spike':  vol_spike,
-                'exchange':   exch_res,
-                'updated':    now.strftime('%Y-%m-%d %H:%M EST'),
-                'timestamp':  time.time(),
-                'ext_price':  ext_price,
-                'ext_pct':    ext_pct,
-                'ext_type':   ext_type,
-                'prev_close': prev_close
+                "price": round(price, 2) if price is not None else None,
+                "close_price": (round(close_price, 2) if close_price is not None else None),
+                "price_chg": round(price_chg, 2) if price_chg is not None else None,
+                "change_pct": round(change_pct, 2) if change_pct is not None else None,
+                "volume": int(volume) if volume else None,
+                "avg_volume": int(avg_vol) if avg_vol else None,
+                "vol_spike": vol_spike,
+                "exchange": exch_res,
+                "updated": now.strftime("%Y-%m-%d %H:%M EST"),
+                "timestamp": time.time(),
+                "ext_price": ext_price,
+                "ext_pct": ext_pct,
+                "ext_type": ext_type,
+                "prev_close": prev_close,
             }
             results[original_ticker] = entry
 
-            if entry.get('price'):
-                ext_str = f' [{ext_type} ${ext_price:.2f} {ext_pct:+.1f}%]' if ext_price is not None and ext_pct is not None else ''
-                log.info(f'  {original_ticker:12s} ${entry["price"]:.2f} '
-                         f'{entry.get("change_pct",0):+.1f}% '
-                         f'[{entry.get("exchange")}] '
-                         f'vol_spike={entry.get("vol_spike","N/A")}{ext_str}')
+            if entry.get("price"):
+                ext_str = (
+                    f" [{ext_type} ${ext_price:.2f} {ext_pct:+.1f}%]"
+                    if ext_price is not None and ext_pct is not None
+                    else ""
+                )
+                log.info(
+                    f'  {original_ticker:12s} ${entry["price"]:.2f} '
+                    f'{entry.get("change_pct",0):+.1f}% '
+                    f'[{entry.get("exchange")}] '
+                    f'vol_spike={entry.get("vol_spike","N/A")}{ext_str}'
+                )
             else:
-                log.warning(f'  {original_ticker:12s} no price data')
-                
+                log.warning(f"  {original_ticker:12s} no price data")
+
     except Exception as ex:
         log.error(f"Error fetching batch: {ex}")
-        
+
     # V26.9: Retry Logic for Taiwan tickers (.TW -> .TWO)
     # If a ticker ending in .TW failed, try .TWO (Taipei Exchange)
-    found_symbols = {item.get('symbol').upper() for item in items}
-    missing_tw = [s for s in all_symbols if s.upper().endswith('.TW') and s.upper() not in found_symbols]
-    
+    found_symbols = {item.get("symbol").upper() for item in items}
+    missing_tw = [
+        s for s in all_symbols if s.upper().endswith(".TW") and s.upper() not in found_symbols
+    ]
+
     if missing_tw:
-        retry_map = {s.upper().replace('.TW', '.TWO'): s for s in missing_tw}
-        retry_symbols = ','.join(retry_map.keys())
+        retry_map = {s.upper().replace(".TW", ".TWO"): s for s in missing_tw}
+        retry_symbols = ",".join(retry_map.keys())
         log.info(f"  Retrying {len(retry_map)} Taiwan tickers with .TWO suffix: {retry_symbols}")
-        
+
         try:
-            url_retry = f'https://query1.finance.yahoo.com/v7/finance/quote?symbols={retry_symbols}&fields={fields}&overnightPrice=true&crumb={crumb}'
+            url_retry = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={retry_symbols}&fields={fields}&overnightPrice=true&crumb={crumb}"
             res_retry = client.get(url_retry, timeout=10)
             if res_retry.status_code == 200:
                 data_retry = res_retry.json()
-                items_retry = data_retry.get('quoteResponse', {}).get('result', [])
+                items_retry = data_retry.get("quoteResponse", {}).get("result", [])
                 log.info(f"  Got {len(items_retry)} retry responses.")
-                
+
                 for item in items_retry:
-                    symbol = item.get('symbol').upper()
+                    symbol = item.get("symbol").upper()
                     original_ticker = retry_map.get(symbol)
-                    if not original_ticker: continue
-                    
+                    if not original_ticker:
+                        continue
+
                     tm = now.hour * 100 + now.minute
-                    exch_res   = item.get('fullExchangeName') or item.get('exchangeName') or item.get('exchange') or '???'
-                    
-                    price      = item.get('regularMarketPrice')
-                    if price is None: price = item.get('postMarketPrice')
-                    if price is None: price = item.get('preMarketPrice')
-                    if price is None: price = item.get('previousClose')
-                    
-                    price_chg  = item.get('regularMarketChange') or 0
-                    change_pct = item.get('regularMarketChangePercent') or 0
-                    volume     = item.get('regularMarketVolume') or 0
-                    avg_vol    = item.get('averageDailyVolume10Day') or 0
-                    
+                    exch_res = (
+                        item.get("fullExchangeName")
+                        or item.get("exchangeName")
+                        or item.get("exchange")
+                        or "???"
+                    )
+
+                    price = item.get("regularMarketPrice")
+                    if price is None:
+                        price = item.get("postMarketPrice")
+                    if price is None:
+                        price = item.get("preMarketPrice")
+                    if price is None:
+                        price = item.get("previousClose")
+
+                    price_chg = item.get("regularMarketChange") or 0
+                    change_pct = item.get("regularMarketChangePercent") or 0
+                    volume = item.get("regularMarketVolume") or 0
+                    avg_vol = item.get("averageDailyVolume10Day") or 0
+
                     ext_price, ext_pct, ext_type = calculate_session_data(item, tm)
                     vol_spike = round(volume / avg_vol, 2) if avg_vol and avg_vol > 0 else 0
-                    
-                    close_price = item.get('regularMarketPrice') or item.get('previousClose')
-                    prev_close  = item.get('regularMarketPreviousClose') or item.get('previousClose')
+
+                    close_price = item.get("regularMarketPrice") or item.get("previousClose")
+                    prev_close = item.get("regularMarketPreviousClose") or item.get("previousClose")
 
                     entry = {
-                        'price':      round(price, 2) if price is not None else None,
-                        'close_price': round(close_price, 2) if close_price is not None else None,
-                        'price_chg':  round(price_chg, 2) if price_chg is not None else None,
-                        'change_pct': round(change_pct, 2) if change_pct is not None else None,
-                        'volume':     int(volume) if volume else None,
-                        'avg_volume': int(avg_vol) if avg_vol else None,
-                        'vol_spike':  vol_spike,
-                        'exchange':   exch_res,
-                        'updated':    now.strftime('%Y-%m-%d %H:%M EST'),
-                        'timestamp':  time.time(),
-                        'ext_price':  ext_price,
-                        'ext_pct':    ext_pct,
-                        'ext_type':   ext_type,
-                        'prev_close': prev_close
+                        "price": round(price, 2) if price is not None else None,
+                        "close_price": (round(close_price, 2) if close_price is not None else None),
+                        "price_chg": (round(price_chg, 2) if price_chg is not None else None),
+                        "change_pct": (round(change_pct, 2) if change_pct is not None else None),
+                        "volume": int(volume) if volume else None,
+                        "avg_volume": int(avg_vol) if avg_vol else None,
+                        "vol_spike": vol_spike,
+                        "exchange": exch_res,
+                        "updated": now.strftime("%Y-%m-%d %H:%M EST"),
+                        "timestamp": time.time(),
+                        "ext_price": ext_price,
+                        "ext_pct": ext_pct,
+                        "ext_type": ext_type,
+                        "prev_close": prev_close,
                     }
                     results[original_ticker] = entry
                     log.info(f'  {original_ticker:12s} ${entry["price"]:.2f} (via {symbol})')
@@ -301,10 +383,11 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
     # Fill missing
     for t in tickers:
         if t not in results:
-            log.warning(f'  {t:12s} no price data')
+            log.warning(f"  {t:12s} no price data")
             results[t] = {}
-            
+
     return results
+
 
 def analyze_movers(prices: dict) -> dict:
     """
@@ -314,34 +397,56 @@ def analyze_movers(prices: dict) -> dict:
     """
     # V24.6: Data Hygiene - Only consider movers updated in the last 6 hours
     now_ts = time.time()
-    fresh_prices = {t: d for t, d in prices.items() 
-                    if t != '_meta' and (now_ts - d.get('timestamp', 0)) < 21600}
+    fresh_prices = {
+        t: d for t, d in prices.items() if t != "_meta" and (now_ts - d.get("timestamp", 0)) < 21600
+    }
 
-    with_change = [(t, d) for t, d in fresh_prices.items()
-                   if 'change_pct' in d and d['change_pct'] is not None]
+    with_change = [
+        (t, d) for t, d in fresh_prices.items() if "change_pct" in d and d["change_pct"] is not None
+    ]
 
-    sorted_by_change = sorted(with_change, key=lambda x: x[1]['change_pct'], reverse=True)
+    sorted_by_change = sorted(with_change, key=lambda x: x[1]["change_pct"], reverse=True)
 
-    top_gainers = [{'ticker': t, 'change_pct': d['change_pct'], 'price': d.get('price')}
-                   for t, d in sorted_by_change[:5] if d['change_pct'] > 0]
+    top_gainers = [
+        {"ticker": t, "change_pct": d["change_pct"], "price": d.get("price")}
+        for t, d in sorted_by_change[:5]
+        if d["change_pct"] > 0
+    ]
 
-    top_losers  = [{'ticker': t, 'change_pct': d['change_pct'], 'price': d.get('price')}
-                   for t, d in sorted_by_change[-5:] if d['change_pct'] < 0]
+    top_losers = [
+        {"ticker": t, "change_pct": d["change_pct"], "price": d.get("price")}
+        for t, d in sorted_by_change[-5:]
+        if d["change_pct"] < 0
+    ]
 
     # Volume spikes: vol_spike > 2x average = something is happening
-    vol_spikes  = sorted(
-        [{'ticker': t, 'vol_spike': d['vol_spike'], 'change_pct': d.get('change_pct')}
-         for t, d in fresh_prices.items() if d.get('vol_spike', 0) and d.get('vol_spike', 0) >= 2.0],
-        key=lambda x: x['vol_spike'], reverse=True
+    vol_spikes = sorted(
+        [
+            {
+                "ticker": t,
+                "vol_spike": d["vol_spike"],
+                "change_pct": d.get("change_pct"),
+            }
+            for t, d in fresh_prices.items()
+            if d.get("vol_spike", 0) and d.get("vol_spike", 0) >= 2.0
+        ],
+        key=lambda x: x["vol_spike"],
+        reverse=True,
     )[:5]
 
     return {
-        'top_gainers':  top_gainers,
-        'top_losers':   [l | {'change_pct': l['change_pct']} for l in reversed(top_losers)],
-        'volume_spikes': vol_spikes,
+        "top_gainers": top_gainers,
+        "top_losers": [item | {"change_pct": item["change_pct"]} for item in reversed(top_losers)],
+        "volume_spikes": vol_spikes,
     }
 
-async def async_run_fetch(tickers: list = None, force: bool = False, dry_run: bool = False, skip_sync: bool = False) -> dict:
+
+async def async_run_fetch(
+    tickers: list = None,
+    force: bool = False,
+    dry_run: bool = False,
+    skip_sync: bool = False,
+) -> dict:
     if tickers is None:
         tickers = load_tickers()
 
@@ -352,37 +457,42 @@ async def async_run_fetch(tickers: list = None, force: bool = False, dry_run: bo
         # Load existing for the return, but don't fetch anything new
         if OUT_JSON.exists():
             try:
-                with open(OUT_JSON, 'r', encoding='utf-8') as f:
+                with open(OUT_JSON, "r", encoding="utf-8") as f:
                     return json.load(f)
-            except: pass
+            except:
+                pass
         return {}
 
     # Load existing prices for TTL check
     existing_all = {}
     if OUT_JSON.exists():
         try:
-            with open(OUT_JSON, 'r', encoding='utf-8') as f:
+            with open(OUT_JSON, "r", encoding="utf-8") as f:
                 existing_all = json.load(f)
-        except: pass
+        except:
+            pass
 
     # V26.9: Granular 15-Minute Lock (Per-Ticker TTL) with improved logging
     if not force:
         now_ts = time.time()
         stale = []
         min_remaining = 999999
-        
+
         for t in tickers:
             # V26.9: Clean ticker before cache check to ensure match (4062.T / IBIDY -> 4062.T)
             clean_t = clean_ticker(t)
-            ts = existing_all.get(t, {}).get('timestamp') or existing_all.get(clean_t, {}).get('timestamp', 0)
-            
+            ts = existing_all.get(t, {}).get("timestamp") or existing_all.get(clean_t, {}).get(
+                "timestamp", 0
+            )
+
             diff = now_ts - ts
-            if diff >= 900: # 15 minutes
+            if diff >= 900:  # 15 minutes
                 stale.append(t)
             else:
                 rem = 900 - diff
-                if rem < min_remaining: min_remaining = rem
-        
+                if rem < min_remaining:
+                    min_remaining = rem
+
         skipped = len(tickers) - len(stale)
         if skipped > 0:
             m, s = divmod(int(min_remaining), 60)
@@ -393,28 +503,28 @@ async def async_run_fetch(tickers: list = None, force: bool = False, dry_run: bo
                 return existing_all
         tickers = stale
 
-    log.info(f'GIGACPO Live Price Fetcher - {len(tickers)} tickers to refresh')
-    log.info(f'Output: {OUT_JS}')
-    log.info('-' * 50)
-    
+    log.info(f"GIGACPO Live Price Fetcher - {len(tickers)} tickers to refresh")
+    log.info(f"Output: {OUT_JS}")
+    log.info("-" * 50)
+
     # Retrieve Valid/Cached Authenticated Session
     cookie_dict, crumb, user_agent = await get_valid_auth()
-    
-    client = requests.Session(impersonate='chrome146')
-    client.headers.update({'User-Agent': user_agent})
+
+    client = requests.Session(impersonate="chrome146")
+    client.headers.update({"User-Agent": user_agent})
     client.cookies.update(cookie_dict)
 
     all_prices = existing_all.copy()
-    
+
     # Randomized Batching (8-13 tickers per burst)
     i = 0
     while i < len(tickers):
         batch_size = random.randint(8, 13)
         batch = tickers[i : i + batch_size]
-        log.info(f'Batch [Size {len(batch)}]: {batch}')
+        log.info(f"Batch [Size {len(batch)}]: {batch}")
         results = fetch_batch(batch, client, crumb)
         all_prices.update(results)
-        
+
         i += len(batch)
         if i < len(tickers):
             # V25.2: Relaxed delay to 2.0-6.0s to improve stealth and avoid Yahoo rate limits
@@ -424,81 +534,98 @@ async def async_run_fetch(tickers: list = None, force: bool = False, dry_run: bo
 
     # Add metadata including top movers
     movers = analyze_movers(all_prices)
-    
+
     # Use EST (US/Eastern) for display anchored to UTC
     now_utc = datetime.now(timezone.utc)
     try:
         from zoneinfo import ZoneInfo
+
         now_est = now_utc.astimezone(ZoneInfo("US/Eastern"))
     except Exception:
-        now_est = now_utc - timedelta(hours=4) # Rough EST
-        
+        now_est = now_utc - timedelta(hours=4)  # Rough EST
+
     refreshed_at_str = now_est.strftime("%Y-%m-%d %I:%M %p EST")
     # Compact format for UI: 2026-04-16 01:49 EST
     compact_ts = now_est.strftime("%Y-%m-%d %I:%M EST")
-    
-    all_prices['_meta'] = {
-        'refreshed_at': refreshed_at_str,
-        'refreshed_at_est': compact_ts,
-        'refreshed_at_iso': now_est.isoformat(),
-        'total_tickers': len(all_prices),
-        'with_price': sum(1 for t, d in all_prices.items() if d.get('price') and t != '_meta'),
+
+    all_prices["_meta"] = {
+        "refreshed_at": refreshed_at_str,
+        "refreshed_at_est": compact_ts,
+        "refreshed_at_iso": now_est.isoformat(),
+        "total_tickers": len(all_prices),
+        "with_price": sum(1 for t, d in all_prices.items() if d.get("price") and t != "_meta"),
         **movers,
     }
 
-    log.info('-' * 50)
+    log.info("-" * 50)
     log.info(f'Fetched {all_prices["_meta"]["with_price"]}/{len(tickers)} prices')
-    if movers['top_gainers']:
-        log.info(f'Top gainer: {movers["top_gainers"][0]["ticker"]} +{movers["top_gainers"][0]["change_pct"]:.1f}%')
-    if movers['top_losers']:
-        log.info(f'Top loser:  {movers["top_losers"][0]["ticker"]} {movers["top_losers"][0]["change_pct"]:.1f}%')
+    if movers["top_gainers"]:
+        log.info(
+            f'Top gainer: {movers["top_gainers"][0]["ticker"]} +{movers["top_gainers"][0]["change_pct"]:.1f}%'
+        )
+    if movers["top_losers"]:
+        log.info(
+            f'Top loser:  {movers["top_losers"][0]["ticker"]} {movers["top_losers"][0]["change_pct"]:.1f}%'
+        )
 
     if not dry_run:
         # V24.6: Database Hygiene - Purge any entries older than 24 hours before saving
         now_ts = time.time()
-        purged_prices = {t: d for t, d in all_prices.items() 
-                         if t == '_meta' or (now_ts - d.get('timestamp', 0)) < 86400}
-        
+        purged_prices = {
+            t: d
+            for t, d in all_prices.items()
+            if t == "_meta" or (now_ts - d.get("timestamp", 0)) < 86400
+        }
+
         # Write JSON (for audit/debugging)
-        with open(OUT_JSON, 'w', encoding='utf-8') as f:
+        with open(OUT_JSON, "w", encoding="utf-8") as f:
             json.dump(purged_prices, f, indent=2)
-        log.info(f'Saved {OUT_JSON} (Purged {len(all_prices) - len(purged_prices)} stale entries)')
+        log.info(f"Saved {OUT_JSON} (Purged {len(all_prices) - len(purged_prices)} stale entries)")
 
         # Write JS (for HTML terminal consumption)
-        with open(OUT_JS, 'w', encoding='utf-8') as f:
-            f.write('// GIGACPO Live Prices - auto-generated by engine/live_prices.py\n')
-            f.write('// DO NOT EDIT. Regenerate with: python engine/live_prices.py\n')
-            f.write('window.LIVE_PRICES = ')
-            json.dump(all_prices, f, separators=(',', ':'))
-            f.write(';\n')
-        log.info(f'Saved {OUT_JS}')
+        with open(OUT_JS, "w", encoding="utf-8") as f:
+            f.write("// GIGACPO Live Prices - auto-generated by engine/live_prices.py\n")
+            f.write("// DO NOT EDIT. Regenerate with: python engine/live_prices.py\n")
+            f.write("window.LIVE_PRICES = ")
+            json.dump(all_prices, f, separators=(",", ":"))
+            f.write(";\n")
+        log.info(f"Saved {OUT_JS}")
 
         # AUTO-SYNC to SFTP
         if not skip_sync:
             try:
                 from remote_sync import RemoteSync
+
                 rel_js = OUT_JS.relative_to(ROOT)
                 RemoteSync.sync_file(OUT_JS)
             except Exception as e:
                 log.error(f"Sync failed: {e}")
     else:
-        log.info('[DRY RUN] Output not written')
-        print(json.dumps(all_prices, indent=2)[:1000] + '\n...[truncated]')
+        log.info("[DRY RUN] Output not written")
+        print(json.dumps(all_prices, indent=2)[:1000] + "\n...[truncated]")
 
     return all_prices
 
+
 PRICE_TTL_SECONDS = 900
 
+
 async def async_main():
-    parser = argparse.ArgumentParser(description='GIGACPO Live Price Fetcher')
-    parser.add_argument('--tickers', nargs='+', help='Specific tickers')
-    parser.add_argument('--dry-run', action='store_true', help='Print, do not write')
-    parser.add_argument('--force', action='store_true', help='Override cache')
-    parser.add_argument('--skip-sync', action='store_true', help='Do not upload to SFTP')
+    parser = argparse.ArgumentParser(description="GIGACPO Live Price Fetcher")
+    parser.add_argument("--tickers", nargs="+", help="Specific tickers")
+    parser.add_argument("--dry-run", action="store_true", help="Print, do not write")
+    parser.add_argument("--force", action="store_true", help="Override cache")
+    parser.add_argument("--skip-sync", action="store_true", help="Do not upload to SFTP")
     args = parser.parse_args()
 
     # V22.95: Global lock removed in favor of granular per-ticker TTL in async_run_fetch
-    await async_run_fetch(tickers=args.tickers, force=args.force, dry_run=args.dry_run, skip_sync=args.skip_sync)
+    await async_run_fetch(
+        tickers=args.tickers,
+        force=args.force,
+        dry_run=args.dry_run,
+        skip_sync=args.skip_sync,
+    )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     asyncio.run(async_main())

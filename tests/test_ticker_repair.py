@@ -1,14 +1,14 @@
-import unittest
-import sys
 import os
-from pathlib import Path
+import sys
+import unittest
 
 # Ensure the script can find dependencies
 sys.path.append(os.getcwd())
-sys.path.append(os.path.join(os.getcwd(), 'research'))
-sys.path.append(os.path.join(os.getcwd(), 'engine'))
+sys.path.append(os.path.join(os.getcwd(), "research"))
+sys.path.append(os.path.join(os.getcwd(), "engine"))
 
 from ultimate_repair import ultimate_reconstruct_v12_2 as ultimate_reconstruct
+
 
 class TestTickerRepair(unittest.TestCase):
     def test_split_tickers(self):
@@ -19,7 +19,7 @@ class TestTickerRepair(unittest.TestCase):
         self.assertEqual(ultimate_reconstruct("$P O E T"), "$POET")
 
     def test_smashed_tickers(self):
-        self.assertEqual(ultimate_reconstruct("$AAOI$CRDO"), "$AAOI $CRDO") 
+        self.assertEqual(ultimate_reconstruct("$AAOI$CRDO"), "$AAOI $CRDO")
 
     def test_smashed_split_tickers(self):
         text = "$A AOI$C R D O$DELL $MS FT$AAP Lhello"
@@ -30,6 +30,7 @@ class TestTickerRepair(unittest.TestCase):
     def test_no_corruption(self):
         self.assertEqual(ultimate_reconstruct("I love $CRDO"), "I love $CRDO")
         self.assertEqual(ultimate_reconstruct("The price of $OSS is up"), "The price of $OSS is up")
+
 
 if __name__ == "__main__":
     unittest.main()

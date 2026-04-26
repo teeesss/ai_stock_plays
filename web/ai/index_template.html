@@ -63,7 +63,7 @@
 
         /* Full Width Layout */
         .table-area { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; width: 100%; min-height: 400px; display: flex; flex-direction: column; }
-        
+
         /* Intelligence Modal Overlay */
         .intel-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2,6,23,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .intel-modal-content { width: 95%; height: 90%; background: var(--bg-card); border: 2px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
@@ -71,7 +71,7 @@
 
         .intel-header { padding: 16px 24px; background: #1e293b; border-bottom: 2px solid var(--border); font-weight: 900; font-size: 17px; color: var(--accent); letter-spacing: 1.5px; display: flex; justify-content: space-between; align-items: center; }
         .intel-scroll { overflow-y: auto; flex-grow: 1; padding: 24px; }
-        
+
         .close-modal { cursor: pointer; color: var(--text-dim); font-size: 28px; line-height: 1; margin-left: 20px; transition: color 0.2s; }
         .close-modal:hover { color: var(--danger); }
         .buzz-bar { display: flex; flex-wrap: wrap; gap: 10px; padding: 12px 24px; border-bottom: 1px solid var(--border); background:rgba(15,23,42,0.4); }
@@ -153,11 +153,11 @@
         .mb.down { background: var(--danger); }
         .region-tag { font-size: 10px; font-weight: 900; padding: 1px 5px; border-radius: 3px; background: rgba(14,165,233,0.1); color: var(--accent); border: 1px solid rgba(14,165,233,0.25); text-transform: uppercase; }
         .watchlist-divider td { background: rgba(168,85,247,0.08) !important; color: var(--purple); font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; border-top: 2px solid rgba(168,85,247,0.4); }
-        
+
         .x-intel-icon { font-size: 10px; margin-left: 5px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s, color 0.2s; color: var(--text-dim); }
         .x-intel-icon:hover { opacity: 1; color: var(--accent); }
         .co-name { font-size: 10px; color: #94a3b8; font-weight: 500; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px; margin-top: 1px; }
-        
+
         /* Column Specifics */
         th.col-rank { text-align: center; width: 45px; padding-left: 0; padding-right: 0; }
     </style>
@@ -167,11 +167,11 @@
 <div class="command-bar">
     <div class="logo">⚡ AI WATCHLIST</div>
     <div id="versionLabel" class="logo-sub">V1.0 · Independent Autonomous Mode</div>
-    
+
     <div class="stat"><span>UNIVERSE</span><div class="val" id="stat-total">—</div></div>
     <div class="stat"><span>PRIVATE</span><div class="val" id="stat-private" style="color:var(--purple)">—</div></div>
     <div class="stat"><span>PINNED</span><div class="val" id="stat-pinned">0</div></div>
-    
+
     <!-- V24.2: News Velocity Widget -->
     <div class="stat" id="velocity-stat" style="display:none; cursor:pointer;" onclick="openNewsModal()">
         <span>VELOCITY</span>
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.classList.add('busy');
         btn.onclick = () => alert("This terminal is in Remote Mode. The data is automatically synchronized daily at 4:20 PM EST by the Master Bridge. Manual sync must be triggered from the local machine hosting the bridge.");
     }
-    
+
     initPulse();
     render();
     initVelocity();
@@ -236,7 +236,7 @@ async function initVelocity() {
         if (!res.ok) return;
         const data = await res.json();
         const metrics = data.metrics || {};
-        
+
         let topKW = null;
         let maxV = 0;
         for (const [kw, m] of Object.entries(metrics)) {
@@ -245,13 +245,13 @@ async function initVelocity() {
                 topKW = kw;
             }
         }
-        
+
         const statEl = document.getElementById('velocity-stat');
         if (topKW && maxV >= 1.5) {
             statEl.style.display = 'flex';
             document.getElementById('vel-val').innerText = topKW;
             statEl.title = `ACCELERATING NARRATIVE: ${topKW}\nVelocity Score: ${maxV.toFixed(1)}\n${metrics[topKW].count_4h} mentions in last 4h`;
-            
+
             // Animation for high velocity
             if (maxV > 5) {
                 document.getElementById('vel-icon').innerText = '⚡';
@@ -439,12 +439,12 @@ function calcScore(h, mcapB, perf1y, rev_num, pe26, agg) {
     if (safety > 10) safety = 10;
 
     let finalMult = 1.0;
-    
+
     // Aggressive micro/small cap suppression on Safe settings to break through Bucket multipliers
     if (agg <= 3 && mcapB < 2.0) {
         finalMult *= 0.15; // Mathematically vanish from top 20
     } else if (agg <= 5 && mcapB < 0.3) {
-        finalMult *= 0.30; 
+        finalMult *= 0.30;
     }
 
     if (agg >= 6) {
@@ -491,16 +491,16 @@ function buildEntries() {
         const ticker = entry.ticker;
         const h = entry.h || {}, p = entry.p || {};
         const live = (window.LIVE_PRICES || {})[ticker] || {};
-        
+
         const price = live.price || entry.price || 0;
         const updTime = live.updated ? live.updated.slice(11,16) + 'Z' : null;
-        
+
         const pe26 = entry.pe26 || 999;
         const pe27 = entry.pe27 || 999;
         const exchange = entry.exchange || 'US';
         const perf1y = entry.perf1y;
         const mcapB = entry.mcapB || 0;
-        
+
         const pe26f = (pe26 > 0 && pe26 < 150) ? pe26.toFixed(1) : '--';
         const pe27f = (pe27 > 0 && pe27 < 150) ? pe27.toFixed(1) : '--';
         const upsideVal = entry.h['Target Upside'] || '--';
@@ -509,11 +509,11 @@ function buildEntries() {
         let rev_num = growth_str.includes('%') ? parseFloat(growth_str) : 0;
 
         const visualBuzz = (window.X_INTEL_MODULE?.visual_mentions || {})[ticker] || null;
-        
+
         return {
             ticker, h, mcapB, pe26, pe27, rev_num, perf1y, isPrivate: h.Bucket === 'Private',
             score: calcScore(h, mcapB, perf1y, rev_num, pe26, state.aggressiveness),
-            todayPct: live.change_pct ?? null, 
+            todayPct: live.change_pct ?? null,
             todayChg: live.price_chg ?? null,
             p: entry.p || {},
             obb: entry.obb || {},
@@ -567,7 +567,7 @@ function render() {
         const tr = document.createElement('tr'); if (isPinned) tr.classList.add('pinned');
         const pe26f = (e.pe26 > 0 && e.pe26 < 500) ? e.pe26.toFixed(1) : '--';
         const pe27f = (e.pe27 > 0 && e.pe27 < 500) ? e.pe27.toFixed(1) : '--';
-        
+
         let upsideVal = `<span class="${parseUpside(e.h['Target Upside']) > 0 ? 'up' : ''}" style="color:${parseUpside(e.h['Target Upside']) > 0 ? 'var(--green)' : 'var(--text-main)'}">${esc(e.h['Target Upside'] || '--')}</span>`;
         if (e.obb && e.obb.analyst_implied_upside_pct) {
             const consensus = e.obb.analyst_implied_upside_pct;
@@ -652,7 +652,7 @@ function render() {
         });
     }
     tbody.innerHTML = ''; tbody.appendChild(frag);
-    
+
     // Update live price timestamp in header
     const refreshTs = (window.LIVE_PRICES || {})._meta?.refreshed_at_est;
     if (refreshTs) {
@@ -766,12 +766,12 @@ function sortFn(a, b) {
 function initBuckets() {
     const entries = buildEntries();
     const buckets = new Set(), exchanges = new Set();
-    entries.forEach(e => { 
-        if (e.h.Bucket !== 'Private') buckets.add(e.h.Bucket); 
-        if (e.exchange) exchanges.add(e.exchange); 
+    entries.forEach(e => {
+        if (e.h.Bucket !== 'Private') buckets.add(e.h.Bucket);
+        if (e.exchange) exchanges.add(e.exchange);
     });
     const container = document.getElementById('bucketPills'); container.innerHTML = '';
-    
+
     const mk = (t, s, k) => {
         const h = document.createElement('div'); h.className='section-label'; h.innerText=t; container.appendChild(h);
         const row = document.createElement('div'); row.className='pill-row';
@@ -872,26 +872,26 @@ function initPulse() {
         pulse.innerHTML = `<div class="no-pulse"><span class="sync-dot"></span> <div>LIVE PRICES NOT LOADED. RUN <code>python engine/live_prices.py</code> TO ACTIVATE TERMINAL PULSE.</div></div>`;
         return;
     }
-    
+
     let html = `<div class="pulse-bar"><div class="pulse-label">CPO PULSE</div>`;
-    
+
     // Top Gainers
     meta.top_gainers.slice(0,3).forEach(g => {
         const chg = (g.change_pct != null) ? g.change_pct.toFixed(1) : '0.0';
         html += `<div class="pulse-item"><span style="color:var(--text-dim)">$</span>${g.ticker} <span class="up">+${chg}%</span></div><div class="pulse-sep">|</div>`;
     });
-    
+
     // Top Losers
     meta.top_losers.slice(0,2).forEach(l => {
         const chg = (l.change_pct != null) ? l.change_pct.toFixed(1) : '0.0';
         html += `<div class="pulse-item"><span style="color:var(--text-dim)">$</span>${l.ticker} <span class="down">${chg}%</span></div><div class="pulse-sep">|</div>`;
     });
-    
+
     // Volume Spikes
     meta.volume_spikes.slice(0,2).forEach(v => {
         html += `<div class="pulse-item"><span class="pulse-vol">VOL!</span> ${v.ticker} <span style="color:var(--purple)">${v.vol_spike}x</span></div><div class="pulse-sep">|</div>`;
     });
-    
+
     // Use the authoritative EST string from Python instead of browser local time
     const timeStr = meta.refreshed_at_est || (meta.refreshed_at.includes('EST') ? meta.refreshed_at : new Date(meta.refreshed_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}));
     html += `<div class="pulse-time"><span class="sync-dot pulse"></span> UPDATED ${timeStr}</div></div>`;
@@ -921,7 +921,7 @@ function renderNews(articles, query='', limit=50) {
     const container = document.getElementById('newsBody');
     const countEl = document.getElementById('news-count');
     if (countEl) countEl.innerText = `${articles.length} ARTICLES`;
-    
+
     if (!articles.length) {
         container.innerHTML = '<div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">NO MATCHING ARTICLES.</div>';
         return;
@@ -932,7 +932,7 @@ function renderNews(articles, query='', limit=50) {
     const others = articles.filter(a => !a.is_earnings).slice(0, limit);
 
     let html = '';
-    
+
     // Only show earnings area if no specific search query is active
     if (earnings.length > 0 && !query) {
         html += `<div style="margin-bottom:20px; padding:12px; background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:8px;">
@@ -958,7 +958,7 @@ function renderArticle(a, query) {
     }
     const borderStyle = a.is_earnings ? 'border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.03);' : '';
     const macroBadge = a.is_macro ? '<span style="color:var(--accent); font-size:8px; font-weight:900; margin-right:6px;">[MACRO]</span>' : '';
-    
+
     return `<div class="intel-item" style="${borderStyle}">
         <div class="meta" style="justify-content:space-between;">
             <span style="color:var(--accent);font-weight:700;font-size:9px;">${macroBadge}${src}</span>

@@ -10,22 +10,22 @@ Set your Windows Task Scheduler to trigger this file at your requested times:
 Features:
 - Sweeps ALL predefined users automatically in one command.
 - Injects a randomized jitter (between users and at start) to avoid pattern detection.
-- Deep scraper ignores the cache for 'today' and 'yesterday', guaranteeing any intraday 
+- Deep scraper ignores the cache for 'today' and 'yesterday', guaranteeing any intraday
   tweets are caught while identically matching ones are silently deduplicated.
 """
 
+import logging
+import random
+import subprocess
 import sys
 import time
-import random
-import logging
-import subprocess
 from pathlib import Path
-from datetime import datetime
-import sys
 
 if sys.platform == "win32":
-    try: sys.stdout.reconfigure(encoding='utf-8')
-    except AttributeError: pass
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except AttributeError:
+        pass
 
 ROOT = Path(__file__).parent.parent
 LOG_DIR = ROOT / "logs"
@@ -38,8 +38,8 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
     handlers=[
         logging.FileHandler(log_file, encoding="utf-8"),
-        logging.StreamHandler(sys.stdout)
-    ]
+        logging.StreamHandler(sys.stdout),
+    ],
 )
 log = logging.getLogger("x_intel_sync")
 
@@ -57,6 +57,7 @@ else:
 ENGINE_DIR = ROOT / "engine"
 SCRAPER_SCRIPT = ENGINE_DIR / "x_intel_deep_scraper.py"
 
+
 def sync_all():
     log.info("=" * 60)
     log.info("V9.2 GLOBAL INTELLIGENCE SYNC INITIATED")
@@ -71,13 +72,13 @@ def sync_all():
 
     for idx, user in enumerate(USERS):
         log.info(f"\n[{idx+1}/{len(USERS)}] Synchronizing @{user}...")
-        
+
         try:
             # Call the main scraper as a subprocess ensuring isolated states
             result = subprocess.run(
                 [sys.executable, str(SCRAPER_SCRIPT), "--username", user],
                 cwd=str(ROOT),
-                check=True
+                check=True,
             )
             log.info(f"[OK] @{user} complete.")
         except subprocess.CalledProcessError as e:
@@ -99,8 +100,10 @@ def sync_all():
     log.info("Running Image Analyzer (OCR on new images)...")
     try:
         import sys as _sys
+
         _sys.path.insert(0, str(ENGINE_DIR))
         from image_analyzer import analyze_images
+
         analyze_images()
         log.info("[OK] Image analysis complete.")
     except Exception as e:
@@ -112,6 +115,7 @@ def sync_all():
     log.info("Running Visual Buzz Aggregator...")
     try:
         from visual_buzz_aggregator import run as run_visual_buzz
+
         run_visual_buzz()
         log.info("[OK] Visual buzz aggregation complete.")
     except Exception as e:

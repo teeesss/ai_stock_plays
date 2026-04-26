@@ -1,6 +1,6 @@
-import sys
 import logging
 import subprocess
+import sys
 from pathlib import Path
 
 # engine/sync_ai_watchlist.py
@@ -9,6 +9,7 @@ PROJECT_ROOT = ENGINE_DIR.parent
 
 logging.basicConfig(level=logging.INFO, format="[AI-SYNC] %(message)s")
 log = logging.getLogger("ai_sync")
+
 
 def run_step(name, cmd_args, cwd=PROJECT_ROOT):
     log.info(f"--- STARTING: {name} ---")
@@ -19,6 +20,7 @@ def run_step(name, cmd_args, cwd=PROJECT_ROOT):
     except Exception as e:
         log.error(f" [ERR] {name} failed: {e}")
         return False
+
 
 def sync():
     log.info("=" * 60)
@@ -35,6 +37,7 @@ def sync():
 
     # 3. Modular Rebuild (AI Only)
     from engine.pipeline_orchestrator import PipelineOrchestrator
+
     try:
         log.info("--- STARTING: Modular AI Rebuild ---")
         PipelineOrchestrator("ai").process()
@@ -60,6 +63,7 @@ def sync():
     log.info("\n" + "=" * 60)
     log.info("[FAST] AI SYNC COMPLETE")
     log.info("=" * 60)
+
 
 if __name__ == "__main__":
     sync()

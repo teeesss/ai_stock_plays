@@ -1,12 +1,14 @@
-import pytest
 from bs4 import BeautifulSoup
-from engine.scraper.dom_parser import parse_tweet, garbage_purge
+
+from engine.scraper.dom_parser import garbage_purge, parse_tweet
+
 
 def test_garbage_purge():
     assert garbage_purge("") is True
     assert garbage_purge("short") is True
     assert garbage_purge("This is a valid tweet about $NVDA and HBM4.") is False
     assert garbage_purge("Airdrop Solana Free Money") is True
+
 
 def test_parse_tweet_basic():
     html = """
@@ -18,11 +20,12 @@ def test_parse_tweet_basic():
     soup = BeautifulSoup(html, "html.parser")
     item = soup.select_one(".timeline-item")
     result = parse_tweet(item, "testuser")
-    
+
     assert result is not None
     assert result["id"] == "12345"
-    assert "$NVDA" in result["text"] or "$ NVDA" in result["text"] # Check current logic
+    assert "$NVDA" in result["text"] or "$ NVDA" in result["text"]  # Check current logic
     assert "testuser" in result["url"]
+
 
 def test_parse_tweet_cashtags():
     html = """
