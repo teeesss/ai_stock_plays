@@ -15,20 +15,44 @@ OUTPUT: database/live_prices.js
   };
 """
 
+import argparse
+import asyncio
 import json
 import logging
+import random
+import sys
 import time
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
-# V28: Hierarchy Leader Error Monitoring
+# V28: Setup Logging BEFORE any local imports that might hijack root
+ROOT = Path(__file__).parent.parent
+OUT_JS = ROOT / "database" / "live_prices.js"
+OUT_JSON = ROOT / "database" / "live_prices.json"
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] %(message)s",
+    datefmt="%H:%M:%S",
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+    ],
+)
+log = logging.getLogger(__name__)
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except AttributeError:
+        pass
+
+# ── LOCAL IMPORTS (Must be after logging setup) ──────────────────────
 try:
     from error_monitor import init_error_monitor
 except ImportError:
     from engine.error_monitor import init_error_monitor
 init_error_monitor()
-import argparse
-import asyncio
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
 
 from curl_cffi import requests
 
@@ -36,8 +60,6 @@ try:
     from yahoo_auth import get_valid_auth
 except ImportError:
     from engine.yahoo_auth import get_valid_auth
-
-import random
 
 try:
     from ticker_utils import load_master_tickers
@@ -47,20 +69,6 @@ try:
     from market_session import MarketSession
 except ImportError:
     from engine.market_session import MarketSession
-
-logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
-log = logging.getLogger(__name__)
-
-# V28: Hierarchy Leader Error Monitoring
-try:
-    from error_monitor import init_error_monitor
-except ImportError:
-    from engine.error_monitor import init_error_monitor
-init_error_monitor()
-
-ROOT = Path(__file__).parent.parent
-OUT_JS = ROOT / "database" / "live_prices.js"
-OUT_JSON = ROOT / "database" / "live_prices.json"
 
 BATCH_SIZE = 25
 
@@ -186,14 +194,18 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
     except Exception:
         now = now_utc - timedelta(hours=4)
 
+    from ticker_utils import resolve_ticker
+
     # Extract primary tickers
-    primary_map = {clean_ticker(t): t for t in tickers}
+    # V28.3: Resolve aliases (SHINKO -> 6967.T) before batching
+    primary_map = {resolve_ticker(clean_ticker(t)): t for t in tickers}
     symbols = ",".join(primary_map.keys())
 
     all_symbols = list(primary_map.keys())
     symbols_str = ",".join(all_symbols)
     # V22.94: Request explicit fields including Overnight (BOATS) data
-    fields = "regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketVolume,averageDailyVolume10Day,marketState,postMarketPrice,postMarketChange,postMarketChangePercent,preMarketPrice,preMarketChange,preMarketChangePercent,overnightMarketPrice,overnightMarketChange,overnightMarketChangePercent,bid,ask,fullExchangeName,exchangeName,exchange"
+    # V28.8: Added marketCap, trailingPE, totalRevenue for dashboard enrichment
+    fields = "regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketVolume,averageDailyVolume10Day,marketState,postMarketPrice,postMarketChange,postMarketChangePercent,preMarketPrice,preMarketChange,preMarketChangePercent,overnightMarketPrice,overnightMarketChange,overnightMarketChangePercent,bid,ask,fullExchangeName,exchangeName,exchange,marketCap,trailingPE,totalRevenue"
     url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={symbols_str}&fields={fields}&overnightPrice=true&crumb={crumb}"
 
     log.debug(f"Fetching {len(all_symbols)} tickers from Yahoo...")
@@ -285,6 +297,9 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
                 "ext_pct": ext_pct,
                 "ext_type": ext_type,
                 "prev_close": prev_close,
+                "market_cap": item.get("marketCap"),
+                "pe": item.get("trailingPE"),
+                "rev": item.get("totalRevenue"),
             }
             results[original_ticker] = entry
 
@@ -374,6 +389,9 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
                         "ext_pct": ext_pct,
                         "ext_type": ext_type,
                         "prev_close": prev_close,
+                        "market_cap": item.get("marketCap"),
+                        "pe": item.get("trailingPE"),
+                        "rev": item.get("totalRevenue"),
                     }
                     results[original_ticker] = entry
                     log.info(f'  {original_ticker:12s} ${entry["price"]:.2f} (via {symbol})')
@@ -558,7 +576,10 @@ async def async_run_fetch(
     }
 
     log.info("-" * 50)
-    log.info(f'Fetched {all_prices["_meta"]["with_price"]}/{len(tickers)} prices')
+    # V28.1: Correctly calculate batch refresh success vs total universe
+    batch_with_price = sum(1 for t in tickers if all_prices.get(t, {}).get("price"))
+    log.info(f"Fetched {batch_with_price}/{len(tickers)} prices in this cycle")
+
     if movers["top_gainers"]:
         log.info(
             f'Top gainer: {movers["top_gainers"][0]["ticker"]} +{movers["top_gainers"][0]["change_pct"]:.1f}%'

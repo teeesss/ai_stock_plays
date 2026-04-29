@@ -8,6 +8,7 @@
    - **Institutional Source Hardening**: strictly blacklist low-signal sources (e.g., "The Motley Fool"). Normalize source badges by removing "GOOG/" prefixes for professional clarity.
    - **Article Rotation Engine**: Deployed sent_news_history.json ledger to track previously sent URLs for 24h. The loop prefers fresh articles.
    - **Massive Rank Sifting**: Increased aggregator pool size to 200 to allow the engine to naturally degrade its threshold down the sorted list to guarantee 15 valid non-earnings items.
+   - **Web Synopsis Endpoint**: Automatically deploys the generated email synopsis to `bmwseals.com/email` via `RemoteSync.sync_file()` for instant web access.
    - **Preserved Scoring Hierarchy**: NLP Engine adds bonuses (+30 macro, +20 tech) directly ON TOP of MacroAggregator scores.
    - **Unified Mirror UI**: Sovereign Index Pulse and Crypto tiles structurally mirror the Global Markets design.
    - **JIT Global Data Hardening**: Explicitly force-fetches global indices (^HSI, ^N225, ^GDAXI, ^FTSE) during the price-refresh cycle.

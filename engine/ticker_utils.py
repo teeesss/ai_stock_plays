@@ -22,7 +22,7 @@ ROOT = Path(__file__).parent.parent
 CPO_DB = ROOT / "database" / "CPO_MASTER_DATA.json"
 AI_DB = ROOT / "database" / "AI_MASTER_DATA.json"
 
-# Global Skip List: Private or non-tradable entities
+# Global Skip List: Private or non-tradable entities, and common technical false positives
 SKIP_TICKERS = {
     "CD",
     "AYAR",
@@ -31,10 +31,51 @@ SKIP_TICKERS = {
     "SCINTIL",
     "PHOTONIC_COMPUTING",
     "OPTICAL_INTERCONNECT",
+    "SEMICON",
+    "800G",
+    "1.6T",
+    "3.2T",
+    "5B",
+    "2026-2028",
+    "OFC",
+    "CIOE",
+    "INNO",
+    "IPH",
+    "LITT",
+    "LR4",
+    "DR8",
+    "FR4",
+    "400G",
+    "PAM4",
+    "2027",
+    "2.63B",
+    "RITTAL",
+    "SUBMER",
+    "KINSUS",
+    "ECTC",
+    "NEG",
+    "KCC",
+}
+
+# Common company names to Yahoo symbols
+TICKER_MAPPING = {
+    "SHINKO": "6967.T",
+    "IBIDEN": "4062.T",
+    "UNIMICRON": "3037.TW",
+    "KINSUS": "3189.TW",
+    "SIVE": "SIVE.ST",
+    "0522.HK": "0522.HK",
+    "ASMVY": "ASMVY",
+    "PVS.DE": "PSM.DE",  # ProSiebenSat.1
 }
 
 # Global Macro Indices & Crypto
 GLOBAL_INDICES = ["BTC-USD", "ETH-USD", "NQ=F", "ES=F", "YM=F"]
+
+
+def resolve_ticker(symbol: str) -> str:
+    """Resolves a shorthand or name to a valid Yahoo Finance ticker."""
+    return TICKER_MAPPING.get(symbol.upper(), symbol.upper())
 
 
 def load_master_tickers(terminal_type="union") -> list[str]:

@@ -26,7 +26,7 @@ goto MENU
 
 :SYNC_OPEN
 echo [1/2] Syncing Local Data Bridge...
-python engine/generate_CPO_BRAIN.py
+python -u engine/generate_CPO_BRAIN.py
 echo [2/2] Opening Dashboard...
 start "" "cpo_plays.html"
 goto END
@@ -42,23 +42,25 @@ echo =========================================================
 echo.
 echo Install deps if needed: pip install fastapi uvicorn apscheduler
 echo.
-python server.py
+python -u server.py
 goto END
 
 :FULL_REFRESH
 echo [1/5] Running Financial Auditor (deep data fetch)...
-python engine/financial_auditor.py
+python -u engine/financial_auditor.py
+echo [1.5/5] Synchronizing Social Intelligence (X/Twitter)...
+python -u engine/x_intel_instant_sync.py
 echo [2/5] Fetching Live Prices...
-python engine/live_prices.py
+python -u engine/live_prices.py
 echo [3/5] Running Comprehensive Test Suite...
-python run_all_tests.py
+python -u run_all_tests.py
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo [ERROR] Tests Failed. Review TEST_RESULTS.md before proceeding.
     pause
 )
 echo [4/5] Exporting LLM Brain Bundles (JSON + MD)...
-python engine/generate_CPO_BRAIN.py
+python -u engine/generate_CPO_BRAIN.py
 echo [5/5] Launching Terminal...
 start "" "cpo_plays.html"
 echo.
@@ -67,13 +69,13 @@ goto END
 
 :PRICES_ONLY
 echo Fetching live prices...
-python engine/live_prices.py
+python -u engine/live_prices.py
 echo Done. Reload your browser or reopen cpo_plays.html.
 goto END
 
 :BUNDLE_ONLY
 echo Exporting Intelligence Bundles...
-python engine/generate_CPO_BRAIN.py
+python -u engine/generate_CPO_BRAIN.py
 echo - `database/CPO_BRAIN.json` (Structured Data)
 echo - `database/CPO_BRAIN.md` (Technical context)
 echo Done. Share with Grok.

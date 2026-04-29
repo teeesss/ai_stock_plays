@@ -12,6 +12,7 @@
    - **Ticker Blacklist**: 'FORM' is strictly blacklisted to prevent common-word collisions.
    - **Institutional Source Hardening**: strictly blacklist low-signal sources (e.g., "The Motley Fool").
    - **Article Rotation Engine**: Deployed `sent_news_history.json` ledger to track previously sent URLs for 24h.
+   - **Web Synopsis Endpoint**: Automatically deploys the generated email synopsis to `bmwseals.com/email` via `RemoteSync.sync_file()` for instant web access.
    - **Data-Driven Session Detection**: ALWAYS match session badges (AH, OVN, PRE) to the actual data source, not clock time.
    - **24h Ghost Ticker Purge**: Database entries older than 24h must be purged during every save cycle.
    - **Multi-Tier Rescue**: Use a 5-gateway pool (`vx_rescue_fetcher.py`) with OpenGraph HTML scraping fallback.

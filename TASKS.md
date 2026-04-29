@@ -1,3 +1,26 @@
+## 🛠 V28.8 Sovereign Intelligence Hardening (2026-04-29)
+- [x] **Web Synopsis Endpoint**: Enabled automatic deployment of `synopsis_preview.html` to `bmwseals.com/email` via `RemoteSync`. ✅
+- [x] **Documentation Mirror Sync**: Synchronized `.cursorrules`, `GEMINI.md`, and `CLAUDE.md` to V28 standards. ✅
+- [x] **Hierarchy Leader Hardening**: Centralized logging and session authority. ✅
+- [x] **Mirror Mandate Established**: Rules parity across all AI context files enforced. ✅
+
+## 🛠 V28.8 Sovereign Intelligence Hardening (2026-04-27)
+- [x] **Dependency Fix**: Add `paramiko` to `requirements.txt` to resolve `ModuleNotFoundError`. ✅
+- [x] **Email Synopsis Polish**: Fix trailing `nbsp; <` character corruption in Executive Summary. ✅
+- [x] **Market Summary Readability**: Refactor market overview to use bulleted topics instead of run-on paragraphs. ✅
+- [x] **ZeroHedge Premium Shield**: Blacklist ZH "Premium" articles from the news aggregator pipeline. ✅
+- [x] **Paywall Guardian Fix**: Resolved `Errno 20` (Not a directory) in `paywall_guardian.py` by hardening zip-extraction path detection. ✅
+- [x] **Intel Dashboard Enrichment**: Inject real-time Market Cap (Valuation) data into Intel Dashboard ticker rows via Yahoo Finance hydration. ✅
+
+## ✅ V28.7 Intelligence Pipeline (2026-04-26)
+- [x] **Log Visibility Restored**: Eliminated logging hijacking across all modules. Verified hierarchical leader logic. ✅
+- [x] **Unbuffered Sync**: Forced `-u` python execution across all entry points (`run.sh`, `x.sh`, `start.bat`). Real-time terminal streaming confirmed. ✅
+- [x] **Mirror Restoration**: Restored original 26-mirror nitter list from working version (936da4c). Redundancy and reliability confirmed. ✅
+- [x] **Headline Sanitization**: Implemented aggressive `strip_urls` in DOM parser and standardizer to eliminate URL creep. ✅
+- [x] **Rescue Path Integrity**: Verified `vxtitter` rescue logic in `vx_rescue_fetcher.py` is active and repairing broken media. ✅
+- [x] **Dependency Hardening**: Installed `easyocr` and `opencv-python-headless`. Image analysis active. ✅
+- [x] **SSL Resilience**: Hardened `StealthNavigator` to ignore HTTPS errors for mirror compatibility. ✅
+
 1. - [x] **V28 Quality Gates Mandate**: Deployed Git Hooks (Ruff, Format, Conventional Commits). Fixed critical code debt across engine. Verified 100% clean pre-commit pass. ✅
 2. - [x] **Deep Semi Intelligence Mandate (V28)**:
     - Hardened technical trade intelligence: Implemented 14-day lookback for SEMI sources. ✅

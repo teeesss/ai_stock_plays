@@ -18,11 +18,23 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-# UTF-8 output
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-
-logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
+# V28: Setup Logging BEFORE any local imports that might hijack root
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] %(message)s",
+    datefmt="%H:%M:%S",
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+    ],
+)
 log = logging.getLogger("visual_buzz")
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except AttributeError:
+        pass
 
 ROOT = Path(__file__).parent.parent
 DB_DIR = ROOT / "database"
@@ -43,15 +55,20 @@ INTEL_JS_PATH = DB_DIR / "intel.js"
 ROOT_INTEL_JS = ROOT / "intel.js"
 
 
-def load_master_tickers() -> set:
-    """Load all known tickers from CPO_MASTER_DATA.json."""
+# V28: Auto-Dependency Guardian
+try:
     try:
-        with open(MASTER_TICKERS_PATH, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        return set(data.keys())
-    except Exception as e:
-        log.error(f"Failed to load master tickers: {e}")
-        return set()
+        from dependency_mgr import ensure_dependencies
+    except ImportError:
+        from engine.dependency_mgr import ensure_dependencies
+    ensure_dependencies()
+except ImportError:
+    pass
+
+try:
+    from ticker_utils import load_master_tickers
+except ImportError:
+    from engine.ticker_utils import load_master_tickers
 
 
 def aggregate_visual_buzz() -> dict:
@@ -62,7 +79,7 @@ def aggregate_visual_buzz() -> dict:
       - finding['text'] (regex fallback for missed tickers)
     Returns: dict[ticker -> {count, sample_texts}]
     """
-    known_tickers = load_master_tickers()
+    known_tickers = set(load_master_tickers())
     ticker_buzz = {}  # {ticker: {"count": int, "images": int, "sample_texts": []}}
 
     total_images_scanned = 0
@@ -95,6 +112,20 @@ def aggregate_visual_buzz() -> dict:
                 # Source 3: whitelist match - bare uppercase words
                 for word in re.findall(r"\b([A-Z]{2,10})\b", text.upper()):
                     if word in known_tickers:
+                        # V28.3: Noise Suppression - Skip common short words misidentified as tickers
+                        if len(word) <= 2 and word in [
+                            "ON",
+                            "BE",
+                            "IT",
+                            "IF",
+                            "IS",
+                            "OR",
+                            "AN",
+                            "BY",
+                            "SO",
+                            "DO",
+                        ]:
+                            continue
                         found.add(word)
 
                 for ticker in found:

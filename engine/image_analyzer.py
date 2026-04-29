@@ -5,11 +5,29 @@ import re
 import sys
 from pathlib import Path
 
-import easyocr
+# V28: Setup Logging BEFORE any local imports that might hijack root
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] %(message)s",
+    datefmt="%H:%M:%S",
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+    ],
+)
+log = logging.getLogger(__name__)
 
-# Ensure UTF-8 output
-if sys.stdout.encoding != "utf-8":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except AttributeError:
+        pass
+
+# ── LOCAL IMPORTS (Must be after logging setup) ──────────────────────
+try:
+    import easyocr
+except ImportError:
+    easyocr = None
 
 # PATHS
 ROOT = Path(__file__).parent.parent
@@ -17,9 +35,6 @@ DB_DIR = ROOT / "database"
 MASTER_INTEL = DB_DIR / "x_intel_master.json"
 PROCESSED_LOG = DB_DIR / "processed_images.json"
 MASTER_DATA = DB_DIR / "CPO_MASTER_DATA.json"
-
-logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
-log = logging.getLogger(__name__)
 
 
 def load_master_tickers():
@@ -65,6 +80,10 @@ def analyze_images():
         return
 
     log.info("Initializing EasyOCR...")
+    if easyocr is None:
+        log.warning("EasyOCR not installed. Ticker extraction from images will be skipped.")
+        return
+
     try:
         reader = easyocr.Reader(["en"])
     except Exception as e:

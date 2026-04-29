@@ -1,24 +1,47 @@
 import csv
 import json
+import logging
 import os
 import re
+import sys
 from datetime import datetime
+from pathlib import Path
+
+# V28: Setup Logging BEFORE any local imports that might hijack root
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] %(message)s",
+    datefmt="%H:%M:%S",
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+    ],
+)
+log = logging.getLogger("brain")
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except AttributeError:
+        pass
+
 
 # PATHS
-MASTER_JSON = "database/CPO_MASTER_DATA.json"
-BRAIN_JSON = "database/CPO_BRAIN.json"
-BRAIN_MD = "database/CPO_BRAIN.md"
-JS_DATA = "database/dashboard_data.js"
-CSV_PATH = "cpo_master_ultimate.csv"
-KNOWLEDGE_MD = "KNOWLEDGE.md"
+ROOT = Path(__file__).parent.parent
+MASTER_JSON = ROOT / "database/CPO_MASTER_DATA.json"
+BRAIN_JSON = ROOT / "database/CPO_BRAIN.json"
+BRAIN_MD = ROOT / "database/CPO_BRAIN.md"
+JS_DATA = ROOT / "database/dashboard_data.js"
+CSV_PATH = ROOT / "cpo_master_ultimate.csv"
+KNOWLEDGE_MD = ROOT / "KNOWLEDGE.md"
 
 
 def generate_brain_from_master(master_path=MASTER_JSON):
     """
     Syncs the Authoritative JSON back to CSV, MD, and JS Dashboards.
     """
-    if not os.path.exists(master_path):
-        print(f"Error: {master_path} not found.")
+    if not master_path.exists():
+        log.error(f"Error: {master_path} not found.")
         return
 
     with open(master_path, "r", encoding="utf-8") as f:
@@ -117,8 +140,8 @@ def generate_brain_from_master(master_path=MASTER_JSON):
     with open(JS_DATA, "w", encoding="utf-8") as f:
         f.write(js_content)
 
-    print("DATABASE SYNC COMPLETE.")
-    print(f"Master: {master_path} -> CSV, MD, JS Dashboard updated.")
+    log.info("DATABASE SYNC COMPLETE.")
+    log.info(f"Master: {master_path} -> CSV, MD, JS Dashboard updated.")
 
 
 if __name__ == "__main__":

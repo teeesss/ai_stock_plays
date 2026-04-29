@@ -29,8 +29,19 @@ def parse_date(raw: str) -> datetime:
         return now
 
 
+def strip_urls(text: str) -> str:
+    """Removes http/https/nitter URLs from text."""
+    # Pattern for URLs including nitter-specific ones
+    url_pattern = r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
+    text = re.sub(url_pattern, "", text)
+    # Remove internal nitter links like /i/web/status/...
+    text = re.sub(r"/\w+/status/\d+", "", text)
+    return text
+
+
 def clean_text_spacing(text: str) -> str:
     """Removes double-spacing and cleans up character fragments."""
+    text = strip_urls(text)
     text = re.sub(r"\s+", " ", text).strip()
     return text
 
@@ -86,7 +97,7 @@ def parse_tweet(item, username: str) -> dict:
 
     raw_text = re.sub(loose_pattern, reconstruct, raw_text)
 
-    text = re.sub(r"\s+", " ", raw_text).strip()
+    text = clean_text_spacing(raw_text)
 
     if garbage_purge(text):
         return None

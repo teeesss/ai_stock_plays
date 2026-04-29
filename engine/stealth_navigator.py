@@ -78,6 +78,7 @@ class StealthNavigator:
             locale="en-US",
             timezone_id="America/New_York",
             permissions=["geolocation"],
+            ignore_https_errors=True,
         )
 
         # Apply basic stealth plugin

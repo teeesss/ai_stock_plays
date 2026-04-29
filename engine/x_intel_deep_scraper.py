@@ -22,30 +22,11 @@ import json
 import logging
 import random
 import re
+import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-try:
-    from vx_rescue_fetcher import rescue_tweet
-except ImportError:
-    from engine.vx_rescue_fetcher import rescue_tweet
-
-
-import sys
-
-sys.path.append(str(Path(__file__).parent))
-# V16.2 Refactor: Modular Domain Logic
-from scraper.dom_parser import clean_text_spacing, garbage_purge, parse_tweet
-from scraper.pagi_engine import scrape_pagination_loop
-from stealth_navigator import StealthNavigator
-
-if sys.platform == "win32":
-    try:
-        sys.stdout.reconfigure(encoding="utf-8")
-        sys.stderr.reconfigure(encoding="utf-8")
-    except AttributeError:
-        pass
-
+# V28: Setup Logging BEFORE any local imports that might hijack root
 ROOT = Path(__file__).parent.parent
 DB_DIR = ROOT / "database"
 IMG_DIR = ROOT / "images"
@@ -64,6 +45,24 @@ logging.basicConfig(
     ],
 )
 log = logging.getLogger("x_intel")
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except AttributeError:
+        pass
+
+# ── LOCAL IMPORTS (Must be after logging setup) ──────────────────────
+try:
+    from vx_rescue_fetcher import rescue_tweet
+except ImportError:
+    from engine.vx_rescue_fetcher import rescue_tweet
+
+sys.path.append(str(Path(__file__).parent))
+from scraper.dom_parser import clean_text_spacing, garbage_purge, parse_tweet
+from scraper.pagi_engine import scrape_pagination_loop
+from stealth_navigator import StealthNavigator
 
 # Verified healthy instances - sorted by points (source: nitter status tracker)
 # Session auto-eviction: 2 consecutive failures removes from pool until next run
@@ -88,6 +87,12 @@ ALL_MIRRORS = [
     "https://nitter.thekitten.space",
     "https://nitter.wisq.net",
     "https://nitter.zebes.info",
+    "https://nitter.unixfox.eu",
+    "https://nitter.privacydev.net",
+    "https://nitter.no-logs.com",
+    "https://nitter.perennialte.ch",
+    "https://nitter.rawbit.ninja",
+    "https://nitter.moomoo.me",
 ]
 
 STATE_FILE = DB_DIR / "scraper_state.json"
@@ -227,8 +232,13 @@ async def scrape_user(
     log.info(f"--- PARALLEL FORENSIC DRILL V9.1 | @{username} | {len(gaps)} gaps ---")
 
     # ── MIRROR POOL WITH AUTO-EVICTION ────────────────────────────────
-    mirrors = ALL_MIRRORS.copy()
-    random.shuffle(mirrors)
+    if instance:
+        mirrors = [instance.rstrip("/")]
+        log.info(f"  [FORCE] Using single instance: {mirrors[0]}")
+    else:
+        mirrors = ALL_MIRRORS.copy()
+        random.shuffle(mirrors)
+
     mirror_failures: dict[str, int] = {m: 0 for m in mirrors}  # session-only
 
     def get_live_mirrors() -> list:
@@ -520,7 +530,14 @@ async def download_images(posts: list, username: str):
             # V26.1: Increased stealth delay (2.5s - 5.5s) to avoid instance banning
             await asyncio.sleep(random.uniform(2.5, 5.5))
 
-            resp = curlr.get(url, impersonate="chrome110", timeout=15)
+            # V28.1: URL Hardening - Strip and Validate
+            clean_url = str(url).strip()
+            if not clean_url or not clean_url.startswith("http"):
+                log.warning(f"  Skipping invalid image URL: {clean_url}")
+                failed_posts.add(post_obj["id"])
+                continue
+
+            resp = curlr.get(clean_url, impersonate="chrome110", timeout=15)
             if resp.status_code == 200 and len(resp.content) > 500:
                 path.write_bytes(resp.content)
                 saved += 1

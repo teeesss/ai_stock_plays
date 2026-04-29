@@ -1,31 +1,24 @@
 # Project Status: Market Intelligence Engine
 
-## 🚀 Current Milestone: V28 (Config-First & FinVADER Architecture)
-**Status**: 🟢 PRODUCTION-READY // **Aesthetic**: Subtle Tile Mandate // **Logic**: NLP Sentiment Steering
+## 🚀 Current Milestone: V28.8 (Sovereign Intelligence Hardening)
+**Status**: 🟢 PRODUCTION-DEPLOYED // **Aesthetic**: Institutional Alternate Tiles // **Logic**: Dual-Dispatch (Email + Web)
 ---
 ### 🧩 Core Accomplishments
-- **[NEW] Institutional Aesthetic Upgrade (V28)**: Complete visual redesign of the Market Intelligence dossier. Implemented an institutional-grade header system with `letter-spacing: 4px`, `font-weight: 900`, and gold accents. Transitioned to a premium linear gradient background (`#0f172a` to `#020617`) matching the user's "View I love" reference.
-- **[NEW] Deep Semi Intelligence Mandate (V28)**: Hardened semiconductor industry coverage by adding direct scrape targets for technical sub-sections (Opto, PV, Markets, Micro) and Semiconductor Packaging News. Increased the mandatory section quota to **15 articles** (up to 20 available) and expanded the source ecosystem with site-specific Google News hardening.
-- **[NEW] Weekend Freshness Mandate (V28)**: Integrated `MarketSession` stasis detection into `MacroAggregator`. Automatically expands the lookback window from 36h to **60h** during weekends.
-- **[NEW] Case-Insensitive Badge Logic (V28)**: Hardened `source_space_map` lookups with uppercase normalization for robust feed mapping.
-- **[NEW] FinVADER Sentiment Injection (V28)**: Integrated `finvader` to supercharge Wall Street term awareness ("beat", "miss", "bullish").
-- **[NEW] Config-First Lexicon Overrides (V28)**: Added `vader_financial_lexicon` to `macro_config.yaml` for sentiment steering.
-- **[NEW] Global Relevance Floor (V28)**: Added hard gate in `local_nlp.py` (`final_score < 15.0`) to drop noise.
-- **[NEW] Double-Enrichment Prevention (V28)**: Removed redundant headline tagging in `MacroAggregator` to prevent HTML corruption. Fixed attribute error in scrape loop that caused Yahoo Finance feeds to crash.
-- **[NEW] High-Fidelity Noise Shield (V28)**: Blacklisted `FORM` from ticker discovery to prevent "form coalition" false positives.
-- **[NEW] Config-First Scoring Architecture (V28)**: Migrated ALL scoring data (keywords, feeds, tickers, bonus terms, cluster multipliers) from hardcoded Python to `config/macro_config.yaml`.
-- **[NEW] Ticker Suffix Recovery (V28)**: Implemented automated `.TW` -> `.TWO` retry logic.
+- **[NEW] Web Synopsis Endpoint (V28.8)**: Integrated automatic deployment of the market intelligence dossier to `bmwseals.com/email`. Every email dispatch now simultaneously updates the web view.
+- **[NEW] Documentation Synchronization (V28.8)**: Achieved total parity across `.cursorrules`, `GEMINI.md`, and `CLAUDE.md`. Established the "Mirror Mandate" to ensure rules remain consistent across all agents.
+- **[NEW] Mandatory Hierarchical Architecture (V28.71)**: Rebuilt the entire intelligence pipeline to follow a strict hierarchy-leader pattern. Logging is now initialized at the absolute top of all main scripts. Verified 100% visibility across Scraper, Price Sync, and Brain Update.
 
-## 🚀 Version: V28 (Config-First & FinVADER Architecture)
+## 🚀 Version: V28.8 (Sovereign Intelligence Hardening)
 Status: **PRODUCTION DEPLOYED — HARDENED**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V28 (NLP Sentiment Steering & Config-First)
-- **Critical Progress**: Hardened Sovereign Intelligence Engine (V28) by resolving recursive `ModuleNotFoundError` across core scripts. Deployed direct scrape targets for technical semiconductor industry news. Increased mandatory technical quota to **15 articles** for the daily dossier. Restored the `Regression Suite (Pytest)` to 100% pass rate. **Aesthetic Upgrade Complete**: Implemented premium dark-mode gradients and institutional headers across all sections.
-- **Next Milestone**: Finalize visual parity for the remaining stock terminal dashboards and validate the 15-article technical density during Monday's market opening run.
+- **Current Tier**: V28.8 (Web Deployment & Sync Parity)
+- **Critical Progress**: Hardened Sovereign Intelligence Engine (V28.8) by enabling dual-dispatch (Email + Web). Synchronized documentation across all rules files (`.cursorrules`, `GEMINI.md`, `CLAUDE.md`) to maintain architectural integrity.
+- **Next Milestone**: Monitor web endpoint traffic and ensure `RemoteSync` handles intermittent SFTP connectivity gracefully.
 
-Date: 2026-04-25
+Date: 2026-04-29
 Tests: **158 passing / 0 failing ✅ FULLY RESTORED**
+
 
 ---
 

@@ -660,6 +660,7 @@ How to find future plays before the "Whales" rerate them.
 ### 4. Technical Intelligence Update: 2026-04-11 (Late Session)
 - **The "Bottleneck Premium"**: As Western/Chinese export controls tighten on Indium/Gallium, the market is mispricing the **recycling and metallurgy** sub-tier. Companies like **$5801.T (Furukawa)** and **$3105.TW (Win Semi)** are entering a supercycle of "secured demand" where price is secondary to delivery speed.
 - **V23.86 [2026-04-22]**: Deployed Universal Session Fidelity. Standardized all time-anchored logic to UTC-anchored US/Eastern HHMM format (Hour*100 + Min). Hardened `live_prices.py` to prioritize most-active fields (PRE/AH/OVN) regardless of Yahoo's reported `marketState`. Implemented JIT (Just-In-Time) price hydration in `email_market_synopsis.py` to refresh cache if >300s old. Restored Work Log transparency (INFO/DEBUG) to the run logs.
+- **V28.8 [2026-04-29]**: **Sovereign Intelligence Dual-Dispatch Architecture**. The intelligence engine now performs an atomic "Dual-Dispatch" of the market dossier. Upon generation of the minified HTML payload (`synopsis_preview.html`), the system automatically pushes the file to `bmwseals.com/email` using `RemoteSync`. This ensures that the web view is always 100% in sync with the email dispatch, providing a subscription-free, institutional-grade intelligence endpoint accessible via browser.
 - **V23.85 [2026-04-21]**: Hardened index tracking with futures-based switching (ES=F, NQ=F) during extended hours. Implemented Bid/Ask midpoint fallback for premarket stasis recovery.
 - **V23.60 [2026-04-20]**: Integrated `MacroAggregator` with Tech-weighted scoring (Photonics +150, AI +100). Deployed Gmail Clipping Defense (102KB minification).
 
@@ -866,3 +867,9 @@ How to find future plays before the "Whales" rerate them.
 - **Case-Insensitive Badge Mapping**: Standardized the `source_space_map` to handle multi-case feed labels. 'DAILYHUNT' now correctly maps to 'Daily Hunt'.
 - **Signal Collision Shield**: Blacklisted the term 'FORM' from the legitimate ticker search to prevent "form coalition" or "Form 20-F" from triggering noise for FormFactor ($FORM).
 - **Universe Expansion**: Added **GFS** (GlobalFoundries) and **SIVEF** (Sivers Semiconductors OTC) to the high-priority tracking list.
+### 2026-04-27 - V28.71 Visibility Hardening & Mirror Restoration
+- **Visibility Breakthrough**: Standardized universal unbuffered execution (`python -u`) across all entry points (`run.sh`, `x.sh`, `start.bat`). This ensures real-time terminal output for all scraping and orchestration events, eliminating "silent" execution lags.
+- **Hierarchical Protocol**: Enforced a top-level logging initialization standard. All scripts must configure `logging.basicConfig` at the very top of the file before local imports to prevent third-party modules from hijacking the log flow.
+- **Mirror Pool Restoration**: Restored the complete 26-mirror nitter list from the April 20th working version (commit `936da4c`). This provides maximum redundancy and bypasses the 429 rate-limiting issues seen with smaller pools.
+- **Rescue Path Verification**: Confirmed `vxtitter` rescue logic (via `vx_rescue_fetcher.py`) is active and prioritized for broken media recovery, ensuring high-fidelity image archival even when Nitter instances fail.
+- **URL Creep Suppression**: Implemented aggressive link scrubbing in `dom_parser.py` to keep headlines clean and professional in terminal strips and research notes.

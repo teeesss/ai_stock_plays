@@ -2,39 +2,44 @@ import asyncio
 import json
 import logging
 import random
+import sys
 import time
 
 import feedparser
 
-# V28: Hierarchy Leader Error Monitoring
-try:
-    from error_monitor import init_error_monitor
-except ImportError:
-    from engine.error_monitor import init_error_monitor
-init_error_monitor()
+# V28: Setup Logging BEFORE any local imports that might hijack root
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] %(message)s",
+    datefmt="%H:%M:%S",
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+    ],
+)
+log = logging.getLogger(__name__)
 
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except AttributeError:
+        pass
+
+# ── LOCAL IMPORTS (Must be after logging setup) ──────────────────────
 import re
-
-# V28: Macro Aggregator for GIGACPO Cockpit
-# Config-First Architecture — all scoring data lives in config/macro_config.yaml
 import urllib.parse
 from pathlib import Path
 
-try:
-    from paywall_intelligence import PaywallIntelligence
-except ImportError:
-    from engine.paywall_intelligence import PaywallIntelligence
 import yaml
 from curl_cffi.requests import AsyncSession
 
-logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
-log = logging.getLogger(__name__)
-
-# V28: Hierarchy Leader Error Monitoring
 try:
     from error_monitor import init_error_monitor
+    from paywall_intelligence import PaywallIntelligence
 except ImportError:
     from engine.error_monitor import init_error_monitor
+    from engine.paywall_intelligence import PaywallIntelligence
+
 init_error_monitor()
 
 ROOT = Path(__file__).parent.parent
@@ -901,6 +906,21 @@ class MacroAggregator:
                                         if href.startswith("http")
                                         else "https://www.zerohedge.com" + href
                                     )
+
+                                    # V28: Surgical ZH Category Scraper Hardening
+                                    # Skip 'PREMIUM' paywalled articles by checking title and parent container
+                                    if "PREMIUM" in title.upper():
+                                        continue
+
+                                    article_container = h.find_parent(
+                                        "div", class_=re.compile(r"Article_article")
+                                    )
+                                    if (
+                                        article_container
+                                        and "PREMIUM" in article_container.get_text().upper()
+                                    ):
+                                        continue
+
                                     items.append({"title": title, "link": full_href})
                                     if len(items) >= 12:
                                         break

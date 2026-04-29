@@ -8,6 +8,7 @@ import os
 import random
 import re
 import smtplib
+import sys
 import time
 
 import requests
@@ -18,6 +19,11 @@ try:
 except ImportError:
     from engine import error_monitor
 error_monitor.init_error_monitor()
+
+try:
+    from remote_sync import RemoteSync
+except ImportError:
+    from engine.remote_sync import RemoteSync
 
 import hashlib
 import uuid
@@ -662,7 +668,7 @@ class SovereignIntelligenceEngine:
 
                 if e_p is not None:
                     price = e_p
-                    prev = p_data.get("prev_close") or p_data.get("close_price")
+                    prev = p_data.get("close_price") or p_data.get("prev_close")
                     if prev:
                         pct = ((price / prev) - 1) * 100
                     elif e_pct is not None:
@@ -1135,7 +1141,35 @@ class SovereignIntelligenceEngine:
         )
 
         if intel_text:
-            exec_summary = f'{access_tip}<div class="hdr-title" style="{summary_hdr_style}">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6;">{intel_text}</div>'
+            # V28.8: Structured Intelligence Strip Rendering
+            vibe = intel_text.get("vibe", "Neutral")
+            focal = intel_text.get("focal_point", "General")
+            points = intel_text.get("points", [])
+
+            lead_vibe_html = (
+                f"<strong>Sovereign Cycle: {vibe}</strong>. <em>Primary focal point: {focal}.</em>"
+            )
+
+            rows_html = ""
+            for i, pt in enumerate(points):
+                # V28.8: High-Contrast Alternating Intelligence Strips
+                # Row A: Subtle Blue Tint / Row B: Minimalist Translucent
+                bg = "rgba(56,189,248,0.06)" if i % 2 == 0 else "rgba(255,255,255,0.02)"
+
+                # Apply high-density price flair to each bullet
+                flaired_pt = self.inject_price_flair(pt, prices, master_data)
+
+                rows_html += (
+                    f'<div style="background:{bg}; padding:10px 14px; margin-bottom:2px; border-radius:4px; border-left:3px solid {accent if i % 2 == 0 else "rgba(99,102,241,0.1)"};">'
+                    f'<span style="color:{text_bright}; font-size:15px; line-height:1.5;">&bull; {flaired_pt}</span>'
+                    f'</div>'
+                )
+
+            # V28.8: Branded Divider (clean separation from news list)
+            # V28.8: Mirrored Global Pulse header for Live News
+            divider = f'<div class="section-hdr" style="text-align:center; color:{accent}; border-bottom:2px solid {accent}; margin:35px 0 20px 0; width:100%;">LIVE NEWS UPDATES</div>'
+
+            exec_summary = f'{access_tip}<div class="hdr-title" style="{summary_hdr_style}">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6; margin-bottom:15px;">{lead_vibe_html}</div><div style="margin-bottom:20px;">{rows_html}</div>{divider}'
         else:
             exec_summary = f'{access_tip}<div class="hdr-title" style="{summary_hdr_style}">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6;">The session is carving out a {vibe_status} posture (F&G: {m_fg}). Liquidity is shifting across tech sectors.</div>'
 
@@ -1390,7 +1424,7 @@ class SovereignIntelligenceEngine:
 
         # V24.9: Reordered - Earnings Intelligence comes AFTER general news URLs
         if earnings_intel_rows:
-            earnings_area = f'<div style="margin-top:20px; margin-bottom:20px;"><div class="earn-hdr" style="color:{accent}; border-bottom:1px solid rgba(99,102,241,0.2); display:inline-block; margin-bottom:12px; width:100%; text-align:center;">EARNINGS INTELLIGENCE</div>{earnings_intel_rows}</div>'
+            earnings_area = f'<div style="margin-top:20px; margin-bottom:20px;"><div class="section-hdr" style="color:{accent}; border-bottom:2px solid {accent}; display:inline-block; margin-bottom:12px; width:100%; text-align:center;">EARNINGS INTELLIGENCE</div>{earnings_intel_rows}</div>'
             macro_intel_rows = macro_intel_rows + earnings_area
 
         # Watchlist Intel Logic (V23.55)
@@ -1406,7 +1440,51 @@ class SovereignIntelligenceEngine:
             semi_trade_rows,
         )
 
-    def gather_all_data(self, custom_tickers=None):
+    def _render_valuation_row(self, item):
+        """V28.8: Renders a high-density valuation row for the Intel Dashboard."""
+        m_cap = item.get("market_cap")
+        pe = item.get("pe")
+        rev = item.get("rev")
+
+    def _get_session_badge(self, s_type):
+        s_type = (s_type or "CLOSED").upper()
+        if s_type == "LIVE":
+            return "L", "#10b981"
+        if s_type in ["POST", "AH"]:
+            return "AH", "#f59e0b"
+        if s_type in ["PRE", "PM"]:
+            return "PRE", "#f59e0b"
+        if s_type == "OVN":
+            return "OVN", "#f59e0b"
+        return "C", "#f59e0b"
+
+    def _render_valuation_row(self, item):
+        m_cap = item.get("marketCap") or item.get("market_cap")
+        pe = item.get("trailingPE") or item.get("trailing_pe")
+        rev = item.get("revenueGrowth") or item.get("revenue_growth")
+        if not any([m_cap, pe, rev]):
+            return ""
+        parts = []
+        if m_cap:
+            if m_cap >= 1e12:
+                cap_str = f"${m_cap/1e12:.2f}T"
+            elif m_cap >= 1e9:
+                cap_str = f"${m_cap/1e9:.1f}B"
+            else:
+                cap_str = f"${m_cap/1e6:.1f}M"
+            parts.append(f"Val: {cap_str}")
+        if pe:
+            parts.append(f"P/E: {pe:.1f}")
+        if rev:
+            parts.append(
+                f"Rev: {rev*100:+.1f}%"
+                if isinstance(rev, float) and rev < 10
+                else f"Rev: ${rev/1e6:.1f}M"
+            )
+        content = " | ".join(parts)
+        return f'<div class="vr">[ {content} ]</div>'
+
+    def gather_all_data(self, custom_tickers=None, force=False):
         master = self._load_json("CPO_MASTER_DATA.json")
         prices_path = self.db_path / "live_prices.json"
 
@@ -1444,13 +1522,17 @@ class SovereignIntelligenceEngine:
                     or (last_fetch_type == "UNKNOWN")
                 )
 
-                stale_time = (time.time() - prices_path.stat().st_mtime) > 300
+                stale_time = (time.time() - prices_path.stat().st_mtime) > 1800
 
-                if stale_time or session_changed:
+                if force or stale_time or session_changed:
                     reason = (
-                        "STALE"
-                        if stale_time
-                        else f"SESSION TRANSITION ({last_fetch_type} -> {current_sess})"
+                        "FORCE"
+                        if force
+                        else (
+                            "STALE"
+                            if stale_time
+                            else f"SESSION TRANSITION ({last_fetch_type} -> {current_sess})"
+                        )
                     )
                     print(f"[INFO] [CACHE] Refresh Triggered: {reason}. Hardening live data...")
                     try:
@@ -1481,7 +1563,7 @@ class SovereignIntelligenceEngine:
                         )
                         # V26.9: Respect 15m Cache Mandate (Remove force=True)
                         prices = asyncio.run(
-                            async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True, force=False)
+                            async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True, force=force)
                         )
                         print(f"[INFO] [LIVE] JIT Refresh Complete: {len(prices)} tickers.")
                     except Exception as e:
@@ -1551,6 +1633,9 @@ class SovereignIntelligenceEngine:
                 "pct": pct or 0,
                 "notes": res.get("Notes", ""),
                 "alpha": float(res.get("Alpha Score", 0) or 0),
+                "market_cap": p_data.get("market_cap"),
+                "pe": p_data.get("pe"),
+                "rev": p_data.get("rev"),
             }
 
             if sym in custom_set:
@@ -1815,46 +1900,37 @@ class SovereignIntelligenceEngine:
                 ext_pct = p_entry.get("ext_pct")
                 sess = p_entry.get("ext_type", "LIVE")
 
-                # Fallbacks for movers data if p_entry is missing
-                if not reg_price:
-                    reg_price = s.get("price", 0)
-                    reg_pct = s.get("change_pct", 0)
-                    sess = s.get("session", "LIVE")
+                # V28.8: Use Session-Aware Primary Price for Movers
+                price, pct, sess = self.get_session_data(p_entry, sym)
 
-                color_movers = bull if reg_pct >= 0 else bear
-                pct_str = f"{'+' if reg_pct >= 0 else ''}{reg_pct:.2f}%"
-                price_str = f"${reg_price:,.2f}" if reg_price > 0 else ""
+                color_movers = bull if pct >= 0 else bear
+                pct_str = f"{'+' if pct >= 0 else ''}{pct:.2f}%"
+                price_str = f"${price:,.2f}" if price > 0 else ""
 
-                # C = Closed (Gold), L = Live (Green)
-                session_key = (
-                    f'<span style="color:{gold}; font-weight:900; font-size:10px;">C</span>'
-                    if sess in ["POST", "AH", "OVN", "CLOSED"]
-                    else f'<span style="color:{bull}; font-weight:900; font-size:10px;">L</span>'
-                )
+                label_text, label_color = self._get_session_badge(sess)
+                session_key = f'<span style="color:{label_color}; font-weight:900; font-size:10px;">{label_text}</span>'
 
-                ext_html = ""
-                if ext_price and sess in ["PRE", "AH", "OVN", "POST", "PM"]:
-                    d_color = bull if (ext_pct or 0) >= 0 else bear
-                    # Use institutional label (AH/PM/OVN)
-                    disp_sess = sess
-                    if disp_sess == "POST":
-                        disp_sess = "AH"
-                    if disp_sess == "PRE":
-                        disp_sess = "PM"
+                anchor = ""
+                if sess in ["PRE", "AH", "OVN", "POST", "PM"]:
+                    c_p = p_entry.get("close_price") or p_entry.get("price")
+                    if c_p:
+                        anchor = f'<span style="font-size:10px; color:{text_dim}; font-weight:normal;"> | C: ${c_p:,.2f}</span>'
 
-                    ext_html = f'<span style="color:{text_dim}; margin:0 4px;">|</span><span style="font-size:10px; color:{d_color}; font-weight:bold;">{disp_sess} ${ext_price:,.2f} {ext_pct:+.1f}%</span>'
-
+                # V28.8: Mirrored Bucket Layout for Movers
                 symbol_link = f'<a href="https://finance.yahoo.com/quote/{sym}" style="color:#f59e0b; text-decoration:none;">${sym}</a>'
+                val_row = self._render_valuation_row(p_entry)
+
+                price_html = f'<span style="color:#cbd5e1; font-size:13px; margin-right:6px;">{price_str}</span>'
+                pct_display = f'{price_html}<span style="color:{color_movers}; font-weight:bold; font-size:14px;">{session_key} {pct_str}{anchor}</span>'
 
                 items_html.append(
                     f"""
-                    <div class="perf-item-wrap">
-                        <div class="perf-item u-nowrap">
-                            <span class="perf-sym">{symbol_link}</span>
-                            <span class="perf-price" style="margin-left:8px;">{price_str}</span>
-                            <span class="perf-pct" style="color:{color_movers}; margin-left:6px;">{session_key} {pct_str}</span>
-                            {ext_html}
-                        </div>
+                    <div class="bi" style="border-left:3px solid {color_movers}; margin-bottom:6px; text-align:left;">
+                        <table class="ut"><tr>
+                            <td class="stc" style="font-size:16px;">{symbol_link}</td>
+                            <td class="spc">{pct_display}</td>
+                        </tr></table>
+                        {val_row}
                     </div>"""
                 )
 
@@ -1928,11 +2004,10 @@ class SovereignIntelligenceEngine:
                 else:
                     clr = bull if pct >= 0 else bear
 
-                    # V26.7: Watchlist Row Hardening
+                    # V28.8: Dynamic Session Badge (L, AH, PRE, OVN, C)
+                    label_text, label_color = self._get_session_badge(sess)
                     session_key = (
-                        f'<span style="color:{gold}; font-weight:900;">C</span>'
-                        if sess in ["POST", "AH", "OVN", "CLOSED"]
-                        else f'<span style="color:{bull}; font-weight:900;">L</span>'
+                        f'<span style="color:{label_color}; font-weight:900;">{label_text}</span>'
                     )
 
                     anchor = ""
@@ -1954,14 +2029,14 @@ class SovereignIntelligenceEngine:
 
                 rows.append(
                     f"""
-                    <div class="bucket-item" style="border-left:3px solid {clr};">
-                        <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                            <td class="sec-ticker-cell"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none;">${sym}</a></td>
-                            <td class="sec-pct-cell">{pct_display}</td>
+                    <div class="bi" style="border-left:3px solid {clr};">
+                        <table class="ut"><tr>
+                            <td class="stc"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none;">${sym}</a></td>
+                            <td class="spc">{pct_display}</td>
                         </tr></table>
-                        {f'<div class="bucket-notes">{flaired_notes}</div>' if flaired_notes else ''}
-                    </div>
-                """
+                        {f'<div class="bn">{flaired_notes}</div>' if flaired_notes else ''}
+                        {self._render_valuation_row(t)}
+                    </div>"""
                 )
 
             # If 2 cols, shard the rows
@@ -1988,7 +2063,7 @@ class SovereignIntelligenceEngine:
         # Merge Semi and AI, then sort by highest momentum to ensure dynamic rotation
         merged_intel = tradeable.get("semi", []) + tradeable.get("ai", [])
         merged_intel = sorted(merged_intel, key=lambda x: x.get("pct", 0), reverse=True)[:25]
-        intelligence_html = render_bucket("INTEL DASHBOARD", merged_intel, columns=1)
+        intelligence_html = render_bucket("TICKER DASHBOARD", merged_intel, columns=1)
 
         # Master Template Assembly — Responsive Single-Surface Design
         html = f"""
@@ -2023,7 +2098,8 @@ class SovereignIntelligenceEngine:
                     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
                 }}
                 .news-link {{ text-decoration:none !important; font-size:14px; font-weight:600; color:inherit !important; }}
-                .src-badge {{ font-family:'Courier New',Courier,monospace; color:#f97316; font-size:11px; font-weight:900; letter-spacing:1px; text-transform:uppercase; }}
+                /* V28.8: Restored Source Badge Typography (Sans-Serif High Fidelity) */
+                .src-badge {{ color:#f97316; font-size:10px; font-weight:900; letter-spacing:0.5px; text-transform:uppercase; vertical-align:middle; opacity:0.8; }}
                 .earn-hdr {{ color:#f59e0b; font-size:18px; font-weight:900; margin-bottom:8px; text-transform:uppercase; letter-spacing:2px; }}
 
                 /* Pulse Grid Components */
@@ -2042,11 +2118,13 @@ class SovereignIntelligenceEngine:
                 .perf-pct {{ font-weight:900; font-size:15px; }}
                 .u-nowrap {{ white-space:nowrap !important; overflow:hidden !important; text-overflow:ellipsis; }}
 
-                /* Watchlist & Intelligence */
-                .bucket-item {{ background:rgba(255,255,255,0.03); padding:5px 12px; border-radius:4px; margin-bottom:4px; }}
-                .sec-ticker-cell {{ font-family:monospace; font-weight:bold; font-size:18px; }}
-                .sec-pct-cell {{ text-align:right; font-family:monospace; }}
-                .bucket-notes {{ font-size:12px; color:#8f9bb3; margin-top:6px; line-height:1.6; overflow:hidden; max-height:80px; }}
+                /* Watchlist & Intelligence (Minified Classes) */
+                .bi {{ background:rgba(255,255,255,0.03); padding:5px 12px; border-radius:4px; margin-bottom:4px; }}
+                .stc {{ font-family:monospace; font-weight:bold; font-size:18px; }}
+                .spc {{ text-align:right; font-family:monospace; }}
+                .bn {{ font-size:12px; color:#8f9bb3; margin-top:6px; line-height:1.6; overflow:hidden; max-height:80px; }}
+                .vr {{ text-align:left !important; font-size:10px; color:#38bdf8; font-family:monospace; margin-top:0px; }}
+                .ut {{ width:100% !important; border-collapse:collapse; }}
 
                 /* News Alternates (V28: Institutional Dark Theme) */
                 .news-row-even, .news-row-odd {{
@@ -2245,6 +2323,12 @@ class SovereignIntelligenceEngine:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="GIGACPO Intelligence Dossier Engine")
     parser.add_argument("--test-email", action="store_true", help="Send a test email")
+    parser.add_argument(
+        "--force", action="store_true", help="Force fresh data fetch (bypass cache)"
+    )
+    parser.add_argument(
+        "--sync-x", action="store_true", help="Synchronize X intelligence before run"
+    )
     parser.add_argument("--tickers", type=str, help="Comma-separated list of custom tickers")
     args, unknown = parser.parse_known_args()
 
@@ -2297,6 +2381,15 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"[{ts()}] [WARN] [GUARDIAN] Intelligence sync skipped: {e}")
 
+    if args.sync_x:
+        print(f"[{ts()}] [SYNC] Triggering Social Intelligence Sync...")
+        try:
+            import subprocess
+
+            subprocess.run([sys.executable, "engine/x_intel_instant_sync.py"], check=True)
+        except Exception as e:
+            print(f"[{ts()}] [ERROR] Social Sync Failed: {e}")
+
     # Filter custom tickers to legit ones
     print(f"[{ts()}] [DEBUG] Filtering custom tickers...")
     valid_custom = [t for t in custom_tickers if engine.is_legit_ticker(t)]
@@ -2305,7 +2398,7 @@ if __name__ == "__main__":
 
     print(f"[{ts()}] [DEBUG] Gathering all data...")
     tradeable, strategic, prices, news_db, sentiment, entries, movers_ext = engine.gather_all_data(
-        custom_tickers=valid_custom
+        custom_tickers=valid_custom, force=args.force
     )
     print(f"[{ts()}] [DEBUG] Data gathered. Composing HTML...")
     html = engine.compose_html(
@@ -2328,6 +2421,10 @@ if __name__ == "__main__":
     print(
         f"Payload Size: {payload_kb:.1f} KB {'[OVER LIMIT - WILL CLIP]' if payload_kb > 102 else '[SAFE]'}"
     )
+
+    # V28: Automatic Web Deployment (bmwseals.com/email)
+    print(f"[{ts()}] [SYNC] Deploying to bmwseals.com/email...")
+    RemoteSync.sync_file(preview_path)
 
     if args.test_email:
         import hashlib

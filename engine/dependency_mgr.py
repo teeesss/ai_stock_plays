@@ -28,6 +28,7 @@ def ensure_dependencies():
         "curl_cffi": "curl-cffi",
         "deep_translator": "deep-translator",
         "yaml": "PyYAML",
+        "easyocr": "easyocr",
     }
 
     missing = []

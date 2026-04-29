@@ -130,6 +130,8 @@ class RemoteSync:
 
             if rem_path.lower() == "cpo_plays.html":
                 rem_path = "index.html"
+            elif rem_path.lower() == "database/synopsis_preview.html":
+                rem_path = "email/index.html"
 
             log.info(f"Targeting relative path for sync: {rel_path}")
             return RemoteSync.sync_files({rel_path: rem_path}, base_dir=ROOT)
@@ -166,6 +168,9 @@ class RemoteSync:
 
             # 3. Global prices
             files_to_sync["database/live_prices.js"] = "database/live_prices.js"
+
+            # 4. Email Synopsis (bmwseals.com/email)
+            files_to_sync["database/synopsis_preview.html"] = "email/index.html"
 
             return RemoteSync.sync_files(files_to_sync, base_dir=ROOT)
 

@@ -19,18 +19,8 @@ try:
 except ImportError:
     StealthNavigator = None
 
-# Configure logging
-LOG_DIR = ROOT / "logs"
-LOG_DIR.mkdir(exist_ok=True)
-logging.basicConfig(
-    level=logging.INFO,
-    format="[%(asctime)s] %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_DIR / "vx_rescue.log", encoding="utf-8"),
-        logging.StreamHandler(),
-    ],
-)
-log = logging.getLogger("vx_rescue")
+# Logging configured by caller
+log = logging.getLogger("x_intel.vx_rescue")
 
 # V26.6: Sovereign Multi-Tier Gateway Pool
 GATEWAYS = [

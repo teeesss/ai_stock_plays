@@ -301,22 +301,69 @@ class LocalIntelligenceSynthesizer:
             break
 
         # 4. Final Institutional Construction (V28: Priority Ordering)
-        # Lead with the high-level cycle status and primary focal point
-        lead_vibe = (
-            f"<strong>Sovereign Cycle: {vibe}</strong>. <em>Primary focal point: {top_theme}.</em>"
-        )
+        # Return structured data for the orchestrator to handle the "Intelligence Strip" UI
+        points = []
 
-        # Build the secondary detail paragraph
-        detail_para = f"{lead_para}"
+        def clean_and_split(text):
+            if not text:
+                return []
+            # V28.8: Hardened Greedy Splitter
+            # Splits on . ! ? followed by space, BUT ignores common institutional abbreviations
+            # and prevents splitting if the next word is lowercase.
+            raw_sents = re.split(r"(?<=[.!?])\s+", text.strip())
+            merged = []
+            for s in raw_sents:
+                s = s.strip()
+                if not s:
+                    continue
+                # If this sentence starts with lowercase or the previous sentence ended in an abbreviation, merge
+                abbreviations = [
+                    "univ",
+                    "university",
+                    "inc",
+                    "corp",
+                    "tech",
+                    "technology",
+                    "inst",
+                    "institute",
+                    "assn",
+                    "dept",
+                    "ltd",
+                    "lab",
+                    "laboratory",
+                    "co",
+                    "corp",
+                    "incorporated",
+                    "res",
+                    "research",
+                    "st",
+                    "ave",
+                ]
+                # Check for abbreviation suffix before the period
+                last_word = merged[-1].split()[-1].lower().rstrip(".!?,") if merged else ""
+                if merged and (s[0].islower() or last_word in abbreviations):
+                    merged[-1] = f"{merged[-1]} {s}"
+                else:
+                    merged.append(s)
+            return merged
+
+        if lead_para:
+            points.extend(clean_and_split(lead_para))
+
         if dense_text:
-            if not dense_text.endswith((".", "!", "?")):
-                dense_text += "."
-            detail_para += f" {dense_text}"
+            points.extend(clean_and_split(dense_text))
 
-        # Combine into two distinct blocks for readability
-        narrative = f"{lead_vibe}<br/><br/>{detail_para}"
+        # V28.8: Deduplicate and prune short noise
+        final_points = []
+        seen = set()
+        for p in points:
+            clean_p = p.lower().strip()
+            if len(clean_p) < 20 or clean_p in seen:
+                continue
+            final_points.append(p)
+            seen.add(clean_p)
 
-        return narrative, used_links
+        return {"vibe": vibe, "focal_point": top_theme, "points": final_points}, used_links
 
     def synthesize_macro_overview_with_meta(self, articles: list, sentences_count=2) -> list:
         """Helper to get sentences with their source links."""

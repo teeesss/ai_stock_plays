@@ -24,9 +24,11 @@ def run_cmd(name, cmd):
     print(f"\n>>> Running {name}...")
     try:
         # Use shell=True on Windows for built-in commands or complex strings
-        result = subprocess.run(cmd, capture_output=True, text=True, shell=True)
+        # V29.7.1: Force UTF-8 encoding to prevent Windows cp1252 decoding crashes
+        result = subprocess.run(cmd, capture_output=True, text=True, shell=True, encoding="utf-8")
         passed = result.returncode == 0
-        output = result.stdout + result.stderr
+        # Harden output aggregation against NoneType artifacts
+        output = (result.stdout or "") + (result.stderr or "")
         print(f"    {'[PASS]' if passed else '[FAIL]'} {name}")
         return passed, output
     except Exception as e:
@@ -36,7 +38,7 @@ def run_cmd(name, cmd):
 
 def main():
     print("=" * 60)
-    print("   GIGACPO UNIFIED TEST RUNNER — MANDATORY VERIFICATION")
+    print("   GIGACPO UNIFIED TEST RUNNER - MANDATORY VERIFICATION")
     print("=" * 60)
 
     all_passed = True
@@ -84,7 +86,7 @@ def main():
         f.write("# Test Execution Results\n\n")
         f.write("## Latest Run (Automated Status)\n")
         f.write(f"- **Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write(f"- **Status:** {'✅ ALL PASSED' if all_passed else '❌ FAILURES DETECTED'}\n\n")
+        f.write(f"- **Status:** {'ALL PASSED' if all_passed else 'FAILURES DETECTED'}\n\n")
 
         for name, passed, output in report:
             f.write(f"### {name}\n")
@@ -97,10 +99,10 @@ def main():
 
     print("=" * 60)
     if all_passed:
-        print("   🚀 ALL SYSTEMS GO — ENVIRONMENT VERIFIED")
+        print("   ALL SYSTEMS GO - ENVIRONMENT VERIFIED")
         sys.exit(0)
     else:
-        print("   ⚠️ FAILURES DETECTED — REVIEW TEST_RESULTS.MD")
+        print("   FAILURES DETECTED - REVIEW TEST_RESULTS.MD")
         sys.exit(1)
 
 

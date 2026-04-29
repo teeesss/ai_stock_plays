@@ -14,22 +14,23 @@ from pathlib import Path
 
 from deep_translator import GoogleTranslator
 
+# V28: Setup Logging BEFORE any local imports that might hijack root
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] %(message)s",
+    datefmt="%H:%M:%S",
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+    ],
+)
+log = logging.getLogger("translate")
+
 if sys.platform == "win32":
     try:
         sys.stdout.reconfigure(encoding="utf-8")
         sys.stderr.reconfigure(encoding="utf-8")
     except AttributeError:
-        # Fallback for old Python versions
-        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", line_buffering=True)
-        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", line_buffering=True)
-
-# Configure primary logging to handle Unicode safely
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
-    force=True,
-)
+        pass
 
 # Suppress noisy/broken logging from sub-modules that trigger charmap errors
 logging.getLogger("argostranslate").setLevel(logging.WARNING)

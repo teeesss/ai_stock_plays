@@ -1,5 +1,5 @@
 """
-x_intel_instant_sync.py [V28]
+x_intel_instant_sync.py
 =======================
 Immediate, sequential sync for all users.
 Bypasses the random jitter of the daily sync script.
@@ -9,22 +9,17 @@ Use this for manual 'refresh-now' operations.
 import logging
 import subprocess
 import sys
-
-# V28: Hierarchy Leader Error Monitoring
-try:
-    from error_monitor import init_error_monitor
-except ImportError:
-    from engine.error_monitor import init_error_monitor
-init_error_monitor()
-
 from pathlib import Path
 
-if sys.platform == "win32":
+# V28: Auto-Dependency Guardian
+try:
     try:
-        sys.stdout.reconfigure(encoding="utf-8")
-        sys.stderr.reconfigure(encoding="utf-8")
-    except AttributeError:
-        pass
+        from dependency_mgr import ensure_dependencies
+    except ImportError:
+        from engine.dependency_mgr import ensure_dependencies
+    ensure_dependencies()
+except ImportError:
+    pass
 
 ROOT = Path(__file__).parent.parent
 LOG_DIR = ROOT / "logs"
@@ -35,10 +30,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="[%(asctime)s] %(message)s",
     datefmt="%H:%M:%S",
-    handlers=[
-        logging.FileHandler(log_file, encoding="utf-8"),
-        logging.StreamHandler(sys.stdout),
-    ],
+    handlers=[logging.FileHandler(log_file, encoding="utf-8"), logging.StreamHandler(sys.stdout)],
 )
 log = logging.getLogger("x_intel_instant")
 
@@ -98,7 +90,7 @@ def instant_sync():
     for idx, user in enumerate(USERS):
         log.info(f"\n[{idx+1}/{len(USERS)}] Synchronizing @{user}...")
         user_log = LOG_DIR / f"{user}_sync.log"
-        cmd = [sys.executable, "engine/x_intel_deep_scraper.py", "--username", user]
+        cmd = [sys.executable, "-u", "engine/x_intel_deep_scraper.py", "--username", user]
         if not run_step(f"Scrape @{user}", cmd, specific_log=user_log):
             log.error(f"Failed @{user}")
             overall_success = False
@@ -113,30 +105,30 @@ def instant_sync():
 
     # 1.5 REBUILD MASTER (MERGE TEXT POSTS)
     log.info("\nSTEP 1.5: REBUILDING MASTER INTEL...")
-    if not run_step("Rebuild Master", [sys.executable, "engine/rebuild_master.py"]):
+    if not run_step("Rebuild Master", [sys.executable, "-u", "engine/rebuild_master.py"]):
         log.warning("Master rebuild encountered issues, but continuing...")
 
     # 2. IMAGE ANALYSIS
     log.info("\nSTEP 2: ANALYZING NEW IMAGES...")
-    if not run_step("Image Analysis", [sys.executable, "engine/image_analyzer.py"]):
+    if not run_step("Image Analysis", [sys.executable, "-u", "engine/image_analyzer.py"]):
         log.warning("Image analysis encountered issues, but continuing...")
 
     # 3. VISUAL BUZZ AGGREGATION
     log.info("\nSTEP 3: AGGREGATING VISUAL BUZZ...")
-    if not run_step("Visual Buzz", [sys.executable, "engine/visual_buzz_aggregator.py"]):
+    if not run_step("Visual Buzz", [sys.executable, "-u", "engine/visual_buzz_aggregator.py"]):
         log.warning("Visual buzz aggregation encountered issues, but continuing...")
 
     # 4. DOCUMENTATION & BRAIN UPDATE
     log.info("\nSTEP 4: UPDATING DOCUMENTATION & BRAIN...")
-    if not run_step("Brain Update", [sys.executable, "engine/generate_CPO_BRAIN.py"]):
+    if not run_step("Brain Update", [sys.executable, "-u", "engine/generate_CPO_BRAIN.py"]):
         log.warning("Brain update encountered issues, but continuing...")
 
     # 5. BUILD & REMOTE UPLOAD
     log.info("\n" + "=" * 60)
-    log.info("SYNC SUCCESSFUL - INITIATING BUILD & REMOTE UPLOAD")
+    log.info("INTELLIGENCE PIPELINE COMPLETE - INITIATING BUILD & REMOTE UPLOAD")
     # 5. LIVE PRICE SYNC
     log.info("\nSTEP 5: REFRESHING LIVE PRICES...")
-    if not run_step("Live Prices", [sys.executable, "engine/live_prices.py"]):
+    if not run_step("Live Prices", [sys.executable, "-u", "engine/live_prices.py"]):
         log.warning("Live price sync encountered issues.")
 
     # 6. Build and Deploy

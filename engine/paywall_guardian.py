@@ -100,9 +100,12 @@ class PaywallGuardian:
                 zip_ref.extractall(extract_dir)
 
             # The zip often has a nested folder named 'bypass-paywalls-chrome-clean-master'
-            source_folder = (
-                next(extract_dir.iterdir()) if any(extract_dir.iterdir()) else extract_dir
-            )
+            # V29.5: Hardened source detection to prevent "Not a directory" errors if ZIP has multiple root items
+            items = list(extract_dir.iterdir())
+            if len(items) == 1 and items[0].is_dir():
+                source_folder = items[0]
+            else:
+                source_folder = extract_dir
 
             target_dir = root / cls.TARGET_DIR
             target_dir.mkdir(parents=True, exist_ok=True)
