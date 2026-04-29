@@ -2,7 +2,7 @@ import json
 import re
 from pathlib import Path
 
-ROOT = Path("z:/COS_Stock_Plays")
+ROOT = Path(__file__).parent.parent
 DB_DIR = ROOT / "database"
 
 

@@ -4,7 +4,8 @@ from pathlib import Path
 
 class TestAIIdentityConsolidation(unittest.TestCase):
     def setUp(self):
-        self.template_path = Path("z:/COS_Stock_Plays/web/ai/index_template.html")
+        root = Path(__file__).parent.parent
+        self.template_path = root / "web" / "ai" / "index_template.html"
         with open(self.template_path, "r", encoding="utf-8") as f:
             self.content = f.read()
 

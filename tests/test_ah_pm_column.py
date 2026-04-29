@@ -346,23 +346,38 @@ class TestLivePricesSource(unittest.TestCase):
 
     def test_ext_type_set_to_AH(self):
         """live_prices.py must set ext_type = 'AH' for post-market data."""
-        self.assertIn("'AH'", self.src, "live_prices.py missing ext_type='AH' assignment")
+        self.assertTrue(
+            '"AH"' in self.src or "'AH'" in self.src,
+            "live_prices.py missing ext_type='AH' assignment",
+        )
 
     def test_ext_type_set_to_PM(self):
         """live_prices.py must set ext_type = 'PM' for pre-market data."""
-        self.assertIn("'PM'", self.src, "live_prices.py missing ext_type='PM' assignment")
+        self.assertTrue(
+            '"PM"' in self.src or "'PM'" in self.src,
+            "live_prices.py missing ext_type='PM' assignment",
+        )
 
     def test_ext_price_in_entry_dict(self):
         """live_prices.py entry dict must include ext_price key."""
-        self.assertIn("'ext_price'", self.src, "live_prices.py entry dict missing 'ext_price' key")
+        self.assertTrue(
+            '"ext_price"' in self.src or "'ext_price'" in self.src,
+            "live_prices.py entry dict missing 'ext_price' key",
+        )
 
     def test_ext_pct_in_entry_dict(self):
         """live_prices.py entry dict must include ext_pct key."""
-        self.assertIn("'ext_pct'", self.src, "live_prices.py entry dict missing 'ext_pct' key")
+        self.assertTrue(
+            '"ext_pct"' in self.src or "'ext_pct'" in self.src,
+            "live_prices.py entry dict missing 'ext_pct' key",
+        )
 
     def test_ext_type_in_entry_dict(self):
         """live_prices.py entry dict must include ext_type key."""
-        self.assertIn("'ext_type'", self.src, "live_prices.py entry dict missing 'ext_type' key")
+        self.assertTrue(
+            '"ext_type"' in self.src or "'ext_type'" in self.src,
+            "live_prices.py entry dict missing 'ext_type' key",
+        )
 
     def test_ah_priority_over_pm(self):
         """live_prices.py must check postMarketPrice before preMarketPrice."""
