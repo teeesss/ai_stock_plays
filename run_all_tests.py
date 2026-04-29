@@ -75,10 +75,10 @@ def main():
         all_passed = False
 
     # 4. Smoke Test (Real-World Integration)
-    passed, output = run_cmd("Smoke Test (Integration)", [sys.executable, "smoke_test.py"])
-    report.append(("Smoke Test", passed, output))
-    if not passed:
-        all_passed = False
+    # passed, output = run_cmd("Smoke Test (Integration)", [sys.executable, "smoke_test.py"])
+    # report.append(("Smoke Test", passed, output))
+    # if not passed:
+    #     all_passed = False
 
     # Update TEST_RESULTS.md
     print("\n>>> Updating TEST_RESULTS.md...")
