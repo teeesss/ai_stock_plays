@@ -859,7 +859,7 @@ How to find future plays before the "Whales" rerate them.
 ### V26.6: Sovereign Intelligence Resilience (2026-04-24)
 - **Multi-Tier Gateway Pool**: To eliminate 429 rate-limits in the image rescue pipeline, the engine now uses a 5-tier architecture. It rotates between JSON APIs (`api.fxtwitter`, `api.vxtwitter`) and **OpenGraph HTML Scrapers** (`vxtwitter.com`, `fxtwitter.com`).
 - **OpenGraph Fallback Logic**: If APIs are saturated, the engine scrapes social meta-tags from the main domains. This bypasses API-level throttling as these tags are optimized for social platform crawlers.
-- **Chrome 160 Identity Standard**: Standardized all scraping footprints on **Chrome 160.0.8827** (2026-grade), utilizing deep-stealth `sec-ch-ua` fingerprints to maintain institutional-grade invisibility.
+- **Chrome 146 Identity Standard**: Standardized all scraping footprints on **Chrome 146.0.7000** (2026-grade), utilizing deep-stealth `sec-ch-ua` fingerprints to maintain institutional-grade invisibility.
 
 ### 2026-04-25 - V28 Config-First & Weekend-Aware Intelligence
 - **Weekend Freshness Mandate**: Implemented clock-aware stasis detection. The system now recognizes that "Weekend news can be STALE.. as markets are not open" and automatically extends lookback coverage to **60 hours** (Friday close through Sunday night futures). This ensures the intelligence cockpit remains saturated even during low-volume periods.

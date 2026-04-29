@@ -53,7 +53,7 @@ Replaces generic sentiment with **Institutional NLP**:
 - **Relevance Floor**: Enforces a strict 22.0 scoring minimum to guarantee technical density.
 
 ### 3.4 Stealth Price Extractor (`engine/live_prices.py`)
-- **Identity 160 Protocol**: Standardized on Chrome 160.0.8827 (2026-grade) TLS fingerprints.
+- **Identity 146 Protocol**: Standardized on Chrome 146.0.7000 (2026-grade) TLS fingerprints.
 - **Decoupled Pricing Math**: Renders Close (C) and Extended (AH/PM) prices separately to maintain 100% session fidelity.
 - **Priority Fetching**: Requests `postMarketPrice` before `preMarketPrice` to satisfy institutional priority assertions.
 

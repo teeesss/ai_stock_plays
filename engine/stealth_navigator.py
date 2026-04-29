@@ -1,4 +1,4 @@
-# V28: Sovereign Stealth Navigator (Chrome 160.0.8827)
+# V28: Sovereign Stealth Navigator (Chrome 146.0.7000)
 import asyncio
 import os
 import random
@@ -23,9 +23,9 @@ if sys.stdout.encoding != "utf-8":
 
 # SPEC 2026: Multi-Browser Rotation (Chrome 160.x)
 USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/160.0.8827.101 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/160.0.8827.105 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/160.0.8827.110 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7000.101 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7000.105 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7000.110 Safari/537.36",
 ]
 
 
@@ -112,8 +112,8 @@ class StealthNavigator:
             Object.defineProperty(navigator, 'userAgentData', {
                 get: () => ({
                     brands: [
-                        { brand: 'Google Chrome', version: '147' },
-                        { brand: 'Chromium', version: '147' },
+                        { brand: 'Google Chrome', version: '146' },
+                        { brand: 'Chromium', version: '146' },
                         { brand: 'Not(A:Brand', version: '24' }
                     ],
                     mobile: false,

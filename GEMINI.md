@@ -18,7 +18,7 @@
    - **Sovereign Resilience Engine (V28)**:
        - **Multi-Tier Rescue**: Use a 5-gateway pool (vx_rescue_fetcher.py) with OpenGraph HTML scraping as a secondary fallback to bypass API rate limits.
        - **Adaptive Health Monitor**: Demote and blacklist 429-saturated gateways for 10 minutes.
-       - **Identity 160**: Standardize all scraper/rescue identities on Chrome 160.0.8827 (2026-grade).
+       - **Identity 146**: Standardize all scraper/rescue identities on Chrome 146.0.7000 (2026-grade).
    - **Sovereign Layout Hardening (V28)**:
        - **Single-Line Mandate**: EVERY ticker row must be wrapped in .u-nowrap with white-space: nowrap !important.
        - **Zero Break Policy**: Explicit <br/> tags are strictly forbidden inside ticker data cells. Use pipes | or mid-dots • for density.

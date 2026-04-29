@@ -11,7 +11,7 @@ class PaywallIntelligence:
 
     # Standard Institutional User-Agents
     GOOGLE_BOT = "Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
-    CHROME_160 = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/160.0.8827.100 Safari/537.36"
+    CHROME_146 = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7000.100 Safari/537.36"
     FACEBOOK_BOT = "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)"
 
     RULES = {
@@ -22,13 +22,13 @@ class PaywallIntelligence:
         },
         "wsj.com": {
             "referer": "https://www.drudgereport.com/",
-            "useragent": CHROME_160,
+            "useragent": CHROME_146,
             "remove_cookies": ["wsj_session", "djcs_session"],
         },
         "barrons.com": {
             "block_regex": r"\.cxense\.com\/",
             "referer": "https://www.drudgereport.com/",
-            "useragent": CHROME_160,
+            "useragent": CHROME_146,
         },
         "nytimes.com": {
             "useragent": GOOGLE_BOT,
@@ -81,7 +81,7 @@ class PaywallIntelligence:
             headers["Referer"] = rules["referer"]
 
         # Add random jitter to Chrome headers if not spoofing a bot
-        if headers.get("User-Agent") == cls.CHROME_160:
+        if headers.get("User-Agent") == cls.CHROME_146:
             headers["User-Agent"] = headers["User-Agent"].replace(
                 ".100", f".{random.randint(100, 250)}"
             )

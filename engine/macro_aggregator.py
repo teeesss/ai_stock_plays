@@ -637,7 +637,7 @@ class MacroAggregator:
         # V23.91: Strict Cross-Source Deduplication
         seen_titles = set()
 
-        async with AsyncSession(impersonate="chrome160") as client:
+        async with AsyncSession(impersonate="chrome146") as client:
             client.headers.update(
                 {
                     "User-Agent": user_agent,

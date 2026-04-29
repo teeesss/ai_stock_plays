@@ -49,13 +49,13 @@ def get_session():
     """Rotates session and impersonation profile to avoid fingerprinting."""
     global _SESSION, _CALL_COUNT
     if _SESSION is None or _CALL_COUNT > 12:
-        log.info("[STEALTH] Initializing primary Chrome 160 session profile")
-        _SESSION = curlr.Session(impersonate="chrome120")
-        ua = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/160.0.8827.{random.randint(100,200)} Safari/537.36"
+        log.info("[STEALTH] Initializing primary Chrome 146 session profile")
+        _SESSION = curlr.Session(impersonate="chrome146")
+        ua = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7000.{random.randint(100,200)} Safari/537.36"
         _SESSION.headers.update(
             {
                 "User-Agent": ua,
-                "sec-ch-ua": '"Google Chrome";v="160", "Chromium";v="160", "Not=A?Brand";v="24"',
+                "sec-ch-ua": '"Google Chrome";v="146", "Chromium";v="146", "Not=A?Brand";v="24"',
                 "sec-ch-ua-mobile": "?0",
                 "sec-ch-ua-platform": '"Windows"',
                 "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",

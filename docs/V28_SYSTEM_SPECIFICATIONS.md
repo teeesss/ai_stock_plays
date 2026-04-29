@@ -10,8 +10,8 @@
   - `sumy` (LSA Synthesis)
 
 ## 2. Stealth & Security Profile
-- **Global User-Agent**: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/160.0.8827.0 Safari/537.36`
-- **TLS Fingerprint**: Chrome 160 (Identity Protocol 2026)
+- **Global User-Agent**: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7000.0 Safari/537.36`
+- **TLS Fingerprint**: Chrome 146 (Identity Protocol 2026)
 - **Session Persistence**: `engine/stealth_session.json` (Automated recovery)
 - **Rate Limit Resilience**: Multi-gateway pool (OpenGraph + RSS)
 

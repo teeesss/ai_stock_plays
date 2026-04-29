@@ -5,6 +5,7 @@
 1. **Sovereign Intelligence Engine (V28)**:
    - **Extreme Payload Optimization**: HTML payload remains under 102KB. ACHIEVED: 63KB by transitioning to centralized CSS.
    - **Hierarchy Leader Mandate**: `engine/market_session.py` is the absolute authority for session/temporal logic. `engine/error_monitor.py` is the authority for exit-point diagnostics.
+   - **Identity 146**: Standardize all scraper/rescue identities on Chrome 146.0.7000 (2026-grade).
    - **Import Hardening**: Use recursive try/except blocks in all `engine/` modules to support both root-level discovery and direct execution.
    - **Weekend Freshness**: Lookback window expands to **60h** during Sat/Sun stasis.
    - **Double-Enrichment Fix**: Aggregator returns plain text; flair injected ONLY once in the email script.
