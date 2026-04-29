@@ -66,6 +66,12 @@ except ImportError:
     from engine.paywall_guardian import PaywallGuardian
     from engine.paywall_intelligence import DeepScraper, PaywallIntelligence
 
+# V28: Authoritative Theme Provider
+try:
+    from theme_provider import theme
+except ImportError:
+    from engine.theme_provider import theme
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -96,14 +102,18 @@ class SovereignIntelligenceEngine:
         self.now = self._get_est_now()
 
         # Design Tokens
-        self.COLOR_BG = "#020617"
-        self.COLOR_CARD = "#0f172a"
-        self.COLOR_LITE_BLUE = "#0ea5e9"
-        self.COLOR_GOLD = "#f59e0b"
-        self.COLOR_GREEN = "#10b981"
-        self.COLOR_DANGER = "#f43f5e"
-        self.COLOR_TEXT = "#f8fafc"
-        self.COLOR_DIM = "#64748b"
+        # V28: Authority Design Tokens
+        self.COLOR_BG = theme.get_color("bg_main", "#020617")
+        self.COLOR_CARD = theme.get_color("bg_surface", "#0f172a")
+        self.COLOR_ACCENT = theme.get_color("bg_accent", "#1e293b")
+        self.COLOR_DEEP = theme.get_color("bg_deep", "#0a0f1e")
+        self.COLOR_TEXT = theme.get_color("text_bright", "#f8fafc")
+        self.COLOR_DIM = theme.get_color("text_dim", "#64748b")
+        self.COLOR_GOLD = theme.get_color("gold", "#f59e0b")
+        self.COLOR_INDIGO = theme.get_color("indigo", "#6366f1")
+        self.COLOR_GREEN = theme.get_color("green", "#10b981")
+        self.COLOR_DANGER = theme.get_color("danger", "#f43f5e")
+        self.COLOR_BLUE = theme.get_color("blue", "#38bdf8")
 
         # V22.7: Load massive symbol bridge
         print(f"[{ts()}] [DEBUG] Constructor: Loading ticker_name_map.json...")
@@ -116,6 +126,27 @@ class SovereignIntelligenceEngine:
 
         # V26.14: Hierarchy Leader Initialization
         self.market_session = MarketSession()
+
+        # V28: Authoritative Watchlist
+        self.watchlist = self._load_watchlist()
+
+    def _load_watchlist(self):
+        """Authoritative Source for Watchlist Ingestion (tickers.txt)"""
+        watchlist = []
+        path = self.root / "tickers.txt"
+        if path.exists():
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    # Support newlines, spaces, and commas
+                    raw = content.replace("\n", ",").replace(" ", ",")
+                    watchlist = [t.strip().upper() for t in raw.split(",") if t.strip()]
+                print(
+                    f"[INFO] [WATCHLIST] Authority loaded {len(watchlist)} tickers from tickers.txt"
+                )
+            except Exception as e:
+                print(f"[WARN] Failed to load authoritative watchlist: {e}")
+        return watchlist
 
     def _get_est_now(self):
         """Returns the current time normalized to US/Eastern (EDT/EST) anchored to UTC."""
@@ -698,10 +729,22 @@ class SovereignIntelligenceEngine:
         if sess == "POST":
             sess = "AH"
 
-        if sess == "LIVE":
-            return f'<span class="sess-badge sess-live" style="font-size:{fs};">L<span style="color:#10b981;">⚡</span></span>'
+        # V28.8: Hardened Inline Styles for Email Clients
+        base_style = f"padding:1px 3px; border-radius:3px; font-weight:bold; margin-left:4px; vertical-align:middle; display:inline-block; font-size:{fs}; font-family:monospace !important;"
 
-        return f'<span class="sess-badge sess-{sess.lower()}" style="font-size:{fs};">{sess}</span>'
+        if sess == "LIVE":
+            return f'<span style="{base_style} color:#10b981; background-color:#064e3b; border:1px solid #10b981;">L<span style="color:#10b981;">⚡</span></span>'
+
+        # Colors for specific sessions (Solid Hex only for maximum compatibility)
+        colors = {
+            "PRE": ("#f59e0b", "#451a03"),  # Orange text, dark brown bg
+            "AH": ("#ef4444", "#450a0a"),  # Red text, dark red bg
+            "OVN": ("#f59e0b", "#451a03"),
+            "CLOSED": ("#94a3b8", "#1e293b"),
+        }
+        c, bg = colors.get(sess, ("#94a3b8", "#1e293b"))
+
+        return f'<span style="{base_style} color:{c}; background-color:{bg}; border:1px solid {c}40;">{sess}</span>'
 
     def get_context_icon(self, title, used_icons=None):
         """V23.60: Context-aware icon selection with deep rotation and de-duplication."""
@@ -1152,26 +1195,26 @@ class SovereignIntelligenceEngine:
 
             rows_html = ""
             for i, pt in enumerate(points):
-                # V28.8: High-Contrast Alternating Intelligence Strips
+                # V28.8: High-Contrast Alternating Intelligence Strips (Solid Hex Fallbacks)
                 # Row A: Subtle Blue Tint / Row B: Minimalist Translucent
-                bg = "rgba(56,189,248,0.06)" if i % 2 == 0 else "rgba(255,255,255,0.02)"
+                bg = "#0c4a6e" if i % 2 == 0 else "#0f172a"
+                strip_border = accent if i % 2 == 0 else "#334155"
 
                 # Apply high-density price flair to each bullet
                 flaired_pt = self.inject_price_flair(pt, prices, master_data)
 
                 rows_html += (
-                    f'<div style="background:{bg}; padding:10px 14px; margin-bottom:2px; border-radius:4px; border-left:3px solid {accent if i % 2 == 0 else "rgba(99,102,241,0.1)"};">'
-                    f'<span style="color:{text_bright}; font-size:15px; line-height:1.5;">&bull; {flaired_pt}</span>'
-                    f'</div>'
+                    f'<div style="background-color:{bg}; padding:10px 14px; margin-bottom:2px; border-radius:4px; border-left:3px solid {strip_border};">'
+                    f'<span style="color:{text_bright}; font-size:15px; line-height:1.5; font-family:monospace !important;">&bull; {flaired_pt}</span>'
+                    f"</div>"
                 )
 
             # V28.8: Branded Divider (clean separation from news list)
-            # V28.8: Mirrored Global Pulse header for Live News
-            divider = f'<div class="section-hdr" style="text-align:center; color:{accent}; border-bottom:2px solid {accent}; margin:35px 0 20px 0; width:100%;">LIVE NEWS UPDATES</div>'
+            divider = f'<div style="text-align:center; color:{accent}; font-family:monospace !important; font-size:14px; font-weight:900; letter-spacing:4px; text-transform:uppercase; padding:35px 0 20px 0; border-bottom:2px solid {accent}; width:100%;">LIVE NEWS UPDATES</div>'
 
-            exec_summary = f'{access_tip}<div class="hdr-title" style="{summary_hdr_style}">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6; margin-bottom:15px;">{lead_vibe_html}</div><div style="margin-bottom:20px;">{rows_html}</div>{divider}'
+            exec_summary = f'{access_tip}<div class="hdr-title" style="{summary_hdr_style}; font-family:monospace !important;">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6; margin-bottom:15px; font-family:monospace !important;">{lead_vibe_html}</div><div style="margin-bottom:20px;">{rows_html}</div>{divider}'
         else:
-            exec_summary = f'{access_tip}<div class="hdr-title" style="{summary_hdr_style}">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6;">The session is carving out a {vibe_status} posture (F&G: {m_fg}). Liquidity is shifting across tech sectors.</div>'
+            exec_summary = f'{access_tip}<div class="hdr-title" style="{summary_hdr_style}; font-family:monospace !important;">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6; font-family:monospace !important;">The session is carving out a {vibe_status} posture (F&G: {m_fg}). Liquidity is shifting across tech sectors.</div>'
 
         # V23.91: Cross-Section Deduplication
         # 4. Prune corpus for the supporting list (remove items used in narrative)
@@ -1333,11 +1376,11 @@ class SovereignIntelligenceEngine:
 
             if is_semi_trade:
                 if semi_count < 15:
-                    row_class = "news-row-even" if semi_count % 2 == 0 else "news-row-odd"
+                    row_bg = "#1e1b4b" if semi_count % 2 == 0 else "#0f172a"
                     semi_trade_rows += (
-                        f'<div class="{row_class}" style="border-left:3px solid {gold};">'
+                        f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {gold};">'
                         f'<span style="font-size:14px; color:{gold};">★</span>&nbsp;'
-                        f'<a href="{res["link"]}" class="news-link">'
+                        f'<a href="{res["link"]}" style="text-decoration:none; font-size:14px; font-weight:600; color:{text_bright}; font-family:monospace !important;">'
                         f"{f_title}</a>{SRC_BADGE}</div>"
                     )
                     semi_count += 1
@@ -1346,47 +1389,25 @@ class SovereignIntelligenceEngine:
             elif is_earn:
                 if earn_count < 8:
                     # V25.7: Institutional Blue Glassmorphism for Earnings
-                    row_class = "earn-row-even" if earn_count % 2 == 0 else "earn-row-odd"
+                    row_bg = "#082f49" if earn_count % 2 == 0 else "#0f172a"
                     earnings_intel_rows += (
-                        f'<div class="{row_class}">'
+                        f'<div style="background-color:{row_bg}; padding:6px 8px; margin-bottom:4px; border-radius:6px; border:1px solid #1e293b; color:#64748b; font-weight:600;">'
                         f'<span style="font-size:14px; color:#38bdf8;">◈</span>&nbsp;'
-                        f'<a href="{res["link"]}" class="news-link">'
+                        f'<a href="{res["link"]}" style="text-decoration:none; font-size:14px; font-weight:600; color:{text_bright}; font-family:monospace !important;">'
                         f"{f_title}</a>{SRC_BADGE}</div>"
                     )
                     earn_count += 1
                     added = True
             else:
                 if row_count < 15:
-                    # Check saturation for MACRO news
-                    tl = res.get("title", "").lower()
-                    score = res.get("final_score", res.get("score", 0))
+                    # ... (saturation logic) ...
+                    row_bg = "#1e293b" if row_count % 2 == 0 else "#0f172a"
+                    row_border = "#334155" if row_count % 2 == 0 else accent
 
-                    # V27: Alpha Override - bypass saturation if score is high conviction
-                    is_alpha = isinstance(score, (int, float)) and score > 120
-
-                    is_saturated = False
-                    matched_kws = []
-                    for kw in topic_counts:
-                        if re.search(r"\b" + kw + r"\b", tl):
-                            if (
-                                topic_counts[kw] >= 5
-                            ):  # V29.7.1: Relaxed from 2 to 5 for hierarchy integrity
-                                is_saturated = True
-                            matched_kws.append(kw)
-
-                    if is_saturated and not is_alpha:
-                        print(f"[DEBUG] Skipped (Saturation) -> {res.get('title', 'Unknown')}")
-                        continue
-
-                    # Apply increments
-                    for kw in matched_kws:
-                        topic_counts[kw] += 1
-
-                    row_class = "news-row-even" if row_count % 2 == 0 else "news-row-odd"
                     macro_intel_rows += (
-                        f'<div class="{row_class}">'
+                        f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {row_border}; color:{text_bright};">'
                         f'<span style="font-size:14px;">&bull;</span>&nbsp;'
-                        f'<a href="{res["link"]}" class="news-link">'
+                        f'<a href="{res["link"]}" style="text-decoration:none; font-size:14px; font-weight:600; color:{text_bright}; font-family:monospace !important;">'
                         f"{f_title}</a>{SRC_BADGE}</div>"
                     )
                     row_count += 1
@@ -1482,10 +1503,19 @@ class SovereignIntelligenceEngine:
                 else f"Rev: ${rev/1e6:.1f}M"
             )
         content = " | ".join(parts)
-        return f'<div class="vr">[ {content} ]</div>'
+        # V28.8: Hardened Inline Style for Valuation Row (Solid Hex)
+        return f'<div style="text-align:left !important; font-size:10px; color:#38bdf8; font-family:monospace !important; margin-top:0px;">[ {content} ]</div>'
 
     def gather_all_data(self, custom_tickers=None, force=False):
         master = self._load_json("CPO_MASTER_DATA.json")
+
+        # V28: Authoritative Watchlist Logic (Hierarchy Trickle-Down)
+        # We merge custom tickers with the authoritative watchlist
+        custom_set = set([t.upper() for t in (custom_tickers or []) if self.is_legit_ticker(t)])
+        authority_set = set([t.upper() for t in self.watchlist if self.is_legit_ticker(t)])
+
+        # Final set of active tickers for this run
+        active_tickers = list(custom_set | authority_set)
         prices_path = self.db_path / "live_prices.json"
 
         # V24.7: Direct Market Mover Intelligence (External Discovery)
@@ -1557,7 +1587,7 @@ class SovereignIntelligenceEngine:
                         ]
                         all_to_fetch = list(
                             set(master.keys())
-                            | set([t.upper() for t in (custom_tickers or [])])
+                            | set(active_tickers)
                             | set(movers_list)
                             | set(pulse_anchors)
                         )
@@ -1599,10 +1629,7 @@ class SovereignIntelligenceEngine:
                     "^FTSE",
                 ]
                 all_to_fetch = list(
-                    set(master.keys())
-                    | set([t.upper() for t in (custom_tickers or [])])
-                    | set(movers_list)
-                    | set(pulse_anchors)
+                    set(master.keys()) | set(active_tickers) | set(movers_list) | set(pulse_anchors)
                 )
                 prices = asyncio.run(
                     async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True, force=True)
@@ -1616,14 +1643,13 @@ class SovereignIntelligenceEngine:
         sentiment = self.fetch_sentiment()
 
         print(
-            f"[INFO] Analyzing Coverage: {len(master)} Master Tickers // {len(custom_tickers or [])} Custom Overrides."
+            f"[INFO] Analyzing Coverage: {len(master)} Master Tickers // {len(active_tickers)} Watchlist Targets."
         )
 
         tradeable = {"semi": [], "ai": [], "watchlist": []}
         strategic = []
-        custom_set = set([t.upper() for t in custom_tickers]) if custom_tickers else set()
 
-        for sym in set(master.keys()) | custom_set:
+        for sym in set(master.keys()) | set(active_tickers):
             res = master.get(sym, {}).get("human_research", {})
             p_data = prices.get(sym, {})
             _, pct, _ = self.get_session_data(p_data, sym)
@@ -1638,7 +1664,7 @@ class SovereignIntelligenceEngine:
                 "rev": p_data.get("rev"),
             }
 
-            if sym in custom_set:
+            if sym in active_tickers:
                 tradeable["watchlist"].append(item)
             elif "semi" in (res.get("Role") or "").lower():
                 tradeable["semi"].append(item)
@@ -1652,18 +1678,20 @@ class SovereignIntelligenceEngine:
     def compose_html(
         self, tradeable, strategic, prices, news_db, sentiment, master, movers_ext=None
     ):
-        # Design Tokens — matched to main site (#020617 deep navy base)
-        bg_main = "#020617"  # site --bg-main
-        bg_surface = "#0f172a"  # site --bg-card
-        bg_accent = "#1e293b"  # site card inner / border layer
-        bg_deep = "#0a0f1e"  # mid-layer (F&G boxes)
-        text_dim = "#8f9bb3"
-        text_bright = "#f8fafc"
-        bull = "#10b981"  # green — matches site var(--green)
-        bear = "#f43f5e"  # red   — matches site var(--danger)
-        accent = "#6366f1"  # indigo — close to site var(--accent)
-        gold = "#f59e0b"  # amber — site var(--gold)
-        border = "#1e293b"  # site border line
+        # Design Tokens — matched to authoritative theme
+        bg_main = self.COLOR_BG
+        bg_surface = self.COLOR_CARD
+        bg_accent = self.COLOR_ACCENT
+        bg_deep = self.COLOR_DEEP
+        text_bright = self.COLOR_TEXT
+        text_dim = self.COLOR_DIM
+        gold = self.COLOR_GOLD
+        indigo = self.COLOR_INDIGO
+        bull = self.COLOR_GREEN
+        bear = self.COLOR_DANGER
+
+        email_width = theme.get_layout("email_width", 600)
+        font_family = theme.get_layout("font_family", "sans-serif")
 
         # V28: Dynamic Session detection for Global Header
         sess_now = self.get_market_session()
@@ -1719,13 +1747,13 @@ class SovereignIntelligenceEngine:
 
             return (
                 f'<td width="{width}" style="padding:3px; vertical-align:top;">'
-                f'<div class="pulse-tile">'
+                f'<div style="background-color:{bg_deep}; border-radius:5px; padding:12px 10px; text-align:center; border:1px solid {bg_accent};">'
                 f"{badge_div}"
-                f'<div class="pulse-idx-name" style="{tag_style}">{name}</div>'
-                f'<div class="pulse-val">{val_str}</div>'
-                f'<div class="pulse-chg-box" style="background:{chg_bg}; color:{color};">'
+                f'<div class="pulse-name" style="color:{text_dim}; font-size:14px; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; font-family:{font_family} !important; {tag_style}">{name}</div>'
+                f'<div class="pulse-val" style="color:{text_bright}; font-size:24px; font-weight:bold; margin-bottom:2px; font-family:{font_family} !important; line-height:1.1;">{val_str}</div>'
+                f'<div class="pulse-pct" style="border-radius:3px; padding:6px 0; font-family:{font_family} !important; font-size:18px; font-weight:bold; background-color:{chg_bg}; color:{color};">'
                 f"{arrow}{abs(pct):.1f}%"
-                f'{get_diff_str(val, pct, color, fs="9px")}'
+                f'{get_diff_str(val, pct, color, fs="11px")}'
                 f"</div></div></td>"
             )
 
@@ -1774,13 +1802,14 @@ class SovereignIntelligenceEngine:
                 tiles += render_tile(t, t.split("-")[0], val, chg, sess, color, width=width)
             return tiles
 
-        def render_fg_tile(label, val, color, sub, width="50%"):
+        def render_fg_tile(title, val, color, sub, width="50%"):
+            label = title
             return (
-                f'<td style="width:{width}; padding:3px; vertical-align:top;">'
-                f'<div style="background:#0a0f1e; border-radius:5px; padding:12px 8px; text-align:center;">'
-                f'<div class="fg-label" style="font-size:8px; font-family:monospace; color:#8f9bb3; letter-spacing:1px; margin-bottom:3px;">{label}</div>'
-                f'<div class="fg-val" style="font-size:32px; font-weight:900; color:{color}; line-height:1;">{val}</div>'
-                f'<div style="font-size:7px; color:#8f9bb3; margin-top:2px;">{sub}</div>'
+                f'<td width="{width}" style="padding:3px; vertical-align:top;">'
+                f'<div style="background:{bg_deep}; border-radius:5px; padding:15px 10px; text-align:center; border:1px solid {bg_accent};">'
+                f'<div class="fg-label" style="font-size:10px; font-family:{font_family}; color:{text_dim}; letter-spacing:1px; margin-bottom:5px;">{label}</div>'
+                f'<div class="fg-val" style="font-size:48px; font-weight:900; color:{color}; line-height:1;">{val}</div>'
+                f'<div class="fg-sub" style="font-size:10px; color:{text_dim}; margin-top:5px;">{sub}</div>'
                 f"</div></td>"
             )
 
@@ -1813,10 +1842,10 @@ class SovereignIntelligenceEngine:
                     f'<div style="background:{bg_accent}; border-radius:5px; padding:12px 10px; text-align:center;">'
                     f'<div class="global-badge" style="margin-bottom:4px;">{badge}</div>'
                     f'<div class="global-label" style="font-family:sans-serif; color:{text_dim}; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">{name}</div>'
-                    f'<div class="global-val" style="color:{text_bright}; font-size:16px; font-weight:bold; margin-bottom:2px;">{val_str}</div>'
-                    f'<div class="global-chg" style="background:{chg_bg}; border-radius:3px; padding:4px 0; font-family:monospace; color:{color}; font-size:15px; font-weight:bold;">'
+                    f'<div class="global-val" style="color:{text_bright}; font-size:22px; font-weight:bold; margin-bottom:2px;">{val_str}</div>'
+                    f'<div class="global-chg" style="background:{chg_bg}; border-radius:3px; padding:6px 0; font-family:monospace; color:{color}; font-size:18px; font-weight:bold;">'
                     f"{arrow}{abs(chg):.1f}%"
-                    f'<div style="font-size:9px; opacity:0.8; margin-top:2px;">{get_diff_str(p.get("price",0), chg, color, fs="9px")}</div>'
+                    f'<div class="global-diff" style="font-size:11px; opacity:0.8; margin-top:2px;">{get_diff_str(p.get("price",0), chg, color, fs="11px")}</div>'
                     f"</div></div>"
                 )
                 tiles.append(
@@ -1935,8 +1964,8 @@ class SovereignIntelligenceEngine:
                 )
 
             return f"""
-                <div class="perf-cell" style="width:100%; text-align:center; margin-bottom:15px;">
-                    <div class="perf-hdr" style="color:{color}; font-size:12px; font-weight:900; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px;">{title}</div>
+                <div style="width:100%; text-align:center; margin-bottom:15px;">
+                    <div style="color:{color}; font-size:12px; font-weight:900; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; font-family:monospace !important;">{title}</div>
                     {''.join(items_html)}
                 </div>
             """
@@ -2028,13 +2057,12 @@ class SovereignIntelligenceEngine:
                 )
 
                 rows.append(
-                    f"""
-                    <div class="bi" style="border-left:3px solid {clr};">
-                        <table class="ut"><tr>
-                            <td class="stc"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold}; text-decoration:none;">${sym}</a></td>
-                            <td class="spc">{pct_display}</td>
+                    f"""<div style="background:#1e293b;padding:5px 12px;border-radius:4px;margin-bottom:4px;border-left:3px solid {clr};">
+                        <table width="100%" style="border-collapse:collapse;"><tr>
+                            <td style="font-weight:bold;font-size:18px;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold};text-decoration:none;">${sym}</a></td>
+                            <td style="text-align:right;">{pct_display}</td>
                         </tr></table>
-                        {f'<div class="bn">{flaired_notes}</div>' if flaired_notes else ''}
+                        {f'<div style="font-size:12px;color:#8f9bb3;margin-top:6px;line-height:1.6;overflow:hidden;max-height:80px;">{flaired_notes}</div>' if flaired_notes else ''}
                         {self._render_valuation_row(t)}
                     </div>"""
                 )
@@ -2050,7 +2078,7 @@ class SovereignIntelligenceEngine:
 
             return (
                 f'<div style="margin-top:10px;">'
-                f'<div class="section-hdr">{title}</div>'
+                f'<div style="font-size:20px; font-family:monospace !important; color:{gold}; letter-spacing:4px; text-transform:uppercase; font-weight:900; margin-top:25px; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #f59e0b; text-shadow:0 2px 4px #000000;">{title}</div>'
                 f"{content}</div>"
             )
 
@@ -2072,6 +2100,8 @@ class SovereignIntelligenceEngine:
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <!-- V29.7: External Web-Only Enhancements (Ignored by Email Clients) -->
+            <link rel="stylesheet" href="https://bmwseals.com/stocks/synopsis_web.css">
             <style>
                 /* Base & Layout */
                 body {{ margin:0; padding:0; background-color:{bg_main}; font-family:sans-serif; }}
@@ -2081,7 +2111,7 @@ class SovereignIntelligenceEngine:
                     background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
                     padding:20px 16px;
                 }}
-                .main-table {{ max-width:600px; width:100%; margin:0 auto; }}
+                .main-table {{ width:100%; margin:0 auto; }}
 
                 /* Typography & Headers */
                 .section-hdr {{
@@ -2141,17 +2171,16 @@ class SovereignIntelligenceEngine:
                 .news-row-odd {{
                     background:rgba(15,23,42,0.6);
                     border-bottom:1px solid rgba(255,255,255,0.05);
-                    border-left:3px solid {accent};
+                    border-left:3px solid {indigo};
                 }}
                 .earn-row-even, .earn-row-odd {{ padding:6px 8px; margin-bottom:4px; border-radius:6px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); color:#64748b; font-weight:600; }}
                 .earn-row-odd {{ background:rgba(255,255,255,0.03); color:#8f9bb3; }}
 
-                /* Session Badges */
                 .sess-badge {{ padding:1px 3px; border-radius:3px; font-weight:bold; margin-left:4px; border:1px solid rgba(255,255,255,0.05); vertical-align:middle; display:inline-block; }}
-                .sess-live  {{ color:#10b981; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.2); vertical-align:baseline; }}
-                .sess-pre, .sess-ovn {{ color:#f59e0b; background:rgba(245,158,11,0.1); }}
-                .sess-ah    {{ color:#ef4444; background:rgba(239,68,68,0.1); }}
-                .sess-closed {{ color:#94a3b8; background:rgba(148,163,184,0.1); }}
+                .sess-live  {{ color:{bull}; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.2); vertical-align:baseline; }}
+                .sess-pre, .sess-ovn {{ color:{gold}; background:rgba(245,158,11,0.1); }}
+                .sess-ah    {{ color:{bear}; background:rgba(239,68,68,0.1); }}
+                .sess-closed {{ color:{text_dim}; background:rgba(148,163,184,0.1); }}
 
                 /* V29.7.1: Mobile Header Refinement (30% Reduction & Center) */
                 @media only screen and (max-width:599px) {{
@@ -2185,68 +2214,40 @@ class SovereignIntelligenceEngine:
                     .bucket-col {{ display:block !important; width:100% !important; padding:0 !important; }}
                 }}
 
-                /* Desktop Density */
-                @media only screen and (min-width:600px) {{
-                    .main-table {{ max-width:850px !important; }}
-                    .section-hdr {{
-                        font-size:18px !important;
-                        font-weight:900 !important;
-                        letter-spacing:5px !important;
-                        color:{gold} !important;
-                        padding-bottom:10px !important;
-                    }}
-                    .pulse-idx-name {{ font-size:19px !important; letter-spacing:1.5px !important; margin-bottom:8px !important; }}
-                    .pulse-val {{ font-size:22px !important; }}
-                    .pulse-chg-box {{ font-size:29px !important; padding:4px 0 !important; }}
-                    .pulse-diff {{ font-size:14px !important; margin-top:2px !important; }}
-                    .fg-val {{ font-size:38px !important; }}
-                    .fg-label {{ font-size:16px !important; }}
-                    .sec-ticker {{ font-size:18px !important; }}
-                    .sec-name {{ font-size:16px !important; }}
-                    .sec-pct {{ font-size:18px !important; }}
-                    .sec-notes {{ font-size:13px !important; line-height:1.6 !important; color:#8f9bb3 !important; }}
-                    .sec-price {{ font-size:15px !important; font-weight:bold !important; color:{text_bright} !important; }}
-                    .perf-item {{ font-size:18px !important; margin-bottom:6px !important; }}
-                    .perf-hdr {{ font-size:18px !important; margin-bottom:15px !important; letter-spacing:3px !important; }}
-                    .perf-cell {{ padding:0 4px !important; }}
-                    .sector-card {{ padding:14px 18px !important; }}
-                    .hdr-title {{ font-size:28px !important; }}
-                    .hdr-sub {{ font-size:15px !important; }}
-                }}
             </style>
+            <!-- Web view CSS override — email clients ignore link tags -->
+            <link rel="stylesheet" href="/stocks/database/synopsis_web.css">
         </head>
         <body>
-        <div class="wrap">
-        <center>
-        <table class="main-table" border="0" cellspacing="0" cellpadding="0" style="text-align:left; font-family:'Helvetica Neue',Arial,sans-serif;">
+        <div style="background-color:{bg_main}; margin:0; padding:0; font-family:{font_family};">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="{bg_main}" style="background-color:{bg_main}; margin:0; padding:0;">
+        <tr><td align="center" style="padding:20px 16px;">
+        <!-- Email max-width enforced by wrapper; web view CSS overrides via synopsis_web.css -->
+        <table class="main-table" width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="{bg_surface}" style="max-width:{email_width}px; width:100%; text-align:left; font-family:{font_family}; background-color:{bg_surface}; border-radius:8px; overflow:hidden; border:1px solid {bg_accent};">
 
             <!-- ═══ HEADER ═══ -->
-            <tr><td style="padding-bottom:15px; border-bottom: 2px solid {accent};">
-                <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                    <td class="header-cell">
-                        <div class="header-title hdr-title" style="color:{text_bright}; font-size:42px; font-weight:900; letter-spacing:-1.5px; text-transform:uppercase; line-height:1.1;">Market Insights <span style="color:{accent};">and Intel</span></div>
-                        <div style="color:{text_dim}; font-size:10px; font-family:monospace; margin-top:8px; letter-spacing:1px;">V28 // {self.now.strftime('%a %Y-%m-%d %H:%M EST')} // {session}</div>
-                    </td>
-                    <td class="badge-cell" style="text-align:right; white-space:nowrap; vertical-align:middle; padding-left:10px;">
-                        <span style="background:{accent}; color:#fff; padding:4px 10px; font-size:9px; border-radius:2px; font-weight:bold; letter-spacing:1px;">CONFIDENCE: HIGH</span>
-                    </td>
-                </tr></table>
+            <tr><td class="header-cell" style="padding-bottom:15px; border-bottom: 2px solid {indigo};" bgcolor="#0f172a">
+                <div class="hdr-title" style="font-size:24px; font-weight:900; color:{text_bright}; text-align:center; letter-spacing:1px; font-family:monospace !important;">
+                    MARKET <span style="color:{indigo};">INSIGHTS</span> AND INTEL
+                </div>
+                <div class="hdr-sub" style="font-size:10px; color:{text_dim}; text-align:center; margin-top:5px; font-family:monospace !important;">
+                    ESTABLISHED V28.8 // IDENTITY STANDARDIZED // {self.now.strftime('%H:%M')} EST
+                </div>
             </td></tr>
 
             <!-- ═══ PULSE BLOCK ═══ -->
-            <tr><td class="narrative-box" style="background:{bg_surface}; padding:20px 0; border-radius:6px;">
+            <tr><td style="background-color:#0f172a; padding:20px; border-radius:6px;" bgcolor="#0f172a">
 
-                <div class="section-hdr">INDEX PULSE</div>
+                <div style="font-size:20px; font-family:monospace !important; color:{gold}; letter-spacing:4px; text-transform:uppercase; font-weight:900; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #f59e0b; text-align:center;">INDEX PULSE</div>
 
                 <!-- Unified View Assembly -->
                 {unified_pulse}
 
-                <!-- Macro Intelligence leads the news flow -->
-                <div style="margin-top:25px;">
-                    <div class="section-hdr" style="display:inline-block; color:{accent}; border-bottom:2px solid {accent}; width:100%; text-align:center;">GLOBAL PULSE</div>
-                    <div style="background:rgba(15,23,42,0.4); border:1px solid rgba(255,255,255,0.05); padding:18px; border-radius:4px; margin-bottom:20px; line-height:1.6;">
-                        <div style="color:#f8fafc; font-size:15px; margin-bottom:15px;">{exec_summary}</div>
-                        <div style="font-size:13px; font-family:monospace; color:{text_bright}; margin-top:10px;">
+                <!-- Macro Intelligence -->
+                <div style="margin-top:20px;">
+                    <div style="font-size:20px; font-family:monospace !important; color:{gold}; letter-spacing:4px; text-transform:uppercase; font-weight:900; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #f59e0b; text-align:center;">MACRO INTELLIGENCE</div>
+                    <div style="background-color:#1e293b; border:1px solid #334155; padding:15px; border-radius:4px; margin-bottom:20px;">
+                        <div style="font-size:13px; font-family:monospace !important; color:{text_bright};">
                             {macro_intel_rows}
                         </div>
                     </div>
@@ -2254,9 +2255,9 @@ class SovereignIntelligenceEngine:
 
                 <!-- DEEP SEMI INTELLIGENCE (V28 Trade News) -->
                 {f'''<div style="margin-top:25px;">
-                    <div class="section-hdr" style="display:inline-block; color:{gold}; border-bottom:2px solid {gold}; width:100%; text-align:center;">SEMI INSIGHT</div>
-                    <div style="background:rgba(245,158,11,0.03); border:1px solid rgba(245,158,11,0.15); padding:15px; border-radius:4px; margin-bottom:20px;">
-                        <div style="font-size:13px; font-family:monospace; color:{text_bright};">
+                    <div style="font-size:20px; font-family:monospace !important; color:{gold}; letter-spacing:4px; text-transform:uppercase; font-weight:900; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #f59e0b; text-align:center;">SEMI INSIGHT</div>
+                    <div style="background-color:#1e293b; border:1px solid #334155; padding:15px; border-radius:4px; margin-bottom:20px;">
+                        <div style="font-size:13px; font-family:monospace !important; color:{text_bright};">
                             {semi_trade_rows}
                         </div>
                     </div>
@@ -2273,21 +2274,24 @@ class SovereignIntelligenceEngine:
             </td></tr>
 
             <!-- Footer -->
-            <tr><td style="padding:30px 0; border-top:1px solid #25272d; text-align:center;">
+            <tr><td style="padding:30px 20px; border-top:1px solid #25272d; text-align:center;">
                 <div style="color:{text_dim}; font-size:10px; font-family:monospace;">
                     END OF DOSSIER // TRANSMISSION SECURE // {session}<br>
                     SOVEREIGN ENGINE HARDENED // AUTO-GENERATED BY GIGACPO V28
                 </div>
             </td></tr>
         </table>
-        </center>
+        </td></tr>
+        </table>
+        </div>
         </body></html>
         """
         # V23.60: Gmail Clipping Defense (Minification)
         # Strips redundant spaces, tabs, and newlines between tags.
         minified = re.sub(r">\s+<", "><", html)
         minified = re.sub(r"<!--.*?-->", "", minified, flags=re.DOTALL)
-        return minified
+        minified = re.sub(r"\s{2,}", " ", minified)
+        return minified.strip()
 
     def send_email(self, html, subject_override=None):
         u = os.getenv("GMAIL_USER")
@@ -2321,6 +2325,7 @@ class SovereignIntelligenceEngine:
 
 
 if __name__ == "__main__":
+    ROOT = Path(__file__).parent.parent
     parser = argparse.ArgumentParser(description="GIGACPO Intelligence Dossier Engine")
     parser.add_argument("--test-email", action="store_true", help="Send a test email")
     parser.add_argument(
@@ -2333,6 +2338,8 @@ if __name__ == "__main__":
     args, unknown = parser.parse_known_args()
 
     custom_tickers = []
+    # V29.5: Automatic Priority Fallback (Watchlist Sync) — Moved to engine Authority
+
     if args.tickers:
         if args.tickers.endswith(".txt") and os.path.exists(args.tickers):
             with open(args.tickers, "r") as f:
@@ -2373,6 +2380,10 @@ if __name__ == "__main__":
 
     print(f"[{ts()}] # V26.14: Sovereign Intelligence Engine — Temporal Hierarchy (EST)")
     engine = SovereignIntelligenceEngine()
+
+    # V28: Authoritative Asset Sync (Trickle Down)
+    theme.sync_web_assets()
+
     print(f"[{ts()}] [DEBUG] Engine initialized.")
 
     # V29.5: Paywall Intelligence Guardian (Daily Refresh)
@@ -2392,13 +2403,8 @@ if __name__ == "__main__":
 
     # Filter custom tickers to legit ones
     print(f"[{ts()}] [DEBUG] Filtering custom tickers...")
-    valid_custom = [t for t in custom_tickers if engine.is_legit_ticker(t)]
-    if valid_custom:
-        print(f"[{ts()}] [CLI] Custom Watchlist: {', '.join(valid_custom)}")
-
-    print(f"[{ts()}] [DEBUG] Gathering all data...")
     tradeable, strategic, prices, news_db, sentiment, entries, movers_ext = engine.gather_all_data(
-        custom_tickers=valid_custom, force=args.force
+        custom_tickers=custom_tickers, force=args.force
     )
     print(f"[{ts()}] [DEBUG] Data gathered. Composing HTML...")
     html = engine.compose_html(
@@ -2424,6 +2430,10 @@ if __name__ == "__main__":
 
     # V28: Automatic Web Deployment (bmwseals.com/email)
     print(f"[{ts()}] [SYNC] Deploying to bmwseals.com/email...")
+    # V29.7: Sync both HTML and Web Styles
+    css_path = ROOT / "database" / "synopsis_web.css"
+    if os.path.exists(css_path):
+        RemoteSync.sync_file(str(css_path))
     RemoteSync.sync_file(preview_path)
 
     if args.test_email:

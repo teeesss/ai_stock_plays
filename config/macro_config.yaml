@@ -894,3 +894,39 @@ google_news_whitelist:
   - "IEEESPECTRUM"
   - "DIGITIMES"
   - "SEMIANALYSIS"
+# ---------------------------------------------------------------------------
+# UI THEME TOKENS (V28 Authority)
+# ---------------------------------------------------------------------------
+# Single Source of Truth for Aesthetics. Changes here trickle down to both
+# the 600px Email Dossier and the Fluid Web Dashboard.
+ui_theme:
+  colors:
+    bg_main: "#020617"      # Deep Navy Base
+    bg_surface: "#0f172a"   # Card Surface
+    bg_accent: "#1e293b"    # Card Inner / Border
+    bg_deep: "#0a0f1e"      # Deep Well (Gauges)
+    text_bright: "#f8fafc"  # Primary Text
+    text_dim: "#64748b"     # Muted Text
+    gold: "#f59e0b"         # Brand Gold
+    indigo: "#6366f1"       # Primary Accent
+    green: "#10b981"        # Bullish
+    danger: "#f43f5e"       # Bearish
+    blue: "#38bdf8"         # Information
+    bull: "#10b981"         # Bullish color
+    bear: "#f43f5e"         # Bearish color
+
+  layout:
+    email_width: 600
+    web_max_width: 1200
+    border_radius: 8
+    font_family: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    font_mono: "'JetBrains Mono', 'Fira Code', monospace"
+
+  typography:
+    base_size: 14
+    h1_size: 24
+    h2_size: 18
+    pulse_label_size: 11
+    pulse_val_size: 20
+    web_scale_factor: 1.2    # Global font boost for web view
+    pulse_scale_web: 2.0     # 2x larger pulse tiles on web
