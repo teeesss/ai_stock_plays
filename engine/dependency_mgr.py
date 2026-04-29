@@ -18,8 +18,10 @@ def ensure_dependencies():
         "bs4": "beautifulsoup4",
         "feedparser": "feedparser",
         "playwright": "playwright",
+        "playwright_stealth": "playwright-stealth",
         "dotenv": "python-dotenv",
         "vaderSentiment": "vaderSentiment",
+        "finvader": "finvader",
         "sumy": "sumy",
         "sklearn": "scikit-learn",
         "nltk": "nltk",
@@ -29,6 +31,13 @@ def ensure_dependencies():
         "deep_translator": "deep-translator",
         "yaml": "PyYAML",
         "easyocr": "easyocr",
+        "cv2": "opencv-python-headless",
+        "paramiko": "paramiko",
+        "yahooquery": "yahooquery",
+        "fastapi": "fastapi",
+        "uvicorn": "uvicorn",
+        "apscheduler": "apscheduler",
+        "pytest": "pytest",
     }
 
     missing = []
