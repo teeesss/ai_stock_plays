@@ -1,16 +1,20 @@
-## 🛠 V28.8 Sovereign Intelligence Hardening (2026-04-29)
+## 🛠 V28.8 Sovereign Intelligence Hardening (2026-04-29 → 2026-04-30)
 - [x] **Web Synopsis Endpoint**: Enabled automatic deployment of `synopsis_preview.html` to `bmwseals.com/email` via `RemoteSync`. ✅
 - [x] **Documentation Mirror Sync**: Synchronized `.cursorrules`, `GEMINI.md`, and `CLAUDE.md` to V28 standards. ✅
-- [x] **Hierarchy Leader Hardening**: Centralized logging and session authority. ✅
+- [x] **Hierarchy Leader Hardening**: Centralized logging and session authority via `market_session.py` and `error_monitor.py`. ✅
 - [x] **Mirror Mandate Established**: Rules parity across all AI context files enforced. ✅
-
-## 🛠 V28.8 Sovereign Intelligence Hardening (2026-04-27)
-- [x] **Dependency Fix**: Add `paramiko` to `requirements.txt` to resolve `ModuleNotFoundError`. ✅
+- [x] **Dependency Fix**: Add `paramiko` to `requirements.txt` to resolve `ModuleNotFoundError` for RemoteSync. ✅
 - [x] **Email Synopsis Polish**: Fix trailing `nbsp; <` character corruption in Executive Summary. ✅
 - [x] **Market Summary Readability**: Refactor market overview to use bulleted topics instead of run-on paragraphs. ✅
 - [x] **ZeroHedge Premium Shield**: Blacklist ZH "Premium" articles from the news aggregator pipeline. ✅
 - [x] **Paywall Guardian Fix**: Resolved `Errno 20` (Not a directory) in `paywall_guardian.py` by hardening zip-extraction path detection. ✅
 - [x] **Intel Dashboard Enrichment**: Inject real-time Market Cap (Valuation) data into Intel Dashboard ticker rows via Yahoo Finance hydration. ✅
+- [x] **Email Redesign**: Optimized HTML payload size by migrating inline styles to CSS classes (reducing size under the 102KB Gmail clip limit to 85KB) and redesigned the ticker rendering into a clean 3-line layout. ✅
+- [x] **International Ticker Hardening**: Resolved data hydration regressions for international/OTC tickers (e.g., SIVE.ST / SIVEF) by resolving compound keys before fetching and deduplicating resolved symbols. ✅
+- [x] **Valuation Pipeline Hardening**: Terminology standardized to `MCap:`, crisp P/E hierarchy (`'26 [9.9] '27 [11.4]`) enforced, and erroneous outliers capped at `[-500, 1000]`. ✅
+- [x] **Header Aesthetic Alignment**: Centered the "REAL-TIME WATCHLIST" header and injected the authoritative "Web Link" (`bmwseals.com/stocks/email`) into the institutional header. ✅
+- [x] **Data Fidelity Hardening**: Resolved $IREN valuation scaling discrepancies by prioritizing live Yahoo marketCap and hardening research-override parsing. ✅
+- [x] **Institutional Header Finalization (2026-04-30)**: Confirmed `ESTABLISHED V28.8 // IDENTITY STANDARDIZED // HH:MM EST // WEB LINK` format in `compose_html`. Eliminated erroneous header injections from individual ticker tiles (`render_tile` decoupled). All 3 test suites green (Syntax + Layout + Regression). ✅
 
 ## ✅ V28.7 Intelligence Pipeline (2026-04-26)
 - [x] **Log Visibility Restored**: Eliminated logging hijacking across all modules. Verified hierarchical leader logic. ✅

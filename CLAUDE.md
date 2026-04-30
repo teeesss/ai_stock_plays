@@ -1,9 +1,12 @@
-### 🚀 Active Context: V28 (Config-First & Weekend-Aware Intelligence)
-[Status Synchronized - 2026-04-25]
+### 🚀 Active Context: V28.8 (Sovereign Intelligence Hardening)
+[Status Synchronized - 2026-04-29]
 
 ### 🧩 Logic & Patterns
 1. **Sovereign Intelligence Engine (V28)**:
-   - **Extreme Payload Optimization**: HTML payload remains under 102KB. ACHIEVED: 63KB by transitioning to centralized CSS.
+   - **Extreme Payload Optimization**: HTML payload remains under 102KB. ACHIEVED: 85KB by transitioning to centralized CSS and high-density layouts.
+    - **Ticker Layout Mandate**: EVERY ticker row must follow the 3-line protocol: $TICKER+PRICE on line 1, C: PRICE+PCT on line 2 (for ext sessions), and VAL+PE (including forward '26/'27 estimates) on line 3. Headers are centered.
+    - **Valuation Logic**: Terminology standardized to `MCap:`. P/E hierarchy favors forward estimates (`'26 [9.9] '27 [11.4]`) over trailing. Outliers strictly capped at `[-500, 1000]`.
+    - **Branding & Accessibility**: Authoritative institutional header includes a live Web Link (`bmwseals.com/stocks/email`) using the `bg_accent` design token.
    - **Hierarchy Leader Mandate**: `engine/market_session.py` is the absolute authority for session/temporal logic. `engine/error_monitor.py` is the authority for exit-point diagnostics.
    - **Identity 146**: Standardize all scraper/rescue identities on Chrome 146.0.7000 (2026-grade).
    - **Import Hardening**: Use recursive try/except blocks in all `engine/` modules to support both root-level discovery and direct execution.

@@ -64,6 +64,9 @@ TICKER_MAPPING = {
     "UNIMICRON": "3037.TW",
     "KINSUS": "3189.TW",
     "SIVE": "SIVE.ST",
+    "SIVEF": "SIVE.ST",
+    "IQEPF": "IQE.L",
+    "FERRF": "6890.T",
     "0522.HK": "0522.HK",
     "ASMVY": "ASMVY",
     "PVS.DE": "PSM.DE",  # ProSiebenSat.1

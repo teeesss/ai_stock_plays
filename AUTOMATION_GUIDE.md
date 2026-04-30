@@ -16,9 +16,9 @@ $trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday -At 9am
 Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "XTweetsRefresh" -Description "Syncs CPO data, audits financials, and exports LLM bundles."
 ```
 
-## 2.5 Sovereign Dossier Scheduling (V26.12)
+## 2.5 Sovereign Dossier Scheduling (V28.8)
 
-The Sovereign Intelligence Engine is designed for high-frequency market alignment. It is recommended to schedule dispatches at **Market Pre-Open**, **Market Close**, and **Sunday Night / Overnight**.
+The Sovereign Intelligence Engine is designed for high-frequency market alignment with **Dual-Dispatch** (Email + Web). It is recommended to schedule dispatches at **Market Pre-Open**, **Market Close**, and **Sunday Night / Overnight**.
 
 **PowerShell Automation:**
 ```powershell
@@ -39,11 +39,12 @@ $t3 = New-ScheduledTaskTrigger -Daily -At 8:01pm
 Register-ScheduledTask -Action $a3 -Trigger $t3 -TaskName "SIE_Overnight_Dispatch"
 ```
 
-## 3. Work Log Transparency (V26.12)
+## 3. Work Log Transparency (V28.8)
 When running via Task Scheduler, review your `soe_intel.log` for high-fidelity work status:
 - **`[INFO] [CACHE]`**: Confirms if the run is utilizing fresh price/news data.
 - **`[INFO] [LIVE]`**: Indicates a just-in-time fetch triggered by stale cache.
 - **`[INFO] [ALPHA]`**: Confirms the NLP ranking engine successfully isolated the top headline.
+- **`[INFO] [SYNC]`**: Confirms successful SFTP deployment via RemoteSync.
 
 ## 3. Manual Setup (The GUI Way)
 1. Open **Task Scheduler**.
@@ -54,7 +55,7 @@ When running via Task Scheduler, review your `soe_intel.log` for high-fidelity w
 6. Add Arguments: `engine\email_market_synopsis.py`.
 7. Start in: `z:\COS_Stock_Plays`.
 
-## 4. Automated Environment Hardening (V26.12)
+## 4. Automated Environment Hardening (V28.8)
 
 The Sovereign pipeline now includes the **Auto-Dependency Guardian** utilizing `os.execv` to restart seamlessly on dependency resolution.
 
@@ -64,7 +65,7 @@ python engine/email_market_synopsis.py
 ```
 If any libraries (vaderSentiment, sumy, curl_cffi, etc.) are missing, the script will **automatically install them** and inject them seamlessly without failing out of the schedule.
 
-## 5. Hierarchy of Truth: Market Temporal Logic (V26.14)
+## 5. Hierarchy of Truth: Market Temporal Logic (V28.8)
 
 To prevent code duplication and inconsistent state across scripts (e.g., fetching prices on weekends when we shouldn't), the ecosystem follows a strict **Temporal Hierarchy**:
 

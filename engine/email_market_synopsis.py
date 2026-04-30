@@ -212,9 +212,8 @@ class SovereignIntelligenceEngine:
         if len(t) < 2 or t.isdigit():
             return False
 
-        # V22.93: High-Fidelity Noise Shield
-        # Filter company names or noise accidentally being treated as tickers
-        if any(x in t for x in [" ", "/", "\\", "(", ")", ".", ",", ":", "'", '"']):
+        # V28.8: International Support (Allow Dots for tickers like SIVE.ST)
+        if any(x in t for x in [" ", "/", "\\", "(", ")", ",", ":", "'", '"']):
             return False
 
         # Mandatory 2-Letter Whitelist (Filters out IN, OF, TO, BY, etc.)
@@ -1461,12 +1460,6 @@ class SovereignIntelligenceEngine:
             semi_trade_rows,
         )
 
-    def _render_valuation_row(self, item):
-        """V28.8: Renders a high-density valuation row for the Intel Dashboard."""
-        m_cap = item.get("market_cap")
-        pe = item.get("pe")
-        rev = item.get("rev")
-
     def _get_session_badge(self, s_type):
         s_type = (s_type or "CLOSED").upper()
         if s_type == "LIVE":
@@ -1479,12 +1472,37 @@ class SovereignIntelligenceEngine:
             return "OVN", "#f59e0b"
         return "C", "#f59e0b"
 
+    def _extract_eps(self, master, master_key):
+        """Extracts FY1 and FY2 EPS estimates from the master data trend."""
+        if not master_key:
+            return None, None
+        data = master.get(master_key, {})
+        fin = data.get("financials", {})
+        et = fin.get("earningsTrend", {})
+        trend = et.get("trend", [])
+
+        eps26, eps27 = None, None
+        for t in trend:
+            # V28.8: Dynamic period detection for 2026/2027
+            # Typically 0y is current FY (2026 if today is 2026)
+            if t.get("period") == "0y":
+                eps26 = t.get("earningsEstimate", {}).get("avg", {}).get("raw")
+            elif t.get("period") == "+1y":
+                eps27 = t.get("earningsEstimate", {}).get("avg", {}).get("raw")
+
+        return eps26, eps27
+
     def _render_valuation_row(self, item):
+        """V28.8: Renders a high-density valuation row with forward P/E estimates."""
         m_cap = item.get("marketCap") or item.get("market_cap")
-        pe = item.get("trailingPE") or item.get("trailing_pe")
-        rev = item.get("revenueGrowth") or item.get("revenue_growth")
-        if not any([m_cap, pe, rev]):
+        pe = item.get("trailingPE") or item.get("pe")
+        pe26 = item.get("pe26")
+        pe27 = item.get("pe27")
+        rev = item.get("revenueGrowth") or item.get("rev")
+
+        if not any([m_cap, pe, pe26, pe27, rev]):
             return ""
+
         parts = []
         if m_cap:
             if m_cap >= 1e12:
@@ -1493,18 +1511,27 @@ class SovereignIntelligenceEngine:
                 cap_str = f"${m_cap/1e9:.1f}B"
             else:
                 cap_str = f"${m_cap/1e6:.1f}M"
-            parts.append(f"Val: {cap_str}")
-        if pe:
-            parts.append(f"P/E: {pe:.1f}")
+            parts.append(f"MCap: {cap_str}")
+
+        # V28.8: Crisp P/E Hierarchy - Only show trailing if forwards missing
+        if pe26 or pe27:
+            if pe26:
+                parts.append(f"'26 [{pe26:.1f}]")
+            if pe27:
+                parts.append(f"'27 [{pe27:.1f}]")
+        elif pe:
+            parts.append(f"P/E: {pe:.1f}x")
+
         if rev:
-            parts.append(
-                f"Rev: {rev*100:+.1f}%"
-                if isinstance(rev, float) and rev < 10
-                else f"Rev: ${rev/1e6:.1f}M"
+            rev_str = (
+                f"{rev*100:+.1f}%"
+                if isinstance(rev, float) and abs(rev) < 10
+                else f"${rev/1e6:.1f}M"
             )
-        content = " | ".join(parts)
-        # V28.8: Hardened Inline Style for Valuation Row (Solid Hex)
-        return f'<div style="text-align:left !important; font-size:10px; color:#38bdf8; font-family:monospace !important; margin-top:0px;">[ {content} ]</div>'
+            parts.append(f"Rev: {rev_str}")
+
+        content = "  ".join(parts)
+        return f'<div class="tk-val">[ {content} ]</div>'
 
     def gather_all_data(self, custom_tickers=None, force=False):
         master = self._load_json("CPO_MASTER_DATA.json")
@@ -1628,11 +1655,22 @@ class SovereignIntelligenceEngine:
                     "^GDAXI",
                     "^FTSE",
                 ]
-                all_to_fetch = list(
+                # V28.8: Resolved Ticker Fetching (Atomic Expansion for Compound Keys)
+                from ticker_utils import resolve_ticker
+
+                fetch_set = set()
+                # Expand master keys and active tickers to atomic symbols for Yahoo Finance
+                for t in (
                     set(master.keys()) | set(active_tickers) | set(movers_list) | set(pulse_anchors)
-                )
+                ):
+                    for part in str(t).split(" / "):
+                        tk = part.strip().upper()
+                        if tk:
+                            fetch_set.add(resolve_ticker(tk))
+
+                all_to_fetch = list(fetch_set)
                 prices = asyncio.run(
-                    async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True, force=True)
+                    async_run_fetch(tickers=all_to_fetch[:300], skip_sync=True, force=True)
                 )
                 print(f"[INFO] [LIVE] Initial Fetch Complete: {len(prices)} tickers.")
             except Exception as e:
@@ -1649,10 +1687,80 @@ class SovereignIntelligenceEngine:
         tradeable = {"semi": [], "ai": [], "watchlist": []}
         strategic = []
 
-        for sym in set(master.keys()) | set(active_tickers):
-            res = master.get(sym, {}).get("human_research", {})
-            p_data = prices.get(sym, {})
+        # Pre-map master keys for efficient lookup of sub-tickers (e.g. SIVE.ST / SIVEF)
+        master_lookup = {}
+        for mk in master.keys():
+            for part in mk.split(" / "):
+                master_lookup[part.strip().upper()] = mk
+
+        from ticker_utils import resolve_ticker
+
+        seen_resolved = set()
+        for raw_sym in set(master.keys()) | set(active_tickers):
+            # Resolve to primary (SIVEF -> SIVE.ST)
+            primary_part = raw_sym.split(" / ")[0].strip()
+            sym = resolve_ticker(primary_part)
+
+            if sym in seen_resolved:
+                continue
+            seen_resolved.add(sym)
+
+            # Find the best key in master data
+            m_key = master_lookup.get(sym) or master_lookup.get(raw_sym) or raw_sym
+
+            res = master.get(m_key, {}).get("human_research", {})
+            p_data = prices.get(m_key, prices.get(sym, prices.get(raw_sym, {})))
+
             _, pct, _ = self.get_session_data(p_data, sym)
+            # V28.8: Forward P/E Hydration (Hierarchy: Research -> Calculated -> None)
+            eps26, eps27 = self._extract_eps(master, m_key)
+            price = p_data.get("price") or p_data.get("regularMarketPrice") or 0
+
+            # Use human research overrides if available
+            pe26_raw = res.get("P/E '26") or (
+                price / eps26 if price and eps26 and eps26 != 0 else None
+            )
+            pe27_raw = res.get("P/E '27") or (
+                price / eps27 if price and eps27 and eps27 != 0 else None
+            )
+
+            # V28.8: Erroneous Value Shield (Max 1000, Min -500)
+            def cap_pe(val):
+                if val is None:
+                    return None
+                try:
+                    v = float(val)
+                    return v if -500 <= v <= 1000 else None
+                except:
+                    return None
+
+            pe26 = cap_pe(pe26_raw)
+            pe27 = cap_pe(pe27_raw)
+
+            # Store back in price data for universal rendering
+            p_data["pe26"] = pe26
+            p_data["pe27"] = pe27
+
+            # V28.8: Market Cap Hardening (Live First)
+            m_cap = p_data.get("marketCap") or p_data.get("market_cap")
+            if not m_cap and res.get("Market Cap"):
+                try:
+                    raw_mc = str(res.get("Market Cap")).replace("$", "").replace(",", "")
+                    if "B" in raw_mc:
+                        m_cap = float(raw_mc.replace("B", "")) * 1e9
+                    elif "M" in raw_mc:
+                        m_cap = float(raw_mc.replace("M", "")) * 1e6
+                    elif "T" in raw_mc:
+                        m_cap = float(raw_mc.replace("T", "")) * 1e12
+                    else:
+                        m_cap = float(raw_mc)
+                except:
+                    pass
+
+            # V28.8: Ensure prices dict has this symbol for downstream lookup (Movers/Watchlist)
+            if sym and sym not in prices and p_data:
+                prices[sym] = p_data
+
             item = {
                 "symbol": sym,
                 "name": res.get("Company") or sym,
@@ -1661,10 +1769,24 @@ class SovereignIntelligenceEngine:
                 "alpha": float(res.get("Alpha Score", 0) or 0),
                 "market_cap": p_data.get("market_cap"),
                 "pe": p_data.get("pe"),
+                "pe26": pe26,
+                "pe27": pe27,
                 "rev": p_data.get("rev"),
             }
 
-            if sym in active_tickers:
+            # V28.8: Authoritative Watchlist Matching (Hierarchy Logic)
+            # Check both resolved and raw symbols, and handles split keys (e.g. SIVE.ST / SIVEF)
+            in_watchlist = False
+            if sym in active_tickers or raw_sym in active_tickers:
+                in_watchlist = True
+            else:
+                # Check parts of a split key
+                for part in raw_sym.split(" / "):
+                    if part.strip().upper() in active_tickers:
+                        in_watchlist = True
+                        break
+
+            if in_watchlist:
                 tradeable["watchlist"].append(item)
             elif "semi" in (res.get("Role") or "").lower():
                 tradeable["semi"].append(item)
@@ -1673,7 +1795,39 @@ class SovereignIntelligenceEngine:
 
         for k in tradeable:
             tradeable[k].sort(key=lambda x: x["pct"], reverse=True)
-        return tradeable, strategic, prices, news_db, sentiment, master, movers_ext
+
+        # V28.8: Hydrate movers_ext with pricing and forward P/E
+        movers_dict = {"gainers": [], "losers": []}
+        for m_type in ["gainers", "losers"]:
+            for sym in movers_ext.get(m_type, []):
+                if not isinstance(sym, str):
+                    continue
+                p_data = prices.get(sym, {})
+                _, pct, _ = self.get_session_data(p_data, sym)
+
+                m_key = master_lookup.get(sym) or sym
+                eps26, eps27 = self._extract_eps(master, m_key)
+                price = p_data.get("price") or p_data.get("regularMarketPrice") or 0
+
+                pe26 = price / eps26 if price and eps26 and eps26 > 0 else None
+                pe27 = price / eps27 if price and eps27 and eps27 > 0 else None
+
+                # Hydrate price data for this symbol too
+                p_data["pe26"] = pe26
+                p_data["pe27"] = pe27
+
+                m_item = {
+                    "symbol": sym,
+                    "pct": pct or 0,
+                    "price": price,
+                    "market_cap": p_data.get("market_cap"),
+                    "pe": p_data.get("pe"),
+                    "pe26": pe26,
+                    "pe27": pe27,
+                }
+                movers_dict[m_type].append(m_item)
+
+        return tradeable, strategic, prices, news_db, sentiment, master, movers_dict
 
     def compose_html(
         self, tradeable, strategic, prices, news_db, sentiment, master, movers_ext=None
@@ -1857,7 +2011,8 @@ class SovereignIntelligenceEngine:
         losers_top = []
 
         if movers_ext:
-            for sym in movers_ext.get("gainers", []):
+            for m_item in movers_ext.get("gainers", []):
+                sym = m_item.get("symbol")
                 p_data = prices.get(sym, {})
                 price, pct, sess = self.get_session_data(p_data, sym)
                 if price:
@@ -1870,7 +2025,8 @@ class SovereignIntelligenceEngine:
                         }
                     )
 
-            for sym in movers_ext.get("losers", []):
+            for m_item in movers_ext.get("losers", []):
+                sym = m_item.get("symbol")
                 p_data = prices.get(sym, {})
                 price, pct, sess = self.get_session_data(p_data, sym)
                 if price:
@@ -1945,20 +2101,37 @@ class SovereignIntelligenceEngine:
                     if c_p:
                         anchor = f'<span style="font-size:10px; color:{text_dim}; font-weight:normal;"> | C: ${c_p:,.2f}</span>'
 
-                # V28.8: Mirrored Bucket Layout for Movers
-                symbol_link = f'<a href="https://finance.yahoo.com/quote/{sym}" style="color:#f59e0b; text-decoration:none;">${sym}</a>'
-                val_row = self._render_valuation_row(p_entry)
+                # V28.8: Mirrored Bucket Layout for Movers (3-Line High Density)
+                symbol_link = f'<a href="https://finance.yahoo.com/quote/{sym}" style="color:#f59e0b; text-decoration:none; font-weight:bold;">${sym}</a>'
 
+                # Line 1: Ticker + Price + Badge + Pct
                 price_html = f'<span style="color:#cbd5e1; font-size:13px; margin-right:6px;">{price_str}</span>'
-                pct_display = f'{price_html}<span style="color:{color_movers}; font-weight:bold; font-size:14px;">{session_key} {pct_str}{anchor}</span>'
+                line1_display = f'{price_html}<span style="color:{color_movers}; font-weight:bold; font-size:14px;">{session_key} {pct_str}</span>'
+
+                # Line 2: Close Price (Conditional) or Live Badge
+                close_line = ""
+                if sess in ["PRE", "AH", "OVN", "POST", "PM"]:
+                    c_p = p_entry.get("close_price") or p_entry.get("price")
+                    c_pct = p_entry.get("change_pct", 0)
+                    if c_p:
+                        c_clr = bull if c_pct >= 0 else bear
+                        close_line = f'<div class="tk-c" style="margin-top:2px;">C: ${c_p:,.2f} <span style="color:{c_clr}">{c_pct:+.2f}%</span></div>'
+
+                if not close_line:
+                    # Line 2 placeholder for consistency (Task 1: 3-line mandate)
+                    close_line = '<div class="tk-c" style="margin-top:2px; opacity:0.5;">LIVE MARKET SESSION</div>'
+
+                # Line 3: Valuation Row
+                val_row = self._render_valuation_row(p_entry)
 
                 items_html.append(
                     f"""
-                    <div class="bi" style="border-left:3px solid {color_movers}; margin-bottom:6px; text-align:left;">
-                        <table class="ut"><tr>
-                            <td class="stc" style="font-size:16px;">{symbol_link}</td>
-                            <td class="spc">{pct_display}</td>
+                    <div class="tk-row" style="border-left:3px solid {color_movers}; margin-bottom:6px; text-align:left;">
+                        <table class="tk-table"><tr>
+                            <td class="tk-sym">{symbol_link}</td>
+                            <td class="tk-rt">{line1_display}</td>
                         </tr></table>
+                        {close_line}
                         {val_row}
                     </div>"""
                 )
@@ -2039,30 +2212,28 @@ class SovereignIntelligenceEngine:
                         f'<span style="color:{label_color}; font-weight:900;">{label_text}</span>'
                     )
 
-                    anchor = ""
+                    close_line = ""
                     if sess in ["PRE", "AH", "OVN", "POST"]:
                         c_p = p_entry.get("close_price") or p_entry.get("price")
+                        c_pct = p_entry.get("change_pct", 0)
                         if c_p:
-                            anchor = f'<span style="font-size:10px; color:{text_dim}; font-weight:normal;"> | C: ${c_p:,.2f}</span>'
+                            c_clr = bull if c_pct >= 0 else bear
+                            close_line = f'<div class="tk-c">C: ${c_p:,.2f} <span style="color:{c_clr}">{c_pct:+.2f}%</span></div>'
 
-                    price_str = f'<span style="color:#cbd5e1; font-size:13px; margin-right:6px;">${price:,.2f}</span>'
-                    pct_display = f'{price_str}<span style="color:{clr}; font-weight:bold; font-size:14px;">{session_key} {pct:+.2f}%{anchor}</span>'
+                    price_str = f'<span class="tk-prc">${price:,.2f}</span>'
+                    pct_display = f'{price_str}<span class="tk-pct" style="color:{clr};">{session_key} {pct:+.2f}%</span>'
 
                 notes = "" if hide_notes else t.get("notes", "").strip()
                 flaired_notes = self.inject_price_flair(notes, prices, link=False)
-                display_name = (
-                    t["name"]
-                    if t["name"].upper() != sym.upper()
-                    else self.ticker_name_map.get(sym, "")
-                )
 
                 rows.append(
-                    f"""<div style="background:#1e293b;padding:5px 12px;border-radius:4px;margin-bottom:4px;border-left:3px solid {clr};">
-                        <table width="100%" style="border-collapse:collapse;"><tr>
-                            <td style="font-weight:bold;font-size:18px;"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:{gold};text-decoration:none;">${sym}</a></td>
-                            <td style="text-align:right;">{pct_display}</td>
+                    f"""<div class="tk-row" style="border-left:3px solid {clr};">
+                        <table class="tk-table"><tr>
+                            <td class="tk-sym"><a href="https://finance.yahoo.com/quote/{t['symbol']}">${sym}</a></td>
+                            <td class="tk-rt">{pct_display}</td>
                         </tr></table>
-                        {f'<div style="font-size:12px;color:#8f9bb3;margin-top:6px;line-height:1.6;overflow:hidden;max-height:80px;">{flaired_notes}</div>' if flaired_notes else ''}
+                        {close_line}
+                        {f'<div class="tk-notes">{flaired_notes}</div>' if flaired_notes else ''}
                         {self._render_valuation_row(t)}
                     </div>"""
                 )
@@ -2078,7 +2249,7 @@ class SovereignIntelligenceEngine:
 
             return (
                 f'<div style="margin-top:10px;">'
-                f'<div style="font-size:20px; font-family:monospace !important; color:{gold}; letter-spacing:4px; text-transform:uppercase; font-weight:900; margin-top:25px; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #f59e0b; text-shadow:0 2px 4px #000000;">{title}</div>'
+                f'<div style="font-size:20px; font-family:monospace !important; color:{gold}; letter-spacing:4px; text-transform:uppercase; font-weight:900; margin-top:25px; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #f59e0b; text-shadow:0 2px 4px #000000; text-align:center;">{title}</div>'
                 f"{content}</div>"
             )
 
@@ -2147,6 +2318,18 @@ class SovereignIntelligenceEngine:
                 .perf-price {{ color:#cbd5e1; font-size:12px; opacity:0.8; }}
                 .perf-pct {{ font-weight:900; font-size:15px; }}
                 .u-nowrap {{ white-space:nowrap !important; overflow:hidden !important; text-overflow:ellipsis; }}
+
+                /* Ticker Views */
+                .tk-row {{ background:#1e293b; padding:5px 12px; border-radius:4px; margin-bottom:4px; }}
+                .tk-table {{ border-collapse:collapse; width:100%; }}
+                .tk-sym {{ font-weight:bold; font-size:18px; }}
+                .tk-sym a {{ color:#f59e0b; text-decoration:none; }}
+                .tk-rt {{ text-align:right; }}
+                .tk-prc {{ color:#cbd5e1; font-size:13px; margin-right:6px; }}
+                .tk-pct {{ font-weight:bold; font-size:14px; }}
+                .tk-c {{ font-size:10px; color:#64748b; font-weight:normal; margin-top:2px; }}
+                .tk-notes {{ font-size:12px; color:#8f9bb3; margin-top:6px; line-height:1.6; overflow:hidden; max-height:80px; }}
+                .tk-val {{ text-align:left; font-size:10px; color:#38bdf8; font-family:monospace; margin-top:2px; }}
 
                 /* Watchlist & Intelligence (Minified Classes) */
                 .bi {{ background:rgba(255,255,255,0.03); padding:5px 12px; border-radius:4px; margin-bottom:4px; }}
@@ -2231,7 +2414,7 @@ class SovereignIntelligenceEngine:
                     MARKET <span style="color:{indigo};">INSIGHTS</span> AND INTEL
                 </div>
                 <div class="hdr-sub" style="font-size:10px; color:{text_dim}; text-align:center; margin-top:5px; font-family:monospace !important;">
-                    ESTABLISHED V28.8 // IDENTITY STANDARDIZED // {self.now.strftime('%H:%M')} EST
+                    ESTABLISHED V28.8 // IDENTITY STANDARDIZED // {self.now.strftime('%H:%M')} EST // <a href="https://bmwseals.com/stocks/email" style="color:{bg_accent}; text-decoration:none;">WEB LINK</a>
                 </div>
             </td></tr>
 
