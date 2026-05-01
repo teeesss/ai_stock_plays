@@ -128,6 +128,10 @@ class RemoteSync:
                     rem_path = "database/dashboard_data.js"
                 rem_path = "ai/" + rem_path
 
+            elif rem_path.lower().startswith("web/archive/"):
+                rem_path = rem_path[12:]  # Strip 'web/archive/'
+                rem_path = "archive/" + rem_path
+
             if rem_path.lower() == "cpo_plays.html":
                 rem_path = "index.html"
             elif rem_path.lower() == "database/synopsis_preview.html":
@@ -166,10 +170,15 @@ class RemoteSync:
                 files_to_sync["web/ai/index.html"] = "ai/index.html"
                 files_to_sync["web/ai/dashboard_data.js"] = "ai/database/dashboard_data.js"
 
-            # 3. Global prices
+            # 3. Archive Mapping (bmwseals.com/stocks/archive)
+            arch_local = ROOT / "web" / "archive"
+            if arch_local.exists():
+                files_to_sync["web/archive/index.html"] = "archive/index.html"
+
+            # 4. Global prices
             files_to_sync["database/live_prices.js"] = "database/live_prices.js"
 
-            # 4. Email Synopsis (bmwseals.com/email)
+            # 5. Email Synopsis (bmwseals.com/email)
             files_to_sync["database/synopsis_preview.html"] = "email/index.html"
 
             return RemoteSync.sync_files(files_to_sync, base_dir=ROOT)

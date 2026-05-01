@@ -77,6 +77,11 @@ try:
 except ImportError:
     from engine.market_synopsis_scraper import MarketSynopsisScraper
 
+try:
+    from synopsis_archive import SynopsisArchiveManager
+except ImportError:
+    from engine.synopsis_archive import SynopsisArchiveManager
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -137,6 +142,11 @@ class SovereignIntelligenceEngine:
 
         # V28.8: Synopsis Scraper
         self.synopsis_scraper = MarketSynopsisScraper()
+
+        # V28.8.1: Synopsis Archive Manager
+        self.archive_mgr = SynopsisArchiveManager(self.root)
+        self.archive_template = self.root / "web" / "ai" / "archive_template.html"
+        self.archive_output = self.root / "web" / "archive" / "index.html"
 
     def _load_watchlist(self):
         """Authoritative Source for Watchlist Ingestion (tickers.txt)"""
@@ -1840,6 +1850,60 @@ class SovereignIntelligenceEngine:
 
         return tradeable, strategic, prices, news_db, sentiment, master, movers_dict, synopsis_data
 
+    def generate_archive_page(self):
+        """
+        V28.8.1: Generates the static archive.html dossier history and syncs it.
+        """
+        try:
+            history = self.archive_mgr.get_history()
+            if not self.archive_template.exists():
+                print(f"[ERROR] Archive template missing: {self.archive_template}")
+                return
+
+            with open(self.archive_template, "r", encoding="utf-8") as f:
+                template = f.read()
+
+            # Simple template replacement
+            history_html = ""
+            if not history:
+                history_html = '<div class="no-data">No historical dossiers found in current 48-hour window.</div>'
+            else:
+                for ts, html_payload in history:
+                    # Sanitize HTML for srcdoc (escape quotes)
+                    safe_html = html_payload.replace('"', "&quot;")
+
+                    entry = f"""
+                    <div class="archive-entry">
+                        <div class="meta">
+                            <span>IDENT: {ts}</span>
+                            <span style="color:#f59e0b">ESTABLISHED DOSSIER</span>
+                        </div>
+                        <div class="content" style="background:#fff; border-radius:4px; overflow:hidden; height:600px;">
+                            <iframe srcdoc="{safe_html}" style="width:100%; height:100%; border:none;"></iframe>
+                        </div>
+                    </div>
+                    """
+                    history_html += entry
+
+            # Perform replacements
+            rendered = template.replace("{history_content}", history_html)
+
+            # Ensure directory exists
+            self.archive_output.parent.mkdir(parents=True, exist_ok=True)
+
+            with open(self.archive_output, "w", encoding="utf-8") as f:
+                f.write(rendered)
+
+            print(f"[INFO] [ARCHIVE] Generated {self.archive_output}")
+
+            # Sync to remote
+            from remote_sync import RemoteSync
+
+            RemoteSync.sync_file(self.archive_output)
+
+        except Exception as e:
+            print(f"[ERROR] [ARCHIVE] Generation failed: {e}")
+
     def compose_html(
         self,
         tradeable,
@@ -2265,7 +2329,7 @@ class SovereignIntelligenceEngine:
                 rows.append(
                     f"""<div class="tk-row" style="border-left:3px solid {clr};">
                         <table class="tk-table"><tr>
-                            <td class="tk-sym"><a href="https://finance.yahoo.com/quote/{t['symbol']}">${sym}</a></td>
+                            <td class="tk-sym"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:#f59e0b; text-decoration:none;">${sym}</a></td>
                             <td class="tk-rt">{pct_display}</td>
                         </tr></table>
                         {close_line}
@@ -2359,7 +2423,6 @@ class SovereignIntelligenceEngine:
                 .tk-row {{ background:#1e293b; padding:5px 12px; border-radius:4px; margin-bottom:4px; }}
                 .tk-table {{ border-collapse:collapse; width:100%; }}
                 .tk-sym {{ font-weight:bold; font-size:18px; }}
-                .tk-sym a {{ color:#f59e0b; text-decoration:none; }}
                 .tk-rt {{ text-align:right; }}
                 .tk-prc {{ color:#cbd5e1; font-size:13px; margin-right:6px; }}
                 .tk-pct {{ font-weight:bold; font-size:14px; }}
@@ -2450,7 +2513,7 @@ class SovereignIntelligenceEngine:
                     MARKET <span style="color:{indigo};">INSIGHTS</span> AND INTEL
                 </div>
                 <div class="hdr-sub" style="font-size:10px; color:{text_dim}; text-align:center; margin-top:5px; font-family:monospace !important;">
-                    ESTABLISHED V28.8 // IDENTITY STANDARDIZED // {self.now.strftime('%H:%M')} EST // <a href="https://bmwseals.com/stocks/email" style="color:{bg_accent}; text-decoration:none;">WEB LINK</a>
+                    ESTABLISHED V28.8 // IDENTITY STANDARDIZED // {self.now.strftime('%H:%M')} EST // <a href="https://bmwseals.com/stocks/email" style="color:#38bdf8; text-decoration:none; font-weight:bold;">WEB LINK</a> // <a href="https://bmwseals.com/stocks/archive/" style="color:#38bdf8; text-decoration:none; font-weight:bold;">🕰️ ARCHIVE</a>
                 </div>
             </td></tr>
 
@@ -2653,6 +2716,13 @@ if __name__ == "__main__":
     print(
         f"Payload Size: {payload_kb:.1f} KB {'[OVER LIMIT - WILL CLIP]' if payload_kb > 102 else '[SAFE]'}"
     )
+
+    # V28.8.1: Full Fidelity Archival
+    print(f"[{ts()}] [ARCHIVE] Storing high-fidelity dossier...")
+    engine.archive_mgr.save_synopsis(html)
+    archive_path = engine.generate_archive_page()
+    if archive_path:
+        RemoteSync.sync_file(archive_path)
 
     # V28: Automatic Web Deployment (bmwseals.com/email)
     print(f"[{ts()}] [SYNC] Deploying to bmwseals.com/email...")

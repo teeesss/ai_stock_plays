@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Watchlist Terminal — Crypto/AI Infrastructure</title>
+    <title>AI Watchlist Terminal â€” Crypto/AI Infrastructure</title>
     <!-- AI Watchlist V1.7.5 Hardened -->
     <script src="database/dashboard_data.js"></script>
     <script src="../database/live_prices.js"></script>
@@ -132,8 +132,8 @@
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         th { background: #1e293b; padding: 10px 6px; text-align: left; font-size: 12px; text-transform: uppercase; color: var(--text-dim); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 20; cursor: pointer; user-select: none; white-space: nowrap; font-weight: 900; }
         th:hover { color: var(--accent); background: #26334d; }
-        th.sort-asc::after { content: ' ▲'; color: var(--gold); }
-        th.sort-desc::after { content: ' ▼'; color: var(--gold); }
+        th.sort-asc::after { content: ' â–²'; color: var(--gold); }
+        th.sort-desc::after { content: ' â–¼'; color: var(--gold); }
         td { padding: 8px 5px; border-bottom: 1px solid var(--border); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         tr:hover td { background: rgba(14,165,233,0.04); }
         tr.pinned td { background: rgba(245,158,11,0.04); border-left: 4px solid var(--gold); }
@@ -165,18 +165,18 @@
 <body style="display:flex;flex-direction:column;min-height:100vh;">
 
 <div class="command-bar">
-    <div class="logo">⚡ AI WATCHLIST</div>
-    <div id="versionLabel" class="logo-sub">V1.0 · Independent Autonomous Mode</div>
+    <div class="logo">âš¡ AI WATCHLIST</div>
+    <div id="versionLabel" class="logo-sub">V1.0 Â· Independent Autonomous Mode</div>
 
-    <div class="stat"><span>UNIVERSE</span><div class="val" id="stat-total">—</div></div>
-    <div class="stat"><span>PRIVATE</span><div class="val" id="stat-private" style="color:var(--purple)">—</div></div>
+    <div class="stat"><span>UNIVERSE</span><div class="val" id="stat-total">â€”</div></div>
+    <div class="stat"><span>PRIVATE</span><div class="val" id="stat-private" style="color:var(--purple)">â€”</div></div>
     <div class="stat"><span>PINNED</span><div class="val" id="stat-pinned">0</div></div>
 
     <!-- V24.2: News Velocity Widget -->
     <div class="stat" id="velocity-stat" style="display:none; cursor:pointer;" onclick="openNewsModal()">
         <span>VELOCITY</span>
         <div class="val" id="stat-velocity" style="color:var(--gold); display:flex; align-items:center; gap:4px;">
-            <span id="vel-icon">🔥</span> <span id="vel-val">0</span>
+            <span id="vel-icon">ðŸ”¥</span> <span id="vel-val">0</span>
         </div>
     </div>
 
@@ -191,6 +191,9 @@
     <button class="sync-btn" onclick="openNewsModal()" style="background:rgba(212,163,115,0.15);border-color:rgba(212,163,115,0.4);color:var(--gold);margin-right:6px;">
         &#128240; NEWS
     </button>
+    <button class="sync-btn" onclick="window.open('../archive/', '_blank')" style="background:rgba(56,189,248,0.15); border-color:rgba(56,189,248,0.4); color:#38bdf8; margin-right:6px;">
+        🕰️ ARCHIVE
+    </button>
     <button class="sync-btn" id="syncBtn" onclick="triggerSync()">
         <span class="sync-dot" id="syncDot"></span> MASTER SYNC
     </button>
@@ -199,7 +202,7 @@
 <div class="intel-modal" id="newsModal">
     <div class="intel-modal-content">
         <div class="intel-header">
-            <div>📰 YAHOO NEWS INTELLIGENCE <span id="news-count" style="font-size:9px;color:var(--text-dim);margin-left:15px;font-weight:700;">0 ARTICLES</span></div>
+            <div>ðŸ“° YAHOO NEWS INTELLIGENCE <span id="news-count" style="font-size:9px;color:var(--text-dim);margin-left:15px;font-weight:700;">0 ARTICLES</span></div>
             <div style="display:flex;gap:15px;align-items:center;">
                 <input type="text" id="newsSearch" class="search-bar" style="width:280px;background:#0f172a;" placeholder="SEARCH TICKER / KEYWORD... (e.g. $NVDA)" oninput="filterNews()">
                 <div class="close-modal" onclick="closeNewsModal()">&times;</div>
@@ -217,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isRemote = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && !window.location.hostname.startsWith('192.168.');
     if (isRemote) {
         const lbl = document.getElementById('versionLabel');
-        lbl.innerHTML = 'V6.1 · Remote Intelligence Mode · <span style="color:var(--gold)">Sync Managed by Master Bridge</span>';
+        lbl.innerHTML = 'V6.1 Â· Remote Intelligence Mode Â· <span style="color:var(--gold)">Sync Managed by Master Bridge</span>';
         const btn = document.getElementById('syncBtn');
         btn.innerHTML = '<span class="sync-dot"></span> MASTER SYNC';
         btn.title = "Sync is automated at 4:20 PM EST by the Master Bridge. Manual trigger unavailable from remote viewing mode.";
@@ -254,7 +257,7 @@ async function initVelocity() {
 
             // Animation for high velocity
             if (maxV > 5) {
-                document.getElementById('vel-icon').innerText = '⚡';
+                document.getElementById('vel-icon').innerText = 'âš¡';
             }
         } else {
             statEl.style.display = 'none';
@@ -311,7 +314,7 @@ async function initVelocity() {
         <table id="masterTable">
             <thead>
                 <tr>
-                    <th style="width:30px;" onclick="setSort('pinned')">★</th>
+                    <th style="width:30px;" onclick="setSort('pinned')">â˜…</th>
                     <th class="col-rank">#</th>
                     <th style="width:100px;" onclick="setSort('ticker')">Ticker</th>
                     <th style="width:60px;" onclick="setSort('alpha')">Alpha</th>
@@ -367,15 +370,15 @@ const RANK_EXPLAIN = {
     7: 'Ranking by: Alpha (40%) + <span>Discovery (29%)</span> + Momentum (15%) + Safety (20%). Aggressive hunt for overlooked plays.',
     8: 'Ranking by: Alpha (40%) + <span>Discovery (36%)</span> + Momentum (15%) + Safety (15%). Tier 3/4 supply chain bottlenecks.',
     9: 'Ranking by: Alpha (40%) + <span>Discovery (43%)</span> + Momentum (15%) + Safety (10%). Maximum undiscovered-company weighting.',
-    10: 'Ranking by: <span>Discovery (50%)</span> + Alpha (40%) + Momentum (15%) + Safety (5%). 💀 Pure conviction. Risk ignored.',
+    10: 'Ranking by: <span>Discovery (50%)</span> + Alpha (40%) + Momentum (15%) + Safety (5%). ðŸ’€ Pure conviction. Risk ignored.',
 };
 
-const sfloat = v => { try { return parseFloat(String(v).replace('%','').trim())||0; } catch { return 0; } };
-const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const sfloat = v => { try { return parseFloat(String(v).replace('%',').trim())||0; } catch { return 0; } };
+const esc = s => s == null ? ' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
 function formatMCap(b) {
     if (!b || b <= 0) return '--';
-    let res = '';
+    let res = ';
     if (b >= 1000) {
         const t = b / 1000;
         res = (t < 10 ? t.toFixed(2) : t.toFixed(1)) + 'T';
@@ -470,11 +473,11 @@ function parseUpside(str) {
 }
 
 const state = {
-    search: '', minMcap: -Infinity, maxMcap: Infinity, minAlpha: 0, maxAlpha: 10, minRisk: 0, maxRisk: 10, minHidden: 0, maxHidden: 10, minRev: -Infinity,
+    search: ', minMcap: -Infinity, maxMcap: Infinity, minAlpha: 0, maxAlpha: 10, minRisk: 0, maxRisk: 10, minHidden: 0, maxHidden: 10, minRev: -Infinity,
     minPe26: -Infinity, maxPe26: Infinity, minPe27: -Infinity, maxPe27: Infinity,
     minInst: -Infinity, maxInst: Infinity, minShort: -Infinity, maxShort: Infinity,
     minAnalysts: -Infinity, maxAnalysts: Infinity, minBuzz: -Infinity, maxBuzz: Infinity,
-    selectedBuckets: [], selectedExchanges: [], pinned: [], range: '1y', sortCol: '', sortDir: -1, aggressiveness: 5, showPrivate: true
+    selectedBuckets: [], selectedExchanges: [], pinned: [], range: '1y', sortCol: ', sortDir: -1, aggressiveness: 5, showPrivate: true
 };
 
 function get1yPerf(entry) {
@@ -505,7 +508,7 @@ function buildEntries() {
         const pe27f = (pe27 > 0 && pe27 < 150) ? pe27.toFixed(1) : '--';
         const upsideVal = entry.h['Target Upside'] || '--';
 
-        const growth_str = h['Rev Growth Est'] || '';
+        const growth_str = h['Rev Growth Est'] || ';
         let rev_num = growth_str.includes('%') ? parseFloat(growth_str) : 0;
 
         const visualBuzz = (window.X_INTEL_MODULE?.visual_mentions || {})[ticker] || null;
@@ -519,7 +522,7 @@ function buildEntries() {
             obb: entry.obb || {},
             buzz: (window.X_INTEL_MODULE?.buzz || {})[ticker] || null,
             visualBuzz,
-            searchStr: `${ticker} ${h.Company||''} ${h.Role||''} ${h.Notes||''}`.toLowerCase(),
+            searchStr: `${ticker} ${h.Company||'} ${h.Role||'} ${h.Notes||'}`.toLowerCase(),
             price, updTime, exchange, pe26f, pe27f, upsideVal,
             extPrice: live.ext_price ?? null,
             extPct: live.ext_pct ?? null,
@@ -560,7 +563,7 @@ function render() {
     const tbody = document.getElementById('tableBody');
     const frag = document.createDocumentFragment();
     let rank = 1;
-    const getMom = (p, k) => { const v=(p||{})[k]; return v===undefined?'':(v>=0?'mb-up':'mb-dn'); };
+    const getMom = (p, k) => { const v=(p||{})[k]; return v===undefined?':(v>=0?'mb-up':'mb-dn'); };
 
     pub.forEach(e => {
         const isPinned = state.pinned.includes(e.ticker);
@@ -568,10 +571,10 @@ function render() {
         const pe26f = (e.pe26 > 0 && e.pe26 < 500) ? e.pe26.toFixed(1) : '--';
         const pe27f = (e.pe27 > 0 && e.pe27 < 500) ? e.pe27.toFixed(1) : '--';
 
-        let upsideVal = `<span class="${parseUpside(e.h['Target Upside']) > 0 ? 'up' : ''}" style="color:${parseUpside(e.h['Target Upside']) > 0 ? 'var(--green)' : 'var(--text-main)'}">${esc(e.h['Target Upside'] || '--')}</span>`;
+        let upsideVal = `<span class="${parseUpside(e.h['Target Upside']) > 0 ? 'up' : '}" style="color:${parseUpside(e.h['Target Upside']) > 0 ? 'var(--green)' : 'var(--text-main)'}">${esc(e.h['Target Upside'] || '--')}</span>`;
         if (e.obb && e.obb.analyst_implied_upside_pct) {
             const consensus = e.obb.analyst_implied_upside_pct;
-            upsideVal = `<div style="font-size:9px; opacity:0.7;">CONSENSUS</div><div style="font-weight:bold; color:var(--green);">${consensus > 0 ? '+' : ''}${consensus.toFixed(1)}%</div>`;
+            upsideVal = `<div style="font-size:9px; opacity:0.7;">CONSENSUS</div><div style="font-weight:bold; color:var(--green);">${consensus > 0 ? '+' : '}${consensus.toFixed(1)}%</div>`;
         }
 
         const todayStr = (e.todayPct != null) ? (e.todayPct > 0 ? '+' + e.todayPct.toFixed(2) + '%' : e.todayPct.toFixed(2) + '%') : '--';
@@ -579,16 +582,16 @@ function render() {
         const extStr = (e.extPrice != null && e.extPct != null) ? (e.extPct > 0 ? '+' + e.extPct.toFixed(2) + '%' : e.extPct.toFixed(2) + '%') : null;
         const extCls = (e.extPct || 0) >= 0 ? 'up' : 'down';
 
-        let newsHtml = '';
+        let newsHtml = ';
         if (e.buzz && e.buzz.total > 0) {
-            newsHtml = `<span onclick="syncIntelSearch('${e.ticker}'); event.stopPropagation();" style="display:inline-flex;align-items:center;gap:3px;background:rgba(212,163,115,0.1);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;border:1px solid rgba(212,163,115,0.3);cursor:pointer;margin-right:3px;" title="Social Buzz: ${e.buzz['7d']} tweet mentions last 7d">𝕏 ${e.buzz['7d']}</span>`;
+            newsHtml = `<span onclick="syncIntelSearch('${e.ticker}'); event.stopPropagation();" style="display:inline-flex;align-items:center;gap:3px;background:rgba(212,163,115,0.1);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;border:1px solid rgba(212,163,115,0.3);cursor:pointer;margin-right:3px;" title="Social Buzz: ${e.buzz['7d']} tweet mentions last 7d">ð• ${e.buzz['7d']}</span>`;
         }
         if (e.visualBuzz && e.visualBuzz.count > 0) {
             const sampleTip = (e.visualBuzz.sample_texts || []).slice(0, 1).join(' | ').substring(0, 120);
-            newsHtml += `<span onclick="syncIntelSearch('${e.ticker}'); event.stopPropagation();" style="display:inline-flex;align-items:center;gap:3px;background:rgba(16,185,129,0.1);color:var(--green);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;border:1px solid rgba(16,185,129,0.3);cursor:pointer;margin-right:3px;" title="Visual Intel: ${e.visualBuzz.count} chart/image mentions | ${sampleTip}">📷 ${e.visualBuzz.count}</span>`;
+            newsHtml += `<span onclick="syncIntelSearch('${e.ticker}'); event.stopPropagation();" style="display:inline-flex;align-items:center;gap:3px;background:rgba(16,185,129,0.1);color:var(--green);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;border:1px solid rgba(16,185,129,0.3);cursor:pointer;margin-right:3px;" title="Visual Intel: ${e.visualBuzz.count} chart/image mentions | ${sampleTip}">ðŸ“· ${e.visualBuzz.count}</span>`;
         }
 
-        let obbHtml = '';
+        let obbHtml = ';
         if (e.obb.analyst_count || e.obb.inst_ownership_pct) {
             obbHtml = `<div style="margin-top:4px;display:flex;gap:4px;">`;
             if (e.obb.analyst_count) obbHtml += `<span style="background:rgba(14,165,233,0.1);color:var(--accent);padding:1px 4px;border-radius:3px;font-size:9px;font-weight:800;border:1px solid rgba(14,165,233,0.2);">ANALYSTS: ${e.obb.analyst_count}</span>`;
@@ -598,10 +601,10 @@ function render() {
         }
 
         const recentStatus = e.obb?.recent_7d_status || e.p?.recent_7d_status || [0,0,0,0,0,0,0];
-        const momHtml = recentStatus.map(s => `<div class="mb ${s ? 'up' : 'down'}"></div>`).join('');
+        const momHtml = recentStatus.map(s => `<div class="mb ${s ? 'up' : 'down'}"></div>`).join(');
 
         tr.innerHTML = `
-            <td style="text-align:center;"><span class="pin-btn ${isPinned ? 'active' : ''}" onclick="togglePin('${esc(e.ticker)}')">★</span></td>
+            <td style="text-align:center;"><span class="pin-btn ${isPinned ? 'active' : '}" onclick="togglePin('${esc(e.ticker)}')">â˜…</span></td>
             <td style="text-align:center; padding-left: 0; padding-right: 0;"><span class="rank-num">${rank}</span></td>
             <td class="ticker">
                 <div style="display: flex; flex-direction: column; gap: 1px;">
@@ -618,7 +621,7 @@ function render() {
             <td><span class="chip">${pe26f}</span></td>
             <td><span class="chip" style="opacity:0.6;">${pe27f}</span></td>
             <td class="upside-cell" style="font-weight:700; font-size:12px;">${upsideVal}</td>
-            <td style="font-size:11px; font-weight:900; color:${(e.perf1y || 0) >= 0 ? 'var(--green)' : 'var(--danger)'};">${e.perf1y !== undefined ? (e.perf1y > 0 ? '+' : '') + e.perf1y.toFixed(1) + '%' : '--'}</td>
+            <td style="font-size:11px; font-weight:900; color:${(e.perf1y || 0) >= 0 ? 'var(--green)' : 'var(--danger)'};">${e.perf1y !== undefined ? (e.perf1y > 0 ? '+' : ') + e.perf1y.toFixed(1) + '%' : '--'}</td>
             <td style="font-weight:800;">
                 <div style="font-size:12px;color:var(--gold);">${e.price != null ? '$' + e.price.toFixed(2) : '--'}</div>
                 <div style="font-size:9px;" class="${todayCls}">${e.todayChg != null ? (e.todayChg > 0 ? '+$' + e.todayChg.toFixed(2) : '-$' + Math.abs(e.todayChg).toFixed(2)) : '--'}</div>
@@ -629,29 +632,29 @@ function render() {
 
             <td style="font-weight:700;">
                 ${extStr !== null ? `
-                <div style="font-size:8px;color:var(--text-dim);font-weight:700;">${e.extType || ''}</div>
+                <div style="font-size:8px;color:var(--text-dim);font-weight:700;">${e.extType || '}</div>
                 <div style="font-size:11px;color:var(--gold);font-weight:800;">$${e.extPrice.toFixed(2)} <span style="font-size:8px;color:var(--text-dim);font-weight:500;">(C: $${(e.price || 0).toFixed(2)})</span></div>
                 <div style="font-size:9px;" class="${extCls}">${extStr}</div>
                 ` : '<span style="color:var(--text-dim);font-size:10px;">--</span>'}
             </td>
             <td style="font-weight:700;color:var(--accent);">${e.rev_num ? e.rev_num + '%' : '--'}</td>
-            <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${newsHtml}${esc(e.h.Role)}</div><div style="font-size:10px;color:#cbd5e1;margin-top:1px;">${esc((e.h.Notes || '').replace(/\s*[|,]?\s*(Valuation|US ADR|US OTC|OTC)[^|]*/gi, '').trim())}</div>${obbHtml}</td>
+            <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${newsHtml}${esc(e.h.Role)}</div><div style="font-size:10px;color:#cbd5e1;margin-top:1px;">${esc((e.h.Notes || ').replace(/\s*[|,]?\s*(Valuation|US ADR|US OTC|OTC)[^|]*/gi, ').trim())}</div>${obbHtml}</td>
         `;
         frag.appendChild(tr); rank++;
     });
 
     if (state.showPrivate && priv.length > 0) {
         const divRow = document.createElement('tr'); divRow.className = 'watchlist-divider';
-        divRow.innerHTML = `<td colspan="16">🔒 PRIVATE / PRE-IPO WATCHLIST</td>`;
+        divRow.innerHTML = `<td colspan="16">ðŸ”’ PRIVATE / PRE-IPO WATCHLIST</td>`;
         frag.appendChild(divRow);
         priv.forEach(e => {
             const tr = document.createElement('tr'); tr.className='private-row';
             const todayStr = (e.todayPct != null) ? (e.todayPct > 0 ? '+' + e.todayPct.toFixed(2) + '%' : e.todayPct.toFixed(2) + '%') : '--';
-            tr.innerHTML = `<td>★</td><td><span class="rank-num" style="color:var(--purple)">🔒</span></td><td class="ticker" style="color:var(--purple)">$${esc(e.ticker)}</td><td><b>${esc(e.h.Company)}</b></td><td><div class="chip" style="border:1px solid ${getScoreColor(e.h['Alpha Score'], 'alpha')}; background:rgba(212,163,115,0.05); color:${getScoreColor(e.h['Alpha Score'], 'alpha')}">${esc(e.h['Alpha Score'] || '?')}</div></td><td><div class="chip" style="border:1px solid ${getScoreColor(e.h['Risk Adj'], 'risk')}; background:rgba(244,63,94,0.05); color:${getScoreColor(e.h['Risk Adj'], 'risk')}">${esc(e.h['Risk Adj'] || '?')}</div></td><td><div class="chip" style="border:1px solid ${getScoreColor(e.h['Hiddenness'], 'hidden')}; background:rgba(14,165,233,0.05); color:${getScoreColor(e.h['Hiddenness'], 'hidden')}">${esc(e.h['Hiddenness'] || '?')}</div></td><td><span class="region-tag">${esc(e.h.Country)}</span></td><td>PRIVATE</td><td>--</td><td>--</td><td class="upside-cell" style="font-weight:700;">${esc(e.h['Target Upside'])}</td><td>--</td><td class="up">${todayStr}</td><td style="color:var(--text-dim)">--</td><td><div style="font-weight:800;font-size:11px;">${esc(e.h.Role)}</div></td>`;
+            tr.innerHTML = `<td>â˜…</td><td><span class="rank-num" style="color:var(--purple)">ðŸ”’</span></td><td class="ticker" style="color:var(--purple)">$${esc(e.ticker)}</td><td><b>${esc(e.h.Company)}</b></td><td><div class="chip" style="border:1px solid ${getScoreColor(e.h['Alpha Score'], 'alpha')}; background:rgba(212,163,115,0.05); color:${getScoreColor(e.h['Alpha Score'], 'alpha')}">${esc(e.h['Alpha Score'] || '?')}</div></td><td><div class="chip" style="border:1px solid ${getScoreColor(e.h['Risk Adj'], 'risk')}; background:rgba(244,63,94,0.05); color:${getScoreColor(e.h['Risk Adj'], 'risk')}">${esc(e.h['Risk Adj'] || '?')}</div></td><td><div class="chip" style="border:1px solid ${getScoreColor(e.h['Hiddenness'], 'hidden')}; background:rgba(14,165,233,0.05); color:${getScoreColor(e.h['Hiddenness'], 'hidden')}">${esc(e.h['Hiddenness'] || '?')}</div></td><td><span class="region-tag">${esc(e.h.Country)}</span></td><td>PRIVATE</td><td>--</td><td>--</td><td class="upside-cell" style="font-weight:700;">${esc(e.h['Target Upside'])}</td><td>--</td><td class="up">${todayStr}</td><td style="color:var(--text-dim)">--</td><td><div style="font-weight:800;font-size:11px;">${esc(e.h.Role)}</div></td>`;
             frag.appendChild(tr);
         });
     }
-    tbody.innerHTML = ''; tbody.appendChild(frag);
+    tbody.innerHTML = '; tbody.appendChild(frag);
 
     // Update live price timestamp in header
     const refreshTs = (window.LIVE_PRICES || {})._meta?.refreshed_at_est;
@@ -663,7 +666,7 @@ function render() {
     document.getElementById('stat-total').innerText = pub.length;
     document.getElementById('stat-private').innerText = priv.length;
     document.getElementById('stat-pinned').innerText = state.pinned.length;
-    document.getElementById('rankExplain').innerHTML = (state.sortCol === '' || state.sortCol === 'best') ? (RANK_EXPLAIN[state.aggressiveness] || '') : '&nbsp;';
+    document.getElementById('rankExplain').innerHTML = (state.sortCol === ' || state.sortCol === 'best') ? (RANK_EXPLAIN[state.aggressiveness] || ') : '&nbsp;';
 }
 
 function passesFilters(e) {
@@ -690,11 +693,11 @@ function passesFilters(e) {
     const instPct = sfloat(e.obb?.inst_ownership_pct);
     const shortPct = sfloat(e.obb?.short_interest_pct);
     const analysts = sfloat(e.obb?.analyst_count);
-    const hasInst = e.obb?.inst_ownership_pct != null && e.obb.inst_ownership_pct !== '';
-    const hasShort = e.obb?.short_interest_pct != null && e.obb.short_interest_pct !== '';
-    const hasAnalysts = e.obb?.analyst_count != null && e.obb.analyst_count !== '';
+    const hasInst = e.obb?.inst_ownership_pct != null && e.obb.inst_ownership_pct !== ';
+    const hasShort = e.obb?.short_interest_pct != null && e.obb.short_interest_pct !== ';
+    const hasAnalysts = e.obb?.analyst_count != null && e.obb.analyst_count !== ';
     if (state.minInst > -Infinity || state.maxInst < Infinity) {
-        if (!hasInst) return false; // filter active but no data → exclude
+        if (!hasInst) return false; // filter active but no data â†’ exclude
         if (instPct < state.minInst || instPct > state.maxInst) return false;
     }
     if (state.minShort > -Infinity || state.maxShort < Infinity) {
@@ -713,11 +716,11 @@ function passesFilters(e) {
     }
 
     if (state.selectedBuckets.length > 0) {
-        const match = state.selectedBuckets.some(b => b.toUpperCase() === (e.h.Bucket || '').toUpperCase());
+        const match = state.selectedBuckets.some(b => b.toUpperCase() === (e.h.Bucket || ').toUpperCase());
         if (!match) return false;
     }
     if (state.selectedExchanges.length > 0) {
-        const match = state.selectedExchanges.some(ex => ex.toUpperCase() === (e.exchange || '').toUpperCase());
+        const match = state.selectedExchanges.some(ex => ex.toUpperCase() === (e.exchange || ').toUpperCase());
         if (!match) return false;
     }
     if (sfloat(e.h['Alpha Score']) < state.minAlpha || sfloat(e.h['Alpha Score']) > state.maxAlpha) return false;
@@ -743,11 +746,11 @@ function sortFn(a, b) {
     if (col === 'best') { av = a.score; bv = b.score; }
     else if (col === 'pinned') { av = state.pinned.includes(a.ticker)?1:0; bv = state.pinned.includes(b.ticker)?1:0; }
     else if (col === 'ticker') { av = a.ticker; bv = b.ticker; }
-    else if (col === 'company') { av = (a.h.Company||'').toLowerCase(); bv = (b.h.Company||'').toLowerCase(); }
+    else if (col === 'company') { av = (a.h.Company||').toLowerCase(); bv = (b.h.Company||').toLowerCase(); }
     else if (col === 'alpha') { av = sfloat(a.h['Alpha Score']); bv = sfloat(b.h['Alpha Score']); }
     else if (col === 'risk') { av = sfloat(a.h['Risk Adj']); bv = sfloat(b.h['Risk Adj']); }
     else if (col === 'hidden') { av = sfloat(a.h['Hiddenness']); bv = sfloat(b.h['Hiddenness']); }
-    else if (col === 'country') { av = (a.exchange||'').toLowerCase(); bv = (b.exchange||'').toLowerCase(); }
+    else if (col === 'country') { av = (a.exchange||').toLowerCase(); bv = (b.exchange||').toLowerCase(); }
     else if (col === 'upside') { av = parseUpside(a.h['Target Upside']); bv = parseUpside(b.h['Target Upside']); }
 
     else if (col === 'mcap') { av = a.mcapB; bv = b.mcapB; }
@@ -758,7 +761,7 @@ function sortFn(a, b) {
     else if (col === 'today') { av = a.todayChg??-9999; bv = b.todayChg??-9999; }
     else if (col === 'todayPct') { av = a.todayPct??-9999; bv = b.todayPct??-9999; }
     else if (col === 'ext')   { av = a.extPct??-9999;   bv = b.extPct??-9999; }
-    else { av = (a.h.Role||'')+(a.h.Notes||''); bv = (b.h.Role||'')+(b.h.Notes||''); }
+    else { av = (a.h.Role||')+(a.h.Notes||'); bv = (b.h.Role||')+(b.h.Notes||'); }
     if (typeof av === 'string' && typeof bv === 'string') return av.localeCompare(bv) * state.sortDir;
     return (av < bv ? -1 : (av > bv ? 1 : 0)) * state.sortDir;
 }
@@ -770,7 +773,7 @@ function initBuckets() {
         if (e.h.Bucket !== 'Private') buckets.add(e.h.Bucket);
         if (e.exchange) exchanges.add(e.exchange);
     });
-    const container = document.getElementById('bucketPills'); container.innerHTML = '';
+    const container = document.getElementById('bucketPills'); container.innerHTML = ';
 
     const mk = (t, s, k) => {
         const h = document.createElement('div'); h.className='section-label'; h.innerText=t; container.appendChild(h);
@@ -781,7 +784,7 @@ function initBuckets() {
             row.appendChild(p);
         });
         if (t === 'SECTORS') {
-            const pp = document.createElement('div'); pp.className='pill priv-pill' + (state.showPrivate ? ' active' : ''); pp.innerText='🔒 SHOW PRIVATE';
+            const pp = document.createElement('div'); pp.className='pill priv-pill' + (state.showPrivate ? ' active' : '); pp.innerText='ðŸ”’ SHOW PRIVATE';
             pp.onclick = () => { state.showPrivate = !state.showPrivate; pp.classList.toggle('active', state.showPrivate); render(); };
             row.appendChild(pp);
         }
@@ -829,7 +832,7 @@ window.setSort = function(col) {
 window.togglePin = t => { state.pinned.includes(t) ? state.pinned=state.pinned.filter(x=>x!==t) : state.pinned.push(t); render(); updateChart(); };
 window.clearPins = () => { state.pinned = []; render(); updateChart(); };
 document.getElementById('searchInput').oninput = e => { state.search = e.target.value.toLowerCase(); render(); };
-const bind = (id, k, f=v=>v) => { const el=document.getElementById(id); if (el) el.oninput=e=> { state[k]=e.target.value===''?(k.startsWith('min')?-Infinity:Infinity):f(e.target.value); render(); } };
+const bind = (id, k, f=v=>v) => { const el=document.getElementById(id); if (el) el.oninput=e=> { state[k]=e.target.value==='?(k.startsWith('min')?-Infinity:Infinity):f(e.target.value); render(); } };
 bind('minMcap','minMcap',parseFloat); bind('maxMcap','maxMcap',parseFloat);
 bind('minAlpha','minAlpha',parseFloat); bind('maxAlpha','maxAlpha',parseFloat);
 bind('minPe26','minPe26',parseFloat); bind('maxPe26','maxPe26',parseFloat);
@@ -840,7 +843,7 @@ bind('minAnalysts','minAnalysts',parseFloat); bind('maxAnalysts','maxAnalysts',p
 bind('minBuzz','minBuzz',parseFloat); bind('maxBuzz','maxBuzz',parseFloat);
 bind('minRev','minRev',parseFloat);
 const aggEl = document.getElementById('aggressiveness');
-aggEl.oninput = () => { state.aggressiveness = parseInt(aggEl.value); document.getElementById('agg-val').innerText = state.aggressiveness; document.getElementById('agg-mode-label').innerText = AGG_MODES[state.aggressiveness]; state.sortCol = ''; render(); };
+aggEl.oninput = () => { state.aggressiveness = parseInt(aggEl.value); document.getElementById('agg-val').innerText = state.aggressiveness; document.getElementById('agg-mode-label').innerText = AGG_MODES[state.aggressiveness]; state.sortCol = '; render(); };
 
 // WEB BRIDGE SYNC
 const BRIDGE_BASE = 'http://localhost:5174';
@@ -900,24 +903,24 @@ function initPulse() {
 }
 
 
-// ═══════════════════════════════════════════════════
-//  NEWS MODAL — Yahoo News Intelligence
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+//  NEWS MODAL â€” Yahoo News Intelligence
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function filterNews() {
     const db = window.YAHOO_NEWS_MODULE;
     if (!db || !db.articles) {
         document.getElementById('newsBody').innerHTML = '<div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">NO NEWS DATA. RUN engine/sync_news.py TO POPULATE.</div>';
         return;
     }
-    const q = (document.getElementById('newsSearch')?.value || '').toLowerCase().trim();
+    const q = (document.getElementById('newsSearch')?.value || ').toLowerCase().trim();
     const articles = db.articles.filter(a => {
         if (!q) return true;
-        return (a.title||'').toLowerCase().includes(q) || (a.summary||'').toLowerCase().includes(q) || (a.tickers||[]).some(t => t.toLowerCase().includes(q.replace('$','')));
+        return (a.title||').toLowerCase().includes(q) || (a.summary||').toLowerCase().includes(q) || (a.tickers||[]).some(t => t.toLowerCase().includes(q.replace('$',')));
     });
     renderNews(articles, q);
 }
 
-function renderNews(articles, query='', limit=50) {
+function renderNews(articles, query=', limit=50) {
     const container = document.getElementById('newsBody');
     const countEl = document.getElementById('news-count');
     if (countEl) countEl.innerText = `${articles.length} ARTICLES`;
@@ -931,33 +934,33 @@ function renderNews(articles, query='', limit=50) {
     const earnings = articles.filter(a => a.is_earnings).slice(0, 8);
     const others = articles.filter(a => !a.is_earnings).slice(0, limit);
 
-    let html = '';
+    let html = ';
 
     // Only show earnings area if no specific search query is active
     if (earnings.length > 0 && !query) {
         html += `<div style="margin-bottom:20px; padding:12px; background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:8px;">
             <div style="color:var(--gold); font-size:14px; font-weight:900; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
-                <span style="font-size:18px;">📊</span> EARNINGS INTELLIGENCE
+                <span style="font-size:18px;">ðŸ“Š</span> EARNINGS INTELLIGENCE
             </div>`;
-        html += earnings.map(a => renderArticle(a, query)).join('');
+        html += earnings.map(a => renderArticle(a, query)).join(');
         html += `</div>`;
     }
 
-    html += others.map(a => renderArticle(a, query)).join('');
+    html += others.map(a => renderArticle(a, query)).join(');
     container.innerHTML = html;
 }
 
 function renderArticle(a, query) {
-    const tickers = (a.tickers||[]).map(t => `<span style="background:rgba(212,163,115,0.15);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;margin-right:3px;cursor:pointer;" onclick="syncNewsSearch('${t}')">${t === 'MACRO' ? 'MACRO' : '$'+t}</span>`).join('');
-    const pub = a.published_est || a.published || '';
-    const src = a.source || '';
-    let title = a.title || '';
+    const tickers = (a.tickers||[]).map(t => `<span style="background:rgba(212,163,115,0.15);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;margin-right:3px;cursor:pointer;" onclick="syncNewsSearch('${t}')">${t === 'MACRO' ? 'MACRO' : '$'+t}</span>`).join(');
+    const pub = a.published_est || a.published || ';
+    const src = a.source || ';
+    let title = a.title || ';
     if (query && query.length > 1) {
         const re = new RegExp(`(${query.replace(/[$]/g,'\\$')})`, 'gi');
         title = title.replace(re, '<span class="highlight">$1</span>');
     }
-    const borderStyle = a.is_earnings ? 'border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.03);' : '';
-    const macroBadge = a.is_macro ? '<span style="color:var(--accent); font-size:8px; font-weight:900; margin-right:6px;">[MACRO]</span>' : '';
+    const borderStyle = a.is_earnings ? 'border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.03);' : ';
+    const macroBadge = a.is_macro ? '<span style="color:var(--accent); font-size:8px; font-weight:900; margin-right:6px;">[MACRO]</span>' : ';
 
     return `<div class="intel-item" style="${borderStyle}">
         <div class="meta" style="justify-content:space-between;">
@@ -965,9 +968,9 @@ function renderArticle(a, query) {
             <span style="color:var(--text-dim);font-size:9px;">${pub}</span>
         </div>
         <div style="margin:4px 0 5px;font-size:11px;font-weight:700;line-height:1.4;">${title}</div>
-        <div style="font-size:9px;color:#94a3b8;margin-bottom:5px;">${a.summary ? a.summary.substring(0,180)+'...' : ''}</div>
+        <div style="font-size:9px;color:#94a3b8;margin-bottom:5px;">${a.summary ? a.summary.substring(0,180)+'...' : '}</div>
         <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${tickers}</div>
-        <div style="margin-top:6px;text-align:right;"><a href="${a.url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;">READ ARTICLE ↗</a></div>
+        <div style="margin-top:6px;text-align:right;"><a href="${a.url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;">READ ARTICLE â†—</a></div>
     </div>`;
 }
 
@@ -981,7 +984,7 @@ function closeNewsModal() {
 }
 
 function syncNewsSearch(ticker) {
-    const q = ticker.startsWith('$') ? ticker.replace('$','') : ticker;
+    const q = ticker.startsWith('$') ? ticker.replace('$',') : ticker;
     const el = document.getElementById('newsSearch');
     if (el) el.value = '$' + q;
     openNewsModal();

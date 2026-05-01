@@ -6,7 +6,8 @@
    - **Extreme Payload Optimization**: HTML payload remains under 102KB. ACHIEVED: 85KB by transitioning to centralized CSS and high-density layouts.
     - **Ticker Layout Mandate**: EVERY ticker row must follow the 3-line protocol: $TICKER+PRICE on line 1, C: PRICE+PCT on line 2 (for ext sessions), and VAL+PE (including forward '26/'27 estimates) on line 3. Headers are centered.
     - **Valuation Logic**: Terminology standardized to `MCap:`. P/E hierarchy favors forward estimates (`'26 [9.9] '27 [11.4]`) over trailing. Outliers strictly capped at `[-500, 1000]`.
-    - **Branding & Accessibility**: Authoritative institutional header includes a live Web Link (`bmwseals.com/stocks/email`) using the `bg_accent` design token.
+    - **Branding & Accessibility**: Authoritative institutional header includes a live Web Link (`bmwseals.com/stocks/email`) using the **Sovereign Blue (#38bdf8)** design token. Injected "🕰️ ARCHIVE" buttons into both email and web cockpit headers for historical access.
+   - **Archival Intelligence Engine**: Deployed `SynopsisArchiveManager` to maintain a 48-hour rolling history (`synopsis_history.json`) of market dossiers, integrated into the master dispatch pipeline.
    - **Hierarchy Leader Mandate**: `engine/market_session.py` is the absolute authority for session/temporal logic. `engine/error_monitor.py` is the authority for exit-point diagnostics.
    - **Identity 146**: Standardize all scraper/rescue identities on Chrome 146.0.7000 (2026-grade).
    - **Import Hardening**: Use recursive try/except blocks in all `engine/` modules to support both root-level discovery and direct execution.
@@ -17,11 +18,12 @@
    - **Institutional Source Hardening**: strictly blacklist low-signal sources (e.g., "The Motley Fool").
    - **Article Rotation Engine**: Deployed `sent_news_history.json` ledger to track previously sent URLs for 24h.
     - **Web Synopsis Endpoint**: Automatically deploys the generated email synopsis to `bmwseals.com/email` via `RemoteSync.sync_file()` for instant web access.
-     - **Session-Aware Narrative Pipeline**: Dossier now includes real-time market context scraped from Yahoo (Morning Brief), CNBC (Midday Live), and Edward Jones (After Close) based on the current market session. **Hardened with junk-pattern rejection and editorial keyword gates.**
+    - **Session-Aware Narrative Pipeline**: Dossier includes real-time market context scraped from StockMarketWatch (PRE), CNBC (MID), and Edward Jones (POST). **Hardened with signature-based extraction, case-insensitive junk rejection, and editorial keyword gates.**
    - **Data-Driven Session Detection**: ALWAYS match session badges (AH, OVN, PRE) to the actual data source, not clock time.
    - **24h Ghost Ticker Purge**: Database entries older than 24h must be purged during every save cycle.
    - **Multi-Tier Rescue**: Use a 5-gateway pool (`vx_rescue_fetcher.py`) with OpenGraph HTML scraping fallback.
    - **Unified Error Monitoring**: `engine/error_monitor.py` is integrated into ALL core hierarchy scripts via `atexit`, ensuring a comprehensive error summary is printed at the end of every run for easy diagnostics.
+   - **Regex Guard Mandate**: ALWAYS use word boundaries (e.g., `r"<p\b"`) when searching for paragraph tags to avoid false-positive matches with `<path>`, `<picture>`, or `<pre>` tags.
 
 2. **Dependency Guardian (V28)**:
    - **Auto-Restart Protocol**: Uses `os.execv` to automatically refresh the Python process after resolving missing dependencies.

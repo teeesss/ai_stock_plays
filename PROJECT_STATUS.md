@@ -1,13 +1,15 @@
 # Project Status: Market Intelligence Engine
 
-## 🚀 Current Milestone: V28.8 (Sovereign Intelligence Hardening)
-**Status**: 🟢 PRODUCTION-DEPLOYED // **Aesthetic**: Institutional Alternate Tiles // **Logic**: Dual-Dispatch (Email + Web)
----
-### 🧩 Core Accomplishments
-- **[NEW] Session-Aware Market Synopsis Pipeline (V28.8)**: Integrated institutional-grade narrative intelligence. The dossier now dynamically scrapes Yahoo Finance (PRE), CNBC (MID), and Edward Jones (POST) to provide professional market context in the executive header. **V28.8.1: Hardened with high-fidelity junk-pattern rejection to eliminate navigation/ad noise.**
+## 🚀 Current Milestone: V28.8.1 - Archival Engine & Scraper Hardening [2026-05-01]
+- **Archival Intelligence**: Deployed `SynopsisArchiveManager` with 48h rolling TTL.
+- **Resilient Scraper**: Multi-source rotation (StockMarketWatch → CNBC → EDJ) implemented to eliminate data gaps.
+- **Endpoint Resolution**: Resolved 404 by deploying static `archive.html` generation and automated SFTP synchronization.
+- **UI Consistency**: Standardized archival links across email and web cockpit using absolute URLs.
+- **[NEW] Session-Aware Market Synopsis Pipeline (V28.8)**: **Session-Aware Narrative Pipeline**: Dossier includes real-time market context scraped from StockMarketWatch (PRE), CNBC (MID), and Edward Jones (POST). Hardened with signature-based extraction and case-insensitive junk rejection. V28.8.1: Hardened with high-fidelity junk-pattern rejection to eliminate navigation/ad noise and fixed SVG regex interference.
 - **[NEW] Web Synopsis Endpoint (V28.8)**: Integrated automatic deployment of the market intelligence dossier to `bmwseals.com/email`. Every email dispatch now simultaneously updates the web view via `RemoteSync`.
 - **[NEW] Email Redesign & Valuation Hardening (V28.8)**: Optimized HTML payload (85KB) and implemented a high-density 3-line ticker layout. Enforced `MCap` terminology, crisp bracketed P/E formatting (`'26 [9.9]`), and strict outlier filtration `[-500, 1000]`.
-- **[NEW] Institutional Branding (V28.8)**: Injected a permanent "Web Link" into the institutional header and synchronized the "Mirror Mandate" across all AI context files (`.cursorrules`, `GEMINI.md`, `CLAUDE.md`).
+- **[NEW] Institutional Branding (V28.8.1)**: Transformed Institutional "Web Link" to Sovereign Blue (#38bdf8) and injected "🕰️ ARCHIVE" buttons into both email and web cockpit headers for historical dossier access.
+- **[NEW] Archival Intelligence (V28.8.1)**: Deployed `SynopsisArchiveManager` to maintain a 48-hour rolling history of market dossiers, ensuring historical intelligence is preserved and accessible.
 - **[NEW] International Ticker Fidelity (V28.8)**: Resolved hydration regressions for international/OTC tickers (SIVE.ST, SIVEF) and fixed $IREN valuation scaling inconsistencies.
 - **[NEW] Mandatory Hierarchical Architecture (V28.71)**: Rebuilt the entire intelligence pipeline to follow a strict hierarchy-leader pattern. Logging is now initialized at the absolute top of all main scripts. Verified 100% visibility across Scraper, Price Sync, and Brain Update.
 - **[NEW] Documentation Overhaul (V28.8)**: Consolidated fragmented project documentation into a definitive V28.8 technical suite. Created `docs/ARCHITECTURE_V28.md` and `docs/INTELLIGENCE_MANUAL.md`. Updated `README.md` and `KNOWLEDGE.md` with institutional governance guidelines.

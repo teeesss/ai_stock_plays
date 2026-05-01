@@ -1,5 +1,18 @@
-## 🛠 V28.8 Sovereign Intelligence Hardening (2026-04-29 → 2026-04-30)
-- [x] **Market Synopsis Pipeline**: Deployed a session-aware narrative engine that scrapes Yahoo (Morning Brief), CNBC (Live updates), and Edward Jones (Daily Recap) based on the active market session. **Hardened with junk-pattern rejection and editorial keyword filtering to eliminate Yahoo navigation/ad noise.** ✅
+## 🛠 V28.8 Sovereign Intelligence Hardening (2026-04-29 → 2026-05-01)
+- [x] **UI & Archival Polish (V28.8.1)**:
+    - [x] Fix Sovereign Intelligence Archive 404
+    - [x] Implement 48-hour rolling history ledger
+    - [x] Hardened Synopsis Scraper with Multi-Source Fallback
+    - [x] Deploy Institutional Archive Dashboard (archive.html)
+    - [x] Transformed institutional "Web Link" to Sovereign Blue (#38bdf8) for premium interactivity. ✅
+    - [x] Deployed `SynopsisArchiveManager` maintaining a rolling 48-hour historical dossier ledger. ✅
+    - [x] Injected "🕰️ ARCHIVE" buttons into both Email and Web cockpit headers for historical access. ✅
+- [x] **Market Synopsis Pipeline**:
+    - [x] Implemented junk-pattern rejection and editorial keyword gates (V28.8.1).
+    - [x] Promoted StockMarketWatch as primary PRE-market authority with signature-based extraction. ✅
+    - [x] Hardened junk filter with case-insensitive patterns and navigational anchors. ✅
+    - [x] Implemented dual-paragraph "Cockpit" summary for deeper pre-market insights. ✅
+    - [x] Fixed global regex vulnerability where SVG <path> tags matched <p> tags. ✅
 - [x] **Web Synopsis Endpoint**: Enabled automatic deployment of `synopsis_preview.html` to `bmwseals.com/email` via `RemoteSync`. ✅
 - [x] **Documentation Mirror Sync**: Synchronized `.cursorrules`, `GEMINI.md`, and `CLAUDE.md` to V28 standards. ✅
 - [x] **Hierarchy Leader Hardening**: Centralized logging and session authority via `market_session.py` and `error_monitor.py`. ✅
