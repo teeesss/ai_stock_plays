@@ -166,7 +166,7 @@
 
 <div class="command-bar">
     <div class="logo">âš¡ AI WATCHLIST</div>
-    <div id="versionLabel" class="logo-sub">V1.0 Â· Independent Autonomous Mode | Last Generated: 2026-05-01 13:41:40</div>
+    <div id="versionLabel" class="logo-sub">V1.0 Â· Independent Autonomous Mode | Last Generated: 2026-05-01 16:04:55</div>
 
     <div class="stat"><span>UNIVERSE</span><div class="val" id="stat-total">â€”</div></div>
     <div class="stat"><span>PRIVATE</span><div class="val" id="stat-private" style="color:var(--purple)">â€”</div></div>
@@ -186,14 +186,16 @@
                 <input type="text" id="searchInput" class="search-bar" placeholder="SEARCH TICKERS...">
                 <span class="search-tag">TICKERS</span>
             </div>
+            <div class="search-box">
+                <input type="text" id="intelSearch" class="search-bar" placeholder="𝕏 SOCIAL INTELLIGENCE SEARCH..." readonly onclick="openIntelModal()">
+                <span class="search-tag" style="color:var(--accent)">SOCIAL</span>
+            </div>
         </div>
     </div>
     <button class="sync-btn" onclick="openNewsModal()" style="background:rgba(212,163,115,0.15);border-color:rgba(212,163,115,0.4);color:var(--gold);margin-right:6px;">
         &#128240; NEWS
     </button>
-    <button class="sync-btn" onclick="window.open('../archive/', '_blank')" style="background:rgba(56,189,248,0.15); border-color:rgba(56,189,248,0.4); color:#38bdf8; margin-right:6px;">
-        🕰️ ARCHIVE
-    </button>
+
     <button class="sync-btn" id="syncBtn" onclick="triggerSync()">
         <span class="sync-dot" id="syncDot"></span> MASTER SYNC
     </button>
@@ -212,7 +214,40 @@
     </div>
 </div>
 
+<div class="intel-modal" id="intelModal">
+    <div class="intel-modal-content">
+        <div class="intel-header">
+            <div>𝕏 SOCIAL INTELLIGENCE TERMINAL <span id="intel-sync-time" style="font-size:9px; color:var(--text-dim); margin-left:15px; font-weight:700;"></span></div>
+            <div style="display:flex;gap:15px;align-items:center;">
+                <input type="text" id="modalIntelSearch" class="search-bar" style="width:250px;background:#0f172a;" placeholder="SEARCH POSTS / KEYWORDS...">
+
+                <select id="intelUserFilter" style="font-size:10px;padding:4px;background:#0f172a;color:var(--text-dim);border:1px solid var(--border);" onchange="filterIntel()">
+                    <option value="all">ALL USERS</option>
+                </select>
+
+                <div style="display:flex;gap:5px;align-items:center;">
+                    <span style="font-size:9px;color:var(--text-dim);">FROM</span>
+                    <input type="date" id="intelDateFrom" style="font-size:10px;padding:4px;background:#0f172a;color:white;border:1px solid var(--border);" onchange="filterIntel()">
+                    <span style="font-size:9px;color:var(--text-dim);">TO</span>
+                    <input type="date" id="intelDateTo" style="font-size:10px;padding:4px;background:#0f172a;color:white;border:1px solid var(--border);" onchange="filterIntel()">
+                </div>
+
+                <select id="intelTimeFilter" style="font-size:10px;padding:4px;background:#0f172a;color:var(--text-dim);border:1px solid var(--border);" onchange="filterIntel()">
+                    <option value="all">ANY TIME (ARCHIVE)</option>
+                    <option value="24h">LAST 24 HOURS</option>
+                    <option value="7d">LAST 7 DAYS</option>
+                </select>
+                <div style="font-size:10px;color:var(--text-dim);white-space:nowrap;" id="intel-count">0 POSTS</div>
+                <div class="close-modal" onclick="closeIntelModal()">&times;</div>
+            </div>
+        </div>
+        <div class="buzz-bar" id="buzzBar"></div>
+        <div class="intel-scroll" id="intelBody"></div>
+    </div>
+</div>
+
 <script src="../database/YAHOO_NEWS_MODULE.js" defer></script>
+<script src="../database/x_intel_master.js" defer></script>
 
 <script>
 // Handle Remote vs Local UI
@@ -228,8 +263,13 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.onclick = () => alert("This terminal is in Remote Mode. The data is automatically synchronized daily at 4:20 PM EST by the Master Bridge. Manual sync must be triggered from the local machine hosting the bridge.");
     }
 
+    // Intel listeners
+    const modalIntelSearch = document.getElementById('modalIntelSearch');
+    if (modalIntelSearch) modalIntelSearch.addEventListener('input', filterIntel);
+
     initPulse();
     render();
+    filterIntel();
     initVelocity();
 });
 
@@ -373,7 +413,7 @@ const RANK_EXPLAIN = {
     10: 'Ranking by: <span>Discovery (50%)</span> + Alpha (40%) + Momentum (15%) + Safety (5%). ðŸ’€ Pure conviction. Risk ignored.',
 };
 
-const sfloat = v => { try { return parseFloat(String(v).replace('%',').trim())||0; } catch { return 0; } };
+const sfloat = v => { try { return parseFloat(String(v).replace('%', '').trim())||0; } catch { return 0; } };
 const esc = s => s == null ? ' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
 function formatMCap(b) {
@@ -571,10 +611,10 @@ function render() {
         const pe26f = (e.pe26 > 0 && e.pe26 < 500) ? e.pe26.toFixed(1) : '--';
         const pe27f = (e.pe27 > 0 && e.pe27 < 500) ? e.pe27.toFixed(1) : '--';
 
-        let upsideVal = `<span class="${parseUpside(e.h['Target Upside']) > 0 ? 'up' : '}" style="color:${parseUpside(e.h['Target Upside']) > 0 ? 'var(--green)' : 'var(--text-main)'}">${esc(e.h['Target Upside'] || '--')}</span>`;
+        let upsideVal = `<span class="${parseUpside(e.h['Target Upside']) > 0 ? 'up' : ''}" style="color:${parseUpside(e.h['Target Upside']) > 0 ? 'var(--green)' : 'var(--text-main)'}">${esc(e.h['Target Upside'] || '--')}</span>`;
         if (e.obb && e.obb.analyst_implied_upside_pct) {
             const consensus = e.obb.analyst_implied_upside_pct;
-            upsideVal = `<div style="font-size:9px; opacity:0.7;">CONSENSUS</div><div style="font-weight:bold; color:var(--green);">${consensus > 0 ? '+' : '}${consensus.toFixed(1)}%</div>`;
+            upsideVal = `<div style="font-size:9px; opacity:0.7;">CONSENSUS</div><div style="font-weight:bold; color:var(--green);">${consensus > 0 ? '+' : ''}${consensus.toFixed(1)}%</div>`;
         }
 
         const todayStr = (e.todayPct != null) ? (e.todayPct > 0 ? '+' + e.todayPct.toFixed(2) + '%' : e.todayPct.toFixed(2) + '%') : '--';
@@ -604,7 +644,7 @@ function render() {
         const momHtml = recentStatus.map(s => `<div class="mb ${s ? 'up' : 'down'}"></div>`).join(');
 
         tr.innerHTML = `
-            <td style="text-align:center;"><span class="pin-btn ${isPinned ? 'active' : '}" onclick="togglePin('${esc(e.ticker)}')">â˜…</span></td>
+            <td style="text-align:center;"><span class="pin-btn ${isPinned ? 'active' : ''}" onclick="togglePin('${esc(e.ticker)}')">â˜…</span></td>
             <td style="text-align:center; padding-left: 0; padding-right: 0;"><span class="rank-num">${rank}</span></td>
             <td class="ticker">
                 <div style="display: flex; flex-direction: column; gap: 1px;">
@@ -635,7 +675,7 @@ function render() {
                 <div style="font-size:8px;color:var(--text-dim);font-weight:700;">${e.extType || '}</div>
                 <div style="font-size:11px;color:var(--gold);font-weight:800;">$${e.extPrice.toFixed(2)} <span style="font-size:8px;color:var(--text-dim);font-weight:500;">(C: $${(e.price || 0).toFixed(2)})</span></div>
                 <div style="font-size:9px;" class="${extCls}">${extStr}</div>
-                ` : '<span style="color:var(--text-dim);font-size:10px;">--</span>'}
+                '' : '<span style="color:var(--text-dim);font-size:10px;">--</span>'}
             </td>
             <td style="font-weight:700;color:var(--accent);">${e.rev_num ? e.rev_num + '%' : '--'}</td>
             <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${newsHtml}${esc(e.h.Role)}</div><div style="font-size:10px;color:#cbd5e1;margin-top:1px;">${esc((e.h.Notes || ').replace(/\s*[|,]?\s*(Valuation|US ADR|US OTC|OTC)[^|]*/gi, ').trim())}</div>${obbHtml}</td>
@@ -915,7 +955,7 @@ function filterNews() {
     const q = (document.getElementById('newsSearch')?.value || ').toLowerCase().trim();
     const articles = db.articles.filter(a => {
         if (!q) return true;
-        return (a.title||').toLowerCase().includes(q) || (a.summary||').toLowerCase().includes(q) || (a.tickers||[]).some(t => t.toLowerCase().includes(q.replace('$',')));
+        return (a.title||'').toLowerCase().includes(q) || (a.summary||'').toLowerCase().includes(q) || (a.tickers||[]).some(t => t.toLowerCase().includes(q.replace('$', '')));
     });
     renderNews(articles, q);
 }
@@ -959,8 +999,8 @@ function renderArticle(a, query) {
         const re = new RegExp(`(${query.replace(/[$]/g,'\\$')})`, 'gi');
         title = title.replace(re, '<span class="highlight">$1</span>');
     }
-    const borderStyle = a.is_earnings ? 'border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.03);' : ';
-    const macroBadge = a.is_macro ? '<span style="color:var(--accent); font-size:8px; font-weight:900; margin-right:6px;">[MACRO]</span>' : ';
+    const borderStyle = a.is_earnings ? 'border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.03);' : '';
+    const macroBadge = a.is_macro ? '<span style="color:var(--accent); font-size:8px; font-weight:900; margin-right:6px;">[MACRO]</span>' : '';
 
     return `<div class="intel-item" style="${borderStyle}">
         <div class="meta" style="justify-content:space-between;">
@@ -968,7 +1008,7 @@ function renderArticle(a, query) {
             <span style="color:var(--text-dim);font-size:9px;">${pub}</span>
         </div>
         <div style="margin:4px 0 5px;font-size:11px;font-weight:700;line-height:1.4;">${title}</div>
-        <div style="font-size:9px;color:#94a3b8;margin-bottom:5px;">${a.summary ? a.summary.substring(0,180)+'...' : '}</div>
+        <div style="font-size:9px;color:#94a3b8;margin-bottom:5px;">${a.summary ? a.summary.substring(0,180)+'...' : ''}</div>
         <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${tickers}</div>
         <div style="margin-top:6px;text-align:right;"><a href="${a.url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;">READ ARTICLE â†—</a></div>
     </div>`;
@@ -984,10 +1024,371 @@ function closeNewsModal() {
 }
 
 function syncNewsSearch(ticker) {
-    const q = ticker.startsWith('$') ? ticker.replace('$',') : ticker;
+    const q = ticker.startsWith('$') ? ticker.replace('$', '') : ticker;
+mk('SECTORS', buckets, 'selectedBuckets'); mk('EXCHANGES', exchanges, 'selectedExchanges');
+}
+
+let chart = null;
+function initChart() {
+    chart = new ApexCharts(document.querySelector('#mainChart'), {
+        series: [], chart: { height: 180, type: 'area', background: 'transparent', toolbar: {show:false} },
+        colors: ['#f59e0b','#0ea5e9','#10b981','#f43f5e','#a855f7'],
+        stroke: { curve: 'smooth', width: 1.5 }, grid: { borderColor: '#1e293b' },
+        xaxis: { type: 'datetime', labels: { style: { colors: '#64748b', fontSize: '9px' } } },
+        yaxis: { labels: { formatter: v => v.toFixed(0)+'%', style: { colors: '#64748b', fontSize: '9px' } } },
+        tooltip: { theme: 'dark' }, dataLabels: { enabled: false }
+    });
+    chart.render();
+}
+
+function updateChart() {
+    const panel = document.getElementById('chartPanel');
+    if (!state.pinned.length) { panel.classList.remove('active'); return; }
+    panel.classList.add('active');
+    const limits = {'1m':30,'6m':182,'1y':365,'3y':1095,'5y':1825};
+    const limit = Date.now() - (limits[state.range]*86400000);
+    const series = state.pinned.map(t => {
+        const h = data[t]?.history || []; const f = h.filter(p=>p.x>=limit);
+        if (f.length < 2) return null; const b = f[0].y;
+        return { name: t, data: f.map(p=>({x:p.x, y:Math.round(((p.y/b)-1)*100)})) };
+    }).filter(Boolean);
+    chart.updateSeries(series);
+}
+
+// ========== INTELLIGENCE ENGINE V7.4 ==========
+window.setSort = function(col) {
+    if (state.sortCol === col) state.sortDir *= -1;
+    else { state.sortCol = col; state.sortDir = -1; }
+    render();
+};
+
+
+
+window.togglePin = t => { state.pinned.includes(t) ? state.pinned=state.pinned.filter(x=>x!==t) : state.pinned.push(t); render(); updateChart(); };
+window.clearPins = () => { state.pinned = []; render(); updateChart(); };
+document.getElementById('searchInput').oninput = e => { state.search = e.target.value.toLowerCase(); render(); };
+const bind = (id, k, f=v=>v) => { const el=document.getElementById(id); if (el) el.oninput=e=> { state[k]=e.target.value==='?(k.startsWith('min')?-Infinity:Infinity):f(e.target.value); render(); } };
+bind('minMcap','minMcap',parseFloat); bind('maxMcap','maxMcap',parseFloat);
+bind('minAlpha','minAlpha',parseFloat); bind('maxAlpha','maxAlpha',parseFloat);
+bind('minPe26','minPe26',parseFloat); bind('maxPe26','maxPe26',parseFloat);
+bind('minPe27','minPe27',parseFloat); bind('maxPe27','maxPe27',parseFloat);
+bind('minInst','minInst',parseFloat); bind('maxInst','maxInst',parseFloat);
+bind('minShort','minShort',parseFloat); bind('maxShort','maxShort',parseFloat);
+bind('minAnalysts','minAnalysts',parseFloat); bind('maxAnalysts','maxAnalysts',parseFloat);
+bind('minBuzz','minBuzz',parseFloat); bind('maxBuzz','maxBuzz',parseFloat);
+bind('minRev','minRev',parseFloat);
+const aggEl = document.getElementById('aggressiveness');
+aggEl.oninput = () => { state.aggressiveness = parseInt(aggEl.value); document.getElementById('agg-val').innerText = state.aggressiveness; document.getElementById('agg-mode-label').innerText = AGG_MODES[state.aggressiveness]; state.sortCol = '; render(); };
+
+// WEB BRIDGE SYNC
+const BRIDGE_BASE = 'http://localhost:5174';
+const syncBtn = document.getElementById('syncBtn');
+async function triggerSync() {
+    if (syncBtn.classList.contains('busy')) return;
+    syncBtn.classList.add('busy'); try {
+        const r = await fetch(`${BRIDGE_BASE}/api/sync`, { method: 'POST' });
+        if (r.ok || r.status === 409) pollSyncStatus();
+    } catch { syncBtn.classList.remove('busy'); syncBtn.classList.add('error'); }
+}
+function pollSyncStatus() {
+    const i = setInterval(async () => {
+        try {
+            const r = await fetch(`${BRIDGE_BASE}/api/status`); const d = await r.json();
+            if (d.status === 'idle') { clearInterval(i); syncBtn.classList.remove('busy'); setTimeout(()=>location.reload(), 1000); }
+        } catch { clearInterval(i); }
+    }, 3000);
+}
+
+function initPulse() {
+    const pulse = document.getElementById('pulseContainer');
+    const meta = (window.LIVE_PRICES || {})._meta;
+    const est = meta?.refreshed_at_est || '--';
+    const hdrTime = document.getElementById('price-updated-at');
+    if (hdrTime) hdrTime.innerText = est;
+
+    if (!meta || !meta.top_gainers) {
+        pulse.innerHTML = `<div class="no-pulse"><span class="sync-dot"></span> <div>LIVE PRICES NOT LOADED. RUN <code>python engine/live_prices.py</code> TO ACTIVATE TERMINAL PULSE.</div></div>`;
+        return;
+    }
+
+    let html = `<div class="pulse-bar"><div class="pulse-label">CPO PULSE</div>`;
+
+    // Top Gainers
+    meta.top_gainers.slice(0,3).forEach(g => {
+        const chg = (g.change_pct != null) ? g.change_pct.toFixed(1) : '0.0';
+        html += `<div class="pulse-item"><span style="color:var(--text-dim)">$</span>${g.ticker} <span class="up">+${chg}%</span></div><div class="pulse-sep">|</div>`;
+    });
+
+    // Top Losers
+    meta.top_losers.slice(0,2).forEach(l => {
+        const chg = (l.change_pct != null) ? l.change_pct.toFixed(1) : '0.0';
+        html += `<div class="pulse-item"><span style="color:var(--text-dim)">$</span>${l.ticker} <span class="down">${chg}%</span></div><div class="pulse-sep">|</div>`;
+    });
+
+    // Volume Spikes
+    meta.volume_spikes.slice(0,2).forEach(v => {
+        html += `<div class="pulse-item"><span class="pulse-vol">VOL!</span> ${v.ticker} <span style="color:var(--purple)">${v.vol_spike}x</span></div><div class="pulse-sep">|</div>`;
+    });
+
+    // Use the authoritative EST string from Python instead of browser local time
+    const timeStr = meta.refreshed_at_est || (meta.refreshed_at.includes('EST') ? meta.refreshed_at : new Date(meta.refreshed_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}));
+    html += `<div class="pulse-time"><span class="sync-dot pulse"></span> UPDATED ${timeStr}</div></div>`;
+
+    pulse.innerHTML = html;
+}
+
+
+// â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â•
+//  NEWS MODAL â€” Yahoo News Intelligence
+// â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â•
+function filterNews() {
+    const db = window.YAHOO_NEWS_MODULE;
+    if (!db || !db.articles) {
+        document.getElementById('newsBody').innerHTML = '<div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">NO NEWS DATA. RUN engine/sync_news.py TO POPULATE.</div>';
+        return;
+    }
+    const q = (document.getElementById('newsSearch')?.value || ').toLowerCase().trim();
+    const articles = db.articles.filter(a => {
+        if (!q) return true;
+        return (a.title||'').toLowerCase().includes(q) || (a.summary||'').toLowerCase().includes(q) || (a.tickers||[]).some(t => t.toLowerCase().includes(q.replace('$', '')));
+    });
+    renderNews(articles, q);
+}
+
+function renderNews(articles, query=', limit=50) {
+    const container = document.getElementById('newsBody');
+    const countEl = document.getElementById('news-count');
+    if (countEl) countEl.innerText = `${articles.length} ARTICLES`;
+
+    if (!articles.length) {
+        container.innerHTML = '<div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">NO MATCHING ARTICLES.</div>';
+        return;
+    }
+
+    // V24.2: Separate Earnings Intelligence
+    const earnings = articles.filter(a => a.is_earnings).slice(0, 8);
+    const others = articles.filter(a => !a.is_earnings).slice(0, limit);
+
+    let html = ';
+
+    // Only show earnings area if no specific search query is active
+    if (earnings.length > 0 && !query) {
+        html += `<div style="margin-bottom:20px; padding:12px; background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:8px;">
+            <div style="color:var(--gold); font-size:14px; font-weight:900; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
+                <span style="font-size:18px;">ðŸ“Š</span> EARNINGS INTELLIGENCE
+            </div>`;
+        html += earnings.map(a => renderArticle(a, query)).join(');
+        html += `</div>`;
+    }
+
+    html += others.map(a => renderArticle(a, query)).join(');
+    container.innerHTML = html;
+}
+
+function renderArticle(a, query) {
+    const tickers = (a.tickers||[]).map(t => `<span style="background:rgba(212,163,115,0.15);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:900;margin-right:3px;cursor:pointer;" onclick="syncNewsSearch('${t}')">${t === 'MACRO' ? 'MACRO' : '$'+t}</span>`).join(');
+    const pub = a.published_est || a.published || ';
+    const src = a.source || ';
+    let title = a.title || ';
+    if (query && query.length > 1) {
+        const re = new RegExp(`(${query.replace(/[$]/g,'\\$')})`, 'gi');
+        title = title.replace(re, '<span class="highlight">$1</span>');
+    }
+    const borderStyle = a.is_earnings ? 'border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.03);' : '';
+    const macroBadge = a.is_macro ? '<span style="color:var(--accent); font-size:8px; font-weight:900; margin-right:6px;">[MACRO]</span>' : '';
+
+    return `<div class="intel-item" style="${borderStyle}">
+        <div class="meta" style="justify-content:space-between;">
+            <span style="color:var(--accent);font-weight:700;font-size:9px;">${macroBadge}${src}</span>
+            <span style="color:var(--text-dim);font-size:9px;">${pub}</span>
+        </div>
+        <div style="margin:4px 0 5px;font-size:11px;font-weight:700;line-height:1.4;">${title}</div>
+        <div style="font-size:9px;color:#94a3b8;margin-bottom:5px;">${a.summary ? a.summary.substring(0,180)+'...' : ''}</div>
+        <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${tickers}</div>
+        <div style="margin-top:6px;text-align:right;"><a href="${a.url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;">READ ARTICLE â†—</a></div>
+    </div>`;
+}
+
+function openNewsModal() {
+    document.getElementById('newsModal').classList.add('active');
+    filterNews();
+}
+
+function closeNewsModal() {
+    document.getElementById('newsModal').classList.remove('active');
+}
+
+function syncNewsSearch(ticker) {
+    const q = ticker.startsWith('$') ? ticker.replace('$', '') : ticker;
     const el = document.getElementById('newsSearch');
     if (el) el.value = '$' + q;
     openNewsModal();
+}
+
+// Filter intelligence
+function filterIntel() {
+    const query = document.getElementById('modalIntelSearch').value.toLowerCase();
+    const timeFilter = document.getElementById('intelTimeFilter').value;
+    const userFilter = document.getElementById('intelUserFilter').value;
+    const dateFrom = document.getElementById('intelDateFrom').value;
+    const dateTo = document.getElementById('intelDateTo').value;
+
+    const module = window.X_INTEL_MODULE || { posts: [] };
+    const posts = module.posts || [];
+
+    // Update sync timestamp in UI
+    const syncTimeEl = document.getElementById('intel-sync-time');
+    if (syncTimeEl && (module.visual_last_updated || module.last_updated)) {
+        const d = new Date(module.visual_last_updated || module.last_updated);
+        syncTimeEl.innerText = `LATEST SYNC: ${d.toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})} EST`;
+    }
+
+    let filtered = posts;
+
+    // Keyword Filter
+    if (query) {
+        filtered = filtered.filter(p => (p.text||"").toLowerCase().includes(query) || (p.username||"").toLowerCase().includes(query));
+    }
+
+    // User Filter
+    if (userFilter !== 'all') {
+        filtered = filtered.filter(p => p.username === userFilter);
+    }
+
+    // Date Range Filter
+    if (dateFrom) {
+        filtered = filtered.filter(p => p.timestamp >= dateFrom);
+    }
+    if (dateTo) {
+        const toLimit = new Date(dateTo);
+        toLimit.setDate(toLimit.getDate() + 1);
+        const toStr = toLimit.toISOString().split('T')[0];
+        filtered = filtered.filter(p => p.timestamp < toStr);
+    }
+
+    // Relative Time Filter
+    if (timeFilter !== 'all') {
+        const now = new Date();
+        const hours = timeFilter === '24h' ? 24 : 168;
+        const cutoff = new Date(now.getTime() - (hours * 60 * 60 * 1000));
+        filtered = filtered.filter(p => new Date(p.timestamp) >= cutoff);
+    }
+
+    renderIntel(filtered, query);
+    renderBuzz(module.buzz);
+}
+
+function openIntelModal() {
+    document.getElementById('intelModal').classList.add('active');
+
+    // Lazy-populate user list
+    const userSel = document.getElementById('intelUserFilter');
+    if (userSel && userSel.options.length <= 1) {
+        const module = window.X_INTEL_MODULE || { posts: [] };
+        const usernames = [...new Set(module.posts.map(p => p.username))].sort();
+        usernames.forEach(u => {
+            const opt = document.createElement('option');
+            opt.value = u;
+            opt.innerText = '@' + u.toUpperCase();
+            userSel.appendChild(opt);
+        });
+    }
+
+    filterIntel();
+}
+
+function closeIntelModal() {
+    document.getElementById('intelModal').classList.remove('active');
+}
+
+function renderBuzz(buzz = {}) {
+    const bar = document.getElementById('buzzBar');
+    const visualMentions = window.X_INTEL_MODULE?.visual_mentions || {};
+
+    // Merge tweet buzz + visual buzz into unified ranking
+    const allTickers = new Set([...Object.keys(buzz), ...Object.keys(visualMentions)]);
+    const merged = Array.from(allTickers).map(t => {
+        const tw = buzz[t] || {};
+        const vi = visualMentions[t] || {};
+        return [t, { '7d': tw['7d'] || 0, '24h': tw['24h'] || 0, img: vi.count || 0 }];
+    });
+    const sorted = merged
+        .filter(([,s]) => s['7d'] > 0 || s.img > 0)
+        .sort((a,b) => (b[1]['7d'] + b[1].img) - (a[1]['7d'] + a[1].img))
+        .slice(0, 14);
+
+    if (sorted.length === 0) {
+        bar.innerHTML = '<div style="font-size:8px;color:var(--text-dim);padding:4px;">NO TRENDING TICKERS IN CACHE.</div>';
+        return;
+    }
+
+    bar.innerHTML = sorted.map(([t, stats]) => {
+        const twBadge = stats['7d'] > 0 ? `<span style="color:var(--gold);">𝕏${stats['7d']}</span>` : '';
+        const imgBadge = stats.img > 0 ? `<span style="color:var(--green);font-size:9px;">📷${stats.img}</span>` : '';
+        return `<div class="buzz-tag" onclick="syncIntelSearch('${t}')"><b>${t}</b> ${twBadge} ${imgBadge}</div>`;
+    }).join('');
+}
+
+function renderIntel(posts, query = "") {
+    const container = document.getElementById('intelBody');
+    const countLabel = document.getElementById('intel-count');
+
+    countLabel.innerText = `${posts.length} POSTS`;
+    container.innerHTML = "";
+
+    if (posts.length === 0) {
+        container.innerHTML = `<div style="text-align:center;color:var(--text-dim);margin-top:20px;font-size:9px;">NO MATCHING INTEL FOUND.</div>`;
+        return;
+    }
+
+    posts.forEach(p => {
+        const date = p.timestamp ? p.timestamp.split('T')[0] : 'Unknown';
+        let text = p.text;
+
+        // Highlight search query
+        if (query && query.length > 2) {
+            const regex = new RegExp(`(${query})`, 'gi');
+            text = text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        let imagesHtml = '';
+        if (p.images && p.images.length > 0) {
+            imagesHtml = `<div class="post-images">` + p.images.map(img => `<a href="${img.url}" target="_blank"><img src="${img.url}" class="post-img" loading="lazy"></a>`).join('') + `</div>`;
+        }
+
+        let visualHtml = '';
+        if (p.visual_analysis && (p.visual_analysis.tickers?.length > 0 || p.visual_analysis.text_content)) {
+            const tList = (p.visual_analysis.tickers || []).map(t => `<span class="visual-tag" onclick="syncIntelSearch('${t}'); event.stopPropagation();" style="cursor:pointer;">$${t}</span>`).join('');
+            const txt = p.visual_analysis.text_content ? p.visual_analysis.text_content.substring(0, 150) + '...' : '';
+            visualHtml = `<div class="visual-intel-box">
+                <div class="visual-intel-header"><span>📷 VISUAL INTELLIGENCE DETECTED</span></div>
+                <div style="margin-bottom:6px;">${tList}</div>
+                ${txt ? `<div style="font-size:10px;opacity:0.8;"><i>"${txt}"</i></div>` : ''}
+            </div>`;
+        }
+
+        const item = document.createElement('div');
+        item.className = 'intel-item';
+        item.innerHTML = `
+            <div class="meta">
+                <span class="user">@${p.username}</span>
+                <span>${date}</span>
+            </div>
+            <div class="text">${text}</div>
+            ${imagesHtml}
+            ${visualHtml}
+            <div style="margin-top:6px; text-align:right;">
+                <a href="${p.url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;">VIEW SOURCE ↗</a>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+function syncIntelSearch(ticker) {
+    const intelSearch = document.getElementById('modalIntelSearch');
+    if (intelSearch) intelSearch.value = ticker.startsWith('$') ? ticker : '$' + ticker;
+    openIntelModal();
 }
 
 initChart(); initBuckets(); initPulse(); render();
