@@ -11,9 +11,10 @@ This project tracks the **Co-Packaged Optics (CPO)** and **Silicon Photonics (Si
 - **Status Dashboard**: [PROJECT_STATUS.md](PROJECT_STATUS.md)
 
 ## 📚 Technical Documentation (V28.8)
-- **Architecture Deep Dive**: [docs/ARCHITECTURE_DEEP_DIVE.md](docs/ARCHITECTURE_DEEP_DIVE.md)
-- **Intelligence Scoring Manual**: [docs/INTELLIGENCE_SCORING.md](docs/INTELLIGENCE_SCORING.md)
+- **Architecture Deep Dive**: [docs/ARCHITECTURE_V28.md](docs/ARCHITECTURE_V28.md)
+- **Intelligence Scoring Manual**: [docs/INTELLIGENCE_MANUAL.md](docs/INTELLIGENCE_MANUAL.md)
 - **System Specifications**: [docs/V28_SYSTEM_SPECIFICATIONS.md](docs/V28_SYSTEM_SPECIFICATIONS.md)
+- **Knowledge Base**: [KNOWLEDGE.md](KNOWLEDGE.md)
 
 
 

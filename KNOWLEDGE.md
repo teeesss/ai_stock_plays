@@ -4,6 +4,15 @@
 
 ---
 
+## 🛠️ How to Contribute
+To maintain the integrity of this intelligence base, follow the **Sovereign Ingestion Protocol**:
+1. **Append Only**: Never delete existing theses. Markets evolve; previous insights provide context for future pivots.
+2. **Standard Formatting**: Use the established Layer/Ticker format.
+3. **Evidence-Based**: Every catalyst or hiddenness score must be backed by a specific data point (13F, Earnings, CHIPS Act grant).
+4. **Ticker Bridge**: When adding new tickers, ensure they are also added to `tickers.txt` and `config/macro_config.yaml` to enable engine tracking.
+
+---
+
 ## Table of Contents
 1. [The Core Thesis](#the-core-thesis)
 2. [Supply Chain Map](#supply-chain-map)

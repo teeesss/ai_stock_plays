@@ -72,6 +72,11 @@ try:
 except ImportError:
     from engine.theme_provider import theme
 
+try:
+    from market_synopsis_scraper import MarketSynopsisScraper
+except ImportError:
+    from engine.market_synopsis_scraper import MarketSynopsisScraper
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -129,6 +134,9 @@ class SovereignIntelligenceEngine:
 
         # V28: Authoritative Watchlist
         self.watchlist = self._load_watchlist()
+
+        # V28.8: Synopsis Scraper
+        self.synopsis_scraper = MarketSynopsisScraper()
 
     def _load_watchlist(self):
         """Authoritative Source for Watchlist Ingestion (tickers.txt)"""
@@ -1827,10 +1835,21 @@ class SovereignIntelligenceEngine:
                 }
                 movers_dict[m_type].append(m_item)
 
-        return tradeable, strategic, prices, news_db, sentiment, master, movers_dict
+        # V28.8: Dynamic Market Synopsis
+        synopsis_data = self.synopsis_scraper.fetch_synopsis(self.get_market_session())
+
+        return tradeable, strategic, prices, news_db, sentiment, master, movers_dict, synopsis_data
 
     def compose_html(
-        self, tradeable, strategic, prices, news_db, sentiment, master, movers_ext=None
+        self,
+        tradeable,
+        strategic,
+        prices,
+        news_db,
+        sentiment,
+        master,
+        movers_ext=None,
+        synopsis_data=None,
     ):
         # Design Tokens — matched to authoritative theme
         bg_main = self.COLOR_BG
@@ -2159,6 +2178,23 @@ class SovereignIntelligenceEngine:
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">
                 {global_grid_html}
             </table>
+            """
+
+        if synopsis_data:
+            s_head = synopsis_data.get("headline", "")
+            s_body = synopsis_data.get("text", "")
+            s_src = synopsis_data.get("source", "MARKET UPDATE")
+
+            s_html = f"""
+                <div class="synopsis-card" style="background:{bg_surface}; border:1px solid {bg_accent}; border-radius:6px; padding:15px; margin-bottom:25px; border-left:4px solid {gold};">
+                    <div style="font-size:10px; color:{gold}; letter-spacing:1px; text-transform:uppercase; font-weight:bold; margin-bottom:8px;">[ SOVEREIGN RECAP: {s_src} ]</div>
+                    {f'<div style="font-size:18px; color:{text_bright}; font-weight:bold; margin-bottom:10px; line-height:1.3;">{s_head}</div>' if s_head else ''}
+                    <div style="font-size:14px; color:{text_dim}; line-height:1.6;">{s_body}</div>
+                </div>
+            """
+            unified_pulse += s_html
+
+        unified_pulse += f"""
             <div class="section-hdr" style="text-align:center; color:{text_bright};">SESSION PERFORMANCE</div>
             <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td class="mover-col" width="50%" style="vertical-align:top; padding-right:5px;">
@@ -2586,12 +2622,19 @@ if __name__ == "__main__":
 
     # Filter custom tickers to legit ones
     print(f"[{ts()}] [DEBUG] Filtering custom tickers...")
-    tradeable, strategic, prices, news_db, sentiment, entries, movers_ext = engine.gather_all_data(
-        custom_tickers=custom_tickers, force=args.force
+    tradeable, strategic, prices, news_db, sentiment, entries, movers_ext, synopsis_data = (
+        engine.gather_all_data(custom_tickers=custom_tickers, force=args.force)
     )
     print(f"[{ts()}] [DEBUG] Data gathered. Composing HTML...")
     html = engine.compose_html(
-        tradeable, strategic, prices, news_db, sentiment, entries, movers_ext=movers_ext
+        tradeable,
+        strategic,
+        prices,
+        news_db,
+        sentiment,
+        entries,
+        movers_ext=movers_ext,
+        synopsis_data=synopsis_data,
     )
 
     # Aggressive Minification for Gmail (102KB Limit)

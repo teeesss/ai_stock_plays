@@ -1,4 +1,5 @@
 ## 🛠 V28.8 Sovereign Intelligence Hardening (2026-04-29 → 2026-04-30)
+- [x] **Market Synopsis Pipeline**: Deployed a session-aware narrative engine that scrapes Yahoo (Morning Brief), CNBC (Live updates), and Edward Jones (Daily Recap) based on the active market session. **Hardened with junk-pattern rejection and editorial keyword filtering to eliminate Yahoo navigation/ad noise.** ✅
 - [x] **Web Synopsis Endpoint**: Enabled automatic deployment of `synopsis_preview.html` to `bmwseals.com/email` via `RemoteSync`. ✅
 - [x] **Documentation Mirror Sync**: Synchronized `.cursorrules`, `GEMINI.md`, and `CLAUDE.md` to V28 standards. ✅
 - [x] **Hierarchy Leader Hardening**: Centralized logging and session authority via `market_session.py` and `error_monitor.py`. ✅

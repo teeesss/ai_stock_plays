@@ -4,19 +4,21 @@
 **Status**: 🟢 PRODUCTION-DEPLOYED // **Aesthetic**: Institutional Alternate Tiles // **Logic**: Dual-Dispatch (Email + Web)
 ---
 ### 🧩 Core Accomplishments
+- **[NEW] Session-Aware Market Synopsis Pipeline (V28.8)**: Integrated institutional-grade narrative intelligence. The dossier now dynamically scrapes Yahoo Finance (PRE), CNBC (MID), and Edward Jones (POST) to provide professional market context in the executive header. **V28.8.1: Hardened with high-fidelity junk-pattern rejection to eliminate navigation/ad noise.**
 - **[NEW] Web Synopsis Endpoint (V28.8)**: Integrated automatic deployment of the market intelligence dossier to `bmwseals.com/email`. Every email dispatch now simultaneously updates the web view via `RemoteSync`.
 - **[NEW] Email Redesign & Valuation Hardening (V28.8)**: Optimized HTML payload (85KB) and implemented a high-density 3-line ticker layout. Enforced `MCap` terminology, crisp bracketed P/E formatting (`'26 [9.9]`), and strict outlier filtration `[-500, 1000]`.
 - **[NEW] Institutional Branding (V28.8)**: Injected a permanent "Web Link" into the institutional header and synchronized the "Mirror Mandate" across all AI context files (`.cursorrules`, `GEMINI.md`, `CLAUDE.md`).
 - **[NEW] International Ticker Fidelity (V28.8)**: Resolved hydration regressions for international/OTC tickers (SIVE.ST, SIVEF) and fixed $IREN valuation scaling inconsistencies.
 - **[NEW] Mandatory Hierarchical Architecture (V28.71)**: Rebuilt the entire intelligence pipeline to follow a strict hierarchy-leader pattern. Logging is now initialized at the absolute top of all main scripts. Verified 100% visibility across Scraper, Price Sync, and Brain Update.
+- **[NEW] Documentation Overhaul (V28.8)**: Consolidated fragmented project documentation into a definitive V28.8 technical suite. Created `docs/ARCHITECTURE_V28.md` and `docs/INTELLIGENCE_MANUAL.md`. Updated `README.md` and `KNOWLEDGE.md` with institutional governance guidelines.
 - **[CLOSED] Institutional Header Finalization (2026-04-30)**: Confirmed `ESTABLISHED V28.8 // IDENTITY STANDARDIZED // HH:MM EST // WEB LINK` format locked in `compose_html`. `render_tile` fully decoupled — zero extraneous header injections in ticker tiles. All 3 test suites green.
 
 ## 🚀 Version: V28.8 (Sovereign Intelligence Hardening)
 Status: **PRODUCTION DEPLOYED — HARDENED ✅ CLOSED 2026-04-30**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V28.8 (Web Deployment & Sync Parity) — **FINALIZED 2026-04-30**
-- **Critical Progress**: Header canonical. `render_tile` decoupled. 158/158 tests passing. Dual-dispatch active. Documentation synced across all AI context files.
+- **Current Tier**: V28.8 (Session-Aware Narrative Intel) — **FINALIZED 2026-04-30**
+- **Critical Progress**: Market Synopsis Pipeline active (Yahoo/CNBC/EDJ). Header canonical. `render_tile` decoupled. 158/158 tests passing. Dual-dispatch active. Documentation overhauled (V28.8).
 - **Next Milestone**: V28.9 — Windows Task Scheduler auto-dispatch (7:30 AM / 4:30 PM). SFTP resilience for intermittent connectivity.
 
 Date: 2026-04-30

@@ -1,5 +1,5 @@
-### 🚀 Active Context: V28.8 (Sovereign Intelligence Hardening)
-[Status Synchronized - 2026-04-29]
+### 🚀 Active Context: V28.8 (Sovereign Intelligence Hardening & Narrative Pipeline)
+[Status Synchronized - 2026-05-01]
 
 ### 🧩 Logic & Patterns
 1. **Sovereign Intelligence Engine (V28)**:
@@ -16,7 +16,8 @@
    - **Ticker Blacklist**: 'FORM' is strictly blacklisted to prevent common-word collisions.
    - **Institutional Source Hardening**: strictly blacklist low-signal sources (e.g., "The Motley Fool").
    - **Article Rotation Engine**: Deployed `sent_news_history.json` ledger to track previously sent URLs for 24h.
-   - **Web Synopsis Endpoint**: Automatically deploys the generated email synopsis to `bmwseals.com/email` via `RemoteSync.sync_file()` for instant web access.
+    - **Web Synopsis Endpoint**: Automatically deploys the generated email synopsis to `bmwseals.com/email` via `RemoteSync.sync_file()` for instant web access.
+     - **Session-Aware Narrative Pipeline**: Dossier now includes real-time market context scraped from Yahoo (Morning Brief), CNBC (Midday Live), and Edward Jones (After Close) based on the current market session. **Hardened with junk-pattern rejection and editorial keyword gates.**
    - **Data-Driven Session Detection**: ALWAYS match session badges (AH, OVN, PRE) to the actual data source, not clock time.
    - **24h Ghost Ticker Purge**: Database entries older than 24h must be purged during every save cycle.
    - **Multi-Tier Rescue**: Use a 5-gateway pool (`vx_rescue_fetcher.py`) with OpenGraph HTML scraping fallback.
@@ -39,6 +40,9 @@
 - `engine/local_nlp.py`: Statistical NLP hub (LSA, VADER, TF-IDF).
 - `engine/yahoo_auth.py`: Centralized stealth session/crumb manager.
 - `engine/live_prices.py`: High-stealth price extractor (10-ticker chunks).
+- `engine/market_synopsis_scraper.py`: Session-aware narrative scraper for Yahoo/CNBC/EDJ.
+- `docs/ARCHITECTURE_V28.md`: V28.8 Definitive Architecture Reference.
+- `docs/INTELLIGENCE_MANUAL.md`: Scoring hierarchy and signal governance guide.
 
 ### ⚠️ Known Quirks
 - Gmail will clip messages if the minification fails or if CSS classes exceed length limits.
