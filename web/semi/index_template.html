@@ -178,6 +178,9 @@
     <button class="sync-btn" onclick="openNewsModal()" style="background:rgba(212,163,115,0.15);border-color:rgba(212,163,115,0.4);color:var(--gold);margin-right:6px;">
         &#128240; NEWS
     </button>
+    <button class="sync-btn" onclick="window.open('archive/', '_blank')" style="background:rgba(56,189,248,0.15); border-color:rgba(56,189,248,0.4); color:#38bdf8; margin-right:6px;">
+        🕰️ ARCHIVE
+    </button>
     <button class="sync-btn" id="syncBtn" onclick="triggerSync()">
         <span class="sync-dot" id="syncDot"></span> MASTER SYNC
     </button>
@@ -197,6 +200,7 @@
 </div>
 
 <script src="database/YAHOO_NEWS_MODULE.js"></script>
+<script src="database/x_intel_master.js"></script>
 
 <script>
 // Handle Remote vs Local UI

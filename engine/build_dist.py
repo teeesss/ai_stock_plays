@@ -19,8 +19,11 @@ def build():
         "web/semi": ".",  # Root /stocks/
         "web/ai": "ai",  # /stocks/ai/
     }
-
-    shared_assets = ["database/live_prices.js", "database/YAHOO_NEWS_MODULE.js"]
+    shared_assets = [
+        "database/live_prices.js",
+        "database/YAHOO_NEWS_MODULE.js",
+        "database/x_intel_master.js",
+    ]
 
     for web_rel, dist_rel in web_endpoints.items():
         src = ROOT / web_rel
