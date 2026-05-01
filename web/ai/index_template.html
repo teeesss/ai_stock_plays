@@ -195,9 +195,7 @@
     <button class="sync-btn" onclick="openNewsModal()" style="background:rgba(212,163,115,0.15);border-color:rgba(212,163,115,0.4);color:var(--gold);margin-right:6px;">
         &#128240; NEWS
     </button>
-    <button class="sync-btn" onclick="window.open('../archive/', '_blank')" style="background:rgba(56,189,248,0.15); border-color:rgba(56,189,248,0.4); color:#38bdf8; margin-right:6px;">
-        🕰️ ARCHIVE
-    </button>
+
     <button class="sync-btn" id="syncBtn" onclick="triggerSync()">
         <span class="sync-dot" id="syncDot"></span> MASTER SYNC
     </button>
@@ -415,7 +413,7 @@ const RANK_EXPLAIN = {
     10: 'Ranking by: <span>Discovery (50%)</span> + Alpha (40%) + Momentum (15%) + Safety (5%). ðŸ’€ Pure conviction. Risk ignored.',
 };
 
-const sfloat = v => { try { return parseFloat(String(v).replace('%',').trim())||0; } catch { return 0; } };
+const sfloat = v => { try { return parseFloat(String(v).replace('%', '').trim())||0; } catch { return 0; } };
 const esc = s => s == null ? ' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
 function formatMCap(b) {
@@ -613,10 +611,10 @@ function render() {
         const pe26f = (e.pe26 > 0 && e.pe26 < 500) ? e.pe26.toFixed(1) : '--';
         const pe27f = (e.pe27 > 0 && e.pe27 < 500) ? e.pe27.toFixed(1) : '--';
 
-        let upsideVal = `<span class="${parseUpside(e.h['Target Upside']) > 0 ? 'up' : '}" style="color:${parseUpside(e.h['Target Upside']) > 0 ? 'var(--green)' : 'var(--text-main)'}">${esc(e.h['Target Upside'] || '--')}</span>`;
+        let upsideVal = `<span class="${parseUpside(e.h['Target Upside']) > 0 ? 'up' : ''}" style="color:${parseUpside(e.h['Target Upside']) > 0 ? 'var(--green)' : 'var(--text-main)'}">${esc(e.h['Target Upside'] || '--')}</span>`;
         if (e.obb && e.obb.analyst_implied_upside_pct) {
             const consensus = e.obb.analyst_implied_upside_pct;
-            upsideVal = `<div style="font-size:9px; opacity:0.7;">CONSENSUS</div><div style="font-weight:bold; color:var(--green);">${consensus > 0 ? '+' : '}${consensus.toFixed(1)}%</div>`;
+            upsideVal = `<div style="font-size:9px; opacity:0.7;">CONSENSUS</div><div style="font-weight:bold; color:var(--green);">${consensus > 0 ? '+' : ''}${consensus.toFixed(1)}%</div>`;
         }
 
         const todayStr = (e.todayPct != null) ? (e.todayPct > 0 ? '+' + e.todayPct.toFixed(2) + '%' : e.todayPct.toFixed(2) + '%') : '--';
@@ -646,7 +644,7 @@ function render() {
         const momHtml = recentStatus.map(s => `<div class="mb ${s ? 'up' : 'down'}"></div>`).join(');
 
         tr.innerHTML = `
-            <td style="text-align:center;"><span class="pin-btn ${isPinned ? 'active' : '}" onclick="togglePin('${esc(e.ticker)}')">â˜…</span></td>
+            <td style="text-align:center;"><span class="pin-btn ${isPinned ? 'active' : ''}" onclick="togglePin('${esc(e.ticker)}')">â˜…</span></td>
             <td style="text-align:center; padding-left: 0; padding-right: 0;"><span class="rank-num">${rank}</span></td>
             <td class="ticker">
                 <div style="display: flex; flex-direction: column; gap: 1px;">
@@ -677,7 +675,7 @@ function render() {
                 <div style="font-size:8px;color:var(--text-dim);font-weight:700;">${e.extType || '}</div>
                 <div style="font-size:11px;color:var(--gold);font-weight:800;">$${e.extPrice.toFixed(2)} <span style="font-size:8px;color:var(--text-dim);font-weight:500;">(C: $${(e.price || 0).toFixed(2)})</span></div>
                 <div style="font-size:9px;" class="${extCls}">${extStr}</div>
-                ` : '<span style="color:var(--text-dim);font-size:10px;">--</span>'}
+                '' : '<span style="color:var(--text-dim);font-size:10px;">--</span>'}
             </td>
             <td style="font-weight:700;color:var(--accent);">${e.rev_num ? e.rev_num + '%' : '--'}</td>
             <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${newsHtml}${esc(e.h.Role)}</div><div style="font-size:10px;color:#cbd5e1;margin-top:1px;">${esc((e.h.Notes || ').replace(/\s*[|,]?\s*(Valuation|US ADR|US OTC|OTC)[^|]*/gi, ').trim())}</div>${obbHtml}</td>
@@ -957,7 +955,7 @@ function filterNews() {
     const q = (document.getElementById('newsSearch')?.value || ').toLowerCase().trim();
     const articles = db.articles.filter(a => {
         if (!q) return true;
-        return (a.title||').toLowerCase().includes(q) || (a.summary||').toLowerCase().includes(q) || (a.tickers||[]).some(t => t.toLowerCase().includes(q.replace('$',')));
+        return (a.title||'').toLowerCase().includes(q) || (a.summary||'').toLowerCase().includes(q) || (a.tickers||[]).some(t => t.toLowerCase().includes(q.replace('$', '')));
     });
     renderNews(articles, q);
 }
@@ -1001,8 +999,8 @@ function renderArticle(a, query) {
         const re = new RegExp(`(${query.replace(/[$]/g,'\\$')})`, 'gi');
         title = title.replace(re, '<span class="highlight">$1</span>');
     }
-    const borderStyle = a.is_earnings ? 'border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.03);' : ';
-    const macroBadge = a.is_macro ? '<span style="color:var(--accent); font-size:8px; font-weight:900; margin-right:6px;">[MACRO]</span>' : ';
+    const borderStyle = a.is_earnings ? 'border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.03);' : '';
+    const macroBadge = a.is_macro ? '<span style="color:var(--accent); font-size:8px; font-weight:900; margin-right:6px;">[MACRO]</span>' : '';
 
     return `<div class="intel-item" style="${borderStyle}">
         <div class="meta" style="justify-content:space-between;">
@@ -1010,7 +1008,7 @@ function renderArticle(a, query) {
             <span style="color:var(--text-dim);font-size:9px;">${pub}</span>
         </div>
         <div style="margin:4px 0 5px;font-size:11px;font-weight:700;line-height:1.4;">${title}</div>
-        <div style="font-size:9px;color:#94a3b8;margin-bottom:5px;">${a.summary ? a.summary.substring(0,180)+'...' : '}</div>
+        <div style="font-size:9px;color:#94a3b8;margin-bottom:5px;">${a.summary ? a.summary.substring(0,180)+'...' : ''}</div>
         <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${tickers}</div>
         <div style="margin-top:6px;text-align:right;"><a href="${a.url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;">READ ARTICLE â†—</a></div>
     </div>`;
@@ -1026,7 +1024,7 @@ function closeNewsModal() {
 }
 
 function syncNewsSearch(ticker) {
-    const q = ticker.startsWith('$') ? ticker.replace('$',') : ticker;
+    const q = ticker.startsWith('$') ? ticker.replace('$', '') : ticker;
 mk('SECTORS', buckets, 'selectedBuckets'); mk('EXCHANGES', exchanges, 'selectedExchanges');
 }
 
@@ -1152,7 +1150,7 @@ function filterNews() {
     const q = (document.getElementById('newsSearch')?.value || ').toLowerCase().trim();
     const articles = db.articles.filter(a => {
         if (!q) return true;
-        return (a.title||').toLowerCase().includes(q) || (a.summary||').toLowerCase().includes(q) || (a.tickers||[]).some(t => t.toLowerCase().includes(q.replace('$',')));
+        return (a.title||'').toLowerCase().includes(q) || (a.summary||'').toLowerCase().includes(q) || (a.tickers||[]).some(t => t.toLowerCase().includes(q.replace('$', '')));
     });
     renderNews(articles, q);
 }
@@ -1196,8 +1194,8 @@ function renderArticle(a, query) {
         const re = new RegExp(`(${query.replace(/[$]/g,'\\$')})`, 'gi');
         title = title.replace(re, '<span class="highlight">$1</span>');
     }
-    const borderStyle = a.is_earnings ? 'border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.03);' : ';
-    const macroBadge = a.is_macro ? '<span style="color:var(--accent); font-size:8px; font-weight:900; margin-right:6px;">[MACRO]</span>' : ';
+    const borderStyle = a.is_earnings ? 'border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.03);' : '';
+    const macroBadge = a.is_macro ? '<span style="color:var(--accent); font-size:8px; font-weight:900; margin-right:6px;">[MACRO]</span>' : '';
 
     return `<div class="intel-item" style="${borderStyle}">
         <div class="meta" style="justify-content:space-between;">
@@ -1205,7 +1203,7 @@ function renderArticle(a, query) {
             <span style="color:var(--text-dim);font-size:9px;">${pub}</span>
         </div>
         <div style="margin:4px 0 5px;font-size:11px;font-weight:700;line-height:1.4;">${title}</div>
-        <div style="font-size:9px;color:#94a3b8;margin-bottom:5px;">${a.summary ? a.summary.substring(0,180)+'...' : '}</div>
+        <div style="font-size:9px;color:#94a3b8;margin-bottom:5px;">${a.summary ? a.summary.substring(0,180)+'...' : ''}</div>
         <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${tickers}</div>
         <div style="margin-top:6px;text-align:right;"><a href="${a.url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;">READ ARTICLE â†—</a></div>
     </div>`;
@@ -1221,7 +1219,7 @@ function closeNewsModal() {
 }
 
 function syncNewsSearch(ticker) {
-    const q = ticker.startsWith('$') ? ticker.replace('$',') : ticker;
+    const q = ticker.startsWith('$') ? ticker.replace('$', '') : ticker;
     const el = document.getElementById('newsSearch');
     if (el) el.value = '$' + q;
     openNewsModal();
