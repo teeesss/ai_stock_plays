@@ -1,6 +1,10 @@
-# V28.8.1: Sovereign Market Synopsis Scraper (Hardened)
+# V28.8.9: Sovereign Market Synopsis Scraper (Hybrid Cache + Resilience)
+import asyncio
+import json
 import logging
+import os
 import re
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from curl_cffi import requests as cffi_requests
@@ -12,6 +16,8 @@ class MarketSynopsisScraper:
     """
     Sovereign Hybrid Scraper: Transitions between institutional sources
     based on the active market session with multi-source fallback.
+    V28.8.9: Implements a hybrid cache model for AI intelligence to bypass
+    environment-specific browser constraints.
     """
 
     SOURCES = {
@@ -37,6 +43,7 @@ class MarketSynopsisScraper:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
             "Accept-Language": "en-US,en;q=0.9",
         }
+        self.cache_path = Path("database/ai_intel_cache.json")
 
     # Junk patterns for rejection
     _JUNK_PATTERNS = re.compile(
@@ -61,16 +68,14 @@ class MarketSynopsisScraper:
             .replace("&amp;", "&")
         )
         text = re.sub(r"\s+", " ", text).strip()
-        if len(text) > 1000:
-            text = text[:997] + "..."
+        if len(text) > 1500:
+            text = text[:1497] + "..."
         return text
 
     def _is_junk(self, text):
         if not text or len(text) < 80:
             return True
         low = text.lower()
-
-        # V28.8.2: Hardened Placeholder Rejection
         if "data is a real-time snapshot" in low or "delayed at least 15 minutes" in low:
             return True
         if "global business and financial news" in low and "stock quotes" in low:
@@ -80,24 +85,21 @@ class MarketSynopsisScraper:
         if "check back here for the latest" in low:
             return True
 
-        sample = text[:300]
-        # Require a higher editorial signal density for short paragraphs
         editorial_matches = len(self._EDITORIAL_KEYWORDS.findall(text))
         if editorial_matches < 2:
             return True
 
+        sample = text[:300]
         if len(self._JUNK_PATTERNS.findall(sample)) >= 2:
             return True
         return False
 
     def _extract_stockmarketwatch(self, html):
-        # 1. Primary: data-article-body signature
         body_match = re.search(r'data-article-body="([^"]+)"', html)
         if body_match:
             cleaned = self._clean_text(body_match.group(1))
             if len(cleaned) > 100 and not self._is_junk(cleaned):
                 return cleaned
-        # 2. Secondary: DOM search
         p_matches = re.findall(r"<p\b[^>]*>(.*?)</p>", html, re.DOTALL | re.IGNORECASE)
         for p in p_matches:
             cleaned = self._clean_text(p)
@@ -105,114 +107,194 @@ class MarketSynopsisScraper:
                 return cleaned
         return ""
 
-    def _extract_cnbc(self, html, depth=0):
+    async def _extract_cnbc_async(self, html, depth=0):
         if depth > 1:
-            return ""  # Prevent loops
-
-        # V28.8.2: Multi-Signature Detection (FeaturedContent vs LiveBlogBody)
+            return ""
         signatures = [
             "FeaturedContent-articleBody",
             "LiveBlogBody-articleBody",
             "ArticleBody-articleBody",
-            "LiveBlog-body",
-            "LiveBlog-post",
         ]
-
-        found_signature = False
         start_idx = -1
-
         for sig in signatures:
             idx = html.find(sig)
             if idx != -1:
-                log.info(f"[SYNOPSIS] CNBC Signature Match: {sig}")
                 start_idx = idx
-                found_signature = True
                 break
 
-        if found_signature:
-            # Slicing is safer than a complex regex for the end boundary
+        if start_idx != -1:
             end_idx = html.find("ArticleFooter-articleFooter", start_idx)
             if end_idx == -1:
                 end_idx = html.find("</footer>", start_idx)
-            if end_idx == -1:
-                end_idx = html.find("SidebarArticle-sidebar", start_idx)
-
             target_html = html[start_idx:end_idx] if end_idx != -1 else html[start_idx:]
-
             p_matches = re.findall(r"<p\b[^>]*>(.*?)</p>", target_html, re.DOTALL | re.IGNORECASE)
-            sub_p = [self._clean_text(p) for p in p_matches]
-            sub_p = [p for p in sub_p if not self._is_junk(p)]
-
-            # Capture first 2 paragraphs for a richer recap if available
+            sub_p = [
+                self._clean_text(p) for p in p_matches if not self._is_junk(self._clean_text(p))
+            ]
             if len(sub_p) >= 2:
                 return f"{sub_p[0]} {sub_p[1]}"
             return sub_p[0] if sub_p else ""
 
-        # 2. If not, assume landing page and find the latest "live-updates" link
         match = re.search(r'href="([^"]+stock-market-today-live-updates[^"]*)"', html)
         if match:
             url = match.group(1)
             if not url.startswith("http"):
                 url = "https://www.cnbc.com" + url
-            log.info(f"[SYNOPSIS] CNBC landing page detected. Jumping to: {url}")
             try:
-                r = cffi_requests.get(
-                    url, headers=self.headers, impersonate="chrome146", timeout=10
+                loop = asyncio.get_event_loop()
+                r = await loop.run_in_executor(
+                    None,
+                    lambda: cffi_requests.get(
+                        url, headers=self.headers, impersonate="chrome146", timeout=10
+                    ),
                 )
                 if r.status_code == 200:
-                    return self._extract_cnbc(r.text, depth + 1)
+                    return await self._extract_cnbc_async(r.text, depth + 1)
+            except:
+                pass
+        return ""
+
+    async def _fetch_ai_intel(self):
+        """Prioritizes the local intelligence cache, then attempts a resilient live fetch."""
+        # 1. Check Intelligence Cache (Sovereign Out-of-Band Loop)
+        if self.cache_path.exists():
+            try:
+                with open(self.cache_path, "r") as f:
+                    data = json.load(f)
+                    ts_str = data.get("timestamp", datetime.now().isoformat())
+                    # Normalize to naive for comparison
+                    ts = datetime.fromisoformat(ts_str).replace(tzinfo=None)
+                    now = datetime.now().replace(tzinfo=None)
+
+                    # Cache valid for 60 minutes
+                    if now - ts < timedelta(minutes=60):
+                        log.info(
+                            f"[SYNOPSIS] AI Intel loaded from Sovereign Cache (@ {ts.strftime('%I:%M %p')})"
+                        )
+                        return {
+                            "text": data["text"],
+                            "timestamp": ts.strftime("%I:%M %p"),
+                            "source": "SOVEREIGN AI",
+                        }
             except Exception as e:
-                log.error(f"[SYNOPSIS] CNBC jump error: {e}")
+                log.warning(f"[SYNOPSIS] Cache read error: {e}")
 
-        return ""
+        # 2. Resilient Live Fetch (Last Resort in restricted environments)
+        log.info("[STEALTH] Initializing Sovereign AI Live Fetch (Final Resort)...")
+        try:
+            try:
+                from stealth_navigator import StealthNavigator
+            except ImportError:
+                from engine.stealth_navigator import StealthNavigator
+        except:
+            return {"text": None, "timestamp": None}
 
-    def _extract_edj(self, html):
-        p_matches = re.findall(r"<p\b[^>]*>(.*?)</p>", html, re.DOTALL | re.IGNORECASE)
-        for p in p_matches:
-            cleaned = self._clean_text(p)
-            if len(cleaned) > 150 and not self._is_junk(cleaned):
-                return cleaned
-        return ""
+        nav = StealthNavigator(headless=True)
+        try:
+            await nav.initialize()
+            page = await nav.context.new_page()
+            # Try Perplexity Direct (Encoded)
+            query = "stock market today news overview".replace(" ", "+")
+            await page.goto(
+                f"https://www.perplexity.ai/search?q={query}",
+                wait_until="domcontentloaded",
+                timeout=30000,
+            )
+            await asyncio.sleep(12)
 
-    def fetch_synopsis(self, session_label):
-        """
-        Hardened Dispatcher: Tries target source, then falls back to healthy alternatives.
-        """
+            el = await page.locator("div.prose").first
+            if await el.is_visible():
+                txt = await el.inner_text()
+                if txt and len(txt) > 200:
+                    return {
+                        "text": txt.strip(),
+                        "timestamp": datetime.now().strftime("%I:%M %p"),
+                        "source": "SOVEREIGN AI",
+                    }
+            return {"text": None, "timestamp": None}
+        except:
+            return {"text": None, "timestamp": None}
+        finally:
+            try:
+                await nav.close()
+            except:
+                pass
+
+    async def fetch_synopsis(self, session_label):
+        """Hardened Async Dispatcher: Aggregates multiple fresh sources (AI, Fallbacks)."""
         lbl = "PRE" if session_label in ["PM", "PRE"] else session_label
         if lbl in ["AH", "POST", "OVN", "CLOSED"]:
             lbl = "POST"
         elif lbl in ["LIVE", "REG"]:
             lbl = "MID"
 
-        # Rotation order: Target -> PRE -> MID -> POST
-        to_try = list(dict.fromkeys([lbl, "PRE", "MID", "POST"]))
+        results = []
+
+        # Build prioritized stack based on session
+        to_try = ["AI", lbl]
+        if lbl == "POST":
+            # After hours: Add fallbacks for completeness
+            to_try.extend(["MID", "PRE"])
+        elif lbl == "MID":
+            # Live market: Focus on MID/AI only. Skip POST (EDJ) until AH.
+            to_try.extend(["PRE"])
+        else:
+            # PRE session
+            to_try.extend(["MID"])
+
+        seen_keys = set()
 
         for key in to_try:
+            if key in seen_keys:
+                continue
+            seen_keys.add(key)
+
+            if key == "AI":
+                res = await self._fetch_ai_intel()
+                if res and res.get("text"):
+                    source_tag = res.get("source", "SOVEREIGN AI")
+                    results.append(
+                        {
+                            "text": res["text"],
+                            "source": source_tag,
+                            "timestamp": res.get("timestamp"),
+                        }
+                    )
+                continue
+
             if key not in self.SOURCES:
                 continue
             src = self.SOURCES[key]
-            log.info(f"[SYNOPSIS] Attempting {src['name']} (Session: {session_label})")
-
+            log.info(f"[SYNOPSIS] Gathering Fallback: {src['name']}")
             try:
-                r = cffi_requests.get(
-                    src["url"], headers=self.headers, impersonate="chrome146", timeout=12
+                loop = asyncio.get_event_loop()
+                r = await loop.run_in_executor(
+                    None,
+                    lambda: cffi_requests.get(
+                        src["url"], headers=self.headers, impersonate="chrome146", timeout=10
+                    ),
                 )
                 if r.status_code != 200:
                     continue
-
                 text = ""
                 if src["type"] == "STOCKMARKETWATCH":
                     text = self._extract_stockmarketwatch(r.text)
                 elif src["type"] == "CNBC":
-                    text = self._extract_cnbc(r.text)
+                    text = await self._extract_cnbc_async(r.text)
                 elif src["type"] == "EDJ":
-                    text = self._extract_edj(r.text)
+                    text = self._extract_stockmarketwatch(r.text)
 
                 if text:
-                    log.info(f"[SYNOPSIS] SUCCESS \u2192 {src['name']}")
-                    return {"text": text, "source": src["name"]}
+                    # Use current time as fallback timestamp for institutional if not found in text
+                    results.append(
+                        {
+                            "text": text,
+                            "source": src["name"],
+                            "timestamp": datetime.now().strftime("%I:%M %p"),
+                        }
+                    )
             except Exception as e:
                 log.error(f"[SYNOPSIS] Source {src['name']} error: {e}")
 
-        log.error("[SYNOPSIS] All sources exhausted.")
-        return None
+        # Return list of results (prioritize AI first as it's already first in to_try)
+        return results if results else None

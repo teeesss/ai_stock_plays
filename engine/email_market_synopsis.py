@@ -1116,7 +1116,7 @@ class SovereignIntelligenceEngine:
                 return " ".join(words)
         return text
 
-    def synthesize_dossier(self, news_db, prices, master_data, sentiment):
+    async def synthesize_dossier(self, news_db, prices, master_data, sentiment):
         nlp = LocalIntelligenceSynthesizer()
         nlp.update_vibe_lexicon(sentiment)
         gold = "#f59e0b"
@@ -1124,7 +1124,7 @@ class SovereignIntelligenceEngine:
         accent = "#60a5fa"
 
         agg = MacroAggregator()
-        macro_headlines = asyncio.run(agg.fetch_agg())
+        macro_headlines = await agg.fetch_agg()
 
         # V28: Specialized Source Detection (Hierarchy Leader)
         semi_sources = [
@@ -1162,7 +1162,7 @@ class SovereignIntelligenceEngine:
 
         # 3. Intelligent Narrative Synthesis (JIT Scrape + NLP)
         scraper = LiveBlogScraper()
-        scraped_lead, lead_url = asyncio.run(scraper.get_sovereign_narrative())
+        scraped_lead, lead_url = await scraper.get_sovereign_narrative()
         if scraped_lead:
             print(f"[MACRO] Scraped Live Narrative: {lead_url}")
 
@@ -1180,14 +1180,10 @@ class SovereignIntelligenceEngine:
                 deep_fetch_tasks.append(art)
 
         if deep_fetch_tasks:
-
-            async def do_deep_fetches(tasks):
-                for art in tasks:
-                    full_text = await DeepScraper.fetch_full_content(art.get("link"))
-                    if full_text:
-                        art["deep_content"] = full_text
-
-            asyncio.run(do_deep_fetches(deep_fetch_tasks))
+            for art in deep_fetch_tasks:
+                full_text = await DeepScraper.fetch_full_content(art.get("link"))
+                if full_text:
+                    art["deep_content"] = full_text
 
         # Institutional Summary Layout - Standardized with primary header classes (V23.72)
         summary_hdr_style = f"color:{text_bright}; font-size:42px; font-weight:900; letter-spacing:-1.5px; text-transform:uppercase; line-height:1.1; margin-bottom:12px;"
@@ -1551,7 +1547,7 @@ class SovereignIntelligenceEngine:
         content = "  ".join(parts)
         return f'<div class="tk-val">[ {content} ]</div>'
 
-    def gather_all_data(self, custom_tickers=None, force=False):
+    async def gather_all_data(self, custom_tickers=None, force=False):
         master = self._load_json("CPO_MASTER_DATA.json")
 
         # V28: Authoritative Watchlist Logic (Hierarchy Trickle-Down)
@@ -1568,7 +1564,7 @@ class SovereignIntelligenceEngine:
         try:
             from market_movers_scraper import get_market_movers
 
-            movers_ext = asyncio.run(get_market_movers())
+            movers_ext = await get_market_movers()
             print(
                 f"[INFO] [MOVERS] Discovered {len(movers_ext['gainers'])} gainers / {len(movers_ext['losers'])} losers."
             )
@@ -1637,8 +1633,8 @@ class SovereignIntelligenceEngine:
                             | set(pulse_anchors)
                         )
                         # V26.9: Respect 15m Cache Mandate (Remove force=True)
-                        prices = asyncio.run(
-                            async_run_fetch(tickers=all_to_fetch[:250], skip_sync=True, force=force)
+                        prices = await async_run_fetch(
+                            tickers=all_to_fetch[:250], skip_sync=True, force=force
                         )
                         print(f"[INFO] [LIVE] JIT Refresh Complete: {len(prices)} tickers.")
                     except Exception as e:
@@ -1687,8 +1683,8 @@ class SovereignIntelligenceEngine:
                             fetch_set.add(resolve_ticker(tk))
 
                 all_to_fetch = list(fetch_set)
-                prices = asyncio.run(
-                    async_run_fetch(tickers=all_to_fetch[:300], skip_sync=True, force=True)
+                prices = await async_run_fetch(
+                    tickers=all_to_fetch[:300], skip_sync=True, force=True
                 )
                 print(f"[INFO] [LIVE] Initial Fetch Complete: {len(prices)} tickers.")
             except Exception as e:
@@ -1845,8 +1841,8 @@ class SovereignIntelligenceEngine:
                 }
                 movers_dict[m_type].append(m_item)
 
-        # V28.8: Dynamic Market Synopsis
-        synopsis_data = self.synopsis_scraper.fetch_synopsis(self.get_market_session())
+        # V28.8: Dynamic Market Synopsis (Async via StealthNavigator)
+        synopsis_data = await self.synopsis_scraper.fetch_synopsis(self.get_market_session())
 
         return tradeable, strategic, prices, news_db, sentiment, master, movers_dict, synopsis_data
 
@@ -1868,18 +1864,18 @@ class SovereignIntelligenceEngine:
             if not history:
                 history_html = '<div class="no-data">No historical dossiers found in current 48-hour window.</div>'
             else:
-                for ts, html_payload in history:
-                    # Sanitize HTML for srcdoc (escape quotes)
-                    safe_html = html_payload.replace('"', "&quot;")
-
+                for ts, filename in history:
+                    dossier_url = f"dossiers/{filename}"
                     entry = f"""
                     <div class="archive-entry">
                         <div class="meta">
                             <span>IDENT: {ts}</span>
                             <span style="color:#f59e0b">ESTABLISHED DOSSIER</span>
                         </div>
-                        <div class="content" style="background:#fff; border-radius:4px; overflow:hidden; height:600px;">
-                            <iframe srcdoc="{safe_html}" style="width:100%; height:100%; border:none;"></iframe>
+                        <div class="link-container">
+                            <a href="{dossier_url}" target="_blank" class="dossier-link">
+                                📄 VIEW SYNOPSIS DOSSIER ({ts})
+                            </a>
                         </div>
                     </div>
                     """
@@ -1896,15 +1892,16 @@ class SovereignIntelligenceEngine:
 
             print(f"[INFO] [ARCHIVE] Generated {self.archive_output}")
 
-            # Sync to remote
+            # Sync the entire archive directory to include dossiers
             from remote_sync import RemoteSync
 
-            RemoteSync.sync_file(self.archive_output)
+            RemoteSync.sync()
+            return self.archive_output
 
         except Exception as e:
             print(f"[ERROR] [ARCHIVE] Generation failed: {e}")
 
-    def compose_html(
+    async def compose_html(
         self,
         tradeable,
         strategic,
@@ -2245,18 +2242,31 @@ class SovereignIntelligenceEngine:
             """
 
         if synopsis_data:
-            s_head = synopsis_data.get("headline", "")
-            s_body = synopsis_data.get("text", "")
-            s_src = synopsis_data.get("source", "MARKET UPDATE")
+            # V28.8.10: Multi-Source Intelligence Stack
+            cards = []
+            for item in synopsis_data:
+                s_body = item.get("text", "")
+                s_src = item.get("source", "MARKET UPDATE")
+                s_ts = item.get("timestamp", "")
 
-            s_html = f"""
-                <div class="synopsis-card" style="background:{bg_surface}; border:1px solid {bg_accent}; border-radius:6px; padding:15px; margin-bottom:25px; border-left:4px solid {gold};">
-                    <div style="font-size:10px; color:{gold}; letter-spacing:1px; text-transform:uppercase; font-weight:bold; margin-bottom:8px;">[ SOVEREIGN RECAP: {s_src} ]</div>
-                    {f'<div style="font-size:18px; color:{text_bright}; font-weight:bold; margin-bottom:10px; line-height:1.3;">{s_head}</div>' if s_head else ''}
-                    <div style="font-size:14px; color:{text_dim}; line-height:1.6;">{s_body}</div>
+                header_text = f"{s_src}"
+                if s_ts:
+                    header_text = f"{s_src} @ {s_ts}"
+
+                # Alternate colors or subtle borders for depth
+                card_html = f"""
+                <div style="margin-bottom: 20px; border-left: 4px solid #38bdf8; padding-left: 15px; background: rgba(56, 189, 248, 0.02); padding-top: 10px; padding-bottom: 10px; border-radius: 0 4px 4px 0;">
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #38bdf8; letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase; font-weight: 900;">
+                        [ {header_text} ]
+                    </div>
+                    <div style="font-size: 14px; color: #f8fafc; line-height: 1.6;">
+                        {s_body}
+                    </div>
                 </div>
-            """
-            unified_pulse += s_html
+                """
+                cards.append(card_html)
+
+            unified_pulse += "".join(cards)
 
         unified_pulse += f"""
             <div class="section-hdr" style="text-align:center; color:{text_bright};">SESSION PERFORMANCE</div>
@@ -2281,7 +2291,7 @@ class SovereignIntelligenceEngine:
             exec_summary,
             macro_intel_rows,
             semi_trade_rows,
-        ) = self.synthesize_dossier(news_db, prices, master, sentiment)
+        ) = await self.synthesize_dossier(news_db, prices, master, sentiment)
         macro_html = "".join(
             [
                 f'<div style="color:{text_dim}; font-size:15px; line-height:1.7; margin-bottom:14px; white-space:normal !important; overflow:visible !important;">'
@@ -2684,73 +2694,83 @@ if __name__ == "__main__":
             print(f"[{ts()}] [ERROR] Social Sync Failed: {e}")
 
     # Filter custom tickers to legit ones
-    print(f"[{ts()}] [DEBUG] Filtering custom tickers...")
-    tradeable, strategic, prices, news_db, sentiment, entries, movers_ext, synopsis_data = (
-        engine.gather_all_data(custom_tickers=custom_tickers, force=args.force)
-    )
-    print(f"[{ts()}] [DEBUG] Data gathered. Composing HTML...")
-    html = engine.compose_html(
-        tradeable,
-        strategic,
-        prices,
-        news_db,
-        sentiment,
-        entries,
-        movers_ext=movers_ext,
-        synopsis_data=synopsis_data,
-    )
-
-    # Aggressive Minification for Gmail (102KB Limit)
-    import re
-
-    html = re.sub(r">\s+<", "><", html)
-    html = re.sub(r"\s{2,}", " ", html)
-    html = html.replace("\n", "").replace("\r", "")
-
-    preview_path = engine.db_path / "synopsis_preview.html"
-    with open(preview_path, "w", encoding="utf-8") as f:
-        f.write(html)
-
-    payload_kb = len(html) / 1024
-    print(f"Dossier generated: {preview_path}")
-    print(
-        f"Payload Size: {payload_kb:.1f} KB {'[OVER LIMIT - WILL CLIP]' if payload_kb > 102 else '[SAFE]'}"
-    )
-
-    # V28.8.1: Full Fidelity Archival
-    print(f"[{ts()}] [ARCHIVE] Storing high-fidelity dossier...")
-    engine.archive_mgr.save_synopsis(html)
-    archive_path = engine.generate_archive_page()
-    if archive_path:
-        RemoteSync.sync_file(archive_path)
-
-    # V28: Automatic Web Deployment (bmwseals.com/email)
-    print(f"[{ts()}] [SYNC] Deploying to bmwseals.com/email...")
-    # V29.7: Sync both HTML and Web Styles
-    css_path = ROOT / "database" / "synopsis_web.css"
-    if os.path.exists(css_path):
-        RemoteSync.sync_file(str(css_path))
-    RemoteSync.sync_file(preview_path)
-
-    if args.test_email:
-        import hashlib
-
-        session_hash = hashlib.md5(html.encode()).hexdigest()[:8].upper()
-        subject = (
-            f"Market Insights and Intel // {engine.now.strftime('%Y-%m-%d')} // [{session_hash}]"
+    async def run_engine():
+        (
+            tradeable,
+            strategic,
+            prices,
+            news_db,
+            sentiment,
+            entries,
+            movers_ext,
+            synopsis_data,
+        ) = await engine.gather_all_data(custom_tickers=custom_tickers, force=args.force)
+        print(f"[{ts()}] [DEBUG] Data gathered. Composing HTML...")
+        html = await engine.compose_html(
+            tradeable,
+            strategic,
+            prices,
+            news_db,
+            sentiment,
+            entries,
+            movers_ext=movers_ext,
+            synopsis_data=synopsis_data,
         )
-        engine.send_email(html, subject_override=subject)
 
-        # V28: Hardened Concise Logging Hierarchy
-        # 1. Print Error Status first
-        if error_monitor._MONITOR_INSTANCE:
-            error_monitor._MONITOR_INSTANCE.print_summary()
+        # Aggressive Minification for Gmail (102KB Limit)
+        import re
 
-        # 2. Print Intelligence Line
-        print(f"[EMAIL] Intelligence: {subject}")
+        html = re.sub(r">\s+<", "><", html)
+        html = re.sub(r"\s{2,}", " ", html)
+        html = html.replace("\n", "").replace("\r", "")
 
-        # 3. Print Final Dispatch Confirmation
-        dispatch_ts = (
-            datetime.datetime.now().strftime("%a %b %d %I:%M:%S %p %Z %Y").replace("  ", " ")
+        preview_path = engine.db_path / "synopsis_preview.html"
+        with open(preview_path, "w", encoding="utf-8") as f:
+            f.write(html)
+
+        payload_kb = len(html) / 1024
+        print(f"Dossier generated: {preview_path}")
+        print(
+            f"Payload Size: {payload_kb:.1f} KB {'[OVER LIMIT - WILL CLIP]' if payload_kb > 102 else '[SAFE]'}"
         )
-        print(f"Dispatched at {dispatch_ts}: SIE Pulse")
+
+        # V28.8.1: Full Fidelity Archival
+        print(f"[{ts()}] [ARCHIVE] Storing high-fidelity dossier...")
+        dossier_path = engine.archive_mgr.save_synopsis(html)
+        if dossier_path:
+            RemoteSync.sync_file(dossier_path)
+
+        archive_path = engine.generate_archive_page()
+        if archive_path:
+            RemoteSync.sync_file(archive_path)
+
+        # V28: Automatic Web Deployment (bmwseals.com/email)
+        print(f"[{ts()}] [SYNC] Deploying to bmwseals.com/email...")
+        # V29.7: Sync both HTML and Web Styles
+        css_path = ROOT / "database" / "synopsis_web.css"
+        if os.path.exists(css_path):
+            RemoteSync.sync_file(str(css_path))
+        RemoteSync.sync_file(preview_path)
+
+        if args.test_email:
+            import hashlib
+
+            session_hash = hashlib.md5(html.encode()).hexdigest()[:8].upper()
+            subject = f"Market Insights and Intel // {engine.now.strftime('%Y-%m-%d')} // [{session_hash}]"
+            engine.send_email(html, subject_override=subject)
+
+            # V28: Hardened Concise Logging Hierarchy
+            # 1. Print Error Status first
+            if error_monitor._MONITOR_INSTANCE:
+                error_monitor._MONITOR_INSTANCE.print_summary()
+
+            # 2. Print Intelligence Line
+            print(f"[EMAIL] Intelligence: {subject}")
+
+            # 3. Print Final Dispatch Confirmation
+            dispatch_ts = (
+                datetime.datetime.now().strftime("%a %b %d %I:%M:%S %p %Z %Y").replace("  ", " ")
+            )
+            print(f"Dispatched at {dispatch_ts}: SIE Pulse")
+
+    asyncio.run(run_engine())

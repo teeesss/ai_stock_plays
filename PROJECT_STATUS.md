@@ -1,6 +1,10 @@
 # Project Status: Market Intelligence Engine
 
-## 🚀 Current Milestone: V28.8.1 - Archival Engine & Scraper Hardening [2026-05-01]
+## 🚀 Current Milestone: V28.8.10 - Anti-Fragile Intelligence & Archive Sync [2026-05-01]
+- **Anti-Fragile Pipeline**: Implemented multi-tier intelligence stack with AI cache fallback and session gating.
+- **Archive Fidelity**: Resolved 404 pathing errors in the historical ledger via absolute pathing and synchronous RemoteSync.
+- **Session Gating**: Restricted Edward Jones (EDJ) summaries to After-Hours (AH) sessions only.
+- **Intelligence Transparency**: Integrated per-source timestamps into the high-density recap cards.
 - **Archival Intelligence**: Deployed `SynopsisArchiveManager` with 48h rolling TTL.
 - **Resilient Scraper**: Multi-source rotation (StockMarketWatch → CNBC → EDJ) implemented to eliminate data gaps.
 - **Endpoint Resolution**: Resolved 404 by deploying static `archive.html` generation and automated SFTP synchronization.

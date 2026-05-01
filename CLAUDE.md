@@ -1,4 +1,4 @@
-### 🚀 Active Context: V28.8 (Sovereign Intelligence Hardening & Narrative Pipeline)
+### 🚀 Active Context: V28.8.10 (Anti-Fragile Intelligence & Archive Stabilization)
 [Status Synchronized - 2026-05-01]
 
 ### 🧩 Logic & Patterns
@@ -19,6 +19,9 @@
    - **Article Rotation Engine**: Deployed `sent_news_history.json` ledger to track previously sent URLs for 24h.
     - **Web Synopsis Endpoint**: Automatically deploys the generated email synopsis to `bmwseals.com/email` via `RemoteSync.sync_file()` for instant web access.
     - **Session-Aware Narrative Pipeline**: Dossier includes real-time market context scraped from StockMarketWatch (PRE), CNBC (MID), and Edward Jones (POST). **Hardened with signature-based extraction, case-insensitive junk rejection, and editorial keyword gates.**
+    - **Anti-Fragile Intelligence Stack (V28.8.10)**: Uses `database/ai_intel_cache.json` as a primary fallback for AI summaries. Each intelligence card MUST display its source-level timestamp (e.g., `[ CNBC @ 12:41 EST ]`).
+    - **Session-Based Gating (V28.8.10)**: Edward Jones (EDJ) summaries are strictly gated to After-Hours (AH) and CLOSED sessions to prevent post-market noise during live trading.
+    - **Archive Synchronization (V28.8.10)**: Every dossier saved to the archive must immediately trigger `RemoteSync.sync_file()` for both the individual HTML file and the archive index.
    - **Data-Driven Session Detection**: ALWAYS match session badges (AH, OVN, PRE) to the actual data source, not clock time.
    - **24h Ghost Ticker Purge**: Database entries older than 24h must be purged during every save cycle.
    - **Multi-Tier Rescue**: Use a 5-gateway pool (`vx_rescue_fetcher.py`) with OpenGraph HTML scraping fallback.

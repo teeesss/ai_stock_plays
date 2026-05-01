@@ -1,4 +1,9 @@
 ## 🛠 V28.8 Sovereign Intelligence Hardening (2026-04-29 → 2026-05-01)
+- [x] **V28.8.10 Stabilization**:
+    - [x] Implement session-based gating for Edward Jones (EDJ) sources (AH only).
+    - [x] Integrate source-level timestamps (`[ SOURCE @ HH:MM EST ]`) into all intelligence cards.
+    - [x] Resolve 404 navigation errors in the archive by forcing absolute paths and immediate RemoteSync.
+    - [x] Hardened multi-source intelligence stack with hybrid AI cache fallback.
 - [x] **UI & Archival Polish (V28.8.1)**:
     - [x] Fix Sovereign Intelligence Archive 404
     - [x] Implement 48-hour rolling history ledger

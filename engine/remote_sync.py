@@ -173,7 +173,13 @@ class RemoteSync:
             # 3. Archive Mapping (bmwseals.com/stocks/archive)
             arch_local = ROOT / "web" / "archive"
             if arch_local.exists():
-                files_to_sync["web/archive/index.html"] = "archive/index.html"
+                # V28.8.2: Sync all files in archive recursively (including dossiers)
+                for p in arch_local.rglob("*"):
+                    if p.is_file():
+                        rel_path = str(p.relative_to(ROOT)).replace("\\", "/")
+                        rem_path = str(p.relative_to(arch_local)).replace("\\", "/")
+                        rem_path = "archive/" + rem_path
+                        files_to_sync[rel_path] = rem_path
 
             # 4. Global prices
             files_to_sync["database/live_prices.js"] = "database/live_prices.js"
