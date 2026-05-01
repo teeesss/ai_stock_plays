@@ -6,11 +6,11 @@ sys.path.append(os.getcwd())
 from engine.email_market_synopsis import SovereignIntelligenceEngine
 
 
-class TestSovereignEngine(unittest.TestCase):
+class TestSovereignEngine(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.engine = SovereignIntelligenceEngine()
 
-    def test_pulse_bar_renaming(self):
+    async def test_pulse_bar_renaming(self):
         """NQ, S&P, and DOW must be labeled correctly in the HTML output."""
         prices = {
             "ES=F": {"change_pct": 1.0},
@@ -20,7 +20,7 @@ class TestSovereignEngine(unittest.TestCase):
             "ETH-USD": {"change_pct": 1.0},
         }
         sentiment = {"market": {"value": 68}, "crypto": {"value": 26}}
-        html = self.engine.compose_html({}, [], prices, {}, sentiment, {})
+        html = await self.engine.compose_html({}, [], prices, {}, sentiment, {})
 
         self.assertIn("S&P", html)
         self.assertIn("DOW", html)
