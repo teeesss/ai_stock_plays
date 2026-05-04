@@ -1,5 +1,5 @@
 ## 🛠 V30.4.13 Mobile UI Polish Final (2026-05-04)
-- [x] **Mobile Icon Finalization**: Increased "Back-to-Top" button size by 25% (to 75px) on mobile viewports for optimized tap-target fidelity. ✅
+- [x] **Mobile Icon Finalization**: Increased "Back-to-Top" button size by 25% (to 75px) on mobile viewports for optimized tap-target fidelity. Injected mandatory `viewport` meta tag to resolve responsive scaling issues. ✅
 
 ## 🛠 V30.4.12 Dual-Ticker Hardening & UI Polish (2026-05-04)
 - [x] **Dual-Ticker Labeling Hardened**: Centralized `$SIVE.TO/$SIVEF` labeling in `ticker_utils.py` to ensure institutional-grade representation of Sivers Semiconductors. ✅

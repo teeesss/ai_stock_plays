@@ -664,6 +664,7 @@ class NewsMarketSynopsisEngine:
 
         watchlist_html = render_bucket("REAL-TIME WATCHLIST", watchlist_data, columns=2)
         html = f"""<!DOCTYPE html><html lang="en" style="background-color:#020617; margin:0; padding:0;"><head><meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {{ margin:0; padding:0; background-color:#020617; font-family:sans-serif; }}
         table {{ border-collapse:collapse; border-spacing:0; border:0; }}
@@ -685,9 +686,9 @@ class NewsMarketSynopsisEngine:
         .tk-c {{ font-size:10px; color:#64748b; font-weight:normal; margin-top:2px; }}
         .tk-notes {{ font-size:12px; color:#8f9bb3; margin-top:6px; line-height:1.6; overflow:hidden; max-height:80px; }}
         .tk-val {{ text-align:left; font-size:10px; color:#38bdf8; font-family:monospace; margin-top:2px; }}
-        @media only screen and (max-width:599px) {{
+        @media only screen and (max-width:768px) {{
             .bucket-col {{ display:block !important; width:100% !important; padding:0 !important; }}
-            .home-btn {{ width: 75px; height: 75px; font-size: 40px; bottom: 25px; right: 25px; border-color: rgba(56, 189, 248, 0.6); }}
+            .home-btn {{ width: 75px !important; height: 75px !important; font-size: 40px !important; bottom: 25px !important; right: 25px !important; border-color: rgba(56, 189, 248, 0.8) !important; }}
         }}
     </style></head><body id="top" style="background-color:#020617; margin:0; padding:0;">
     <div class="nav-bar"><a href="#synopsis" class="nav-btn">Synopsis</a><a href="#macro" class="nav-btn">Macro</a><a href="#ticker-news" class="nav-btn">Tickers</a><a href="#earn" class="nav-btn">Earnings</a><a href="#semi" class="nav-btn">Semi</a><a href="#ticker" class="nav-btn">Watchlist</a></div><a href="#top" class="home-btn">&uarr;</a>

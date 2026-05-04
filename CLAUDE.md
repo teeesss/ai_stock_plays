@@ -34,6 +34,7 @@
     - **Centralized Ticker Intelligence (V30.4.8)**: `MacroAggregator.fetch_ticker_news` is the authoritative gateway for ticker-specific news, enforcing strict freshness (36h/60h/72h for macro, **168h/7-day for tickers**) and safety gates.
     - **Hierarchical Utility Layer (V30.4.10)**: Shared rendering and extraction logic (EPS, session badges) and **authoritative news categorization and date formatting (format_news_date)** moved to `ticker_utils.py` to decouple engines and centralize institutional standards.
     - **Strict Section Exclusivity (V30.4.9)**: Enforced 100% isolation for technical semiconductor news. Articles identified as semi-trade news are strictly prohibited from the Macro section, regardless of section capacity, to prevent intelligence bleed.
+    - **Mobile UI Hardening (V30.4.13)**: Enforced 75px tap-target density for the Back-to-Top (`.home-btn`) component on mobile viewports (<768px). Injected mandatory `viewport` meta tags to ensure responsive media query execution on high-DPI mobile devices.
 
 2. **Dependency Guardian (V28)**:
    - **Auto-Restart Protocol**: Uses `os.execv` to automatically refresh the Python process after resolving missing dependencies.

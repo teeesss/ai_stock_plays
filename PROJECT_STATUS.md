@@ -1,7 +1,7 @@
 # Project Status: Market Intelligence Engine
 
 ## 🚀 Current Milestone: V30.4.13 - Mobile UI Polish Final [2026-05-04]
-- **Mobile Icon Finalization**: Increased "Back-to-Top" button size by 25% (to 75px) on mobile viewports for optimized tap-target fidelity.
+- **Mobile Icon Finalization**: Increased "Back-to-Top" button size by 25% (to 75px) on mobile viewports for optimized tap-target fidelity. Injected `viewport` meta tag to resolve responsive scaling issues.
 - **Labeling Parity**: Maintained dual-ticker standard ($SIVE.TO/$SIVEF) across all platforms.
 
 ## 🚀 Version: V30.4.13 (Mobile UI Polish Final)
