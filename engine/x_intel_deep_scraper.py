@@ -26,6 +26,13 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+# V28: Hierarchy Leader Dependency Check
+try:
+    from dependency_mgr import ensure_dependencies
+except ImportError:
+    from engine.dependency_mgr import ensure_dependencies
+ensure_dependencies()
+
 # V28: Setup Logging BEFORE any local imports that might hijack root
 ROOT = Path(__file__).parent.parent
 DB_DIR = ROOT / "database"

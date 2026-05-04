@@ -32,6 +32,13 @@ logging.basicConfig(
 )
 log = logging.getLogger("x_intel_auto")
 
+# V28: Hierarchy Leader Dependency Check
+try:
+    from dependency_mgr import ensure_dependencies
+except ImportError:
+    from engine.dependency_mgr import ensure_dependencies
+ensure_dependencies()
+
 # Reuse the deep scraper logic but with restricted days/pages
 sys.path.append(str(Path(__file__).parent))
 import x_intel_deep_scraper as scraper
