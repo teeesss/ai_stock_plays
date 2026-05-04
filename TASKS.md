@@ -1,3 +1,6 @@
+## 🛠 V30.4.14 Mobile UI Polish Refined (2026-05-04)
+- [x] **Mobile Icon Scaling**: Reduced "Back-to-Top" button size by 33% (to 50px) on mobile viewports for improved spatial balance. ✅
+
 ## 🛠 V30.4.13 Mobile UI Polish Final (2026-05-04)
 - [x] **Mobile Icon Finalization**: Increased "Back-to-Top" button size by 25% (to 75px) on mobile viewports for optimized tap-target fidelity. Injected mandatory `viewport` meta tag to resolve responsive scaling issues. ✅
 

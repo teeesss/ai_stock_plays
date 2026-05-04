@@ -1,14 +1,14 @@
 # Project Status: Market Intelligence Engine
 
-## 🚀 Current Milestone: V30.4.13 - Mobile UI Polish Final [2026-05-04]
-- **Mobile Icon Finalization**: Increased "Back-to-Top" button size by 25% (to 75px) on mobile viewports for optimized tap-target fidelity. Injected `viewport` meta tag to resolve responsive scaling issues.
+## 🚀 Current Milestone: V30.4.14 - Mobile UI Polish Refined [2026-05-04]
+- **Mobile Icon Scaling**: Reduced "Back-to-Top" button size by 33% (to 50px) on mobile viewports for improved spatial balance.
 - **Labeling Parity**: Maintained dual-ticker standard ($SIVE.TO/$SIVEF) across all platforms.
 
-## 🚀 Version: V30.4.13 (Mobile UI Polish Final)
+## 🚀 Version: V30.4.14 (Mobile UI Polish Refined)
 Status: **PRODUCTION DEPLOYED — VERIFIED ✅ 2026-05-04**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V30.4.13 (Mobile UI Polish Final)
+- **Current Tier**: V30.4.14 (Mobile UI Polish Refined)
 - **Critical Progress**: Mobile navigation UX finalized.
 - **Next Milestone**: V30.5 — Implementation of automated sector-specific weighting for narrative generation.
 
