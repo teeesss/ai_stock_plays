@@ -50,6 +50,7 @@ async def run_auto_sync():
         scraper._deduplicate_file(user)
         try:
             from repair_tickers import repair_user
+
             repair_user(user)
         except Exception as e:
             log.warning(f"  Ticker repair failed for @{user}: {e}")

@@ -12,4 +12,3 @@
 
 ### Regression Suite
 - **Result:** PASSED
-
