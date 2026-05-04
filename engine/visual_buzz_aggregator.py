@@ -189,7 +189,14 @@ def merge_into_master(visual_buzz: dict):
         f.write(js_content)
     with open(ROOT_INTEL_JS, "w", encoding="utf-8") as f:
         f.write(js_content)
-    log.info(f"Rebuilt intel.js ({INTEL_JS_PATH.stat().st_size / 1024:.0f} KB) [stripped]")
+
+    # V30.4.15: Restore legacy master naming for template compatibility
+    (DB_DIR / "x_intel_master.js").write_text(js_content, encoding="utf-8")
+    (ROOT / "x_intel_master.js").write_text(js_content, encoding="utf-8")
+
+    log.info(
+        f"Rebuilt intel.js and x_intel_master.js ({INTEL_JS_PATH.stat().st_size / 1024:.0f} KB) [stripped]"
+    )
 
 
 def run():

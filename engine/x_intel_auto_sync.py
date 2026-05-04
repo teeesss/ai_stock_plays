@@ -41,17 +41,14 @@ async def run_auto_sync():
     log.info("--- [GIGACPO] Social Intelligence Auto-Sync Started ---")
     users = ["KawzInvests", "PhotonCap", "aleabitoreddit"]
 
-    all_new = []
     for user in users:
         log.info(f"Syncing @{user}...")
         # Only check the last 3 days to keep it fast
-        posts = await scraper.scrape_user_history(user, max_days=3)
-        all_new.extend(posts)
+        await scraper.scrape_user(user, max_days=3)
 
-    if all_new:
-        scraper.save_master(all_new)
-    else:
-        log.info("No new posts discovered.")
+    log.info("Rebuilding master intelligence module...")
+    scraper.rebuild_master()
+
     log.info("--- Auto-Sync Complete ---")
 
 

@@ -28,8 +28,14 @@ def forensic_repair(text: str) -> str:
     # 3. Collapse bare capital chains (C P O -> CPO)
     text = re.sub(r"(?<!\w)[A-Z](?:\s[A-Z]\b)+", lambda m: m.group(0).replace(" ", ""), text)
 
-    # 4. Add spaces between smashed tickers ($PGY$NVDA -> $PGY $NVDA)
-    text = re.sub(r"(\$[A-Z0-9]{2,10})(\$[A-Z0-9])", r"\1 \2", text)
+    # Rule 1: Fix smashed tickers ($AAOI -> $AAOI)
+    # This rule looks for non-whitespace characters followed by '$' and adds a space
+    # It now includes a broader range of characters (including foreign ones)
+    text = re.sub(r"([^\s$])(\$)", r"\1 \2", text)
+
+    # Rule 2: Fix specific cases where tickers are concatenated with numbers or words
+    # e.g., "1.$AAOI" -> "1. $AAOI"
+    text = re.sub(r"(\d+)\.(\$)", r"\1. \2", text)
 
     # 5. Final Spacing Refinement
     text = re.sub(r"([a-z0-9])([\$@])", r"\1 \2", text)  # Space before $ or @

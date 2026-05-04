@@ -645,12 +645,13 @@ def rebuild_master():
         return c
 
     bridge_payload = {**payload, "posts": [_strip_assets(p) for p in all_posts]}
-    js_content = (
-        "// GIGACPO Intelligence Data - images stripped for performance\n"
-        "window.X_INTEL_MODULE = " + json.dumps(bridge_payload, ensure_ascii=True) + ";"
-    )
+    js_content = "window.X_INTEL_MODULE = " + json.dumps(bridge_payload) + ";"
     (DB_DIR / "intel.js").write_text(js_content, encoding="utf-8")
     (ROOT / "intel.js").write_text(js_content, encoding="utf-8")
+
+    # V30.4.15: Restore legacy master naming for template compatibility
+    (DB_DIR / "x_intel_master.js").write_text(js_content, encoding="utf-8")
+    (ROOT / "x_intel_master.js").write_text(js_content, encoding="utf-8")
 
     log.info(
         f"Master rebuilt: {len(all_posts)} posts, {len(buzz)} tickers, "

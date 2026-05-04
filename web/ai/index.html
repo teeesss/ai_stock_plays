@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Watchlist Terminal â€” Crypto/AI Infrastructure</title>
     <!-- AI Watchlist V1.7.5 Hardened -->
-    <script src="database/dashboard_data.js"></script>
+    <script src="dashboard_data.js"></script>
     <script src="../database/live_prices.js"></script>
+    <script src="../database/x_intel_master.js"></script>
     <!-- Live prices: run 'python engine/live_prices.py' to refresh -->
     <script>
     // Graceful load: LIVE_PRICES is optional, terminal works without it
@@ -98,6 +99,15 @@
         .search-tag { position: absolute; right: 8px; top: 6px; font-size: 8px; font-weight: 900; color: #334155; pointer-events: none; }
         .filter-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 8px; }
         .filter-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+
+        .home-btn { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background: #000000; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 900; box-shadow: 0 4px 15px rgba(0,0,0,0.8); z-index: 1100; font-size: 24px; border: 1px solid rgba(56, 189, 248, 0.4); transition: all 0.2s ease; display: none; }
+        .home-btn:hover { background: #111111; transform: scale(1.1); border-color: #38bdf8; }
+        .intel-sync-badge { font-size: 9px; color: var(--text-dim); background: rgba(15, 23, 42, 0.5); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border); font-weight: 700; letter-spacing: 0.5px; }
+
+        @media (max-width: 768px) {
+            .home-btn { width: 50px !important; height: 50px !important; font-size: 28px !important; bottom: 20px !important; right: 20px !important; border-color: rgba(56, 189, 248, 0.8) !important; }
+        }
+
         .filter-group { display: flex; flex-direction: column; gap: 4px; }
         .filter-group label { font-size: 10px; color: var(--gold); text-transform: uppercase; font-weight: 900; letter-spacing: 0.5px; }
         .input-pair { display: flex; gap: 4px; }
@@ -166,7 +176,7 @@
 
 <div class="command-bar">
     <div class="logo">âš¡ AI WATCHLIST</div>
-    <div id="versionLabel" class="logo-sub">V1.0 Â· Independent Autonomous Mode | Last Generated: 2026-05-01 16:04:55</div>
+    <div id="versionLabel" class="logo-sub">V1.0 Â· Independent Autonomous Mode | Last Generated: 2026-05-04 14:17:37</div>
 
     <div class="stat"><span>UNIVERSE</span><div class="val" id="stat-total">â€”</div></div>
     <div class="stat"><span>PRIVATE</span><div class="val" id="stat-private" style="color:var(--purple)">â€”</div></div>
@@ -204,7 +214,7 @@
 <div class="intel-modal" id="newsModal">
     <div class="intel-modal-content">
         <div class="intel-header">
-            <div>ðŸ“° YAHOO NEWS INTELLIGENCE <span id="news-count" style="font-size:9px;color:var(--text-dim);margin-left:15px;font-weight:700;">0 ARTICLES</span></div>
+            <div>📰 YAHOO NEWS INTELLIGENCE <span id="news-count" style="font-size:9px;color:var(--text-dim);margin-left:15px;font-weight:700;">0 ARTICLES</span></div>
             <div style="display:flex;gap:15px;align-items:center;">
                 <input type="text" id="newsSearch" class="search-bar" style="width:280px;background:#0f172a;" placeholder="SEARCH TICKER / KEYWORD... (e.g. $NVDA)" oninput="filterNews()">
                 <div class="close-modal" onclick="closeNewsModal()">&times;</div>
@@ -214,40 +224,47 @@
     </div>
 </div>
 
-<div class="intel-modal" id="intelModal">
+<div id="intelModal" class="intel-modal">
     <div class="intel-modal-content">
         <div class="intel-header">
-            <div>𝕏 SOCIAL INTELLIGENCE TERMINAL <span id="intel-sync-time" style="font-size:9px; color:var(--text-dim); margin-left:15px; font-weight:700;"></span></div>
-            <div style="display:flex;gap:15px;align-items:center;">
-                <input type="text" id="modalIntelSearch" class="search-bar" style="width:250px;background:#0f172a;" placeholder="SEARCH POSTS / KEYWORDS...">
-
-                <select id="intelUserFilter" style="font-size:10px;padding:4px;background:#0f172a;color:var(--text-dim);border:1px solid var(--border);" onchange="filterIntel()">
-                    <option value="all">ALL USERS</option>
-                </select>
-
-                <div style="display:flex;gap:5px;align-items:center;">
-                    <span style="font-size:9px;color:var(--text-dim);">FROM</span>
-                    <input type="date" id="intelDateFrom" style="font-size:10px;padding:4px;background:#0f172a;color:white;border:1px solid var(--border);" onchange="filterIntel()">
-                    <span style="font-size:9px;color:var(--text-dim);">TO</span>
-                    <input type="date" id="intelDateTo" style="font-size:10px;padding:4px;background:#0f172a;color:white;border:1px solid var(--border);" onchange="filterIntel()">
-                </div>
-
-                <select id="intelTimeFilter" style="font-size:10px;padding:4px;background:#0f172a;color:var(--text-dim);border:1px solid var(--border);" onchange="filterIntel()">
-                    <option value="all">ANY TIME (ARCHIVE)</option>
-                    <option value="24h">LAST 24 HOURS</option>
-                    <option value="7d">LAST 7 DAYS</option>
-                </select>
-                <div style="font-size:10px;color:var(--text-dim);white-space:nowrap;" id="intel-count">0 POSTS</div>
-                <div class="close-modal" onclick="closeIntelModal()">&times;</div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span>𝕏 SOCIAL INTELLIGENCE</span>
+                <span id="intel-sync-time" class="intel-sync-badge">LATEST SYNC: --</span>
             </div>
+            <div class="close-modal" onclick="closeIntelModal()">&times;</div>
         </div>
-        <div class="buzz-bar" id="buzzBar"></div>
-        <div class="intel-scroll" id="intelBody"></div>
+        <div id="buzzBar" class="buzz-bar"></div>
+        <div class="command-bar" style="border-bottom:none; background:rgba(30,41,59,0.3);">
+            <div class="search-box">
+                <input type="text" id="modalIntelSearch" class="search-bar" placeholder="Search Intel (e.g. $NVDA, 'Earnings', '@JackXJong')..." oninput="filterIntel()">
+            </div>
+            <select id="intelTimeFilter" class="search-bar" style="width:120px;" onchange="filterIntel()">
+                <option value="all">ALL TIME</option>
+                <option value="24h">LAST 24H</option>
+                <option value="7d">LAST 7D</option>
+            </select>
+            <select id="intelUserFilter" class="search-bar" style="width:150px;" onchange="filterIntel()">
+                <option value="all">ALL USERS</option>
+            </select>
+        </div>
+        <div class="command-bar" style="background:rgba(30,41,59,0.2); border-bottom:1px solid var(--border); font-size:10px;">
+            <div style="display:flex; gap:10px; align-items:center; flex-grow:1;">
+                <span style="color:var(--text-dim)">DATE FROM:</span>
+                <input type="date" id="intelDateFrom" class="search-bar" style="width:130px; font-size:10px; padding:3px;" onchange="filterIntel()">
+                <span style="color:var(--text-dim)">TO:</span>
+                <input type="date" id="intelDateTo" class="search-bar" style="width:130px; font-size:10px; padding:3px;" onchange="filterIntel()">
+            </div>
+            <div id="intel-count" style="color:var(--gold); font-weight:900;">0 POSTS</div>
+        </div>
+        <div id="intelScroll" class="intel-scroll">
+            <div id="intelBody"></div>
+            <a href="#" class="home-btn" id="modal-top-btn" onclick="document.getElementById('intelScroll').scrollTo({top:0, behavior:'smooth'}); return false;">&uarr;</a>
+        </div>
     </div>
 </div>
 
-<script src="../database/YAHOO_NEWS_MODULE.js" defer></script>
-<script src="../database/x_intel_master.js" defer></script>
+<script src="database/YAHOO_NEWS_MODULE.js" defer></script>
+<script src="database/x_intel_master.js" defer></script>
 
 <script>
 // Handle Remote vs Local UI
@@ -255,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isRemote = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && !window.location.hostname.startsWith('192.168.');
     if (isRemote) {
         const lbl = document.getElementById('versionLabel');
-        lbl.innerHTML = 'V6.1 Â· Remote Intelligence Mode Â· <span style="color:var(--gold)">Sync Managed by Master Bridge</span>';
+        lbl.innerHTML = 'V6.1 · Remote Intelligence Mode · <span style="color:var(--gold)">Sync Managed by Master Bridge</span>';
         const btn = document.getElementById('syncBtn');
         btn.innerHTML = '<span class="sync-dot"></span> MASTER SYNC';
         btn.title = "Sync is automated at 4:20 PM EST by the Master Bridge. Manual trigger unavailable from remote viewing mode.";
@@ -275,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function initVelocity() {
     try {
-        const res = await fetch('../database/macro_velocity_metrics.json');
+        const res = await fetch('database/macro_velocity_metrics.json');
         if (!res.ok) return;
         const data = await res.json();
         const metrics = data.metrics || {};
@@ -297,7 +314,7 @@ async function initVelocity() {
 
             // Animation for high velocity
             if (maxV > 5) {
-                document.getElementById('vel-icon').innerText = 'âš¡';
+                document.getElementById('vel-icon').innerText = '⚡';
             }
         } else {
             statEl.style.display = 'none';
@@ -354,7 +371,7 @@ async function initVelocity() {
         <table id="masterTable">
             <thead>
                 <tr>
-                    <th style="width:30px;" onclick="setSort('pinned')">â˜…</th>
+                    <th style="width:30px;" onclick="setSort('pinned')">★</th>
                     <th class="col-rank">#</th>
                     <th style="width:100px;" onclick="setSort('ticker')">Ticker</th>
                     <th style="width:60px;" onclick="setSort('alpha')">Alpha</th>
@@ -410,15 +427,15 @@ const RANK_EXPLAIN = {
     7: 'Ranking by: Alpha (40%) + <span>Discovery (29%)</span> + Momentum (15%) + Safety (20%). Aggressive hunt for overlooked plays.',
     8: 'Ranking by: Alpha (40%) + <span>Discovery (36%)</span> + Momentum (15%) + Safety (15%). Tier 3/4 supply chain bottlenecks.',
     9: 'Ranking by: Alpha (40%) + <span>Discovery (43%)</span> + Momentum (15%) + Safety (10%). Maximum undiscovered-company weighting.',
-    10: 'Ranking by: <span>Discovery (50%)</span> + Alpha (40%) + Momentum (15%) + Safety (5%). ðŸ’€ Pure conviction. Risk ignored.',
+    10: 'Ranking by: <span>Discovery (50%)</span> + Alpha (40%) + Momentum (15%) + Safety (5%). 💀 Pure conviction. Risk ignored.',
 };
 
 const sfloat = v => { try { return parseFloat(String(v).replace('%', '').trim())||0; } catch { return 0; } };
-const esc = s => s == null ? ' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
 function formatMCap(b) {
     if (!b || b <= 0) return '--';
-    let res = ';
+    let res = '';
     if (b >= 1000) {
         const t = b / 1000;
         res = (t < 10 ? t.toFixed(2) : t.toFixed(1)) + 'T';
@@ -454,7 +471,7 @@ function momentumScore(perf1y) {
 function buildTickerHTML(ticker) {
     // Strip exchange suffixes for X (e.g., 3105.TW -> 3105)
     const primary = ticker.split(/[\/\.]/)[0].trim();
-    const xIcon = `&nbsp;<span class="x-intel-icon" onclick="syncIntelSearch('${primary}'); event.stopPropagation();" title="Search \u{1D54F} Intelligence for $${primary}">\u{1D54F}</span>`;
+    const xIcon = `&nbsp;<span class="x-intel-icon" onclick="syncIntelSearch('${primary}'); event.stopPropagation();" title="Search 𝕏 Intelligence for $${primary}">𝕏</span>`;
 
     if (!ticker.includes('/')) return `<a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" class="ticker-link">${ticker}</a>${xIcon}`;
     const parts = ticker.split('/').map(t => t.trim());
@@ -513,11 +530,11 @@ function parseUpside(str) {
 }
 
 const state = {
-    search: ', minMcap: -Infinity, maxMcap: Infinity, minAlpha: 0, maxAlpha: 10, minRisk: 0, maxRisk: 10, minHidden: 0, maxHidden: 10, minRev: -Infinity,
+    search: '', minMcap: -Infinity, maxMcap: Infinity, minAlpha: 0, maxAlpha: 10, minRisk: 0, maxRisk: 10, minHidden: 0, maxHidden: 10, minRev: -Infinity,
     minPe26: -Infinity, maxPe26: Infinity, minPe27: -Infinity, maxPe27: Infinity,
     minInst: -Infinity, maxInst: Infinity, minShort: -Infinity, maxShort: Infinity,
     minAnalysts: -Infinity, maxAnalysts: Infinity, minBuzz: -Infinity, maxBuzz: Infinity,
-    selectedBuckets: [], selectedExchanges: [], pinned: [], range: '1y', sortCol: ', sortDir: -1, aggressiveness: 5, showPrivate: true
+    selectedBuckets: [], selectedExchanges: [], pinned: [], range: '1y', sortCol: '', sortDir: -1, aggressiveness: 5, showPrivate: true
 };
 
 function get1yPerf(entry) {
@@ -548,8 +565,12 @@ function buildEntries() {
         const pe27f = (pe27 > 0 && pe27 < 150) ? pe27.toFixed(1) : '--';
         const upsideVal = entry.h['Target Upside'] || '--';
 
-        const growth_str = h['Rev Growth Est'] || ';
-        let rev_num = growth_str.includes('%') ? parseFloat(growth_str) : 0;
+        const growth_str = String(h['Rev Growth Est'] || '');
+        let rev_num = 0;
+        if (growth_str) {
+            rev_num = parseFloat(growth_str.replace('%', ''));
+            if (isNaN(rev_num)) rev_num = 0;
+        }
 
         const visualBuzz = (window.X_INTEL_MODULE?.visual_mentions || {})[ticker] || null;
 
@@ -677,7 +698,7 @@ function render() {
                 <div style="font-size:9px;" class="${extCls}">${extStr}</div>
                 '' : '<span style="color:var(--text-dim);font-size:10px;">--</span>'}
             </td>
-            <td style="font-weight:700;color:var(--accent);">${e.rev_num ? e.rev_num + '%' : '--'}</td>
+            <td style="font-weight:700;color:var(--accent);">${e.rev_num !== 0 ? e.rev_num.toFixed(1) + '%' : '--'}</td>
             <td style="white-space:normal;line-height:1.3;"><div style="font-weight:800;font-size:11px;">${newsHtml}${esc(e.h.Role)}</div><div style="font-size:10px;color:#cbd5e1;margin-top:1px;">${esc((e.h.Notes || ').replace(/\s*[|,]?\s*(Valuation|US ADR|US OTC|OTC)[^|]*/gi, ').trim())}</div>${obbHtml}</td>
         `;
         frag.appendChild(tr); rank++;
@@ -1236,12 +1257,27 @@ function filterIntel() {
     const module = window.X_INTEL_MODULE || { posts: [] };
     const posts = module.posts || [];
 
-    // Update sync timestamp in UI
+    // Update sync timestamp in UI (Primary: DASHBOARD_METADATA, Fallback: Module timestamp)
     const syncTimeEl = document.getElementById('intel-sync-time');
-    if (syncTimeEl && (module.visual_last_updated || module.last_updated)) {
-        const d = new Date(module.visual_last_updated || module.last_updated);
-        syncTimeEl.innerText = `LATEST SYNC: ${d.toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})} EST`;
+    const masterSync = window.DASHBOARD_METADATA?.last_rebuild;
+    if (syncTimeEl) {
+        if (masterSync) {
+            syncTimeEl.innerText = `LATEST REBUILD: ${masterSync} EST`;
+        } else if (module.visual_last_updated || module.last_updated) {
+            const d = new Date(module.visual_last_updated || module.last_updated);
+            syncTimeEl.innerText = `LATEST SYNC: ${d.toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})} EST`;
+        }
     }
+
+    // Modal Scroll Behavior
+    const scrollEl = document.getElementById('intelScroll');
+    const topBtn = document.getElementById('modal-top-btn');
+    if (scrollEl && topBtn) {
+        scrollEl.onscroll = () => {
+            topBtn.style.display = scrollEl.scrollTop > 300 ? 'flex' : 'none';
+        };
+    }
+
 
     let filtered = posts;
 

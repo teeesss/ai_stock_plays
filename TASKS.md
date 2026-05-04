@@ -1,3 +1,9 @@
+## 🛠 V30.4.15 Social Intelligence Pipeline Hardened (2026-05-04)
+- [x] **Auto-Sync Repair**: Corrected `x_intel_auto_sync.py` to use valid `scrape_user` method and established a 3-day fast-sync protocol. ✅
+- [x] **Master Rebuild Integration**: Injected mandatory `rebuild_master()` call into the auto-sync loop to ensure dashboard continuity. ✅
+- [x] **Legacy Compatibility**: Restored dual-naming bridge (`intel.js` and `x_intel_master.js`) at root and database levels to prevent template 404s. ✅
+- [x] **Data Continuity Verified**: Executed full 3-user sync (KawzInvests, PhotonCap, aleabitoreddit) with 100% success and 0 errors. ✅
+
 ## 🛠 V30.4.14 Mobile UI Polish Refined (2026-05-04)
 - [x] **Mobile Icon Scaling**: Reduced "Back-to-Top" button size by 33% (to 50px) on mobile viewports for improved spatial balance. ✅
 

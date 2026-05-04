@@ -104,5 +104,9 @@ class SocialIntelEngine:
         (DB_DIR / "intel.js").write_text(js_content, encoding="utf-8")
         (ROOT / "intel.js").write_text(js_content, encoding="utf-8")
 
+        # V30.4.15: Restore legacy master naming for template compatibility
+        (DB_DIR / "x_intel_master.js").write_text(js_content, encoding="utf-8")
+        (ROOT / "x_intel_master.js").write_text(js_content, encoding="utf-8")
+
         print(f"Social Intel Success: {len(deduped)} posts aggregated.")
         return payload

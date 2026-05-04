@@ -187,8 +187,10 @@ class RemoteSync:
                         rem_path = "archive/" + rem_path
                         files_to_sync[rel_path] = rem_path
 
-            # 4. Global prices
+            # 4. Global prices & Intelligence
             files_to_sync["database/live_prices.js"] = "database/live_prices.js"
+            files_to_sync["database/x_intel_master.js"] = "database/x_intel_master.js"
+            files_to_sync["database/intel.js"] = "database/intel.js"
 
             # 5. Email Synopsis (bmwseals.com/email)
             files_to_sync["database/synopsis_preview.html"] = "email/index.html"
