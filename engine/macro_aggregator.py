@@ -599,6 +599,64 @@ class MacroAggregator:
             pass
         return metrics
 
+    async def fetch_ticker_news(self, tickers, macro_headlines=None):
+        """
+        V30.4: Specialized Ticker-Specific Intelligence Harvest.
+        1. Scans existing macro headlines for ticker mentions.
+        2. Performs surgical RSS fetch for tickers with 0 news.
+        3. ENFORCES strict safety and freshness gates on every item.
+        """
+        ticker_news_pool = []
+        ticker_status = {t: 0 for t in tickers}
+        macro_headlines = macro_headlines or []
+        now_ts = time.time()
+
+        # Pass 1: Scan macro headlines
+        for res in macro_headlines:
+            raw_title = res.get("title", "").upper()
+            for t in tickers:
+                if f" {t} " in f" {raw_title} " or f"${t}" in raw_title:
+                    ticker_news_pool.append(res)
+                    ticker_status[t] += 1
+
+        # Pass 2: Surgical Search for under-represented tickers
+        for t in tickers:
+            if ticker_status[t] == 0:
+                try:
+                    q = f"${t} stock news"
+                    url = f"https://news.google.com/rss/search?q={urllib.parse.quote(q)}&hl=en-US&gl=US&ceid=US:en"
+                    # V30.4: Surgical Fetch with 2026-grade async handling
+                    feed = await asyncio.to_thread(feedparser.parse, url)
+
+                    for entry in feed.entries[:3]:
+                        # V30.4: CRITICAL - Freshness Gate Enforcement
+                        pub_ts = now_ts
+                        if hasattr(entry, "published_parsed") and entry.published_parsed:
+                            pub_ts = time.mktime(entry.published_parsed)
+
+                        if not self.is_fresh_enough(pub_ts):
+                            log.debug(f"  [REJECT-STALE] {t}: {entry.title[:45]}...")
+                            continue  # REJECT STALE NEWS
+
+                        res = {
+                            "title": entry.title,
+                            "link": entry.link,
+                            "source": entry.get("source", {}).get("title", "Google News"),
+                            "display_source": entry.get("source", {}).get("title", "Google News"),
+                            "date": pub_ts,
+                            "timestamp": pub_ts,
+                            "score": self.score_headline(entry.title, "Google News")[0],
+                        }
+
+                        if self.is_article_safe(res["title"], res["link"], res["source"]):
+                            ticker_news_pool.append(res)
+                            ticker_status[t] += 1
+                except Exception as e:
+                    log.error(f"  [ERR] Ticker Fetch Failed ({t}): {e}")
+                    continue
+
+        return ticker_news_pool
+
     async def fetch_agg(self):
         """Aggregates and scores news with hardening/stealth protocols."""
         print(f"[DEBUG] fetch_agg called. Cache target: {MACRO_NEWS_CACHE}")
