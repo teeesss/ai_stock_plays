@@ -46,6 +46,14 @@ async def run_auto_sync():
         # Only check the last 3 days to keep it fast
         await scraper.scrape_user(user, max_days=3)
 
+        # V30.4.15: Post-scrape hygiene
+        scraper._deduplicate_file(user)
+        try:
+            from repair_tickers import repair_user
+            repair_user(user)
+        except Exception as e:
+            log.warning(f"  Ticker repair failed for @{user}: {e}")
+
     log.info("Rebuilding master intelligence module...")
     scraper.rebuild_master()
 
