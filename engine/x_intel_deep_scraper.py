@@ -659,6 +659,16 @@ def rebuild_master():
     # V30.4.15: Restore legacy master naming for template compatibility
     (DB_DIR / "x_intel_master.js").write_text(js_content, encoding="utf-8")
     (ROOT / "x_intel_master.js").write_text(js_content, encoding="utf-8")
+    (ROOT / "intel.js").write_text(js_content, encoding="utf-8")
+
+    # V30.4.15: Automated Deployment to Live Server
+    try:
+        from remote_sync import RemoteSync
+
+        log.info("Triggering RemoteSync for intelligence modules...")
+        RemoteSync.sync()
+    except Exception as e:
+        log.warning(f"RemoteSync failed: {e}")
 
     log.info(
         f"Master rebuilt: {len(all_posts)} posts, {len(buzz)} tickers, "
