@@ -1,3 +1,21 @@
+## 🛠 V30.4.12 Dual-Ticker Hardening & UI Polish (2026-05-04)
+- [x] **Dual-Ticker Labeling Hardened**: Centralized `$SIVE.TO/$SIVEF` labeling in `ticker_utils.py` to ensure institutional-grade representation of Sivers Semiconductors. ✅
+- [x] **Pricing Discovery Persistence**: Maintained `SIVE.ST` (Stockholm) as the machine-readable pricing authority while projecting the dual-symbol moniker in all UI outputs. ✅
+- [x] **Responsive Navigation Hardening**: Re-engineered the "Back-to-Top" button (`.home-btn`) with a high-contrast black/white aesthetic and increased tap-target density (60px) for mobile devices. ✅
+- [x] **Parity Synchronization**: Verified 100% labeling consistency between the News Portal (`news_market_synopsis.py`) and the Email Dossier (`email_market_synopsis.py`). ✅
+
+## 🛠 V30.4.10 News Intelligence Freshness Hardening (2026-05-04)
+- [x] **7-Day Freshness Lookback**: Extended ticker-specific news threshold to 168h (7 days) in `macro_aggregator.py` to increase intelligence density. ✅
+- [x] **Date Visibility Utility**: Created centralized `format_news_date` in `ticker_utils.py` for standardized article timestamping. ✅
+- [x] **Intelligence Transparency**: Injected human-readable publication dates (e.g., "May 04") into all news rows in `news_market_synopsis.py`. ✅
+- [x] **Quota Verification**: Confirmed 15-article minimum for ticker intel using multi-day coverage and deep-backfill logic. ✅
+
+## 🛠 V30.4.9 News Portal Hardening & Synchronization (2026-05-04)
+- [x] **Institutional Timestamping**: Fixed missing date/time in portal header by injecting centralized logic from `ticker_utils.py`. ✅
+- [x] **Ticker-Specific Intel Density**: Implemented a 3-tier aggressive backfill (Pass 1: Surgical RSS, Pass 2: Deep Tracker, Pass 3: Raw News Pool) to guarantee a 15-article minimum. ✅
+- [x] **Semiconductor Technical Isolation**: Enforced strict categorization to prevent trade-specific semi news (EE Times/Semi Wiki) from bleeding into the Macro section. ✅
+- [x] **Deployment Parity**: Restored `RemoteSync` functionality in the news engine for automated institutional web deployment. ✅
+
 ## 🛠 V30.4.7 News Portal Density & Reliability (2026-05-04)
 - [x] **Watchlist Sorting Protocol**: Implemented session-prioritized sorting (L > PRE > AH > OVN > CLOSED) with secondary percentage-descending rank. ✅
 - [x] **Watchlist Density Hardening**: Removed company descriptions from the News Portal watchlist to maximize data density. ✅

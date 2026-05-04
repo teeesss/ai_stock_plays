@@ -21,9 +21,23 @@ except ImportError:
 error_monitor.init_error_monitor()
 
 try:
-    from remote_sync import RemoteSync
+    from ticker_utils import (
+        MAJOR_SEMI_TICKERS,
+        VERSION,
+        format_news_date,
+        get_display_symbol,
+        get_header_timestamp,
+        is_semi_article,
+    )
 except ImportError:
-    from engine.remote_sync import RemoteSync
+    from engine.ticker_utils import (
+        MAJOR_SEMI_TICKERS,
+        VERSION,
+        format_news_date,
+        get_display_symbol,
+        get_header_timestamp,
+        is_semi_article,
+    )
 
 import hashlib
 import uuid
@@ -56,6 +70,7 @@ try:
     from market_session import MarketSession
     from paywall_guardian import PaywallGuardian
     from paywall_intelligence import DeepScraper, PaywallIntelligence
+    from remote_sync import RemoteSync
 except ImportError:
     from engine.email_spark_fetcher import run_spark_fetch
     from engine.live_blog_scraper import LiveBlogScraper
@@ -65,6 +80,7 @@ except ImportError:
     from engine.market_session import MarketSession
     from engine.paywall_guardian import PaywallGuardian
     from engine.paywall_intelligence import DeepScraper, PaywallIntelligence
+    from engine.remote_sync import RemoteSync
 
 # V28: Authoritative Theme Provider
 try:
@@ -388,6 +404,7 @@ class NewsMarketSynopsisEngine:
             "used_links": used_links,
             "history": sent_news_history,
             "watchlist_data": watchlist_data,
+            "ticker_news_pool": ticker_news_pool,
         }
 
     async def compose_html(self, data):
@@ -398,6 +415,7 @@ class NewsMarketSynopsisEngine:
         used_links = data["used_links"]
         sent_news_history = data["history"]
         watchlist_data = data["watchlist_data"]
+        ticker_news_pool = data.get("ticker_news_pool", [])
         now_ts = time.time()
 
         bg_main = "#020617"
@@ -419,25 +437,27 @@ class NewsMarketSynopsisEngine:
         row_count = 0
         earn_count = 0
         semi_count = 0
-        semi_sources = [
-            "SemiAnalysis",
-            "SemiEngineering",
-            "Semiconductor Today",
-            "EE Times Semi",
-            "Semiconductor Digest",
-            "SemiWiki",
-            "IEEE Spectrum Semi",
-            "Google News CPO Photonics",
-            "Google News Semiconductors",
-            "Google News Transceiver",
-        ]
+        # V30.4.9: Decentralized to ticker_utils (Hierarchy Leader)
+        # semi_sources list removed locally to ensure modular parity.
 
         ticker_tracker = {t: [] for t in self.watchlist}
-        for res in headlines:
+        seen_links = set()
+
+        # V30.4.9: Authoritative Multi-Source Ticker Tracking
+        # Merges macro headlines with surgical ticker harvest
+        all_potential_ticker_news = ticker_news_pool + headlines
+
+        for res in all_potential_ticker_news:
+            link = res.get("link")
+            if not link or link in seen_links:
+                continue
+
             raw_title = res.get("title", "").upper()
             for t in self.watchlist:
                 if f" {t} " in f" {raw_title} " or f"${t}" in raw_title:
                     ticker_tracker[t].append(res)
+                    seen_links.add(link)
+                    break  # Assign to first matching ticker to avoid section bloat
 
         ticker_news_rows = ""
         ticker_news_count = 0
@@ -454,7 +474,13 @@ class NewsMarketSynopsisEngine:
                     )
                     f_title = self.inject_price_flair(cleaned_title, prices)
                     src_label = res.get("display_source", res.get("source", ""))[:22]
-                    SRC_BADGE = f'&nbsp;<span class="src-badge">[{src_label}]</span>'
+                    pub_date = format_news_date(res.get("date") or res.get("timestamp"))
+                    DATE_STR = (
+                        f'<span style="font-size:10px; color:{self.COLOR_DIM}; margin-left:8px;">{pub_date}</span>'
+                        if pub_date
+                        else ""
+                    )
+                    SRC_BADGE = f'&nbsp;<span class="src-badge">[{src_label}]</span>{DATE_STR}'
                     ticker_news_rows += f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {accent}; color:{text_bright};"><span style="font-size:14px; color:{accent};">◈</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
                     ticker_news_count += 1
                     used_links_ticker.add(res["link"])
@@ -471,7 +497,69 @@ class NewsMarketSynopsisEngine:
                     )
                     f_title = self.inject_price_flair(cleaned_title, prices)
                     src_label = res.get("display_source", res.get("source", ""))[:22]
-                    SRC_BADGE = f'&nbsp;<span class="src-badge">[{src_label}]</span>'
+                    pub_date = format_news_date(res.get("date") or res.get("timestamp"))
+                    DATE_STR = (
+                        f'<span style="font-size:10px; color:{self.COLOR_DIM}; margin-left:8px;">{pub_date}</span>'
+                        if pub_date
+                        else ""
+                    )
+                    SRC_BADGE = f'&nbsp;<span class="src-badge">[{src_label}]</span>{DATE_STR}'
+                    ticker_news_rows += f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {accent}; color:{text_bright};"><span style="font-size:14px; color:{accent};">◈</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
+                    ticker_news_count += 1
+                    used_links_ticker.add(res["link"])
+
+        # V30.4.9: Aggressive Content-Backfill (The 15-Article Quota)
+        # If specific ticker news is sparse, we pull deeper from the tracker and then the pool.
+        if ticker_news_count < 15:
+            for t in self.watchlist:
+                for i in range(2, 10):  # Check up to 10 articles per ticker
+                    if ticker_news_count >= 15:
+                        break
+                    if len(ticker_tracker[t]) > i:
+                        res = ticker_tracker[t][i]
+                        if res["link"] not in used_links_ticker:
+                            row_bg = "#0f172a" if ticker_news_count % 2 == 0 else "#020617"
+                            cleaned_title = (
+                                re.sub(r"\s+[-|•|–]\s+.*$", "", res.get("title", ""))
+                                .strip()
+                                .replace("📊", "»")
+                            )
+                            f_title = self.inject_price_flair(cleaned_title, prices)
+                            src_label = res.get("display_source", res.get("source", ""))[:22]
+                            pub_date = format_news_date(res.get("date") or res.get("timestamp"))
+                            DATE_STR = (
+                                f'<span style="font-size:10px; color:{self.COLOR_DIM}; margin-left:8px;">{pub_date}</span>'
+                                if pub_date
+                                else ""
+                            )
+                            SRC_BADGE = (
+                                f'&nbsp;<span class="src-badge">[{src_label}]</span>{DATE_STR}'
+                            )
+                            ticker_news_rows += f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {accent}; color:{text_bright};"><span style="font-size:14px; color:{accent};">◈</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
+                            ticker_news_count += 1
+                            used_links_ticker.add(res["link"])
+
+        # Final Fallback: If still under 15, pull directly from ticker_news_pool (all surgical hits)
+        if ticker_news_count < 15:
+            for res in ticker_news_pool:
+                if ticker_news_count >= 15:
+                    break
+                if res["link"] not in used_links_ticker:
+                    row_bg = "#0f172a" if ticker_news_count % 2 == 0 else "#020617"
+                    cleaned_title = (
+                        re.sub(r"\s+[-|•|–]\s+.*$", "", res.get("title", ""))
+                        .strip()
+                        .replace("📊", "»")
+                    )
+                    f_title = self.inject_price_flair(cleaned_title, prices)
+                    src_label = res.get("display_source", res.get("source", ""))[:22]
+                    pub_date = format_news_date(res.get("date") or res.get("timestamp"))
+                    DATE_STR = (
+                        f'<span style="font-size:10px; color:{self.COLOR_DIM}; margin-left:8px;">{pub_date}</span>'
+                        if pub_date
+                        else ""
+                    )
+                    SRC_BADGE = f'&nbsp;<span class="src-badge">[{src_label}]</span>{DATE_STR}'
                     ticker_news_rows += f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {accent}; color:{text_bright};"><span style="font-size:14px; color:{accent};">◈</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
                     ticker_news_count += 1
                     used_links_ticker.add(res["link"])
@@ -493,37 +581,31 @@ class NewsMarketSynopsisEngine:
                 src_label,
                 flags=re.IGNORECASE,
             )
-            SRC_BADGE = f'&nbsp;<span class="src-badge">[{src_label}]</span>'
+            pub_date = format_news_date(res.get("date") or res.get("timestamp"))
+            DATE_STR = (
+                f'<span style="font-size:10px; color:{self.COLOR_DIM}; margin-left:8px;">{pub_date}</span>'
+                if pub_date
+                else ""
+            )
+            SRC_BADGE = f'&nbsp;<span class="src-badge">[{src_label}]</span>{DATE_STR}'
             is_earn = (
                 res.get("is_earnings") or "EARNINGS" in raw_title or feed_name == "CNBC Earnings"
             )
-            is_semi = (
-                feed_name in semi_sources
-                or res.get("is_semi", False)
-                or any(
-                    kw in raw_title
-                    for kw in [
-                        "NVIDIA",
-                        "CHIP",
-                        "SEMI",
-                        "INTEL",
-                        "AMD",
-                        "TSMC",
-                        "ASML",
-                        "ARM",
-                        "BROADCOM",
-                    ]
-                )
-            )
-            if is_semi and semi_count < 15:
-                row_bg = "#1e1b4b" if semi_count % 2 == 0 else "#0f172a"
-                semi_trade_rows += f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {gold};"><span style="font-size:14px; color:{gold};">★</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
-                semi_count += 1
+            # V30.4.9: Authoritative News Integrity check (Semi vs Macro)
+            is_semi = is_semi_article(res)
+
+            if is_semi:
+                if semi_count < 15:
+                    row_bg = "#1e1b4b" if semi_count % 2 == 0 else "#0f172a"
+                    semi_trade_rows += f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {gold};"><span style="font-size:14px; color:{gold};">★</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
+                    semi_count += 1
+                # STRICT EXCLUSIVITY: No fall-through for technical news
             elif is_earn and earn_count < 10:
                 row_bg = "#082f49" if earn_count % 2 == 0 else "#0f172a"
                 earnings_intel_rows += f'<div style="background-color:{row_bg}; padding:6px 8px; margin-bottom:4px; border-radius:6px; border:1px solid #1e293b; color:#64748b; font-weight:600;"><span style="font-size:14px; color:#38bdf8;">◈</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
                 earn_count += 1
             elif row_count < 25:
+                # This is the Macro section. It MUST NOT contain is_semi news.
                 row_bg = "#1e293b" if row_count % 2 == 0 else "#0f172a"
                 row_border = "#334155" if row_count % 2 == 0 else accent
                 macro_intel_rows += f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {row_border}; color:{text_bright};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
@@ -541,26 +623,31 @@ class NewsMarketSynopsisEngine:
                 return ""
             rows = []
             for t in items:
-                sym = t["symbol"]
-                clr = bull if t["pct"] >= 0 else bear
-                label_text, label_color = self._get_session_badge(t["sess"])
-                session_key = (
-                    f'<span style="color:{label_color}; font-weight:900;">{label_text}</span>'
-                )
+                sym = get_display_symbol(t.get("symbol", ""))
+                p_entry = prices.get(t["symbol"], {})
+                price, pct, sess = self.get_session_data(p_entry, t["symbol"])
+                has_price = price and price > 0
+                clr = text_dim
                 close_line = ""
-                if t["sess"] in ["PRE", "AH", "OVN", "POST"]:
-                    p_entry = prices.get(sym, {})
-                    c_p = p_entry.get("close_price") or p_entry.get("price")
-                    c_pct = p_entry.get("change_pct", 0)
-                    if c_p:
-                        c_clr = bull if c_pct >= 0 else bear
-                        close_line = f'<div class="tk-c">C: ${c_p:,.2f} <span style="color:{c_clr}">{c_pct:+.2f}%</span></div>'
+                session_key = ""
+                if has_price:
+                    clr = bull if pct >= 0 else bear
+                    label_text, label_color = self._get_session_badge(sess)
+                    session_key = (
+                        f'<span style="color:{label_color}; font-weight:900;">{label_text}</span>'
+                    )
+                    if sess in ["PRE", "AH", "OVN", "POST"]:
+                        c_p = p_entry.get("close_price") or p_entry.get("price")
+                        c_pct = p_entry.get("change_pct", 0)
+                        if c_p:
+                            c_clr = bull if c_pct >= 0 else bear
+                            close_line = f'<div class="tk-c">C: ${c_p:,.2f} <span style="color:{c_clr}">{c_pct:+.2f}%</span></div>'
                 price_str = f'<span class="tk-prc">${t["price"]:,.2f}</span>'
                 pct_display = f'{price_str}<span class="tk-pct" style="color:{clr};">{session_key} {t["pct"]:+.2f}%</span>'
                 val_row = self._render_valuation_row(t)
                 rows.append(f"""<div class="tk-row" style="border-left:3px solid {clr};">
                     <table class="tk-table"><tr>
-                        <td class="tk-sym"><a href="https://finance.yahoo.com/quote/{sym}" style="color:#f59e0b; text-decoration:none;">${sym}</a></td>
+                        <td class="tk-sym"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:#f59e0b; text-decoration:none;">${sym}</a></td>
                         <td class="tk-rt">{pct_display}</td>
                     </tr></table>
                     {close_line}
@@ -587,7 +674,8 @@ class NewsMarketSynopsisEngine:
         .src-badge {{ color:#f97316; font-size:10px; font-weight:900; letter-spacing:0.5px; text-transform:uppercase; vertical-align:middle; opacity:0.8; font-family:monospace !important; }}
         .nav-bar {{ position: sticky; top: 0; z-index: 1000; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(56, 189, 248, 0.2); display: flex; justify-content: center; gap: 10px; padding: 10px; }}
         .nav-btn {{ background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #38bdf8; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; font-family:monospace !important; }}
-        .home-btn {{ position: fixed; bottom: 30px; right: 30px; width: 44px; height: 44px; background: #38bdf8; color: #020617; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 900; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 1000; font-size: 20px; }}
+        .home-btn {{ position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background: #000000; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 900; box-shadow: 0 4px 15px rgba(0,0,0,0.6); z-index: 1000; font-size: 24px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s ease; }}
+        .home-btn:hover {{ background: #111111; transform: scale(1.1); border-color: #38bdf8; }}
         .tk-row {{ background:#1e293b; padding:5px 12px; border-radius:4px; margin-bottom:4px; }}
         .tk-table {{ border-collapse:collapse; width:100%; }}
         .tk-sym {{ font-weight:bold; font-size:18px; }}
@@ -599,6 +687,7 @@ class NewsMarketSynopsisEngine:
         .tk-val {{ text-align:left; font-size:10px; color:#38bdf8; font-family:monospace; margin-top:2px; }}
         @media only screen and (max-width:599px) {{
             .bucket-col {{ display:block !important; width:100% !important; padding:0 !important; }}
+            .home-btn {{ width: 60px; height: 60px; font-size: 32px; bottom: 20px; right: 20px; border-color: rgba(56, 189, 248, 0.5); }}
         }}
     </style></head><body id="top" style="background-color:#020617; margin:0; padding:0;">
     <div class="nav-bar"><a href="#synopsis" class="nav-btn">Synopsis</a><a href="#macro" class="nav-btn">Macro</a><a href="#ticker-news" class="nav-btn">Tickers</a><a href="#earn" class="nav-btn">Earnings</a><a href="#semi" class="nav-btn">Semi</a><a href="#ticker" class="nav-btn">Watchlist</a></div><a href="#top" class="home-btn">&uarr;</a>
@@ -606,7 +695,7 @@ class NewsMarketSynopsisEngine:
     <table class="main-table" width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#0f172a" style="max-width:800px; width:100%; text-align:left; font-family:monospace, sans-serif; background-color:#0f172a; border-radius:8px; overflow:hidden; border:1px solid #1e293b;">
     <tr><td class="header-cell" style="padding:25px; border-bottom: 2px solid #6366f1;" bgcolor="#0f172a">
         <div class="hdr-title" style="font-size:24px; font-weight:900; color:#f8fafc; text-align:center; letter-spacing:1px; font-family:monospace !important; text-transform:uppercase;">NEWS <span style="color:#6366f1;">INTELLIGENCE</span></div>
-        <div class="hdr-sub" style="font-size:10px; color:#64748b; text-align:center; margin-top:5px; font-family:monospace !important; text-transform:uppercase;">V30.4.6 // {self.now.strftime('%H:%M')} EST // <a href="https://bmwseals.com/stocks/news" style="color:#38bdf8; text-decoration:none; font-weight:bold;">PORTAL ACCESS</a></div>
+        <div class="hdr-sub" style="font-size:10px; color:#64748b; text-align:center; margin-top:5px; font-family:monospace !important; text-transform:uppercase;">{VERSION} // {get_header_timestamp(self.now)} EST // <a href="https://bmwseals.com/stocks/news" style="color:#38bdf8; text-decoration:none; font-weight:bold;">PORTAL ACCESS</a></div>
     </td></tr>
     <tr><td class="wrap" bgcolor="#0f172a">
         <div id="synopsis" class="section-hdr">MARKET ANALYSIS OVERVIEW</div>{syn_html}
@@ -615,7 +704,7 @@ class NewsMarketSynopsisEngine:
         <div id="earn" class="section-hdr">EARNINGS INTELLIGENCE</div>{earnings_intel_rows}
         <div id="semi" class="section-hdr">SEMI INSIGHT</div>{semi_trade_rows}
         <div id="ticker">{watchlist_html}</div>
-        <div style="text-align:center; color:#64748b; font-size:10px; font-family:monospace; padding:40px 0;">END OF DOSSIER // TRANSMISSION SECURE // SOVEREIGN NEWS ENGINE V30.4.6</div>
+        <div style="text-align:center; color:#64748b; font-size:10px; font-family:monospace; padding:40px 0;">END OF DOSSIER // TRANSMISSION SECURE // SOVEREIGN NEWS ENGINE {VERSION}</div>
     </td></tr></table></td></tr></table></div></body></html>"""
         return re.sub(r">\s+<", "><", html).strip()
 

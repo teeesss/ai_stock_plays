@@ -5,6 +5,8 @@ The Single Source of Truth for ticker discovery across the GIGACPO ecosystem.
 Unifies Root, AI, and Macro indices into a single monitored universe.
 """
 
+VERSION = "V30.4.10"
+
 # V23.59: Auto-Dependency Guardian
 try:
     try:
@@ -75,10 +77,69 @@ TICKER_MAPPING = {
 # Global Macro Indices & Crypto
 GLOBAL_INDICES = ["BTC-USD", "ETH-USD", "NQ=F", "ES=F", "YM=F"]
 
+# V30.4.9: Authoritative Semiconductor Intelligence Tokens
+SEMI_SOURCES = [
+    "SemiAnalysis",
+    "SemiEngineering",
+    "Semiconductor Today",
+    "EE Times Semi",
+    "Semiconductor Digest",
+    "SemiWiki",
+    "IEEE Spectrum Semi",
+    "Google News CPO Photonics",
+    "Google News Semiconductors",
+    "Google News Transceiver",
+    "Semi Today Markets",
+    "Semi Today Suppliers",
+    "Semi Today Opto",
+    "Semi Today Micro",
+    "Semi Packaging News",
+    "Yahoo Semi",
+]
+
+SEMI_KEYWORDS = [
+    "CHIPLET",
+    "TAPE-OUT",
+    "PHOTONICS",
+    "EDA TOOL",
+    "WAFER",
+    "LITHOGRAPHY",
+    "FAB ",
+    "ASIC",
+    "FPGA",
+    "GPU CLUSTER",
+    "HBM3",
+    "TSV",
+    "HYBRID BONDING",
+    "N3P",
+    "N2 ",
+    "1.4NM",
+]
+
+MAJOR_SEMI_TICKERS = [
+    "NVIDIA",
+    "INTEL",
+    "AMD",
+    "TSMC",
+    "ASML",
+    "ARM",
+    "BROADCOM",
+    "MU ",
+    "MICRON",
+]
+
 
 def resolve_ticker(symbol: str) -> str:
     """Resolves a shorthand or name to a valid Yahoo Finance ticker."""
     return TICKER_MAPPING.get(symbol.upper(), symbol.upper())
+
+
+def get_display_symbol(symbol: str) -> str:
+    """V30.4.11: Returns the authoritative display label for a ticker (e.g. 'SIVE.TO/$SIVEF')."""
+    s_upper = symbol.upper().replace("$", "")
+    if s_upper in ["SIVE.TO", "SIVEF"]:
+        return "SIVE.TO/$SIVEF"
+    return s_upper
 
 
 def load_master_tickers(terminal_type="union") -> list[str]:
@@ -167,3 +228,50 @@ def get_session_badge_style(s_type):
     if s_type == "OVN":
         return "OVN", "#f59e0b"
     return "C", "#f59e0b"
+
+
+def get_header_timestamp(dt=None):
+    """V30.4.9: Authoritative Institutional Header Timestamp."""
+    import datetime
+
+    dt = dt or datetime.datetime.now()
+    return dt.strftime("%Y-%m-%d // %H:%M")
+
+
+def format_news_date(ts):
+    """V30.4.10: Formats an epoch timestamp for news display (e.g. 'May 04')."""
+    import datetime
+
+    if not ts:
+        return ""
+    try:
+        dt = datetime.datetime.fromtimestamp(ts)
+        return dt.strftime("%b %d")
+    except:
+        return ""
+
+
+def is_semi_article(res):
+    """
+    V30.4.9: Authoritative Semiconductor Technical Check.
+    Determines if an article is technical semi-trade news based on:
+    1. Aggregator 'is_semi' flag (Source-of-truth)
+    2. Hardcoded specialized source matching
+    3. Deep technical keyword matching (Chiplet, Tape-out, etc.)
+    """
+    feed_name = res.get("source", "")
+    title = res.get("title", "").upper()
+
+    # 1. Direct Aggregator Flag
+    if res.get("is_semi"):
+        return True
+
+    # 2. Known Specialized Sources
+    if feed_name in SEMI_SOURCES:
+        return True
+
+    # 3. Deep Technical Keywords (Excluding generic ones to prevent bleed)
+    if any(kw in title for kw in SEMI_KEYWORDS):
+        return True
+
+    return False

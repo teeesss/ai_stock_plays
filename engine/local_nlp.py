@@ -9,6 +9,11 @@ except ImportError:
 init_error_monitor()
 from collections import Counter
 
+try:
+    from ticker_utils import SEMI_SOURCES
+except ImportError:
+    from engine.ticker_utils import SEMI_SOURCES
+
 import nltk
 
 try:
@@ -615,7 +620,7 @@ class LocalIntelligenceSynthesizer:
         if not self.is_active or not articles:
             return articles[:top_n]
 
-        specialized_sources = specialized_sources or []
+        specialized_sources = specialized_sources or SEMI_SOURCES
 
         try:
             seen_titles = []

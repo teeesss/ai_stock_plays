@@ -1,4 +1,4 @@
-### 🚀 Active Context: V30.4.8 (Hierarchical News Hardening & Modularity)
+### 🚀 Active Context: V30.4.12 (Sivers Hardening & UI Polish)
 [Status Synchronized - 2026-05-04]
 
 ### 🧩 Logic & Patterns
@@ -31,8 +31,9 @@
     - **Regex Guard Mandate**: ALWAYS use word boundaries (e.g., `r"<p\b"`) when searching for paragraph tags to avoid false-positive matches with `<path>`, `<picture>`, or `<pre>` tags.
     - **News Portal Mirror Mandate (V30.4)**: `engine/news_market_synopsis.py` must maintain 100% aesthetic and logical parity with the main email engine while optimized for high-density web access (e.g., removed company notes from watchlist).
     - **Email Anti-Clip Protocol**: All dossiers MUST include a hidden anti-clip UUID and timestamp in the footer to prevent Gmail from collapsing repeated market updates.
-    - **Centralized Ticker Intelligence (V30.4.8)**: `MacroAggregator.fetch_ticker_news` is the authoritative gateway for ticker-specific news, enforcing strict freshness (36h/60h/72h) and safety gates.
-    - **Hierarchical Utility Layer (V30.4.8)**: Shared rendering and extraction logic (EPS, session badges) moved to `ticker_utils.py` to decouple engines and centralize institutional standards.
+    - **Centralized Ticker Intelligence (V30.4.8)**: `MacroAggregator.fetch_ticker_news` is the authoritative gateway for ticker-specific news, enforcing strict freshness (36h/60h/72h for macro, **168h/7-day for tickers**) and safety gates.
+    - **Hierarchical Utility Layer (V30.4.10)**: Shared rendering and extraction logic (EPS, session badges) and **authoritative news categorization and date formatting (format_news_date)** moved to `ticker_utils.py` to decouple engines and centralize institutional standards.
+    - **Strict Section Exclusivity (V30.4.9)**: Enforced 100% isolation for technical semiconductor news. Articles identified as semi-trade news are strictly prohibited from the Macro section, regardless of section capacity, to prevent intelligence bleed.
 
 2. **Dependency Guardian (V28)**:
    - **Auto-Restart Protocol**: Uses `os.execv` to automatically refresh the Python process after resolving missing dependencies.

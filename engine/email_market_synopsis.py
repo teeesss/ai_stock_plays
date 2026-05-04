@@ -82,6 +82,23 @@ try:
 except ImportError:
     from engine.synopsis_archive import SynopsisArchiveManager
 
+try:
+    from ticker_utils import (
+        MAJOR_SEMI_TICKERS,
+        VERSION,
+        get_display_symbol,
+        get_header_timestamp,
+        is_semi_article,
+    )
+except ImportError:
+    from engine.ticker_utils import (
+        MAJOR_SEMI_TICKERS,
+        VERSION,
+        get_display_symbol,
+        get_header_timestamp,
+        is_semi_article,
+    )
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -1126,28 +1143,15 @@ class SovereignIntelligenceEngine:
         agg = MacroAggregator()
         macro_headlines = await agg.fetch_agg()
 
-        # V28: Specialized Source Detection (Hierarchy Leader)
-        semi_sources = [
-            "SemiAnalysis",
-            "SemiEngineering",
-            "Semiconductor Today",
-            "EE Times Semi",
-            "Semiconductor Digest",
-            "SemiWiki",
-            "IEEE Spectrum Semi",
-            "Google News CPO Photonics",
-            "Google News Semiconductors",
-            "Google News Transceiver",
-        ]
+        # V30.4.9: Decentralized to ticker_utils (Hierarchy Leader)
+        # semi_sources list removed locally to ensure modular parity.
 
         print(
             f"[INFO] NLP Processor: Analyzing {len(macro_headlines)} headlines for institutional relevance..."
         )
         # Real-world NLP Intelligence Synthesis for Executive Summary
         # V24.9: mandatory 15 articles in list, increase ranking depth
-        best_headlines = nlp.rank_news_relevance(
-            macro_headlines, top_n=400, specialized_sources=semi_sources
-        )
+        best_headlines = nlp.rank_news_relevance(macro_headlines, top_n=400)
 
         if best_headlines:
             top_t = best_headlines[0].get("title", "Unknown")
@@ -1314,26 +1318,16 @@ class SovereignIntelligenceEngine:
             feed_name = res.get("source", "")
             display_src = res.get("display_source", feed_name)
 
-            # V28: Deep Semi Intelligence logic (High Fidelity trade news)
-            is_semi_trade = feed_name in semi_sources or res.get("is_semi", False)
+            # V30.4.9: Authoritative News Integrity check (Semi vs Macro)
+            is_semi_trade = is_semi_article(res)
 
             # V29.7.1: Cross-Categorization for Semi Integrity
-            is_semi_topic = any(
-                kw in f_title.upper()
-                for kw in [
-                    "NVIDIA",
-                    "CHIP",
-                    "SEMI",
-                    "INTEL",
-                    "AMD",
-                    "TSMC",
-                    "ASML",
-                    "ARM",
-                    "BROADCOM",
-                ]
-            )
-            if is_semi_topic and not is_semi_trade and not is_earn:
-                is_semi_trade = True  # Allow high-signal macro chips to fill semi slots
+            # Only force macro chips into semi if they are high-signal majors (NVDA, etc.)
+            is_semi_major = any(kw in f_title.upper() for kw in MAJOR_SEMI_TICKERS)
+            if is_semi_major and not is_semi_trade and not is_earn:
+                # We DON'T set is_semi_trade = True here anymore to keep Macro section clean
+                # instead we leave it for Macro if it's from a non-semi source but major news
+                pass
 
             if "Google News" in feed_name and display_src != feed_name:
                 # Clean up common long publishers
@@ -1398,6 +1392,10 @@ class SovereignIntelligenceEngine:
                     )
                     semi_count += 1
                     added = True
+                else:
+                    # V30.4.9: STRICT EXCLUSIVITY. If Semi section is full, technical news is DROPPED.
+                    # It MUST NOT bleed into the Macro section.
+                    pass
 
             elif is_earn:
                 if earn_count < 8:
@@ -1412,8 +1410,9 @@ class SovereignIntelligenceEngine:
                     earn_count += 1
                     added = True
             else:
+                # This is the Macro section. It MUST NOT contain is_semi_trade news.
                 if row_count < 15:
-                    # ... (saturation logic) ...
+                    # V24.9: Dynamic background saturation based on order
                     row_bg = "#1e293b" if row_count % 2 == 0 else "#0f172a"
                     row_border = "#334155" if row_count % 2 == 0 else accent
 
@@ -2287,7 +2286,7 @@ class SovereignIntelligenceEngine:
                 return ""
             rows = []
             for t in items:
-                sym = t.get("symbol", "").replace("$", "")
+                sym = get_display_symbol(t.get("symbol", ""))
                 p_entry = prices.get(t["symbol"], {})
                 price, pct, sess = self.get_session_data(p_entry, t["symbol"])
                 has_price = price and price > 0
@@ -2501,12 +2500,12 @@ class SovereignIntelligenceEngine:
 
             <!-- ═══ HEADER ═══ -->
             <tr><td class="header-cell" style="padding-bottom:15px; border-bottom: 2px solid {indigo};" bgcolor="#0f172a">
-                <div class="hdr-title" style="font-size:24px; font-weight:900; color:{text_bright}; text-align:center; letter-spacing:1px; font-family:monospace !important;">
-                    MARKET <span style="color:{indigo};">INSIGHTS</span> AND INTEL
-                </div>
-                <div class="hdr-sub" style="font-size:10px; color:{text_dim}; text-align:center; margin-top:5px; font-family:monospace !important;">
-                    ESTABLISHED V28.8 // V30.2 HARDENED // {self.now.strftime('%H:%M')} EST // <a href="https://bmwseals.com/stocks/email" style="color:#38bdf8; text-decoration:none; font-weight:bold;">WEB LINK</a> // <a href="https://bmwseals.com/stocks/archive/" style="color:#38bdf8; text-decoration:none; font-weight:bold;">🕰️ ARCHIVE</a>
-                </div>
+                <div style="background-color:#0f172a; padding:15px; border-bottom:1px solid #1e293b; text-align:center;">
+            <h2 style="margin:0; font-size:18px; color:{gold}; font-family:monospace !important;">Sovereign Intel Dossier</h2>
+            <div style="font-size:12px; color:#64748b; margin-top:4px; font-family:monospace !important;">
+                {VERSION} // {get_header_timestamp(self.now)} EST // <a href="https://bmwseals.com/stocks/email" style="color:#38bdf8; text-decoration:none; font-weight:bold;">WEB COCKPIT</a>
+            </div>
+   </div>
             </td></tr>
 
             <!-- ═══ PULSE BLOCK ═══ -->

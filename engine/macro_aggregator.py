@@ -387,13 +387,18 @@ class MacroAggregator:
 
         return True
 
-    def is_fresh_enough(self, ts, is_semi=False):
-        """V28 Hardened: articles older than 36h (Weekday) or 60h (Weekend).
-        Top Hierarchy: SEMI articles can go back 2 weeks (336h)."""
+    def is_fresh_enough(self, ts, is_semi=False, is_ticker=False):
+        """V30.4.10 Hardened:
+        1. Macro: older than 36h (Weekday) or 60h (Weekend) or 72h (Sunday/Monday).
+        2. Tickers: older than 7 days (168h).
+        3. SEMI: older than 14 days (336h)."""
         age_hours = (time.time() - ts) / 3600
 
         if is_semi:
             return age_hours <= 336  # 14 days
+
+        if is_ticker:
+            return age_hours <= 168  # 7 days
 
         limit = 60 if self.market_session.is_market_stasis() else 36
 
@@ -634,7 +639,7 @@ class MacroAggregator:
                         if hasattr(entry, "published_parsed") and entry.published_parsed:
                             pub_ts = time.mktime(entry.published_parsed)
 
-                        if not self.is_fresh_enough(pub_ts):
+                        if not self.is_fresh_enough(pub_ts, is_ticker=True):
                             log.debug(f"  [REJECT-STALE] {t}: {entry.title[:45]}...")
                             continue  # REJECT STALE NEWS
 
@@ -765,6 +770,7 @@ class MacroAggregator:
 
                         now_ts = time.time()
                         source_item_count = 0
+                        is_semi_feed = cfg.get("is_semi", False)
 
                         if f_type == "rss":
                             feed = feedparser.parse(res.content)
@@ -829,7 +835,6 @@ class MacroAggregator:
                                 # V24.2: Signal Decay Engine (5% per hour after 1h, floor at 50%)
                                 # V26.10 Hardening: 24h Decay Gate + 36h Hard Limit
                                 # Top Hierarchy: SEMI articles can go back 2 weeks
-                                is_semi_feed = cfg.get("is_semi", False)
                                 if not self.is_fresh_enough(entry_ts, is_semi=is_semi_feed):
                                     continue
 
@@ -1039,6 +1044,8 @@ class MacroAggregator:
                                         "score": round(base_weight + content_score, 1),
                                         "date": "Just now",
                                         "is_earnings": is_earnings,
+                                        "is_earn": is_earnings,
+                                        "is_semi": is_semi_feed,
                                     }
                                 )
                                 source_item_count += 1
