@@ -4,9 +4,11 @@ import json
 import logging
 import os
 import re
+import urllib.parse
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import feedparser
 from curl_cffi import requests as cffi_requests
 
 log = logging.getLogger(__name__)
@@ -94,17 +96,62 @@ class MarketSynopsisScraper:
             return True
         return False
 
-    def _extract_stockmarketwatch(self, html):
-        body_match = re.search(r'data-article-body="([^"]+)"', html)
-        if body_match:
-            cleaned = self._clean_text(body_match.group(1))
-            if len(cleaned) > 100 and not self._is_junk(cleaned):
-                return cleaned
-        p_matches = re.findall(r"<p\b[^>]*>(.*?)</p>", html, re.DOTALL | re.IGNORECASE)
-        for p in p_matches:
-            cleaned = self._clean_text(p)
-            if len(cleaned) > 150 and not self._is_junk(cleaned):
-                return cleaned
+        return ""
+
+    def _extract_edward_jones(self, html):
+        """
+        V30.0: Hardened Edward Jones scraper.
+        Extracts high-alpha recap bullets while strictly stripping IPC boilerplate and author lines.
+        """
+        from bs4 import BeautifulSoup
+
+        soup = BeautifulSoup(html, "html.parser")
+
+        # Edward Jones recaps are typically in <li> or <p> tags starting with "- "
+        potential_points = []
+
+        # First try finding the main content div to avoid footer noise
+        main_content = soup.find("div", class_="market-news-insights") or soup
+
+        items = main_content.find_all(["p", "li"])
+        for item in items:
+            text = item.get_text().strip()
+            # Clean up non-breaking spaces and other encoding artifacts
+            text = text.replace("\xa0", " ")
+
+            # Identify recap bullets (usually start with "-" or a dash)
+            if text.startswith(("-", "–", "—")) or " – " in text or " - " in text:
+                # Normalize dash encoding artifacts
+                text = text.replace("\u2013", "-").replace("\u2014", "-")
+
+                # Stop if we hit the author/IPC section
+                if any(
+                    x in text
+                    for x in [
+                        "Investment Policy Committee",
+                        "James McCann",
+                        "Brock Weimer",
+                        "Mona Mahajan",
+                        "Brian Therien",
+                        "Angelo Kourkafas",
+                    ]
+                ):
+                    break
+
+                if len(text) > 100 and not self._is_junk(text):
+                    # V30.2: Defensive narrative suppression
+                    if not any(
+                        bad in text.upper() for bad in ["SESSION PERFORMANCE", "DISCLOSURE", "IPC"]
+                    ):
+                        potential_points.append(text)
+
+        if potential_points:
+            # Join top 3 points, ensuring no IPC disclosures leak
+            recap = " ".join(potential_points[:3])
+            # Nuclear strip of any trailing IPC noise or boilerplate
+            recap = re.split(r"Investment Policy Committee", recap, flags=re.I)[0].strip()
+            recap = recap.replace("SESSION PERFORMANCE", "Market Dynamics")
+            return recap
         return ""
 
     async def _extract_cnbc_async(self, html, depth=0):
@@ -154,118 +201,130 @@ class MarketSynopsisScraper:
                 pass
         return ""
 
+    async def _fetch_rss_intelligence(self, query_type="PRE"):
+        """
+        V29.0: High-fidelity synthesis via Google News RSS + Local NLP.
+        Bypasses brittle web scraping by aggregating 100+ headlines.
+        """
+        queries = {
+            "PRE": "stock market today premarket movers when:1d",
+            "MID": "stock market live updates today when:1d",
+            "POST": "stock market closing recap today when:1d",
+        }
+        query = queries.get(query_type, queries["MID"])
+        encoded_query = urllib.parse.quote(query)
+        rss_url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-US&gl=US&ceid=US:en"
+
+        log.info(f"[SYNOPSIS] Aggregating RSS Intelligence: {query}")
+        try:
+            feed = await asyncio.get_event_loop().run_in_executor(
+                None, lambda: feedparser.parse(rss_url)
+            )
+            if not feed.entries:
+                return None
+
+            # Convert RSS entries to normalized article objects for NLP ranking
+            articles = []
+            for entry in feed.entries:
+                # V30.2: Aggressively strip HTML from summaries to prevent URL-split corruption
+                raw_summary = entry.get("summary", "")
+                clean_summary = re.sub(r"<[^>]+>", "", raw_summary)
+
+                articles.append(
+                    {
+                        "title": entry.title,
+                        "summary": clean_summary,
+                        "link": entry.link,
+                        "source": entry.get("source", {}).get("title", "Google News"),
+                        "content_score": 0,
+                        "base_weight": 10,
+                        "is_specialized": True,  # V29: Bypass high macro floor for snippets
+                    }
+                )
+
+            # Initialize Local NLP (VADER + FinVADER)
+            try:
+                from local_nlp import LocalIntelligenceSynthesizer
+            except ImportError:
+                from engine.local_nlp import LocalIntelligenceSynthesizer
+
+            nlp = LocalIntelligenceSynthesizer()
+
+            # Rank and prune noise via FinVADER / Keyword density
+            ranked = nlp.rank_news_relevance(articles, top_n=15)
+            if not ranked:
+                log.warning("[SYNOPSIS] No articles passed the relevance floor.")
+                return None
+
+            # Synthesize dense narrative
+            # We use "Neutral" as vibe fallback; the orchestrator will flair it later
+            intel_data, used_links = nlp.synthesize_market_narrative(ranked, vibe="Neutral")
+
+            # V30.2: Defensive filtering before return
+            clean_points = []
+            for p in intel_data.get("points", []):
+                if any(bad in p.upper() for bad in ["SESSION PERFORMANCE", "DISCLOSURE", "IPC"]):
+                    continue
+                clean_points.append(p)
+
+            full_text = " ".join(clean_points)
+            if not full_text:
+                return None
+
+            return {
+                "text": full_text,
+                "timestamp": datetime.now().strftime("%I:%M %p"),
+                "source": "SOVEREIGN INTEL V30.2",
+                "focal_point": intel_data.get("focal_point", "Market Pulse"),
+            }
+        except Exception as e:
+            log.error(f"[SYNOPSIS] RSS Synthesis Error: {e}")
+            return None
+
     async def _fetch_ai_intel(self):
-        """Prioritizes the local intelligence cache, then attempts a resilient live fetch."""
+        """DEPRECATED (V29.0): Brittle Playwright scraping preserved as emergency fallback only."""
         # 1. Check Intelligence Cache (Sovereign Out-of-Band Loop)
         if self.cache_path.exists():
             try:
                 with open(self.cache_path, "r") as f:
                     data = json.load(f)
                     ts_str = data.get("timestamp", datetime.now().isoformat())
-                    # Normalize to naive for comparison
                     ts = datetime.fromisoformat(ts_str).replace(tzinfo=None)
                     now = datetime.now().replace(tzinfo=None)
 
-                    # Cache valid for 60 minutes
                     if now - ts < timedelta(minutes=60):
                         log.info(
                             f"[SYNOPSIS] AI Intel loaded from Sovereign Cache (@ {ts.strftime('%I:%M %p')})"
                         )
+                        text = data["text"]
+                        # V30.2: Mandatory filter for legacy cache leaks
+                        if "SESSION PERFORMANCE" in text:
+                            text = text.replace("SESSION PERFORMANCE", "Market Dynamics")
+
                         return {
-                            "text": data["text"],
+                            "text": text,
                             "timestamp": ts.strftime("%I:%M %p"),
                             "source": "SOVEREIGN AI",
                         }
             except Exception as e:
                 log.warning(f"[SYNOPSIS] Cache read error: {e}")
 
-        # 2. Resilient Live Fetch (Last Resort in restricted environments)
-        log.info("[STEALTH] Initializing Sovereign AI Live Fetch (Final Resort)...")
-        try:
-            try:
-                from stealth_navigator import StealthNavigator
-            except ImportError:
-                from engine.stealth_navigator import StealthNavigator
-        except:
-            return {"text": None, "timestamp": None}
-
-        nav = StealthNavigator(headless=True)
-        try:
-            await nav.initialize()
-            page = await nav.context.new_page()
-            # Try Perplexity Direct (Encoded)
-            query = "stock market today news overview".replace(" ", "+")
-            await page.goto(
-                f"https://www.perplexity.ai/search?q={query}",
-                wait_until="domcontentloaded",
-                timeout=30000,
-            )
-            await asyncio.sleep(12)
-
-            el = await page.locator("div.prose").first
-            if await el.is_visible():
-                txt = await el.inner_text()
-                if txt and len(txt) > 200:
-                    return {
-                        "text": txt.strip(),
-                        "timestamp": datetime.now().strftime("%I:%M %p"),
-                        "source": "SOVEREIGN AI",
-                    }
-            return {"text": None, "timestamp": None}
-        except:
-            return {"text": None, "timestamp": None}
-        finally:
-            try:
-                await nav.close()
-            except:
-                pass
+        return {"text": None, "timestamp": None}
 
     async def fetch_synopsis(self, session_label):
-        """Hardened Async Dispatcher: Aggregates multiple fresh sources (AI, Fallbacks)."""
+        """
+        Hardened V30.0: Hybrid RSS + Institutional Scraper Pipeline.
+        Prioritizes high-fidelity synthesis with specialized fallback for Edward Jones.
+        """
         lbl = "PRE" if session_label in ["PM", "PRE"] else session_label
         if lbl in ["AH", "POST", "OVN", "CLOSED"]:
             lbl = "POST"
         elif lbl in ["LIVE", "REG"]:
             lbl = "MID"
 
-        results = []
-
-        # Build prioritized stack based on session
-        to_try = ["AI", lbl]
+        # V30.0: Priority 1 - High-alpha Institutional Scrape (EDJ) for Post-Market
         if lbl == "POST":
-            # After hours: Add fallbacks for completeness
-            to_try.extend(["MID", "PRE"])
-        elif lbl == "MID":
-            # Live market: Focus on MID/AI only. Skip POST (EDJ) until AH.
-            to_try.extend(["PRE"])
-        else:
-            # PRE session
-            to_try.extend(["MID"])
-
-        seen_keys = set()
-
-        for key in to_try:
-            if key in seen_keys:
-                continue
-            seen_keys.add(key)
-
-            if key == "AI":
-                res = await self._fetch_ai_intel()
-                if res and res.get("text"):
-                    source_tag = res.get("source", "SOVEREIGN AI")
-                    results.append(
-                        {
-                            "text": res["text"],
-                            "source": source_tag,
-                            "timestamp": res.get("timestamp"),
-                        }
-                    )
-                continue
-
-            if key not in self.SOURCES:
-                continue
-            src = self.SOURCES[key]
-            log.info(f"[SYNOPSIS] Gathering Fallback: {src['name']}")
+            src = self.SOURCES["POST"]
             try:
                 loop = asyncio.get_event_loop()
                 r = await loop.run_in_executor(
@@ -274,27 +333,42 @@ class MarketSynopsisScraper:
                         src["url"], headers=self.headers, impersonate="chrome146", timeout=10
                     ),
                 )
-                if r.status_code != 200:
-                    continue
-                text = ""
-                if src["type"] == "STOCKMARKETWATCH":
-                    text = self._extract_stockmarketwatch(r.text)
-                elif src["type"] == "CNBC":
-                    text = await self._extract_cnbc_async(r.text)
-                elif src["type"] == "EDJ":
-                    text = self._extract_stockmarketwatch(r.text)
+                if r.status_code == 200:
+                    edj_text = self._extract_edward_jones(r.text)
+                    if edj_text:
+                        # Feed the high-quality scrape into the Narrative Engine V2
+                        try:
+                            from local_nlp import LocalIntelligenceSynthesizer
+                        except ImportError:
+                            from engine.local_nlp import LocalIntelligenceSynthesizer
 
-                if text:
-                    # Use current time as fallback timestamp for institutional if not found in text
-                    results.append(
-                        {
-                            "text": text,
-                            "source": src["name"],
-                            "timestamp": datetime.now().strftime("%I:%M %p"),
-                        }
-                    )
+                        nlp = LocalIntelligenceSynthesizer()
+                        # Use the EJ text as the lead paragraph for the narrative
+                        intel_data, _ = nlp.synthesize_market_narrative(
+                            [], vibe="Neutral", scraped_lead=edj_text
+                        )
+                        full_text = " ".join(intel_data.get("points", []))
+
+                        if full_text:
+                            return [
+                                {
+                                    "text": full_text,
+                                    "timestamp": datetime.now().strftime("%I:%M %p"),
+                                    "source": "EDWARD JONES V30.2",
+                                    "focal_point": "Market Recap",
+                                }
+                            ]
             except Exception as e:
-                log.error(f"[SYNOPSIS] Source {src['name']} error: {e}")
+                log.warning(f"[SYNOPSIS] EDJ Scrape failed: {e}")
 
-        # Return list of results (prioritize AI first as it's already first in to_try)
-        return results if results else None
+        # V30.0: Priority 2 - RSS-driven Intelligence Synthesis
+        res = await self._fetch_rss_intelligence(lbl)
+        if res and res.get("text"):
+            return [res]
+
+        # Emergency Fallback: Last known good AI Intel from cache
+        legacy = await self._fetch_ai_intel()
+        if legacy and legacy.get("text"):
+            return [legacy]
+
+        return []

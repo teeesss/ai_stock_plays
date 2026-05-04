@@ -1233,6 +1233,7 @@ Grouped in options:\
 [GaúchaZH](https://gauchazh.clicrbs.com.br) -
 [Gazeta do Povo](https://www.gazetadopovo.com.br) -
 [Grupo Abril](https://grupoabril.com.br) -
+[Lance!](https://www.lance.com.br) -
 [Le Monde Diplomatique Brasil](https://diplomatique.org.br) -
 [NSC Total](https://www.nsctotal.com.br) -
 [O Estado de S. Paulo](https://estadao.com.br) -

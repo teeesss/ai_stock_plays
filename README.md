@@ -1,11 +1,12 @@
-# GIGACPO Intelligence Terminal (V28.8)
+# GIGACPO Intelligence Terminal (V30.4.7)
 
 This project tracks the **Co-Packaged Optics (CPO)** and **Silicon Photonics (SiPh)** supply chain (200+ high-conviction assets) to identify high-alpha investment opportunities in the AI infrastructure build-out.
 
 ## 🚀 Primary Access
 
-- **Sovereign Intelligence Engine**: [engine/email_market_synopsis.py](engine/email_market_synopsis.py) (V28.8 FinVADER NLP)
-- **Web Synopsis Endpoint**: `bmwseals.com/email` (Auto-synced via Dual-Dispatch)
+- **Sovereign Intelligence Engine**: [engine/email_market_synopsis.py](engine/email_market_synopsis.py) (V30.4 FinVADER NLP)
+- **News Intelligence Portal**: [engine/news_market_synopsis.py](engine/news_market_synopsis.py) (V30.4.7 Mirror)
+- **Web Dashboards**: `bmwseals.com/stocks/email` & `bmwseals.com/stocks/news`
 - **CPO Intelligence Terminal**: [web/semi/index_template.html](web/semi/index_template.html) (V21.1 Root)
 - **AI/Crypto Infrastructure**: [web/ai/index_template.html](web/ai/index_template.html) (V21.1 AI)
 - **Status Dashboard**: [PROJECT_STATUS.md](PROJECT_STATUS.md)

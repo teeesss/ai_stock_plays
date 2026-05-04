@@ -132,10 +132,16 @@ class RemoteSync:
                 rem_path = rem_path[12:]  # Strip 'web/archive/'
                 rem_path = "archive/" + rem_path
 
+            elif rem_path.lower().startswith("web/news/"):
+                rem_path = rem_path[9:]  # Strip 'web/news/'
+                rem_path = "news/" + rem_path
+
             if rem_path.lower() == "cpo_plays.html":
                 rem_path = "index.html"
             elif rem_path.lower() == "database/synopsis_preview.html":
                 rem_path = "email/index.html"
+            elif rem_path.lower() == "database/news_preview.html":
+                rem_path = "news/index.html"
 
             log.info(f"Targeting relative path for sync: {rel_path}")
             return RemoteSync.sync_files({rel_path: rem_path}, base_dir=ROOT)

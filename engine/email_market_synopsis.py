@@ -1475,36 +1475,18 @@ class SovereignIntelligenceEngine:
         )
 
     def _get_session_badge(self, s_type):
-        s_type = (s_type or "CLOSED").upper()
-        if s_type == "LIVE":
-            return "L", "#10b981"
-        if s_type in ["POST", "AH"]:
-            return "AH", "#f59e0b"
-        if s_type in ["PRE", "PM"]:
-            return "PRE", "#f59e0b"
-        if s_type == "OVN":
-            return "OVN", "#f59e0b"
-        return "C", "#f59e0b"
+        try:
+            from ticker_utils import get_session_badge_style
+        except ImportError:
+            from engine.ticker_utils import get_session_badge_style
+        return get_session_badge_style(s_type)
 
     def _extract_eps(self, master, master_key):
-        """Extracts FY1 and FY2 EPS estimates from the master data trend."""
-        if not master_key:
-            return None, None
-        data = master.get(master_key, {})
-        fin = data.get("financials", {})
-        et = fin.get("earningsTrend", {})
-        trend = et.get("trend", [])
-
-        eps26, eps27 = None, None
-        for t in trend:
-            # V28.8: Dynamic period detection for 2026/2027
-            # Typically 0y is current FY (2026 if today is 2026)
-            if t.get("period") == "0y":
-                eps26 = t.get("earningsEstimate", {}).get("avg", {}).get("raw")
-            elif t.get("period") == "+1y":
-                eps27 = t.get("earningsEstimate", {}).get("avg", {}).get("raw")
-
-        return eps26, eps27
+        try:
+            from ticker_utils import extract_ticker_eps
+        except ImportError:
+            from engine.ticker_utils import extract_ticker_eps
+        return extract_ticker_eps(master, master_key)
 
     def _render_valuation_row(self, item):
         """V28.8: Renders a high-density valuation row with forward P/E estimates."""
@@ -2523,7 +2505,7 @@ class SovereignIntelligenceEngine:
                     MARKET <span style="color:{indigo};">INSIGHTS</span> AND INTEL
                 </div>
                 <div class="hdr-sub" style="font-size:10px; color:{text_dim}; text-align:center; margin-top:5px; font-family:monospace !important;">
-                    ESTABLISHED V28.8 // IDENTITY STANDARDIZED // {self.now.strftime('%H:%M')} EST // <a href="https://bmwseals.com/stocks/email" style="color:#38bdf8; text-decoration:none; font-weight:bold;">WEB LINK</a> // <a href="https://bmwseals.com/stocks/archive/" style="color:#38bdf8; text-decoration:none; font-weight:bold;">🕰️ ARCHIVE</a>
+                    ESTABLISHED V28.8 // V30.2 HARDENED // {self.now.strftime('%H:%M')} EST // <a href="https://bmwseals.com/stocks/email" style="color:#38bdf8; text-decoration:none; font-weight:bold;">WEB LINK</a> // <a href="https://bmwseals.com/stocks/archive/" style="color:#38bdf8; text-decoration:none; font-weight:bold;">🕰️ ARCHIVE</a>
                 </div>
             </td></tr>
 
@@ -2583,6 +2565,8 @@ class SovereignIntelligenceEngine:
         minified = re.sub(r">\s+<", "><", html)
         minified = re.sub(r"<!--.*?-->", "", minified, flags=re.DOTALL)
         minified = re.sub(r"\s{2,}", " ", minified)
+        # V30.2: Final Nuclear Guardrail - Forcibly strip any leaks
+        minified = minified.replace("SESSION PERFORMANCE", "Market Dynamics")
         return minified.strip()
 
     def send_email(self, html, subject_override=None):

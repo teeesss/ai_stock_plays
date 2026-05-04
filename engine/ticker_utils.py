@@ -127,3 +127,43 @@ def get_ticker_count_report():
     ai_count = len(load_master_tickers("ai"))
     union_count = len(load_master_tickers("union"))
     return f"Ticker Universe: {union_count} (Root: {root_count}, AI: {ai_count}, Indices: {len(GLOBAL_INDICES)})"
+
+
+def extract_ticker_eps(master, master_key):
+    """
+    V30.4: Authoritative EPS Extraction Logic.
+    Extracts FY1 and FY2 EPS estimates from the master data trend.
+    """
+    if not master_key:
+        return None, None
+    data = master.get(master_key, {})
+    fin = data.get("financials", {})
+    et = fin.get("earningsTrend", {})
+    trend = et.get("trend", [])
+
+    eps26, eps27 = None, None
+    for t in trend:
+        # V28.8: Dynamic period detection for 2026/2027
+        if t.get("period") == "0y":
+            eps26 = t.get("earningsEstimate", {}).get("avg", {}).get("raw")
+        elif t.get("period") == "+1y":
+            eps27 = t.get("earningsEstimate", {}).get("avg", {}).get("raw")
+
+    return eps26, eps27
+
+
+def get_session_badge_style(s_type):
+    """
+    V30.4: Authoritative Session Badge Styling.
+    Returns (BadgeText, Color) for a given session type.
+    """
+    s_type = (s_type or "CLOSED").upper()
+    if s_type == "LIVE":
+        return "L", "#10b981"
+    if s_type in ["POST", "AH"]:
+        return "AH", "#f59e0b"
+    if s_type in ["PRE", "PM"]:
+        return "PRE", "#f59e0b"
+    if s_type == "OVN":
+        return "OVN", "#f59e0b"
+    return "C", "#f59e0b"

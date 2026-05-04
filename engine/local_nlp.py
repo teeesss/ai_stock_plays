@@ -33,18 +33,80 @@ except ImportError:
 
 class LocalIntelligenceSynthesizer:
     def __init__(self):
+        # V30.0: Narrative Engine Vocabulary
+        self.PULSE_OPENERS = [
+            "Market dynamics are shifting toward {vibe} as {theme} takes center stage.",
+            "Equities are carving out a {vibe} posture, driven primarily by {theme} catalysts.",
+            "Institutional appetite remains {vibe}, with focus centering on the {theme} complex.",
+            "The broad market is navigating a {vibe} session, as {theme} becomes the primary narrative anchor.",
+        ]
+        self.CONNECTORS = [
+            "In parallel, {insight}.",
+            "This development coincides with {insight}.",
+            "Furthermore, {insight}.",
+            "Meanwhile, {insight}.",
+        ]
+        self.OUTLOOKS = [
+            "Looking ahead, the technical setup remains anchored by {sentiment} sentiment.",
+            "The forward outlook is strictly contingent on {sentiment} developments.",
+            "Traders are monitoring {sentiment} signals for the next high-alpha opportunity.",
+        ]
+
+        # V30.0: Theme & Catalyst Blacklist
+        self.THEME_BLACKLIST = [
+            "SESSION PERFORMANCE",
+            "500",
+            "INDEX",
+            "MARKET",
+            "STOCK",
+            "UPDATE",
+            "TODAY",
+            "DAILY",
+            "RECAP",
+            "SUMMARY",
+            "DESK",
+            "PULSE",
+            "NEWS",
+            "EDWARD JONES",
+            "CNBC",
+            "YAHOO",
+            "FINANCE",
+            "NEWS.GOOGLE",
+            "GOOGLE NEWS",
+            "PERFORMANCE",
+            "DISCLOSURE",
+            "IMPORTANT",
+            "CHART",
+            "IMAGE",
+            "VIDEO",
+            "SESSION",
+            "MORNING",
+            "EVENING",
+            "AFTERNOON",
+            "WEEKEND",
+            "LATEST",
+            "NBSP",
+            "HTML",
+            "URL",
+            "HTTPS",
+            "HTTP",
+        ]
+
         try:
             self.analyzer = SentimentIntensityAnalyzer()
             self.is_active = True
 
             # V28: Inject FinVADER Lexicons
-            if HAS_FINVADER:
+            if HAS_FINVADER and not getattr(
+                LocalIntelligenceSynthesizer, "_LEXICON_INJECTED", False
+            ):
                 # Merge SentiBignomics and Henry lexicons
                 fin_lexicon = Merge(lexicon1(), lexicon2())
                 self.analyzer.lexicon.update(fin_lexicon)
                 print(
                     f"[INFO] [NLP] FinVADER Financial Lexicons Injected ({len(fin_lexicon)} terms)"
                 )
+                LocalIntelligenceSynthesizer._LEXICON_INJECTED = True
 
             # V28: Inject Config-First Lexicon Overrides
             try:
@@ -98,7 +160,10 @@ class LocalIntelligenceSynthesizer:
                         self.relevance_floor = cfg.get("scoring_rules", {}).get(
                             "relevance_floor", 22.0
                         )
-                        print(f"[INFO] [NLP] Relevance Floor initialized: {self.relevance_floor}")
+                        if not getattr(LocalIntelligenceSynthesizer, "_LEXICON_INJECTED", False):
+                            print(
+                                f"[INFO] [NLP] Relevance Floor initialized: {self.relevance_floor}"
+                            )
             except:
                 pass
         except Exception as e:
@@ -150,7 +215,11 @@ class LocalIntelligenceSynthesizer:
             for chunk in chunks:
                 if hasattr(chunk, "label") and chunk.label() == "ORGANIZATION":
                     name = " ".join([c[0] for c in chunk])
-                    if len(name) > 2 and name.lower() not in self.base_stops:
+                    if (
+                        len(name) > 2
+                        and name.lower() not in self.base_stops
+                        and name.upper() not in self.THEME_BLACKLIST
+                    ):
                         entities.append(name)
             return list(set(entities))
         except:
@@ -353,17 +422,98 @@ class LocalIntelligenceSynthesizer:
         if dense_text:
             points.extend(clean_and_split(dense_text))
 
-        # V28.8: Deduplicate and prune short noise
-        final_points = []
-        seen = set()
-        for p in points:
-            clean_p = p.lower().strip()
-            if len(clean_p) < 20 or clean_p in seen:
-                continue
-            final_points.append(p)
-            seen.add(clean_p)
+        # V30.0: Narrative Engine V2 (Human-Grade Synthesis)
+        # Attempt to build a template-driven composite narrative for 90%+ human feel
+        try:
+            narrative = self._build_human_grade_narrative(
+                vibe, lead_para, dense_text, top_theme, articles
+            )
+            return {"vibe": vibe, "focal_point": top_theme, "points": [narrative]}, used_links
+        except Exception as e:
+            print(f"[NLP] Narrative V2 failed, falling back to extractive: {e}")
+            return {"vibe": vibe, "focal_point": top_theme, "points": points}, used_links
 
-        return {"vibe": vibe, "focal_point": top_theme, "points": final_points}, used_links
+    def _build_human_grade_narrative(self, vibe, lead, dense, theme, articles) -> str:
+        """Assembles a professional market narrative using institutional templates."""
+        import random
+
+        # 1. Pulse Opener
+        vibe_adj = "bullish" if vibe.lower() in ["bullish", "greed", "risk-on"] else "cautious"
+        if vibe.lower() in ["bearish", "fear", "risk-off"]:
+            vibe_adj = "defensive"
+
+        # Theme cleanup (avoid numeric or blacklisted themes)
+        # V30.2: Aggressive dot removal to prevent Gmail auto-link corruption
+        clean_theme = theme.upper().replace(".", " ").replace("NBSP", "").strip()
+        if clean_theme.isdigit() or len(clean_theme) < 3 or clean_theme in self.THEME_BLACKLIST:
+            clean_theme = "MACRO"
+
+        opener = random.choice(self.PULSE_OPENERS).format(vibe=vibe_adj, theme=clean_theme)
+
+        # Catalyst (Lead)
+        # V30.3: Hardened split to avoid breaking on decimals (e.g. 0.5%)
+        sentences = re.split(r"(?<!\d)\.(?!\d)|(?<=\D)\.(?=\d)|(?<=\d)\.(?=\D)", lead)
+        catalyst = sentences[0].strip() if sentences else "market catalysts remain fluid"
+
+        # Hardened Blacklist check (substring match)
+        is_blacklisted = any(bad in catalyst.upper() for bad in self.THEME_BLACKLIST)
+        if is_blacklisted:
+            if len(sentences) > 1:
+                catalyst = sentences[1].strip()
+            else:
+                catalyst = "market catalysts remain fluid"
+
+        # Double-check cleaned catalyst & secondary catch-all
+        if (
+            any(bad in catalyst.upper() for bad in self.THEME_BLACKLIST)
+            or "SESSION PERFORMANCE" in catalyst.upper()
+        ):
+            catalyst = "market catalysts remain fluid"
+
+        if len(catalyst) < 30 and len(sentences) > 1:
+            catalyst = sentences[0] + ". " + sentences[1]
+
+        # V30.2: Mandatory Sanitization (Strip NBSP and dots NOT in numbers)
+        catalyst = catalyst.replace("NBSP", "")
+        catalyst = re.sub(r"(?<!\d)\.(?!\d)", " ", catalyst)  # Replace periods not in decimals
+        catalyst = re.sub(r"\s+", " ", catalyst).strip()
+
+        # Grammar Guard: "The primary lead stems from The..." -> "The primary lead stems from the..."
+        if catalyst.lower().startswith("the "):
+            catalyst = catalyst[4:]  # Remove "The " prefix
+
+        catalyst_sent = f"The primary lead stems from {catalyst}."
+
+        # 3. Secondary Insight (Dense)
+        insight = "steady flows across major sectors"
+        if dense:
+            # Strip common fluff from start
+            insight = re.sub(
+                r"^(Meanwhile|Furthermore|In parallel|Additionally),?\s*", "", dense, flags=re.I
+            )
+            # Grammar Guard for second sentence
+            if insight.lower().startswith("the "):
+                insight = insight[4:]
+
+            # V30.2: Strip dots and NBSP from insight as well
+            insight = insight.replace("NBSP", "")
+            insight = re.sub(r"(?<!\d)\.(?!\d)", " ", insight)
+            insight = insight.strip()
+
+        connector = random.choice(self.CONNECTORS).format(insight=insight)
+
+        # 4. Outlook
+        sentiment_vibe = "stabilizing" if vibe_adj == "bullish" else "shifting"
+        outlook = random.choice(self.OUTLOOKS).format(sentiment=sentiment_vibe)
+
+        # Assemble
+        full = f"{opener} {catalyst_sent} {connector} {outlook}"
+
+        # Final cleanup
+        full = full.replace("NBSP", "").replace("nbsp", "").replace("  ", " ").strip()
+        if not full.endswith("."):
+            full += "."
+        return full
 
     def synthesize_macro_overview_with_meta(self, articles: list, sentences_count=2) -> list:
         """Helper to get sentences with their source links."""
@@ -442,7 +592,11 @@ class LocalIntelligenceSynthesizer:
                 reverse=True,
             )[:top_n]
 
-            results = [kw.title() for kw, _ in top_keywords]
+            results = []
+            for kw, _ in top_keywords:
+                clean_kw = kw.title().replace(".", " ").strip()
+                if clean_kw.upper() not in self.THEME_BLACKLIST:
+                    results.append(clean_kw)
 
             # NER Integration: Inject a top discovered entity if relevant
             entities = self.discover_entities(all_text)
@@ -496,8 +650,10 @@ class LocalIntelligenceSynthesizer:
                 length_score = min(len(text) / 200.0, 1.0)
 
                 # V28: Specialized Source Detection (SEMI)
-                is_specialized = a.get("source") in specialized_sources or a.get(
-                    "is_semi_trade", False
+                is_specialized = (
+                    a.get("source") in specialized_sources
+                    or a.get("is_semi_trade", False)
+                    or a.get("is_specialized", False)
                 )
 
                 # V28: Institutional Fluff Penalty / Specialized Bonus

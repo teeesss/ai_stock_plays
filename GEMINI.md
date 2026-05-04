@@ -1,9 +1,11 @@
-### 🚀 Active Context: V28.8.10 (Anti-Fragile Intelligence & Archive Stabilization)
-[Status Synchronized - 2026-05-01]
+### 🚀 Active Context: V30.4.8 (Hierarchical News Hardening & Modularity)
+[Status Synchronized - 2026-05-04]
 
 ### 🧩 Logic & Patterns
-1. **Sovereign Intelligence Engine (V28)**:
+1. **Sovereign Intelligence Engine (V30.2)**:
    - **Extreme Payload Optimization**: HTML payload remains under 102KB. ACHIEVED: 85KB by transitioning to centralized CSS and high-density layouts.
+    - **Narrative Hardening (V30.2)**: RSS summaries are aggressively stripped of HTML before synthesis to prevent split-URL corruption. THEME_BLACKLIST expanded to include NBSP, SESSION PERFORMANCE, IPC, and DISCLOSURE fragments.
+    - **Period-Stripping Mandate**: All narrative catalysts MUST have internal periods replaced with spaces and trailing periods stripped to prevent Gmail from misinterpreting text as clickable links.
     - **Ticker Layout Mandate**: EVERY ticker row must follow the 3-line protocol: $TICKER+PRICE on line 1, C: PRICE+PCT on line 2 (for ext sessions), and VAL+PE (including forward '26/'27 estimates) on line 3. Headers are centered.
     - **Valuation Logic**: Terminology standardized to `MCap:`. P/E hierarchy favors forward estimates (`'26 [9.9] '27 [11.4]`) over trailing. Outliers strictly capped at `[-500, 1000]`.
     - **Branding & Accessibility**: Authoritative institutional header includes a live Web Link (`bmwseals.com/stocks/email`) using the **Sovereign Blue (#38bdf8)** design token. Injected "🕰️ ARCHIVE" buttons into both email and web cockpit headers for historical access.
@@ -25,8 +27,12 @@
    - **Data-Driven Session Detection**: ALWAYS match session badges (AH, OVN, PRE) to the actual data source, not clock time.
    - **24h Ghost Ticker Purge**: Database entries older than 24h must be purged during every save cycle.
    - **Multi-Tier Rescue**: Use a 5-gateway pool (`vx_rescue_fetcher.py`) with OpenGraph HTML scraping fallback.
-   - **Unified Error Monitoring**: `engine/error_monitor.py` is integrated into ALL core hierarchy scripts via `atexit`, ensuring a comprehensive error summary is printed at the end of every run for easy diagnostics.
-   - **Regex Guard Mandate**: ALWAYS use word boundaries (e.g., `r"<p\b"`) when searching for paragraph tags to avoid false-positive matches with `<path>`, `<picture>`, or `<pre>` tags.
+    - **Unified Error Monitoring**: `engine/error_monitor.py` is integrated into ALL core hierarchy scripts via `atexit`, ensuring a comprehensive error summary is printed at the end of every run for easy diagnostics.
+    - **Regex Guard Mandate**: ALWAYS use word boundaries (e.g., `r"<p\b"`) when searching for paragraph tags to avoid false-positive matches with `<path>`, `<picture>`, or `<pre>` tags.
+    - **News Portal Mirror Mandate (V30.4)**: `engine/news_market_synopsis.py` must maintain 100% aesthetic and logical parity with the main email engine while optimized for high-density web access (e.g., removed company notes from watchlist).
+    - **Email Anti-Clip Protocol**: All dossiers MUST include a hidden anti-clip UUID and timestamp in the footer to prevent Gmail from collapsing repeated market updates.
+    - **Centralized Ticker Intelligence (V30.4.8)**: `MacroAggregator.fetch_ticker_news` is the authoritative gateway for ticker-specific news, enforcing strict freshness (36h/60h/72h) and safety gates.
+    - **Hierarchical Utility Layer (V30.4.8)**: Shared rendering and extraction logic (EPS, session badges) moved to `ticker_utils.py` to decouple engines and centralize institutional standards.
 
 2. **Dependency Guardian (V28)**:
    - **Auto-Restart Protocol**: Uses `os.execv` to automatically refresh the Python process after resolving missing dependencies.
@@ -40,6 +46,7 @@
 
 ### 🏛️ File Roles
 - `engine/email_market_synopsis.py`: SIE Orchestrator. Managed high-density "Cockpit" UI and minified HTML dispatch.
+- `engine/news_market_synopsis.py`: News Portal Engine. Optimized for high-density web reporting and automated email dispatch.
 - `engine/macro_aggregator.py`: Multi-source tech-centric news aggregator with weighted scoring.
 - `engine/dependency_mgr.py`: Cross-platform dependency resolver with auto-restart (`os.execv`) logic.
 - `engine/local_nlp.py`: Statistical NLP hub (LSA, VADER, TF-IDF).

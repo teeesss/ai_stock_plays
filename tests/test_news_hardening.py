@@ -42,9 +42,14 @@ def test_rejects_blacklisted_personalities(agg):
 
 def test_enforces_36h_hard_cutoff(agg):
     now = time.time()
-    # On weekends, the limit is 60h, otherwise 36h
+    # On weekends, the limit is 60h, otherwise 36h.
+    # V29.7: Sunday/Monday Lenience (72h limit)
     is_stasis = agg.market_session.is_market_stasis()
     limit_hours = 60 if is_stasis else 36
+
+    now_est = agg.market_session.get_est_now()
+    if now_est.weekday() in [0, 6]:
+        limit_hours = 72
 
     # Just over the limit
     old_ts = now - ((limit_hours + 1) * 3600)
