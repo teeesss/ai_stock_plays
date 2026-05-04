@@ -47,6 +47,7 @@ Status: **PRODUCTION DEPLOYED — VERIFIED ✅ 2026-05-04**
     - **Hierarchical Utility Layer (V30.4.10)**: Shared rendering and extraction logic (EPS, session badges) and **authoritative news categorization and date formatting (format_news_date)** moved to `ticker_utils.py` to decouple engines and centralize institutional standards.
     - **Strict Section Exclusivity (V30.4.9)**: Enforced 100% isolation for technical semiconductor news. Articles identified as semi-trade news are strictly prohibited from the Macro section, regardless of section capacity, to prevent intelligence bleed.
     - **Mobile UI Hardening (V30.4.13)**: Enforced 75px tap-target density for the Back-to-Top (`.home-btn`) component on mobile viewports (<768px). Injected mandatory `viewport` meta tags to ensure responsive media query execution on high-DPI mobile devices.
+    - **Mobile UI Refinement (V30.4.14)**: Reduced the mobile Back-to-Top button size by 33% (to 50px) to improve spatial balance while maintaining high-contrast visibility and responsive authority. ✅
 
 2. **Dependency Guardian (V28)**:
    - **Auto-Restart Protocol**: Uses `os.execv` to automatically refresh the Python process after resolving missing dependencies.

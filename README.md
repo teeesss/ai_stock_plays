@@ -1,4 +1,4 @@
-# GIGACPO Intelligence Terminal (V30.4.7)
+# GIGACPO Intelligence Terminal (V30.4.14)
 
 This project tracks the **Co-Packaged Optics (CPO)** and **Silicon Photonics (SiPh)** supply chain (200+ high-conviction assets) to identify high-alpha investment opportunities in the AI infrastructure build-out.
 

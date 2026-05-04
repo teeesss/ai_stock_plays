@@ -884,3 +884,9 @@ How to find future plays before the "Whales" rerate them.
 - **Mirror Pool Restoration**: Restored the complete 26-mirror nitter list from the April 20th working version (commit `936da4c`). This provides maximum redundancy and bypasses the 429 rate-limiting issues seen with smaller pools.
 - **Rescue Path Verification**: Confirmed `vxtitter` rescue logic (via `vx_rescue_fetcher.py`) is active and prioritized for broken media recovery, ensuring high-fidelity image archival even when Nitter instances fail.
 - **URL Creep Suppression**: Implemented aggressive link scrubbing in `dom_parser.py` to keep headlines clean and professional in terminal strips and research notes.
+
+### 2026-05-04 - V30.4.14 Mobile UI Polish Refined
+- **Viewport Authority Breakthrough**: Resolved a global media query failure on mobile devices by injecting the mandatory `<meta name="viewport" content="width=device-width, initial-scale=1.0">` tag into the `news_market_synopsis.py` template.
+- **Mobile Button Scaling**: Refined the "Back-to-Top" (`.home-btn`) component to **50px** (reduced 33% from the 75px giant size) on mobile viewports (<768px). This achieves optimal spatial balance on phone screens while preserving a large, accessible tap-target.
+- **Authoritative CSS**: Standardized the use of `!important` flags in mobile media queries to ensure CSS overrides remain resilient against browser-side styling artifacts.
+- **Labeling Parity**: Finalized the dual-ticker standard ($SIVE.TO/$SIVEF) across all intelligence portals, ensuring OTC and primary exchange visibility is preserved.
