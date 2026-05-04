@@ -1291,15 +1291,12 @@ function filterIntel() {
         filtered = filtered.filter(p => p.username === userFilter);
     }
 
-    // Date Range Filter
+    // Date Range Filter — compare only YYYY-MM-DD prefix (timestamp may have +00:00 suffix)
     if (dateFrom) {
-        filtered = filtered.filter(p => p.timestamp >= dateFrom);
+        filtered = filtered.filter(p => (p.timestamp || '').slice(0, 10) >= dateFrom);
     }
     if (dateTo) {
-        const toLimit = new Date(dateTo);
-        toLimit.setDate(toLimit.getDate() + 1);
-        const toStr = toLimit.toISOString().split('T')[0];
-        filtered = filtered.filter(p => p.timestamp < toStr);
+        filtered = filtered.filter(p => (p.timestamp || '').slice(0, 10) <= dateTo);
     }
 
     // Relative Time Filter

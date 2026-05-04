@@ -118,6 +118,7 @@ def parse_tweet(item, username: str) -> dict:
         "username": username,
         "text": text,
         "raw_text": text,
+        "timestamp": parse_date(raw_date).isoformat(),
         "raw_date": raw_date,
         "images": local_paths,
         "image_urls": img_urls,
