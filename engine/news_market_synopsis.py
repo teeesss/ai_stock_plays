@@ -687,7 +687,7 @@ class NewsMarketSynopsisEngine:
         .tk-val {{ text-align:left; font-size:10px; color:#38bdf8; font-family:monospace; margin-top:2px; }}
         @media only screen and (max-width:599px) {{
             .bucket-col {{ display:block !important; width:100% !important; padding:0 !important; }}
-            .home-btn {{ width: 60px; height: 60px; font-size: 32px; bottom: 20px; right: 20px; border-color: rgba(56, 189, 248, 0.5); }}
+            .home-btn {{ width: 75px; height: 75px; font-size: 40px; bottom: 25px; right: 25px; border-color: rgba(56, 189, 248, 0.6); }}
         }}
     </style></head><body id="top" style="background-color:#020617; margin:0; padding:0;">
     <div class="nav-bar"><a href="#synopsis" class="nav-btn">Synopsis</a><a href="#macro" class="nav-btn">Macro</a><a href="#ticker-news" class="nav-btn">Tickers</a><a href="#earn" class="nav-btn">Earnings</a><a href="#semi" class="nav-btn">Semi</a><a href="#ticker" class="nav-btn">Watchlist</a></div><a href="#top" class="home-btn">&uarr;</a>

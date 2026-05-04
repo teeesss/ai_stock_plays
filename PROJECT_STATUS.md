@@ -1,17 +1,15 @@
 # Project Status: Market Intelligence Engine
 
-## 🚀 Current Milestone: V30.4.12 - Dual-Ticker Hardening & UI Polish [2026-05-04]
-- **Dual-Ticker Labeling Hardened**: Centralized `$SIVE.TO/$SIVEF` labeling in `ticker_utils.py` to ensure institutional-grade representation of Sivers Semiconductors across all platforms.
-- **Pricing Authority Persistence**: Maintained `SIVE.ST` (Stockholm) as the machine-readable pricing authority while projecting the dual-symbol moniker in all UI outputs.
-- **Responsive UI Hardening**: Re-engineered the "Back-to-Top" navigation button (`.home-btn`) with a high-contrast black/white aesthetic and increased tap-target density (60px) for mobile accessibility.
-- **Labeling Parity**: Verified 100% labeling consistency between the News Portal (`news_market_synopsis.py`) and the Email Dossier (`email_market_synopsis.py`).
+## 🚀 Current Milestone: V30.4.13 - Mobile UI Polish Final [2026-05-04]
+- **Mobile Icon Finalization**: Increased "Back-to-Top" button size by 25% (to 75px) on mobile viewports for optimized tap-target fidelity.
+- **Labeling Parity**: Maintained dual-ticker standard ($SIVE.TO/$SIVEF) across all platforms.
 
-## 🚀 Version: V30.4.12 (Sivers Hardening & UI Polish)
+## 🚀 Version: V30.4.13 (Mobile UI Polish Final)
 Status: **PRODUCTION DEPLOYED — VERIFIED ✅ 2026-05-04**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V30.4.12 (Sivers Hardening & UI Polish)
-- **Critical Progress**: Dual-ticker labeling and responsive navigation hardening completed.
+- **Current Tier**: V30.4.13 (Mobile UI Polish Final)
+- **Critical Progress**: Mobile navigation UX finalized.
 - **Next Milestone**: V30.5 — Implementation of automated sector-specific weighting for narrative generation.
 
 Date: 2026-05-04
@@ -42,4 +40,4 @@ Tests: **158 passing / 0 failing ✅ FULLY RESTORED**
 - Dashboard data is minified JSON on a single line — edits must be surgical via engine scripts, not manual.
 - **V30.2 Hardening**: Always strip HTML from RSS summaries before NLP splitting to avoid corrupted link fragments.
 
-[GIGACPO V30.4.12 Production Snapshot — 2026-05-04]
+[GIGACPO V30.4.13 Production Snapshot — 2026-05-04]
