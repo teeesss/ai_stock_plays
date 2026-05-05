@@ -931,7 +931,7 @@ class SovereignIntelligenceEngine:
         # V22.54: Hardened remapping for common crypto/OTC aliases
         remapped = []
         for t in tickers:
-            if not self.is_legit_ticker(t):
+            if not is_legit_ticker(t):
                 continue
 
             # Map aliases
@@ -977,7 +977,7 @@ class SovereignIntelligenceEngine:
             clean_word = stripped.upper()
 
             # Check if it's a legit ticker we have price data for
-            if clean_word in prices and self.is_legit_ticker(clean_word):
+            if clean_word in prices and is_legit_ticker(clean_word):
                 p_data = prices[clean_word]
                 price, pct, sess = self.get_session_data(p_data, clean_word)
                 if price is None or pct is None:
@@ -1328,8 +1328,8 @@ class SovereignIntelligenceEngine:
 
         # V28: Authoritative Watchlist Logic (Hierarchy Trickle-Down)
         # We merge custom tickers with the authoritative watchlist
-        custom_set = set([t.upper() for t in (custom_tickers or []) if self.is_legit_ticker(t)])
-        authority_set = set([t.upper() for t in self.watchlist if self.is_legit_ticker(t)])
+        custom_set = set([t.upper() for t in (custom_tickers or []) if is_legit_ticker(t)])
+        authority_set = set([t.upper() for t in self.watchlist if is_legit_ticker(t)])
 
         # Final set of active tickers for this run
         active_tickers = list(custom_set | authority_set)
@@ -1900,7 +1900,7 @@ class SovereignIntelligenceEngine:
             perf_candidates = []
             now_ts = time.time()
             for sym, p_data in prices.items():
-                if sym == "_meta" or not self.is_legit_ticker(sym):
+                if sym == "_meta" or not is_legit_ticker(sym):
                     continue
                 last_ts = p_data.get("timestamp", 0)
                 if (now_ts - last_ts) > 21600:

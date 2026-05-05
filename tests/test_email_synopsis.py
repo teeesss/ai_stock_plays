@@ -2,6 +2,7 @@ import time
 
 from engine.email_market_synopsis import SovereignIntelligenceEngine
 from engine.macro_aggregator import MacroAggregator
+from engine.ticker_utils import is_legit_ticker
 
 
 def test_lookback_filtering():
@@ -19,10 +20,8 @@ def test_lookback_filtering():
 
 
 def test_sector_data_loading():
-    """Ensure SovereignIntelligenceEngine can identify AI and Semi tickers."""
-    engine = SovereignIntelligenceEngine()
-
-    # Check legit ticker logic (V28)
-    assert engine.is_legit_ticker("NVDA") == True
-    assert engine.is_legit_ticker("ARM") == True
-    assert engine.is_legit_ticker("AI") == False  # Blocked noise
+    """Ensure is_legit_ticker can identify legit tickers and block noise."""
+    # Check legit ticker logic (V30.6.10)
+    assert is_legit_ticker("NVDA") == True
+    assert is_legit_ticker("ARM") == True
+    assert is_legit_ticker("AI") == False  # Blocked noise

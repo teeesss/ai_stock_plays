@@ -170,6 +170,12 @@ class NewsMarketSynopsisEngine:
         except:
             return now_utc - datetime.timedelta(hours=4)
 
+    def get_market_session(self, symbol=None, dt_override=None):
+        # V26.14: Defer to Hierarchy Leader
+        label = self.market_session.get_market_session_label(symbol, dt_override)
+        # Convert 'CLOSED' back to empty string for legacy compatibility in email logic
+        return label if label != "CLOSED" else ""
+
     def _load_json(self, name):
         p = self.db_path / name
         try:
