@@ -483,9 +483,10 @@ def get_ticker_session_data(p_data, symbol=None, ms=None):
             e_p = p_data.get("ext_price")
             if e_p is not None:
                 price = e_p
-                prev = get_authoritative_prev_close(p_data)
-                if prev:
-                    pct = ((price / prev) - 1) * 100
+                # V30.6.10: Extended session % is relative to TODAY'S regular close
+                today_close = p_data.get("close_price")
+                if today_close:
+                    pct = ((price / today_close) - 1) * 100
                 elif p_data.get("ext_pct") is not None:
                     pct = p_data.get("ext_pct")
 

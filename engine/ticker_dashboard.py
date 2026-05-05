@@ -214,43 +214,38 @@ class WatchlistReporter:
             p, m = t["p_data"], t["m_data"]
 
             c_p = t["close_price"]
-            c_pct = t["close_pct"]  # Regular Session %
-            total_pct = pct  # Total (Price vs Prior) %
+            c_pct = t["close_pct"]
 
             m_cap_val = p.get("market_cap") or m.get("financials", {}).get("marketCap") or 0
-            eps26, eps27 = extract_ticker_eps({sym: m}, sym)
-            pe26_val = (price / eps26) if eps26 and price else 0
-            pe27_val = (price / eps27) if eps27 and price else 0
+            val_parts = render_valuation_row(p, m, sym)
 
-            t_clr = "#4ade80" if total_pct >= 0 else "#f87171"
+            # Map parts to columns: [MCap, P/E 26, P/E 27]
+            cap_str, p26_str, p27_str = "N/A", "-", "-"
+            for part in val_parts:
+                if "MCap:" in part:
+                    cap_str = part.replace("MCap:", "").strip()
+                elif "'26 [" in part:
+                    p26_str = part.replace("'26 [", "").replace("]", "").strip()
+                elif "'27 [" in part:
+                    p27_str = part.replace("'27 [", "").replace("]", "").strip()
+                elif "P/E:" in part:
+                    p26_str = part.replace("P/E:", "").strip()
+
+            t_clr = "#4ade80" if pct >= 0 else "#f87171"
             c_clr = "#4ade80" if c_pct >= 0 else "#f87171"
             _, badge_color = get_session_badge_style(sess)
-
-            if m_cap_val:
-                if m_cap_val >= 1e12:
-                    cap_str = f"${m_cap_val/1e12:.2f}T"
-                elif m_cap_val >= 1e9:
-                    cap_str = f"${m_cap_val/1e9:.1f}B"
-                else:
-                    cap_str = f"${m_cap_val/1e6:.1f}M"
-            else:
-                cap_str = "N/A"
-            p26_str, p27_str = (
-                (f"{pe26_val:.1f}" if pe26_val else "-"),
-                (f"{pe27_val:.1f}" if pe27_val else "-"),
-            )
 
             rows += f"""
             <tr style="border-bottom:1px solid #1e293b;">
                 <td style="padding:12px; font-weight:bold; color:#f8fafc;" data-v="{sym}">${sym}</td>
                 <td style="padding:12px; font-family:monospace; color:{t_clr}; text-align:right;" data-v="{price}">${price:,.2f}</td>
                 <td style="padding:12px; font-family:monospace; color:{badge_color}; text-align:center; font-size:10px; font-weight:bold;" data-v="{sess or 'C'}">{sess or 'C'}</td>
-                <td style="padding:12px; font-family:monospace; color:{t_clr}; font-weight:bold; text-align:right;" data-v="{total_pct}">{total_pct:+.2f}%</td>
+                <td style="padding:12px; font-family:monospace; color:{t_clr}; font-weight:bold; text-align:right;" data-v="{pct}">{pct:+.2f}%</td>
                 <td style="padding:12px; font-family:monospace; color:#cbd5e1; text-align:right;" data-v="{c_p}">${c_p:,.2f}</td>
                 <td style="padding:12px; font-family:monospace; color:{c_clr}; font-weight:bold; text-align:right;" data-v="{c_pct}">{c_pct:+.2f}%</td>
                 <td style="padding:12px; font-family:monospace; color:#38bdf8; text-align:right;" data-v="{m_cap_val}">{cap_str}</td>
-                <td style="padding:12px; font-family:monospace; color:#94a3b8; text-align:right;" data-v="{pe26_val}">{p26_str}</td>
-                <td style="padding:12px; font-family:monospace; color:#94a3b8; text-align:right;" data-v="{pe27_val}">{p27_str}</td>
+                <td style="padding:12px; font-family:monospace; color:#94a3b8; text-align:right;">{p26_str}</td>
+                <td style="padding:12px; font-family:monospace; color:#94a3b8; text-align:right;">{p27_str}</td>
             </tr>"""
 
         html = f"""<!DOCTYPE html><html><head>
