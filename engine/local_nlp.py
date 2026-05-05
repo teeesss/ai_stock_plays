@@ -366,8 +366,8 @@ class LocalIntelligenceSynthesizer:
             # Stutter check against the lead
             pt_words = set(re.findall(r"\b\w{4,}\b", pt.lower()))
             overlap = len(pt_words & anchor_words) / (len(pt_words) + 1)
-            if overlap > 0.4:
-                continue  # Tighter threshold for scraped leads
+            if overlap > 0.3:
+                continue  # Tighter threshold (V30.4.17)
 
             dense_text = pt
             if link:
@@ -430,16 +430,16 @@ class LocalIntelligenceSynthesizer:
         # V30.0: Narrative Engine V2 (Human-Grade Synthesis)
         # Attempt to build a template-driven composite narrative for 90%+ human feel
         try:
-            narrative = self._build_human_grade_narrative(
+            narrative_points = self._build_human_grade_narrative(
                 vibe, lead_para, dense_text, top_theme, articles
             )
-            return {"vibe": vibe, "focal_point": top_theme, "points": [narrative]}, used_links
+            return {"vibe": vibe, "focal_point": top_theme, "points": narrative_points}, used_links
         except Exception as e:
             print(f"[NLP] Narrative V2 failed, falling back to extractive: {e}")
             return {"vibe": vibe, "focal_point": top_theme, "points": points}, used_links
 
-    def _build_human_grade_narrative(self, vibe, lead, dense, theme, articles) -> str:
-        """Assembles a professional market narrative using institutional templates."""
+    def _build_human_grade_narrative(self, vibe, lead, dense, theme, articles) -> list:
+        """Assembles a professional market narrative using institutional templates. Returns list of points."""
         import random
 
         # 1. Pulse Opener
@@ -478,8 +478,10 @@ class LocalIntelligenceSynthesizer:
         if len(catalyst) < 30 and len(sentences) > 1:
             catalyst = sentences[0] + ". " + sentences[1]
 
-        # V30.2: Mandatory Sanitization (Strip NBSP and dots NOT in numbers)
-        catalyst = catalyst.replace("NBSP", "")
+        # V30.4.17: Aggressive Artifact Stripping (&;&;, Benzinga, and source signatures)
+        catalyst = catalyst.replace("NBSP", "").replace("&;&;", " ").replace("&;", " ")
+        catalyst = re.sub(r"\s+Benzinga.*$", "", catalyst, flags=re.I)
+        catalyst = re.sub(r"Read more on Yahoo.*$", "", catalyst, flags=re.I)
         catalyst = re.sub(r"(?<!\d)\.(?!\d)", " ", catalyst)  # Replace periods not in decimals
         catalyst = re.sub(r"\s+", " ", catalyst).strip()
 
@@ -500,10 +502,15 @@ class LocalIntelligenceSynthesizer:
             if insight.lower().startswith("the "):
                 insight = insight[4:]
 
-            # V30.2: Strip dots and NBSP from insight as well
-            insight = insight.replace("NBSP", "")
+            # V30.4.17: Strip artifacts from insight as well
+            insight = insight.replace("NBSP", "").replace("&;&;", " ").replace("&;", " ")
+            insight = re.sub(r"\s+Benzinga.*$", "", insight, flags=re.I)
             insight = re.sub(r"(?<!\d)\.(?!\d)", " ", insight)
             insight = insight.strip()
+
+            # V30.4.17: Final Stutter Guard (if insight still matches catalyst)
+            if insight.lower()[:30] in catalyst_sent.lower():
+                insight = "steady flows across major sectors"
 
         connector = random.choice(self.CONNECTORS).format(insight=insight)
 
@@ -511,14 +518,20 @@ class LocalIntelligenceSynthesizer:
         sentiment_vibe = "stabilizing" if vibe_adj == "bullish" else "shifting"
         outlook = random.choice(self.OUTLOOKS).format(sentiment=sentiment_vibe)
 
-        # Assemble
-        full = f"{opener} {catalyst_sent} {connector} {outlook}"
+        # V30.4.17: Return as discrete intelligence points for high-density rendering
+        p1 = f"{opener} {catalyst_sent}".strip()
+        if not p1.endswith("."):
+            p1 += "."
 
-        # Final cleanup
-        full = full.replace("NBSP", "").replace("nbsp", "").replace("  ", " ").strip()
-        if not full.endswith("."):
-            full += "."
-        return full
+        p2 = connector.strip()
+        if not p2.endswith("."):
+            p2 += "."
+
+        p3 = outlook.strip()
+        if not p3.endswith("."):
+            p3 += "."
+
+        return [p1, p2, p3]
 
     def synthesize_macro_overview_with_meta(self, articles: list, sentences_count=2) -> list:
         """Helper to get sentences with their source links."""

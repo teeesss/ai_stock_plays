@@ -652,7 +652,11 @@ def rebuild_master():
         return c
 
     bridge_payload = {**payload, "posts": [_strip_assets(p) for p in all_posts]}
-    js_content = "window.X_INTEL_MODULE = " + json.dumps(bridge_payload) + ";"
+    js_content = (
+        f"// v{now.strftime('%Y%m%d%H%M%S')}\nwindow.X_INTEL_MODULE = "
+        + json.dumps(bridge_payload)
+        + ";"
+    )
     (DB_DIR / "intel.js").write_text(js_content, encoding="utf-8")
     (ROOT / "intel.js").write_text(js_content, encoding="utf-8")
 

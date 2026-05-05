@@ -267,12 +267,11 @@ class MarketSynopsisScraper:
                     continue
                 clean_points.append(p)
 
-            full_text = " ".join(clean_points)
-            if not full_text:
+            if not clean_points:
                 return None
 
             return {
-                "text": full_text,
+                "points": clean_points,
                 "timestamp": datetime.now().strftime("%I:%M %p"),
                 "source": "SOVEREIGN INTEL V30.2",
                 "focal_point": intel_data.get("focal_point", "Market Pulse"),
@@ -347,12 +346,12 @@ class MarketSynopsisScraper:
                         intel_data, _ = nlp.synthesize_market_narrative(
                             [], vibe="Neutral", scraped_lead=edj_text
                         )
-                        full_text = " ".join(intel_data.get("points", []))
+                        points = intel_data.get("points", [])
 
-                        if full_text:
+                        if points:
                             return [
                                 {
-                                    "text": full_text,
+                                    "points": points,
                                     "timestamp": datetime.now().strftime("%I:%M %p"),
                                     "source": "EDWARD JONES V30.2",
                                     "focal_point": "Market Recap",

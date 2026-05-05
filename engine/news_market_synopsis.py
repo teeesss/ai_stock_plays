@@ -612,11 +612,44 @@ class NewsMarketSynopsisEngine:
                 row_count += 1
 
         syn_html = ""
-        if synopsis_data:
-            for item in synopsis_data:
-                content = item.get("text", "")
-                if content:
-                    syn_html += f'<div style="margin-bottom:20px; border-left:4px solid {accent}; padding-left:15px; background:rgba(56,189,248,0.02); padding-top:10px; padding-bottom:10px; border-radius:0 4px 4px 0;"><div style="font-family:monospace !important; font-size:11px; color:{accent}; letter-spacing:1px; margin-bottom:8px; text-transform:uppercase; font-weight:900;">[ {item.get("source")} ANALYSIS ]</div><div style="font-size:14px; color:{text_bright}; line-height:1.6; font-family:monospace !important;">{content}</div></div>'
+        # V30.4.17: Support both single dict and list of intelligence blocks
+        syn_items = (
+            synopsis_data
+            if isinstance(synopsis_data, list)
+            else ([synopsis_data] if synopsis_data else [])
+        )
+
+        # Fallback to intel_text if synopsis is empty
+        if not syn_items and intel_text:
+            syn_items = [intel_text]
+            if isinstance(intel_text, dict) and "source" not in intel_text:
+                intel_text["source"] = "SOVEREIGN INTEL"
+
+        for item in syn_items:
+            if not isinstance(item, dict):
+                continue
+
+            # V30.4.17: Support for structured Intelligence Strips (List of points)
+            points = item.get("points", [])
+            if not points and item.get("text"):
+                # Fallback for legacy text-only format
+                points = [item.get("text")]
+
+            if points:
+                src_label = item.get("source", "SOVEREIGN INTEL")
+                header = f'<div style="font-family:monospace !important; font-size:11px; color:{accent}; letter-spacing:1px; margin-bottom:8px; text-transform:uppercase; font-weight:900;">[ {src_label} ANALYSIS ]</div>'
+                strips = ""
+                for i, pt in enumerate(points):
+                    # Alternating backgrounds for high-density readability
+                    bg = "rgba(56,189,248,0.05)" if i % 2 == 0 else "rgba(15,23,42,0.4)"
+                    strip_border = accent if i % 2 == 0 else "#334155"
+
+                    # V30.4.17: Inject price flair into strips for high-density intel
+                    flaired_pt = self.inject_price_flair(pt, prices)
+
+                    strips += f'<div style="background-color:{bg}; padding:10px 14px; margin-bottom:2px; border-radius:4px; border-left:3px solid {strip_border}; color:{text_bright}; font-size:14px; line-height:1.6; font-family:monospace !important;">&bull; {flaired_pt}</div>'
+
+                syn_html += f'<div style="margin-bottom:25px;">{header}{strips}</div>'
 
         def render_bucket(title, items, columns=1):
             if not items:

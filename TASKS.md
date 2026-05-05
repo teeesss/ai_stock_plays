@@ -1,3 +1,10 @@
+## 🛠 V30.4.17 Narrative Hardening & Intelligence Strips (2026-05-05)
+- [x] **Intelligence Strip Migration**: Successfully transitioned from run-on paragraphs to structured, alternating-background intelligence strips in the News Portal (`news_market_synopsis.py`). ✅
+- [x] **Aggressive Narrative Sanitization**: Implemented deep regex-based stripping in `local_nlp.py` to eliminate RSS artifacts (`&;&;`) and "doubling" content. ✅
+- [x] **High-Density Price Flair**: Injected real-time price flair into all intelligence strips on the News Portal to mirror institutional dashboard aesthetics. ✅
+- [x] **Pipeline Parity**: Verified 100% structural alignment between the Email Dossier and the News Portal rendering engines. ✅
+- [x] **Fallback Resilience**: Added automated fallback to the Macro NLP engine if session-specific synopsis data is unavailable. ✅
+
 ## 🛠 V30.4.15 Social Intelligence Pipeline Hardened (2026-05-04)
 - [x] **Auto-Sync Repair**: Corrected `x_intel_auto_sync.py` to use valid `scrape_user` method and established a 3-day fast-sync protocol. ✅
 - [x] **Master Rebuild Integration**: Injected mandatory `rebuild_master()` call into the auto-sync loop to ensure dashboard continuity. ✅

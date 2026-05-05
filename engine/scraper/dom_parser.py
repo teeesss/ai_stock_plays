@@ -12,21 +12,27 @@ def parse_date(raw: str) -> datetime:
     now = datetime.now(timezone.utc)
     try:
         # 'Apr 13, 2026 · 12:36 AM UTC'
-        clean = raw.split("·")[0].strip()
-        dt = datetime.strptime(clean, "%b %d, %Y")
+        # Use full string for maximum precision
+        dt = datetime.strptime(raw, "%b %d, %Y · %I:%M %p UTC")
         return dt.replace(tzinfo=timezone.utc)
     except:
-        # Handle '5h', '20m', etc.
-        m = re.match(r"(\d+)([hmd])", raw)
-        if m:
-            val, unit = int(m.group(1)), m.group(2)
-            if unit == "h":
-                return now - timedelta(hours=val)
-            if unit == "m":
-                return now - timedelta(minutes=val)
-            if unit == "d":
-                return now - timedelta(days=val)
-        return now
+        try:
+            # Fallback for just the date if the separator or time is malformed
+            clean = raw.split("·")[0].strip()
+            dt = datetime.strptime(clean, "%b %d, %Y")
+            return dt.replace(tzinfo=timezone.utc)
+        except:
+            # Handle '5h', '20m', etc.
+            m = re.match(r"(\d+)([hmd])", raw)
+            if m:
+                val, unit = int(m.group(1)), m.group(2)
+                if unit == "h":
+                    return now - timedelta(hours=val)
+                if unit == "m":
+                    return now - timedelta(minutes=val)
+                if unit == "d":
+                    return now - timedelta(days=val)
+            return now
 
 
 def strip_urls(text: str) -> str:

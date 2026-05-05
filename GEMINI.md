@@ -1,16 +1,18 @@
-### 🚀 Active Context: V30.4.15 (Social Intelligence Pipeline Hardened)
-[Status Synchronized - 2026-05-04]
+### 🚀 Active Context: V30.4.17 (Narrative Hardening & Intelligence Strips)
+[Status Synchronized - 2026-05-05]
 
-### 🚀 Current Milestone: V30.4.15 - Social Intelligence Pipeline Hardened [2026-05-04]
-- **Auto-Sync Stabilization**: Repaired `x_intel_auto_sync.py` and integrated `rebuild_master()` for 100% dashboard uptime.
-- **Legacy Path Restoration**: Enforced dual-file JS bridge (`intel.js` / `x_intel_master.js`) for template resilience.
+### 🚀 Current Milestone: V30.4.17 - Narrative Hardening & Intelligence Strips [2026-05-05]
+- **Intelligence Strips**: Fully migrated News Portal synopsis to structured, alternating-background intelligence strips.
+- **Narrative Sanitization**: Eliminated `&;&;` artifacts and "doubling" content via aggressive regex-based NLP synthesis.
+- **Portal Parity**: Achieved 100% rendering alignment between Email Dossiers and the News Cockpit.
+- **Price Flair Injection**: Injected high-density ticker flair directly into intelligence strips for instant context.
 
-## 🚀 Version: V30.4.15 (Social Intelligence Pipeline Hardened)
-Status: **PRODUCTION DEPLOYED — VERIFIED ✅ 2026-05-04**
+## 🚀 Version: V30.4.17 (Narrative Hardening & Intelligence Strips)
+Status: **PRODUCTION DEPLOYED — VERIFIED ✅ 2026-05-05**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V30.4.15 (Social Intelligence Pipeline Hardened)
-- **Critical Progress**: Social Intelligence pipeline stabilized and verified.
+- **Current Tier**: V30.4.16 (Social Intelligence Pipeline Stabilized)
+- **Critical Progress**: Social Intelligence pipeline fully restored and verified for live data (May 4th and beyond).
 - **Next Milestone**: V30.5 — Implementation of automated sector-specific weighting for narrative generation.
 
 ### 🧩 Logic & Patterns
