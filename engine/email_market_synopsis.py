@@ -733,7 +733,9 @@ class SovereignIntelligenceEngine:
 
                 if e_p is not None:
                     price = e_p
-                    prev = p_data.get("close_price") or p_data.get("prev_close")
+                    # V30.4.18: Prefer prev_close (true prior-day close) as denominator
+                    # close_price = regularMarketPrice which can equal ext_price during extended sessions
+                    prev = p_data.get("prev_close") or p_data.get("close_price")
                     if prev:
                         pct = ((price / prev) - 1) * 100
                     elif e_pct is not None:
@@ -1036,7 +1038,8 @@ class SovereignIntelligenceEngine:
 
         anchor = ""
         if sess in ["PRE", "AH", "OVN", "POST"]:
-            c_p = p.get("close_price") or p.get("price")
+            # V30.4.18: Use prev_close (true previous session close) to avoid duplication with ext_price
+            c_p = p.get("prev_close") or p.get("close_price")
             if c_p:
                 anchor = f'<span style="font-size:9px; color:#94a3b8; font-weight:normal;">&nbsp;| C: ${c_p:,.2f}</span>'
 
@@ -2158,7 +2161,8 @@ class SovereignIntelligenceEngine:
 
                 anchor = ""
                 if sess in ["PRE", "AH", "OVN", "POST", "PM"]:
-                    c_p = p_entry.get("close_price") or p_entry.get("price")
+                    # V30.4.18: Use prev_close (true previous session close) to avoid duplication with ext_price
+                    c_p = p_entry.get("prev_close") or p_entry.get("close_price")
                     if c_p:
                         anchor = f'<span style="font-size:10px; color:{text_dim}; font-weight:normal;"> | C: ${c_p:,.2f}</span>'
 
@@ -2170,9 +2174,10 @@ class SovereignIntelligenceEngine:
                 line1_display = f'{price_html}<span style="color:{color_movers}; font-weight:bold; font-size:14px;">{session_key} {pct_str}</span>'
 
                 # Line 2: Close Price (Conditional) or Live Badge
+                # V30.4.18: Use prev_close for the true previous session close anchor
                 close_line = ""
                 if sess in ["PRE", "AH", "OVN", "POST", "PM"]:
-                    c_p = p_entry.get("close_price") or p_entry.get("price")
+                    c_p = p_entry.get("prev_close") or p_entry.get("close_price")
                     c_pct = p_entry.get("change_pct", 0)
                     if c_p:
                         c_clr = bull if c_pct >= 0 else bear
@@ -2305,7 +2310,8 @@ class SovereignIntelligenceEngine:
 
                     close_line = ""
                     if sess in ["PRE", "AH", "OVN", "POST"]:
-                        c_p = p_entry.get("close_price") or p_entry.get("price")
+                        # V30.4.18: Use prev_close (true previous session close) to avoid duplication with ext_price
+                        c_p = p_entry.get("prev_close") or p_entry.get("close_price")
                         c_pct = p_entry.get("change_pct", 0)
                         if c_p:
                             c_clr = bull if c_pct >= 0 else bear

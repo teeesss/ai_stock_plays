@@ -208,7 +208,8 @@ class NewsMarketSynopsisEngine:
                 e_pct = p_data.get("ext_pct")
                 if e_p is not None:
                     price = e_p
-                    prev = p_data.get("close_price") or p_data.get("prev_close")
+                    # V30.4.18: Prefer prev_close (true prior-day close) as denominator
+                    prev = p_data.get("prev_close") or p_data.get("close_price")
                     if prev:
                         pct = ((price / prev) - 1) * 100
                     elif e_pct is not None:
@@ -262,7 +263,8 @@ class NewsMarketSynopsisEngine:
                 sess_tag = self.get_session_tag_html(fs="8px", sess_override=sess)
                 anchor = ""
                 if sess in ["PRE", "AH", "OVN", "POST"]:
-                    c_p = p_data.get("close_price") or p_data.get("price")
+                    # V30.4.18: Use prev_close (true previous session close) to avoid duplication with ext_price
+                    c_p = p_data.get("prev_close") or p_data.get("close_price")
                     if c_p:
                         anchor = f' <span style="font-size:8px; color:#94a3b8; font-weight:normal;">| C: ${c_p:,.2f}</span>'
                 start_idx = word.find(stripped)
@@ -670,7 +672,8 @@ class NewsMarketSynopsisEngine:
                         f'<span style="color:{label_color}; font-weight:900;">{label_text}</span>'
                     )
                     if sess in ["PRE", "AH", "OVN", "POST"]:
-                        c_p = p_entry.get("close_price") or p_entry.get("price")
+                        # V30.4.18: Use prev_close (true previous session close) to avoid duplication with ext_price
+                        c_p = p_entry.get("prev_close") or p_entry.get("close_price")
                         c_pct = p_entry.get("change_pct", 0)
                         if c_p:
                             c_clr = bull if c_pct >= 0 else bear
