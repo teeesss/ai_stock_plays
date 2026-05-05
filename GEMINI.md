@@ -1,19 +1,21 @@
-### 🚀 Active Context: V30.4.19 (Unified Narrative & Anchor Fidelity)
+### 🚀 Active Context: V30.6.10 (Cross-Channel Pricing Parity)
 [Status Synchronized - 2026-05-05]
 
-### 🚀 Current Milestone: V30.4.19 - Unified Narrative & Anchor Fidelity [2026-05-05]
-- **Unified Narrative Aesthetic**: Consolidated alternating news analysis bullets into a single, high-density institutional background container.
-- **Anchor Price Fidelity**: Standardized `prev_close` as the authoritative denominator for all session-aware percentage calculations.
-- **Portal Consistency**: Synchronized background styling between Email Dossiers and the News Cockpit for visual parity.
-- **Price Flair Hardening**: Reinforced flair injection to use true prior-day close anchors during extended sessions.
+### 🚀 Current Milestone: V30.6.10 - Cross-Channel Pricing Parity [2026-05-05]
+- **Single Source of Truth**: `ticker_utils.py` is the SOLE authority for `is_legit_ticker`, `get_ticker_session_data`, and `render_valuation_row`. NEVER duplicate these in individual engines.
+- **Preposition Flair Fix**: `TICKER_BLACKLIST` now includes common English words (ON, AT, BY, IF, IN, TO...) to prevent false price flair.
+- **News/Email Cross-Channel Parity**: Both `/news` and `/email` portals now use the exact same pricing and session logic. Zero divergence.
+- **Close Price Fidelity**: News watchlist now shows `CLOSE: $X.XX ±X.X%` anchored to `get_authoritative_prev_close`.
+- **Numerical High-to-Low Sorting**: News watchlist sorted by `pct` descending — consistent with email dashboard.
+- **Ticker Cockpit (V30.6.9 legacy)**: Engine decoupled into `engine/ticker_dashboard.py`. Columns: PRICE | AH/OVN/PRE/L | % CHG | CLOSE | C % | MCAP | '26 P/E | '27 P/E.
 
 ## 🚀 Version: V30.4.19 (Unified Narrative & Anchor Fidelity)
 Status: **PRODUCTION DEPLOYED — VERIFIED ✅ 2026-05-05**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V30.4.16 (Social Intelligence Pipeline Stabilized)
-- **Critical Progress**: Social Intelligence pipeline fully restored and verified for live data (May 4th and beyond).
-- **Next Milestone**: V30.5 — Implementation of automated sector-specific weighting for narrative generation.
+- **Current Tier**: V30.6.10 (Cross-Channel Pricing Parity)
+- **Critical Progress**: News and email pipelines fully unified. ticker_utils.py is single source of truth.
+- **Next Milestone**: V30.7 — Automated sector-specific weighting for narrative generation.
 
 ### 🧩 Logic & Patterns
 1. **Sovereign Intelligence Engine (V30.2)**:
@@ -50,6 +52,9 @@ Status: **PRODUCTION DEPLOYED — VERIFIED ✅ 2026-05-05**
     - **Strict Section Exclusivity (V30.4.9)**: Enforced 100% isolation for technical semiconductor news. Articles identified as semi-trade news are strictly prohibited from the Macro section, regardless of section capacity, to prevent intelligence bleed.
     - **Mobile UI Hardening (V30.4.13)**: Enforced 75px tap-target density for the Back-to-Top (`.home-btn`) component on mobile viewports (<768px). Injected mandatory `viewport` meta tags to ensure responsive media query execution on high-DPI mobile devices.
     - **Mobile UI Refinement (V30.4.14)**: Reduced the mobile Back-to-Top button size by 33% (to 50px) to improve spatial balance while maintaining high-contrast visibility and responsive authority. ✅
+     - **Ticker Utils Single-Source Mandate (V30.6.10)**: ticker_utils.py is the ABSOLUTE AUTHORITY for is_legit_ticker, TICKER_BLACKLIST, get_ticker_session_data, and render_valuation_row. ANY engine MUST import, NEVER re-implement locally.
+     - **Pre-hydrated PE Priority (V30.6.10)**: render_valuation_row checks p_data.get(pe26) first before recalculating from EPS trend.
+     - **Refactor Safety Rule (V30.6.10)**: When removing a block of methods, always audit for collateral removals. grep for helpers after bulk deletions.
 
 2. **Dependency Guardian (V28)**:
    - **Auto-Restart Protocol**: Uses `os.execv` to automatically refresh the Python process after resolving missing dependencies.
@@ -62,17 +67,20 @@ Status: **PRODUCTION DEPLOYED — VERIFIED ✅ 2026-05-05**
    - Use absolute paths for `stealth_session.json` to prevent CWD-dependent `FileNotFoundError`.
 
 ### 🏛️ File Roles
-- `engine/email_market_synopsis.py`: SIE Orchestrator. Managed high-density "Cockpit" UI and minified HTML dispatch.
-- `engine/news_market_synopsis.py`: News Portal Engine. Optimized for high-density web reporting and automated email dispatch.
-- `engine/macro_aggregator.py`: Multi-source tech-centric news aggregator with weighted scoring.
-- `engine/dependency_mgr.py`: Cross-platform dependency resolver with auto-restart (`os.execv`) logic.
-- `engine/local_nlp.py`: Statistical NLP hub (LSA, VADER, TF-IDF).
-- `engine/yahoo_auth.py`: Centralized stealth session/crumb manager.
-- `engine/live_prices.py`: High-stealth price extractor (10-ticker chunks).
-- `engine/market_synopsis_scraper.py`: Session-aware narrative scraper for Yahoo/CNBC/EDJ.
+- `run.sh`: Sovereign Intelligence Email Orchestrator. Dispatches the high-density "Cockpit" UI.
+- `news.sh`: News Intelligence Portal Engine. Optimized for high-density web reporting and news email dispatch.
+- `ticker.sh`: Thin launcher → delegates to `engine/ticker_dashboard.py`. Do NOT run directly on NAS drives.
+- `x.sh`: Unified Social Intelligence & Dashboard Sync. Handles scraping, OCR, and web portal deployment.
+- `engine/ticker_utils.py`: **SINGLE SOURCE OF TRUTH** — ticker legitimacy, session data, valuation rendering.
+- `engine/ticker_dashboard.py`: Ticker Cockpit HTML + CLI renderer.
+- `engine/email_market_synopsis.py`: SIE Orchestrator logic.
+- `engine/news_market_synopsis.py`: News Portal Engine logic.
+- `engine/x_intel_instant_sync.py`: Unified Social/Web sync logic (supports `--auto` mode).
 - `docs/ARCHITECTURE_V28.md`: V28.8 Definitive Architecture Reference.
 - `docs/INTELLIGENCE_MANUAL.md`: Scoring hierarchy and signal governance guide.
 
 ### ⚠️ Known Quirks
 - Gmail will clip messages if the minification fails or if CSS classes exceed length limits.
 - `os.execv` behaves differently on Windows than Linux/Unix (replaces process image).
+- **NAS Drive (X:) Rule**: NEVER use `wsl` or `bash` for scripts on X: drive. PowerShell native ONLY.
+- **DO NOT open files locally** via VSCode or shell commands from AI — view internally using Antigravity tools.

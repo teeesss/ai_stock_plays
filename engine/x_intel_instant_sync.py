@@ -6,6 +6,7 @@ Bypasses the random jitter of the daily sync script.
 Use this for manual 'refresh-now' operations.
 """
 
+import argparse
 import logging
 import subprocess
 import sys
@@ -78,9 +79,9 @@ def run_step(name, command, specific_log=None):
 from ticker_utils import get_ticker_count_report
 
 
-def instant_sync():
+def instant_sync(fast_mode=False):
     log.info("=" * 60)
-    log.info("INSTANT INTELLIGENCE REFRESH INITIATED")
+    log.info(f"INSTANT INTELLIGENCE REFRESH INITIATED ({'FAST' if fast_mode else 'DEEP'})")
     log.info(get_ticker_count_report())
     log.info(f"Targets: {', '.join(USERS)}")
     log.info("=" * 60)
@@ -90,7 +91,15 @@ def instant_sync():
     for idx, user in enumerate(USERS):
         log.info(f"\n[{idx+1}/{len(USERS)}] Synchronizing @{user}...")
         user_log = LOG_DIR / f"{user}_sync.log"
-        cmd = [sys.executable, "-u", "engine/x_intel_deep_scraper.py", "--username", user]
+
+        # V30.4.16: Support fast mode (3 days) vs deep mode
+        scraper_script = "engine/x_intel_deep_scraper.py"
+        scraper_args = ["--username", user]
+        if fast_mode:
+            scraper_args.extend(["--days", "3"])
+
+        cmd = [sys.executable, "-u", scraper_script] + scraper_args
+
         if not run_step(f"Scrape @{user}", cmd, specific_log=user_log):
             log.error(f"Failed @{user}")
             overall_success = False
@@ -151,4 +160,9 @@ def instant_sync():
 
 
 if __name__ == "__main__":
-    instant_sync()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--fast", action="store_true", help="Fast sync (last 3 days only)")
+    parser.add_argument("--auto", action="store_true", help="Alias for --fast")
+    args = parser.parse_args()
+
+    instant_sync(fast_mode=(args.fast or args.auto))

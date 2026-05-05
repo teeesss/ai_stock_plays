@@ -1,4 +1,11 @@
 #!/bin/bash
+# ============================================================================
+# GIGACPO Unified Social Intelligence & Dashboard Sync (V30.4.16)
+# Targets: @KawzInvests, @PhotonCap, @aleabitoreddit
+# Components: Scrape -> Master Rebuild -> OCR -> Live Prices -> Build -> Deploy
+# Usage: ./x.sh [--auto|--fast]
+# ============================================================================
+
 set -euo pipefail
 
 # Define paths
@@ -8,7 +15,6 @@ REPO_PATH="$DIR"
 
 # 0. Venv Discovery
 VENV_PATH="./venv"
-# Check if current venv is FUNCTIONAL (catches broken mount symlinks)
 if ! "$VENV_PATH/bin/python" --version &>/dev/null; then
     if "$HOME/.venv_gigacpo/bin/python" --version &>/dev/null; then
         VENV_PATH="$HOME/.venv_gigacpo"
@@ -20,7 +26,6 @@ if ! "$VENV_PATH/bin/python" --version &>/dev/null; then
     fi
 fi
 VENV_PYTHON="$VENV_PATH/bin/python"
-echo "$(date): Using Venv: $VENV_PYTHON"
 LOG="/home/jonesy/x_intel.log"
 
 # 1. Safety Check: Verify Mount
@@ -32,8 +37,6 @@ fi
 # 1.5. Ensure dependencies are current (Stealth Mode)
 if [ -f "requirements.txt" ]; then
     "$VENV_PYTHON" -m pip install --no-input --no-warn-script-location -r requirements.txt --quiet
-
-    # V28.2: Ensure Playwright Chromium is present
     if grep -q "playwright" requirements.txt; then
         if ! "$VENV_PYTHON" -m playwright install chromium --dry-run &>/dev/null; then
             echo "$(date): Initializing Playwright Chromium..."
@@ -42,9 +45,21 @@ if [ -f "requirements.txt" ]; then
     fi
 fi
 
-# 2. Run the python script and tee output (captures stdout+stderr)
-# This appends to $LOG and prints to the terminal
-"$VENV_PYTHON" -u engine/x_intel_instant_sync.py 2>&1 | tee -a "$LOG"
+# 2. Parse Arguments
+SYNC_MODE=""
+if [[ $# -gt 0 ]]; then
+    if [[ "$1" == "--auto" || "$1" == "--fast" ]]; then
+        SYNC_MODE="--fast"
+        echo "$(date): Unified Sync Mode: FAST (3-day lookback)"
+    fi
+fi
 
-# 3. Final message (show and log)
-echo "$(date): SIE Pulse Dispatched" | tee -a "$LOG"
+# 3. Execute Unified Intelligence Pipeline
+echo "============================================================"
+echo " GIGACPO UNIFIED SOCIAL INTELLIGENCE & DASHBOARD REFRESH"
+echo "============================================================"
+"$VENV_PYTHON" -u engine/x_intel_instant_sync.py $SYNC_MODE 2>&1 | tee -a "$LOG"
+
+# 4. Final message
+echo "$(date): Dashboard Sync Complete" | tee -a "$LOG"
+echo "============================================================"

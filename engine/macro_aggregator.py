@@ -750,8 +750,13 @@ class MacroAggregator:
                                 fetch_headers = PaywallIntelligence.apply_stealth_headers(
                                     url, client.headers.copy()
                                 )
+                                # V30.4.19: Incremental timeout (15s, 20s, 25s)
+                                current_timeout = 15 + (attempt * 5)
                                 res = await client.get(
-                                    url, timeout=15, impersonate=current_imp, headers=fetch_headers
+                                    url,
+                                    timeout=current_timeout,
+                                    impersonate=current_imp,
+                                    headers=fetch_headers,
                                 )
                                 if res.status_code == 200:
                                     break
@@ -760,12 +765,18 @@ class MacroAggregator:
                                 )
                                 await asyncio.sleep(random.uniform(2, 5))
                             except Exception as e:
-                                log.error(f"  [!] Fetch error {name} (Attempt {attempt+1}): {e}")
+                                # V30.4.19: Downgraded to warning to avoid Summary clutter
+                                log.warning(
+                                    f"  [!] Fetch error {name} (Attempt {attempt+1}) @ {current_timeout}s: {e}"
+                                )
                                 await asyncio.sleep(2)
 
                         if not res or res.status_code != 200:
                             status = res.status_code if res else "TIMEOUT"
-                            log.error(f"  [!] Blocked or Error {name}: HTTP {status}")
+                            # V30.4.19: Final failure is a warning, skipping source
+                            log.warning(
+                                f"  [!] Skipped source {name} after 3 attempts: HTTP {status}"
+                            )
                             continue
 
                         now_ts = time.time()

@@ -25,15 +25,20 @@ try:
         MAJOR_SEMI_TICKERS,
         VERSION,
         format_news_date,
+        get_authoritative_prev_close,
         get_display_symbol,
         get_header_timestamp,
+        get_ticker_session_data,
+        is_legit_ticker,
         is_semi_article,
+        render_valuation_row,
     )
 except ImportError:
     from engine.ticker_utils import (
         MAJOR_SEMI_TICKERS,
         VERSION,
         format_news_date,
+        get_authoritative_prev_close,
         get_display_symbol,
         get_header_timestamp,
         is_semi_article,
@@ -165,16 +170,6 @@ class NewsMarketSynopsisEngine:
         except:
             return now_utc - datetime.timedelta(hours=4)
 
-    def is_legit_ticker(self, t):
-        if not t or not isinstance(t, str):
-            return False
-        t = t.upper()
-        if len(t) < 2 or t.isdigit():
-            return False
-        if any(x in t for x in [" ", "/", "\\", "(", ")", ",", ":", "'", '"']):
-            return False
-        return True
-
     def _load_json(self, name):
         p = self.db_path / name
         try:
@@ -182,47 +177,6 @@ class NewsMarketSynopsisEngine:
                 return json.load(f)
         except:
             return {}
-
-    def get_market_session(self, symbol=None, dt_override=None):
-        label = self.market_session.get_market_session_label(symbol, dt_override)
-        return label if label != "CLOSED" else ""
-
-    def get_session_data(self, p_data, symbol=None):
-        sess = self.get_market_session(symbol)
-        effective_sess = sess
-        price = p_data.get("price", 0)
-        pct = p_data.get("change_pct", 0)
-        ext_type = p_data.get("ext_type")
-        if ext_type and ext_type in ["OVN", "PRE", "POST", "AH"]:
-            match = ext_type == sess
-            if not match:
-                match = (
-                    (sess == "AH" and ext_type in ["POST", "AH"])
-                    or (sess == "PRE" and ext_type == "PRE")
-                    or (sess == "OVN" and ext_type in ["POST", "AH", "OVN"])
-                )
-            if not match and sess == "PRE" and ext_type == "OVN":
-                match = True
-            if match:
-                e_p = p_data.get("ext_price")
-                e_pct = p_data.get("ext_pct")
-                if e_p is not None:
-                    price = e_p
-                    # V30.4.18: Prefer prev_close (true prior-day close) as denominator
-                    prev = p_data.get("prev_close") or p_data.get("close_price")
-                    if prev:
-                        pct = ((price / prev) - 1) * 100
-                    elif e_pct is not None:
-                        pct = e_pct
-                    lbl = ext_type
-                    if lbl == "POST":
-                        lbl = "AH"
-                    effective_sess = lbl
-            elif sess == "LIVE":
-                effective_sess = "LIVE"
-            else:
-                effective_sess = "CLOSED"
-        return price, pct, effective_sess
 
     def get_session_tag_html(self, fs="8px", sess_override=None, color=None):
         sess = sess_override if sess_override else ""
@@ -252,10 +206,10 @@ class NewsMarketSynopsisEngine:
             stripped = word.strip(".,;:()$ '\"?!")
             if not stripped:
                 continue
-            clean_word = stripped.upper()
-            if clean_word in prices and self.is_legit_ticker(clean_word):
+            clean_word = stripped.upper().replace("$", "")
+            if clean_word in prices and is_legit_ticker(clean_word):
                 p_data = prices[clean_word]
-                price, pct, sess = self.get_session_data(p_data, clean_word)
+                price, pct, sess = get_ticker_session_data(p_data, clean_word, self.market_session)
                 if price is None or pct is None:
                     continue
                 color = "#22c55e" if pct >= 0 else "#ef4444"
@@ -263,7 +217,6 @@ class NewsMarketSynopsisEngine:
                 sess_tag = self.get_session_tag_html(fs="8px", sess_override=sess)
                 anchor = ""
                 if sess in ["PRE", "AH", "OVN", "POST"]:
-                    # V30.4.18: Use prev_close (true previous session close) to avoid duplication with ext_price
                     c_p = p_data.get("prev_close") or p_data.get("close_price")
                     if c_p:
                         anchor = f' <span style="font-size:8px; color:#94a3b8; font-weight:normal;">| C: ${c_p:,.2f}</span>'
@@ -277,7 +230,6 @@ class NewsMarketSynopsisEngine:
                 )
                 flair = f'{prefix}<strong>{stripped}</strong>&nbsp;(<span style="color:{color}; font-weight:bold;">${price:,.2f}&nbsp;{sign}{pct:.1f}%{sess_tag}{anchor}</span>){suffix}'
                 words[i] = flair
-                # V30.4.7: Fixed bug where it returned after first match. Continue to find all tickers.
         return " ".join(words)
 
     def _get_session_badge(self, s_type):
@@ -363,40 +315,38 @@ class NewsMarketSynopsisEngine:
         # Replaces manual feedparser loop with a centralized, safety-gated engine.
         ticker_news_pool = await agg.fetch_ticker_news(self.watchlist, macro_headlines)
 
-        # V30.4.7: Forward P/E & Valuation Hydration (Mirror Mandate)
-        try:
-            from ticker_utils import extract_ticker_eps
-        except ImportError:
-            from engine.ticker_utils import extract_ticker_eps
-
+        # V30.6.10: Authoritative Watchlist Ingestion (unified pricing, close, valuation)
         watchlist_data = []
         for t in self.watchlist:
             p_data = prices.get(t, {})
-            # Hydrate forward estimates
-            eps26, eps27 = extract_ticker_eps(master, t)
-            price = p_data.get("price", 0)
-            p_data["pe26"] = price / eps26 if price and eps26 and eps26 > 0 else None
-            p_data["pe27"] = price / eps27 if price and eps27 and eps27 > 0 else None
+            # Authoritative Session Ingestion
+            price, pct, sess = get_ticker_session_data(p_data, t, self.market_session)
 
-            price, pct, sess = self.get_session_data(p_data, t)
+            # Close Price Logic (Fidelity Cockpit Standard)
+            c_p = p_data.get("close_price") or get_authoritative_prev_close(p_data)
+            c_pct = 0
+            if price and c_p:
+                c_pct = ((price / c_p) - 1) * 100
+
             watchlist_data.append(
                 {
                     "symbol": t,
                     "price": price,
                     "pct": pct,
                     "sess": sess,
+                    "close_price": c_p,
+                    "close_pct": c_pct,
                     "market_cap": p_data.get("market_cap") or p_data.get("marketCap"),
                     "pe": p_data.get("pe") or p_data.get("trailingPE"),
-                    "pe26": p_data["pe26"],
-                    "pe27": p_data["pe27"],
+                    "pe26": p_data.get("pe26"),
+                    "pe27": p_data.get("pe27"),
                     "rev": p_data.get("rev") or p_data.get("revenueGrowth"),
                     "notes": master.get(t, {}).get("human_research", {}).get("Notes", ""),
                 }
             )
 
-        # V30.4.7: Hierarchy Sorting Protocol (L > PRE > AH > OVN > CLOSED)
-        sess_priority = {"LIVE": 0, "PRE": 1, "AH": 2, "OVN": 3, "CLOSED": 4}
-        watchlist_data.sort(key=lambda x: (sess_priority.get(x["sess"], 99), -x["pct"]))
+        # V30.6.10: Institutional Numerical Momentum Sorting (High-to-Low)
+        watchlist_data.sort(key=lambda x: x["pct"], reverse=True)
 
         return {
             "headlines": macro_headlines,
@@ -468,7 +418,7 @@ class NewsMarketSynopsisEngine:
             if ticker_tracker[t]:
                 res = ticker_tracker[t][0]
                 if res["link"] not in used_links_ticker:
-                    row_bg = "#0f172a" if ticker_news_count % 2 == 0 else "#020617"
+                    row_bg = "#1e293b"
                     cleaned_title = (
                         re.sub(r"\s+[-|•|–]\s+.*$", "", res.get("title", ""))
                         .strip()
@@ -491,7 +441,7 @@ class NewsMarketSynopsisEngine:
             if ticker_news_count < 15 and len(ticker_tracker[t]) > 1:
                 res = ticker_tracker[t][1]
                 if res["link"] not in used_links_ticker:
-                    row_bg = "#0f172a" if ticker_news_count % 2 == 0 else "#020617"
+                    row_bg = "#1e293b"
                     cleaned_title = (
                         re.sub(r"\s+[-|•|–]\s+.*$", "", res.get("title", ""))
                         .strip()
@@ -591,25 +541,27 @@ class NewsMarketSynopsisEngine:
             )
             SRC_BADGE = f'&nbsp;<span class="src-badge">[{src_label}]</span>{DATE_STR}'
             is_earn = (
-                res.get("is_earnings") or "EARNINGS" in raw_title or feed_name == "CNBC Earnings"
+                res.get("is_earnings")
+                or any(
+                    kw in raw_title
+                    for kw in ["EARNINGS", "GUIDANCE", "REVENUE", "PROFIT", "DIVIDEND"]
+                )
+                or feed_name == "CNBC Earnings"
             )
             # V30.4.9: Authoritative News Integrity check (Semi vs Macro)
             is_semi = is_semi_article(res)
 
+            row_bg = "#1e293b"
+            row_border = "#334155"
+
             if is_semi:
                 if semi_count < 15:
-                    row_bg = "#1e1b4b" if semi_count % 2 == 0 else "#0f172a"
                     semi_trade_rows += f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {gold};"><span style="font-size:14px; color:{gold};">★</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
                     semi_count += 1
-                # STRICT EXCLUSIVITY: No fall-through for technical news
-            elif is_earn and earn_count < 10:
-                row_bg = "#082f49" if earn_count % 2 == 0 else "#0f172a"
-                earnings_intel_rows += f'<div style="background-color:{row_bg}; padding:6px 8px; margin-bottom:4px; border-radius:6px; border:1px solid #1e293b; color:#64748b; font-weight:600;"><span style="font-size:14px; color:#38bdf8;">◈</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
+            elif is_earn and earn_count < 15:
+                earnings_intel_rows += f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {accent}; color:{text_bright};"><span style="font-size:14px; color:{accent};">◈</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
                 earn_count += 1
             elif row_count < 25:
-                # This is the Macro section. It MUST NOT contain is_semi news.
-                row_bg = "#1e293b" if row_count % 2 == 0 else "#0f172a"
-                row_border = "#334155" if row_count % 2 == 0 else accent
                 macro_intel_rows += f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {row_border}; color:{text_bright};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
                 row_count += 1
 
@@ -656,28 +608,37 @@ class NewsMarketSynopsisEngine:
             rows = []
             for t in items:
                 sym = get_display_symbol(t.get("symbol", ""))
-                p_entry = prices.get(t["symbol"], {})
-                price, pct, sess = self.get_session_data(p_entry, t["symbol"])
-                has_price = price and price > 0
-                clr = text_dim
-                close_line = ""
-                session_key = ""
-                if has_price:
-                    clr = bull if pct >= 0 else bear
-                    label_text, label_color = self._get_session_badge(sess)
-                    session_key = (
-                        f'<span style="color:{label_color}; font-weight:900;">{label_text}</span>'
-                    )
-                    if sess in ["PRE", "AH", "OVN", "POST"]:
-                        # V30.4.18: Use prev_close (true previous session close) to avoid duplication with ext_price
-                        c_p = p_entry.get("prev_close") or p_entry.get("close_price")
-                        c_pct = p_entry.get("change_pct", 0)
-                        if c_p:
-                            c_clr = bull if c_pct >= 0 else bear
-                            close_line = f'<div class="tk-c">C: ${c_p:,.2f} <span style="color:{c_clr}">{c_pct:+.2f}%</span></div>'
-                price_str = f'<span class="tk-prc">${t["price"]:,.2f}</span>'
-                pct_display = f'{price_str}<span class="tk-pct" style="color:{clr};">{session_key} {t["pct"]:+.2f}%</span>'
-                val_row = self._render_valuation_row(t)
+                price = t.get("price", 0)
+                pct = t.get("pct", 0)
+                sess = t.get("sess", "")
+
+                clr = bull if pct >= 0 else bear
+                label_text, label_color = self._get_session_badge(sess)
+                session_badge = (
+                    f'<span style="color:{label_color}; font-weight:900; font-size:10px;">{label_text}</span>'
+                    if label_text
+                    else ""
+                )
+
+                # Close Price Logic (Fidelity Alignment)
+                c_p = t.get("close_price")
+                c_pct = t.get("close_pct", 0)
+                c_clr = bull if c_pct >= 0 else bear
+                close_line = (
+                    f'<div class="tk-c">CLOSE: ${c_p:,.2f} <span style="color:{c_clr}">{c_pct:+.1f}%</span></div>'
+                    if c_p
+                    else ""
+                )
+
+                # Valuation Row (MCap, PE '26, PE '27)
+                val_parts = render_valuation_row(t, {}, t["symbol"])
+                val_row = (
+                    f'<div class="tk-val">[ {"  ".join(val_parts)} ]</div>' if val_parts else ""
+                )
+
+                price_str = f'<span class="tk-prc">${price:,.2f}</span>'
+                pct_display = f'{price_str}<span class="tk-pct" style="color:{clr};">{session_badge} {pct:+.1f}%</span>'
+
                 rows.append(f"""<div class="tk-row" style="border-left:3px solid {clr};">
                     <table class="tk-table"><tr>
                         <td class="tk-sym"><a href="https://finance.yahoo.com/quote/{t['symbol']}" style="color:#f59e0b; text-decoration:none;">${sym}</a></td>
@@ -686,6 +647,7 @@ class NewsMarketSynopsisEngine:
                     {close_line}
                     {val_row}
                 </div>""")
+
             if columns == 2:
                 half = (len(rows) + 1) // 2
                 col1 = "".join(rows[:half])
@@ -695,7 +657,7 @@ class NewsMarketSynopsisEngine:
                 content = "".join(rows)
             return f'<div style="margin-top:10px;"><div class="section-hdr">{title}</div>{content}</div>'
 
-        watchlist_html = render_bucket("REAL-TIME WATCHLIST", watchlist_data, columns=2)
+        watchlist_html = render_bucket("INSTITUTIONAL WATCHLIST", watchlist_data, columns=2)
         html = f"""<!DOCTYPE html><html lang="en" style="background-color:#020617; margin:0; padding:0;"><head><meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>

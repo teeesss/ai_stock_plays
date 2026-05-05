@@ -5,7 +5,7 @@ The Single Source of Truth for ticker discovery across the GIGACPO ecosystem.
 Unifies Root, AI, and Macro indices into a single monitored universe.
 """
 
-VERSION = "V30.4.10"
+VERSION = "V30.6.10"
 
 # V23.59: Auto-Dependency Guardian
 try:
@@ -17,8 +17,16 @@ try:
 except ImportError:
     pass
 
+import datetime
 import json
+import time
+import urllib.parse
 from pathlib import Path
+
+try:
+    from market_session import MarketSession
+except ImportError:
+    from engine.market_session import MarketSession
 
 ROOT = Path(__file__).parent.parent
 CPO_DB = ROOT / "database" / "CPO_MASTER_DATA.json"
@@ -128,6 +136,149 @@ MAJOR_SEMI_TICKERS = [
     "MICRON",
 ]
 
+# V30.6.10: Authoritative Ticker Legitimacy Blacklist
+# Prevents common words and prepositions (e.g. ON, AT, IF) from being misinterpreted as tickers.
+TICKER_BLACKLIST = {
+    "AI",
+    "US",
+    "NYSE",
+    "NASDAQ",
+    "ITS",
+    "OSAT",
+    "POS",
+    "AND",
+    "RESEPI",
+    "NASA",
+    "EUV",
+    "ESA",
+    "PT",
+    "PTO",
+    "M1",
+    "M2",
+    "M3",
+    "G1",
+    "G2",
+    "G3",
+    "G5",
+    "YTD",
+    "HELOC",
+    "APY",
+    "APR",
+    "PE",
+    "EPS",
+    "ROE",
+    "ROIC",
+    "EBITDA",
+    "GAAP",
+    "CFO",
+    "COO",
+    "CEO",
+    "CTO",
+    "IPO",
+    "LBO",
+    "PFIC",
+    "FATCA",
+    "ETF",
+    "IRA",
+    "HSA",
+    "RAN",
+    "EMS",
+    "LIDE",
+    "HBM",
+    "DRAM",
+    "NAND",
+    "CPO",
+    "GPU",
+    "CPU",
+    "NPU",
+    "LSA",
+    "NLP",
+    "AIAI",
+    "S&P",
+    "DJI",
+    "SNP",
+    "QQQ",
+    "CD",
+    "EST",
+    "MARKET",
+    "FED",
+    "CPI",
+    "PPI",
+    "GDP",
+    "USD",
+    "EUR",
+    "GBP",
+    "JPY",
+    "CAD",
+    "USDC",
+    "USDT",
+    "DAI",
+    "BUSD",
+    "PYUSD",
+    "TETHER",
+    "STABLECOINS",
+    "FDUSD",
+    "FORM",
+    "ON",
+    "AT",
+    "BY",
+    "IF",
+    "SO",
+    "ME",
+    "IT",
+    "IS",
+    "AS",
+    "BE",
+    "AN",
+    "OR",
+    "OF",
+    "TO",
+    "IN",
+    "A",
+    "THE",
+    "FOR",
+    "WITH",
+}
+
+
+def is_legit_ticker(t: str) -> bool:
+    """V30.6.10: Global authority for ticker verification."""
+    if not t or not isinstance(t, str):
+        return False
+    t = t.upper().replace("$", "")
+    if len(t) < 2 or t.isdigit():
+        return False
+    # Standard character constraints
+    if any(x in t for x in [" ", "/", "\\", "(", ")", ",", ":", "'", '"']):
+        return False
+
+    # 2-Letter Whitelist logic (inherited from email engine)
+    if len(t) == 2:
+        WHITELIST_2 = {
+            "BA",
+            "GM",
+            "GE",
+            "MU",
+            "FN",
+            "V",
+            "MA",
+            "T",
+            "F",
+            "KO",
+            "VZ",
+            "UP",
+            "ON",
+            "ST",
+            "SQ",
+            "PYPL",
+            "UBER",
+            "LYFT",
+        }
+        if t not in WHITELIST_2:
+            return False
+
+    return t not in TICKER_BLACKLIST
+
 
 def resolve_ticker(symbol: str) -> str:
     """Resolves a shorthand or name to a valid Yahoo Finance ticker."""
@@ -232,16 +383,12 @@ def get_session_badge_style(s_type):
 
 def get_header_timestamp(dt=None):
     """V30.4.9: Authoritative Institutional Header Timestamp."""
-    import datetime
-
     dt = dt or datetime.datetime.now()
     return dt.strftime("%Y-%m-%d // %H:%M")
 
 
 def format_news_date(ts):
     """V30.4.10: Formats an epoch timestamp for news display (e.g. 'May 04')."""
-    import datetime
-
     if not ts:
         return ""
     try:
@@ -275,3 +422,120 @@ def is_semi_article(res):
         return True
 
     return False
+
+
+def get_authoritative_prev_close(p_data):
+    """
+    V30.4.18: Resolves the absolute authoritative previous session close price.
+    Calculates it from regularMarketPrice and regularMarketChange if prev_close is missing.
+    """
+    if not p_data:
+        return None
+
+    pc = p_data.get("prev_close")
+    if pc:
+        return pc
+
+    # Fallback calculation: Today's Close / (1 + Today's % Change)
+    cp = p_data.get("close_price")
+    pct = p_data.get("change_pct")
+
+    if cp and pct is not None:
+        try:
+            calc = cp / (1 + (pct / 100))
+            return round(calc, 3)
+        except ZeroDivisionError:
+            return cp
+
+    return cp
+
+
+def get_ticker_session_data(p_data, symbol=None, ms=None):
+    """
+    V30.4.22: Unified Session Pricing Logic.
+    Extracts the correct price, percentage change, and session label.
+    """
+    ms = ms or MarketSession()
+    sess = ms.get_market_session_label(symbol)
+    if sess == "CLOSED":
+        sess = ""
+
+    price = p_data.get("price", 0)
+    pct = p_data.get("change_pct", 0)
+
+    ext_type = p_data.get("ext_type")
+    effective_sess = sess
+
+    if ext_type and ext_type in ["OVN", "PRE", "POST", "AH"]:
+        # Session Match Logic
+        match = (
+            (ext_type == sess)
+            or (sess == "AH" and ext_type in ["POST", "AH"])
+            or (sess == "PRE" and ext_type == "PRE")
+            or (sess == "OVN" and ext_type in ["POST", "AH", "OVN"])
+        )
+
+        # OVN Fallback
+        if not match and sess == "PRE" and ext_type == "OVN":
+            match = True
+
+        if match:
+            e_p = p_data.get("ext_price")
+            if e_p is not None:
+                price = e_p
+                prev = get_authoritative_prev_close(p_data)
+                if prev:
+                    pct = ((price / prev) - 1) * 100
+                elif p_data.get("ext_pct") is not None:
+                    pct = p_data.get("ext_pct")
+
+                effective_sess = ext_type if ext_type != "POST" else "AH"
+        elif sess == "LIVE":
+            effective_sess = "LIVE"
+        else:
+            effective_sess = ""
+
+    return price, pct, effective_sess
+
+
+def render_valuation_row(p_data, m_data, sym):
+    """V30.4.22: Authoritative Valuation Logic."""
+    m_cap = p_data.get("market_cap") or m_data.get("financials", {}).get("marketCap")
+    pe = p_data.get("pe") or m_data.get("financials", {}).get("trailingPE")
+
+    # V30.6.10: Prefer pre-hydrated forward estimates from p_data before recalculating
+    pe26 = p_data.get("pe26")
+    pe27 = p_data.get("pe27")
+
+    if not pe26 or not pe27:
+        eps26, eps27 = extract_ticker_eps({sym: m_data}, sym)
+        price = p_data.get("price") or 0
+        if not pe26 and eps26 and price:
+            pe26 = price / eps26
+        if not pe27 and eps27 and price:
+            pe27 = price / eps27
+
+    # Cap logic
+    def cap(v):
+        return v if v and -500 <= v <= 1000 else None
+
+    pe26, pe27 = cap(pe26), cap(pe27)
+
+    parts = []
+    if m_cap:
+        if m_cap >= 1e12:
+            cap_str = f"${m_cap/1e12:.2f}T"
+        elif m_cap >= 1e9:
+            cap_str = f"${m_cap/1e9:.1f}B"
+        else:
+            cap_str = f"${m_cap/1e6:.1f}M"
+        parts.append(f"MCap: {cap_str}")
+
+    if pe26:
+        parts.append(f"'26 [{pe26:.1f}]")
+    if pe27:
+        parts.append(f"'27 [{pe27:.1f}]")
+    elif pe:
+        parts.append(f"P/E: {pe:.1f}x")
+
+    return parts

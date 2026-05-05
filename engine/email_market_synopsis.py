@@ -86,14 +86,20 @@ try:
     from ticker_utils import (
         MAJOR_SEMI_TICKERS,
         VERSION,
+        get_authoritative_prev_close,
         get_display_symbol,
         get_header_timestamp,
+        get_ticker_session_data,
+        is_legit_ticker,
         is_semi_article,
+        render_valuation_row,
     )
 except ImportError:
     from engine.ticker_utils import (
         MAJOR_SEMI_TICKERS,
         VERSION,
+        format_news_date,
+        get_authoritative_prev_close,
         get_display_symbol,
         get_header_timestamp,
         is_semi_article,
@@ -239,137 +245,6 @@ class SovereignIntelligenceEngine:
         except:
             pass
         return merged
-
-    def is_legit_ticker(self, t):
-        if not t or not isinstance(t, str):
-            return False
-        t = t.upper()
-        if len(t) < 2 or t.isdigit():
-            return False
-
-        # V28.8: International Support (Allow Dots for tickers like SIVE.ST)
-        if any(x in t for x in [" ", "/", "\\", "(", ")", ",", ":", "'", '"']):
-            return False
-
-        # Mandatory 2-Letter Whitelist (Filters out IN, OF, TO, BY, etc.)
-        if len(t) == 2:
-            WHITELIST_2 = {
-                "BA",
-                "GM",
-                "GE",
-                "MU",
-                "FN",
-                "V",
-                "MA",
-                "T",
-                "F",
-                "KO",
-                "VZ",
-                "PYPL",
-                "UBER",
-                "LYFT",
-            }
-            return t in WHITELIST_2
-
-        # Financial Acronym & Intelligence Blacklist
-        FETCH_BLACKLIST = {
-            "AI",
-            "US",
-            "NYSE",
-            "NASDAQ",
-            "ITS",
-            "OSAT",
-            "POS",
-            "AND",
-            "RESEPI",
-            "NASA",
-            "EUV",
-            "ESA",
-            "PT",
-            "PTO",
-            "M1",
-            "M2",
-            "M3",
-            "G1",
-            "G2",
-            "G3",
-            "G5",
-            "YTD",
-            "HELOC",
-            "APY",
-            "APR",
-            "PE",
-            "EPS",
-            "ROE",
-            "ROIC",
-            "EBITDA",
-            "GAAP",
-            "CFO",
-            "COO",
-            "CEO",
-            "CTO",
-            "IPO",
-            "LBO",
-            "PFIC",
-            "FATCA",
-            "ETF",
-            "IRA",
-            "HSA",
-            "RAN",
-            "EMS",
-            "LIDE",
-            "HBM",
-            "DRAM",
-            "NAND",
-            "CPO",
-            "GPU",
-            "CPU",
-            "NPU",
-            "LSA",
-            "NLP",
-            "AIAI",
-            "S&P",
-            "DJI",
-            "SNP",
-            "QQQ",
-            "CD",
-            "EST",
-            "MARKET",
-            "FED",
-            "CPI",
-            "PPI",
-            "GDP",
-            "USD",
-            "EUR",
-            "GBP",
-            "JPY",
-            "CAD",
-            "USDC",
-            "USDT",
-            "DAI",
-            "BUSD",
-            "PYUSD",
-            "TETHER",
-            "STABLECOINS",
-            "FDUSD",
-            "FORM",
-            "ON",
-            "AT",
-            "BY",
-            "IF",
-            "SO",
-            "ME",
-            "IT",
-            "IS",
-            "AS",
-            "BE",
-            "AN",
-            "OR",
-            "OF",
-            "TO",
-            "IN",
-        }
-        return t not in FETCH_BLACKLIST
 
     def _load_json(self, name):
         p = self.db_path / name
@@ -733,9 +608,8 @@ class SovereignIntelligenceEngine:
 
                 if e_p is not None:
                     price = e_p
-                    # V30.4.18: Prefer prev_close (true prior-day close) as denominator
-                    # close_price = regularMarketPrice which can equal ext_price during extended sessions
-                    prev = p_data.get("prev_close") or p_data.get("close_price")
+                    # V30.4.18: Use authoritative prev_close (true prior-day close) as denominator
+                    prev = get_authoritative_prev_close(p_data)
                     if prev:
                         pct = ((price / prev) - 1) * 100
                     elif e_pct is not None:
@@ -1039,7 +913,7 @@ class SovereignIntelligenceEngine:
         anchor = ""
         if sess in ["PRE", "AH", "OVN", "POST"]:
             # V30.4.18: Use prev_close (true previous session close) to avoid duplication with ext_price
-            c_p = p.get("prev_close") or p.get("close_price")
+            c_p = get_authoritative_prev_close(p)
             if c_p:
                 anchor = f'<span style="font-size:9px; color:#94a3b8; font-weight:normal;">&nbsp;| C: ${c_p:,.2f}</span>'
 
@@ -1115,7 +989,7 @@ class SovereignIntelligenceEngine:
 
                 anchor = ""
                 if sess in ["PRE", "AH", "OVN", "POST"]:
-                    c_p = p_data.get("close_price") or p_data.get("price")
+                    c_p = get_authoritative_prev_close(p_data)
                     if c_p:
                         anchor = f' <span style="font-size:8px; color:#94a3b8; font-weight:normal;">| C: ${c_p:,.2f}</span>'
 
@@ -1145,9 +1019,6 @@ class SovereignIntelligenceEngine:
 
         agg = MacroAggregator()
         macro_headlines = await agg.fetch_agg()
-
-        # V30.4.9: Decentralized to ticker_utils (Hierarchy Leader)
-        # semi_sources list removed locally to ensure modular parity.
 
         print(
             f"[INFO] NLP Processor: Analyzing {len(macro_headlines)} headlines for institutional relevance..."
@@ -1275,27 +1146,13 @@ class SovereignIntelligenceEngine:
         print(f"[INFO] Rotation Engine: Unified sort with {fresh_count} fresh articles available.")
 
         macro_intel_rows = ""
-        earnings_intel_rows = ""
-        semi_trade_rows = ""
+        earn_intel_rows = ""
+        semi_intel_rows = ""
         row_count = 0
         earn_count = 0
         semi_count = 0
 
         import re
-
-        # V25.1: Keyword Saturation Limiter to prevent topic flooding (max 2 per topic)
-        topic_counts = {
-            "oil": 0,
-            "energy": 0,
-            "apple": 0,
-            "tesla": 0,
-            "fed": 0,
-            "rate": 0,
-            "rates": 0,
-            "china": 0,
-            "iran": 0,
-            "israel": 0,
-        }
 
         for i, res in enumerate(rotated_news):
             raw_title = res.get("title", "")
@@ -1304,32 +1161,24 @@ class SovereignIntelligenceEngine:
             cleaned_title = cleaned_title.replace("📊", "»").strip()
 
             f_title = self.inject_price_flair(cleaned_title, prices, master_data)
+            title_upper = cleaned_title.upper()
 
-            # V24.1: Separate Earnings Area Logic
+            # V30.4.19: Categorization Logic
+            is_semi = is_semi_article(res)
             is_earn = (
                 res.get("is_earnings")
-                or "EARNINGS" in res.get("raw_title", "").upper()
+                or any(
+                    kw in title_upper
+                    for kw in ["EARNINGS", "GUIDANCE", "REVENUE", "PROFIT", "DIVIDEND"]
+                )
                 or res.get("source") == "CNBC Earnings"
             )
 
-            added = False
             # V25.4: Build clean source label for display
             feed_name = res.get("source", "")
             display_src = res.get("display_source", feed_name)
 
-            # V30.4.9: Authoritative News Integrity check (Semi vs Macro)
-            is_semi_trade = is_semi_article(res)
-
-            # V29.7.1: Cross-Categorization for Semi Integrity
-            # Only force macro chips into semi if they are high-signal majors (NVDA, etc.)
-            is_semi_major = any(kw in f_title.upper() for kw in MAJOR_SEMI_TICKERS)
-            if is_semi_major and not is_semi_trade and not is_earn:
-                # We DON'T set is_semi_trade = True here anymore to keep Macro section clean
-                # instead we leave it for Macro if it's from a non-semi source but major news
-                pass
-
             if "Google News" in feed_name and display_src != feed_name:
-                # Clean up common long publishers
                 d_clean = display_src.replace("Investor's Business Daily", "IBD")
                 d_clean = d_clean.replace("The Wall Street Journal", "WSJ")
                 d_clean = d_clean.replace("Financial Times", "FT")
@@ -1340,11 +1189,9 @@ class SovereignIntelligenceEngine:
             else:
                 src_label = display_src.replace("CNBC ", "").strip()
 
-            # Truncate to keep badge tight
             if len(src_label) > 22:
                 src_label = src_label[:22]
 
-            # V26.9: Strip TLDs from source labels (AOL.COM -> AOL, BLOOMBERG.COM -> BLOOMBERG)
             src_label = re.sub(
                 r"\.(COM|NET|ORG|CO|UK|IO|AI|INFO|EDU|GOV|US|BIZ|ME)$",
                 "",
@@ -1357,9 +1204,7 @@ class SovereignIntelligenceEngine:
             lookup_key = src_label.upper().replace(" ", "")
             if lookup_key in space_map:
                 src_label = space_map[lookup_key]
-
             else:
-                # Step 2: Auto-formatter reads rules from YAML auto_badge_rules via agg
                 _acronym_max = getattr(agg, "BADGE_ACRONYM_MAX", 5)
                 _camel_split = getattr(agg, "BADGE_CAMEL_SPLIT", True)
 
@@ -1377,73 +1222,24 @@ class SovereignIntelligenceEngine:
 
                 src_label = _fmt_badge(src_label)
 
-            # monospaced badge
             SRC_BADGE = f'&nbsp;<span class="src-badge">[{src_label}]</span>'
+            row_bg = "#1e293b"
+            row_border = "#334155"
 
-            if is_semi_trade:
+            if is_semi:
                 if semi_count < 15:
-                    row_bg = "#1e1b4b" if semi_count % 2 == 0 else "#0f172a"
-                    semi_trade_rows += (
-                        f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {gold};">'
-                        f'<span style="font-size:14px; color:{gold};">★</span>&nbsp;'
-                        f'<a href="{res["link"]}" style="text-decoration:none; font-size:14px; font-weight:600; color:{text_bright}; font-family:monospace !important;">'
-                        f"{f_title}</a>{SRC_BADGE}</div>"
-                    )
+                    semi_intel_rows += f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {row_border}; color:{text_bright};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
                     semi_count += 1
-                    added = True
-                else:
-                    # V30.4.9: STRICT EXCLUSIVITY. If Semi section is full, technical news is DROPPED.
-                    # It MUST NOT bleed into the Macro section.
-                    pass
-
             elif is_earn:
-                if earn_count < 8:
-                    # V25.7: Institutional Blue Glassmorphism for Earnings
-                    row_bg = "#082f49" if earn_count % 2 == 0 else "#0f172a"
-                    earnings_intel_rows += (
-                        f'<div style="background-color:{row_bg}; padding:6px 8px; margin-bottom:4px; border-radius:6px; border:1px solid #1e293b; color:#64748b; font-weight:600;">'
-                        f'<span style="font-size:14px; color:#38bdf8;">◈</span>&nbsp;'
-                        f'<a href="{res["link"]}" style="text-decoration:none; font-size:14px; font-weight:600; color:{text_bright}; font-family:monospace !important;">'
-                        f"{f_title}</a>{SRC_BADGE}</div>"
-                    )
+                if earn_count < 15:
+                    earn_intel_rows += f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {row_border}; color:{text_bright};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
                     earn_count += 1
-                    added = True
-            else:
-                # This is the Macro section. It MUST NOT contain is_semi_trade news.
-                if row_count < 15:
-                    # V24.9: Dynamic background saturation based on order
-                    row_bg = "#1e293b" if row_count % 2 == 0 else "#0f172a"
-                    row_border = "#334155" if row_count % 2 == 0 else accent
+            elif row_count < 25:
+                macro_intel_rows += f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {row_border}; color:{text_bright};"><span style="font-size:14px;">&bull;</span>&nbsp;<a href="{res["link"]}" class="news-link">{f_title}</a>{SRC_BADGE}</div>'
+                row_count += 1
 
-                    macro_intel_rows += (
-                        f'<div style="background-color:{row_bg}; padding:10px 14px; margin-bottom:6px; border-radius:4px; border-left:3px solid {row_border}; color:{text_bright};">'
-                        f'<span style="font-size:14px;">&bull;</span>&nbsp;'
-                        f'<a href="{res["link"]}" style="text-decoration:none; font-size:14px; font-weight:600; color:{text_bright}; font-family:monospace !important;">'
-                        f"{f_title}</a>{SRC_BADGE}</div>"
-                    )
-                    row_count += 1
-                    added = True
-
-            if added:
-                # V28: Unified Status Logic - Determine freshness before updating history
-                is_new = res["link"] not in sent_news_history
-                sent_news_history[res["link"]] = now_ts
-                status = "FRESH" if is_new else "STALE"
-                score = res.get("final_score", res.get("score", 0))
-                if isinstance(score, float):
-                    score = f"{score:.2f}"
-                tag = "EARNINGS" if is_earn else ("SEMI" if is_semi_trade else "MACRO")
-                print(
-                    f"[DEBUG] Selected ({status}) [Score: {score}] -> [{tag}] {res.get('title', 'Unknown')}"
-                )
-
-            if row_count >= 15 and earn_count >= 8 and semi_count >= 15:
-                # V28: Mandatory 15 SEMI articles cap
-                if semi_count < 15 and i < (len(rotated_news) - 1):
-                    continue
-                print(
-                    f"[INFO] News Quota Met: {row_count} Macro, {earn_count} Earnings, {semi_count} Semi (High-Fidelity)."
-                )
+            sent_news_history[res["link"]] = now_ts
+            if row_count >= 25 and earn_count >= 15 and semi_count >= 15:
                 break
 
         # Save history for rotation
@@ -1455,8 +1251,8 @@ class SovereignIntelligenceEngine:
             print(f"[ERROR] Could not save sent news history: {e}")
 
         # V24.9: Reordered - Earnings Intelligence comes AFTER general news URLs
-        if earnings_intel_rows:
-            earnings_area = f'<div style="margin-top:20px; margin-bottom:20px;"><div class="section-hdr" style="color:{accent}; border-bottom:2px solid {accent}; display:inline-block; margin-bottom:12px; width:100%; text-align:center;">EARNINGS INTELLIGENCE</div>{earnings_intel_rows}</div>'
+        if earn_intel_rows:
+            earnings_area = f'<div style="margin-top:20px; margin-bottom:20px;"><div class="section-hdr" style="color:{accent}; border-bottom:2px solid {accent}; display:inline-block; margin-bottom:12px; width:100%; text-align:center;">EARNINGS INTELLIGENCE</div>{earn_intel_rows}</div>'
             macro_intel_rows = macro_intel_rows + earnings_area
 
         # Watchlist Intel Logic (V23.55)
@@ -1469,7 +1265,7 @@ class SovereignIntelligenceEngine:
             watchlist_intel_html,
             exec_summary,
             macro_intel_rows,
-            semi_trade_rows,
+            semi_intel_rows,
         )
 
     def _get_session_badge(self, s_type):
@@ -2289,32 +2085,40 @@ class SovereignIntelligenceEngine:
             for t in items:
                 sym = get_display_symbol(t.get("symbol", ""))
                 p_entry = prices.get(t["symbol"], {})
-                price, pct, sess = self.get_session_data(p_entry, t["symbol"])
-                has_price = price and price > 0
+
+                # Check price
+                price_check = p_entry.get("price") or 0
+                has_price = price_check > 0
 
                 if not has_price:
                     pct_display = '<span style="color:#4a5568; font-size:9px;">N/A</span>'
                     clr = text_dim
                 else:
-                    clr = bull if pct >= 0 else bear
+                    # V30.4.22: Unified Ticker Intelligence Extraction
+                    from ticker_utils import get_session_badge_style, get_ticker_session_data
 
-                    # V28.8: Dynamic Session Badge (L, AH, PRE, OVN, C)
-                    label_text, label_color = self._get_session_badge(sess)
-                    session_key = (
-                        f'<span style="color:{label_color}; font-weight:900;">{label_text}</span>'
+                    price, pct, sess = get_ticker_session_data(
+                        p_entry, t["symbol"], self.market_session
                     )
 
+                    clr = bull if pct >= 0 else bear
+                    label_text, label_color = get_session_badge_style(sess)
+
+                    session_key = ""
+                    if label_text:
+                        session_key = f'<span style="color:{label_color}; font-weight:900;">{label_text}</span> '
+
                     close_line = ""
-                    if sess in ["PRE", "AH", "OVN", "POST"]:
-                        # V30.4.18: Use prev_close (true previous session close) to avoid duplication with ext_price
-                        c_p = p_entry.get("prev_close") or p_entry.get("close_price")
+                    if sess:
+                        # V30.4.22: Authoritative Closing Anchor (Slate-300 for visibility)
+                        c_p = p_entry.get("close_price")
                         c_pct = p_entry.get("change_pct", 0)
                         if c_p:
                             c_clr = bull if c_pct >= 0 else bear
-                            close_line = f'<div class="tk-c">C: ${c_p:,.2f} <span style="color:{c_clr}">{c_pct:+.2f}%</span></div>'
+                            close_line = f'<div class="tk-c" style="color:#cbd5e1;">C: ${c_p:,.2f} <span style="color:{c_clr}">{c_pct:+.2f}%</span></div>'
 
                     price_str = f'<span class="tk-prc">${price:,.2f}</span>'
-                    pct_display = f'{price_str}<span class="tk-pct" style="color:{clr};">{session_key} {pct:+.2f}%</span>'
+                    pct_display = f'{price_str}<span class="tk-pct" style="color:{clr};">{session_key}{pct:+.2f}%</span>'
 
                 notes = "" if hide_notes else t.get("notes", "").strip()
                 flaired_notes = self.inject_price_flair(notes, prices, link=False)
@@ -2327,7 +2131,7 @@ class SovereignIntelligenceEngine:
                         </tr></table>
                         {close_line}
                         {f'<div class="tk-notes">{flaired_notes}</div>' if flaired_notes else ''}
-                        {self._render_valuation_row(t)}
+                        {f'<div class="tk-val" style="font-size:10px; color:#38bdf8; font-family:monospace; margin-top:4px;">[ {" ".join(render_valuation_row(p_entry, master.get(t["symbol"], {}), t["symbol"]))} ]</div>'}
                     </div>"""
                 )
 

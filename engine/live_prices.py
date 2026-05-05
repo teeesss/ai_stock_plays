@@ -279,12 +279,18 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
             vol_spike = round(volume / avg_vol, 2) if avg_vol and avg_vol > 0 else 0
 
             # V24.2: Anchor Price Logic
+            # V30.4.18: Hardened previous close retrieval with expanded fallback
             close_price = item.get("regularMarketPrice") or item.get("previousClose")
-            prev_close = item.get("regularMarketPreviousClose") or item.get("previousClose")
+            prev_close = (
+                item.get("regularMarketPreviousClose")
+                or item.get("previousClose")
+                or item.get("regularMarketPrice")
+            )
 
             entry = {
                 "price": round(price, 2) if price is not None else None,
                 "close_price": (round(close_price, 2) if close_price is not None else None),
+                "prev_close": (round(prev_close, 2) if prev_close is not None else None),
                 "price_chg": round(price_chg, 2) if price_chg is not None else None,
                 "change_pct": round(change_pct, 2) if change_pct is not None else None,
                 "volume": int(volume) if volume else None,
@@ -293,10 +299,9 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
                 "exchange": exch_res,
                 "updated": now.strftime("%Y-%m-%d %H:%M EST"),
                 "timestamp": time.time(),
-                "ext_price": ext_price,
-                "ext_pct": ext_pct,
+                "ext_price": round(ext_price, 2) if ext_price is not None else None,
+                "ext_pct": round(ext_pct, 2) if ext_pct is not None else None,
                 "ext_type": ext_type,
-                "prev_close": prev_close,
                 "market_cap": item.get("marketCap"),
                 "pe": item.get("trailingPE"),
                 "rev": item.get("totalRevenue"),
