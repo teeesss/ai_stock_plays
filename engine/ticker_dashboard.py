@@ -259,7 +259,7 @@ class WatchlistReporter:
                 th.l {{ text-align:left; }}
                 th.c {{ text-align:center; }}
                 @media (max-width: 800px) {{
-                    th:nth-child(5), td:nth-child(5), th:nth-child(7), td:nth-child(7), th:nth-child(8), td:nth-child(8), th:nth-child(9), td:nth-child(9) {{ display: none; }}
+                    th:nth-child(7), td:nth-child(7), th:nth-child(8), td:nth-child(8), th:nth-child(9), td:nth-child(9) {{ display: none; }}
                 }}
             </style>
             <script>
