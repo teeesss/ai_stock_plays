@@ -14,20 +14,50 @@ from pathlib import Path
 # Add engine to path for module discovery
 sys.path.append(str(Path(__file__).parent))
 
+# V28: Auto-Dependency Guardian
 try:
-    from live_prices import async_run_fetch
-    from market_session import MarketSession
-    from remote_sync import RemoteSync
-    from ticker_utils import (
-        extract_ticker_eps,
-        get_authoritative_prev_close,
-        get_header_timestamp,
-        get_session_badge_style,
-        get_ticker_session_data,
-        render_valuation_row,
-    )
-except ImportError:
-    # Minimal stubs if modules not found
+    try:
+        from dependency_mgr import ensure_dependencies
+    except ImportError:
+        from engine.dependency_mgr import ensure_dependencies
+    ensure_dependencies()
+except Exception as e:
+    print(f"[!] Dependency Guardian Warning: {e}")
+
+try:
+    # Try direct imports first (standard for running from root)
+    try:
+        from live_prices import async_run_fetch
+        from market_session import MarketSession
+        from remote_sync import RemoteSync
+        from ticker_utils import (
+            extract_ticker_eps,
+            get_authoritative_prev_close,
+            get_header_timestamp,
+            get_session_badge_style,
+            get_ticker_session_data,
+            render_valuation_row,
+        )
+    except ImportError:
+        # Fallback to engine-prefixed imports
+        from engine.live_prices import async_run_fetch
+        from engine.market_session import MarketSession
+        from engine.remote_sync import RemoteSync
+        from engine.ticker_utils import (
+            extract_ticker_eps,
+            get_authoritative_prev_close,
+            get_header_timestamp,
+            get_session_badge_style,
+            get_ticker_session_data,
+            render_valuation_row,
+        )
+except ImportError as e:
+    print(f"[!] FATAL: Could not import engine foundations: {e}")
+    import traceback
+
+    traceback.print_exc()
+
+    # Minimal stubs (Emergency Fallback Only)
     def extract_ticker_eps(m, k):
         return None, None
 

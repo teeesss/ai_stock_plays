@@ -1282,47 +1282,6 @@ class SovereignIntelligenceEngine:
             from engine.ticker_utils import extract_ticker_eps
         return extract_ticker_eps(master, master_key)
 
-    def _render_valuation_row(self, item):
-        """V28.8: Renders a high-density valuation row with forward P/E estimates."""
-        m_cap = item.get("marketCap") or item.get("market_cap")
-        pe = item.get("trailingPE") or item.get("pe")
-        pe26 = item.get("pe26")
-        pe27 = item.get("pe27")
-        rev = item.get("revenueGrowth") or item.get("rev")
-
-        if not any([m_cap, pe, pe26, pe27, rev]):
-            return ""
-
-        parts = []
-        if m_cap:
-            if m_cap >= 1e12:
-                cap_str = f"${m_cap/1e12:.2f}T"
-            elif m_cap >= 1e9:
-                cap_str = f"${m_cap/1e9:.1f}B"
-            else:
-                cap_str = f"${m_cap/1e6:.1f}M"
-            parts.append(f"MCap: {cap_str}")
-
-        # V28.8: Crisp P/E Hierarchy - Only show trailing if forwards missing
-        if pe26 or pe27:
-            if pe26:
-                parts.append(f"'26 [{pe26:.1f}]")
-            if pe27:
-                parts.append(f"'27 [{pe27:.1f}]")
-        elif pe:
-            parts.append(f"P/E: {pe:.1f}x")
-
-        if rev:
-            rev_str = (
-                f"{rev*100:+.1f}%"
-                if isinstance(rev, float) and abs(rev) < 10
-                else f"${rev/1e6:.1f}M"
-            )
-            parts.append(f"Rev: {rev_str}")
-
-        content = "  ".join(parts)
-        return f'<div class="tk-val">[ {content} ]</div>'
-
     async def gather_all_data(self, custom_tickers=None, force=False):
         master = self._load_json("CPO_MASTER_DATA.json")
 
@@ -1980,7 +1939,13 @@ class SovereignIntelligenceEngine:
                     close_line = '<div class="tk-c" style="margin-top:2px; opacity:0.5;">LIVE MARKET SESSION</div>'
 
                 # Line 3: Valuation Row
-                val_row = self._render_valuation_row(p_entry)
+                m_data = self.master.get(sym, {})
+                val_parts = render_valuation_row(p_entry, m_data, sym)
+                val_row = (
+                    f'<div class="tk-val" style="font-size:10px; color:#38bdf8; font-family:monospace; margin-top:4px;">[ {" ".join(val_parts)} ]</div>'
+                    if val_parts
+                    else ""
+                )
 
                 items_html.append(
                     f"""
