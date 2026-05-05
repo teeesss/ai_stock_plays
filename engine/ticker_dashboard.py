@@ -201,7 +201,7 @@ class WatchlistReporter:
         with open(preview_path, "w", encoding="utf-8") as f:
             f.write(html)
 
-        print("[*] Deploying to bmwseals.com/stocks/tickers.html...")
+        print("[*] Deploying to bmwseals.com/stocks/tickers...")
         RemoteSync.sync_file(preview_path)
 
         # 6. Send Email
