@@ -642,16 +642,13 @@ class NewsMarketSynopsisEngine:
                 header = f'<div style="font-family:monospace !important; font-size:11px; color:{accent}; letter-spacing:1px; margin-bottom:8px; text-transform:uppercase; font-weight:900;">[ {src_label} ANALYSIS ]</div>'
                 strips = ""
                 for i, pt in enumerate(points):
-                    # Alternating backgrounds for high-density readability
-                    bg = "rgba(56,189,248,0.05)" if i % 2 == 0 else "rgba(15,23,42,0.4)"
-                    strip_border = accent if i % 2 == 0 else "#334155"
-
                     # V30.4.17: Inject price flair into strips for high-density intel
                     flaired_pt = self.inject_price_flair(pt, prices)
+                    strips += f'<div style="padding:4px 0; font-family:monospace !important; color:{text_bright}; font-size:14px; line-height:1.6;">&bull; {flaired_pt}</div>'
 
-                    strips += f'<div style="background-color:{bg}; padding:10px 14px; margin-bottom:2px; border-radius:4px; border-left:3px solid {strip_border}; color:{text_bright}; font-size:14px; line-height:1.6; font-family:monospace !important;">&bull; {flaired_pt}</div>'
-
-                syn_html += f'<div style="margin-bottom:25px;">{header}{strips}</div>'
+                # V30.4.19: Unified Narrative Container (Single background for analysis block)
+                rows_container = f'<div style="background-color:rgba(30,41,59,0.5); padding:12px 16px; border-radius:4px; border-left:3px solid {accent}; margin-bottom:20px;">{strips}</div>'
+                syn_html += f'<div style="margin-bottom:25px;">{header}{rows_container}</div>'
 
         def render_bucket(title, items, columns=1):
             if not items:

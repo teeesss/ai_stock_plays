@@ -1215,24 +1215,20 @@ class SovereignIntelligenceEngine:
 
             rows_html = ""
             for i, pt in enumerate(points):
-                # V28.8: High-Contrast Alternating Intelligence Strips (Solid Hex Fallbacks)
-                # Row A: Subtle Blue Tint / Row B: Minimalist Translucent
-                bg = "#0c4a6e" if i % 2 == 0 else "#0f172a"
-                strip_border = accent if i % 2 == 0 else "#334155"
-
                 # Apply high-density price flair to each bullet
                 flaired_pt = self.inject_price_flair(pt, prices, master_data)
-
                 rows_html += (
-                    f'<div style="background-color:{bg}; padding:10px 14px; margin-bottom:2px; border-radius:4px; border-left:3px solid {strip_border};">'
-                    f'<span style="color:{text_bright}; font-size:15px; line-height:1.5; font-family:monospace !important;">&bull; {flaired_pt}</span>'
-                    f"</div>"
+                    f'<div style="padding:4px 0; font-family:monospace !important; color:{text_bright}; font-size:15px; line-height:1.6;">'
+                    f"&bull; {flaired_pt}</div>"
                 )
+
+            # V30.4.19: Unified Narrative Container (Single background for analysis block)
+            rows_container = f'<div style="background-color:#1e293b; padding:12px 16px; border-radius:4px; border-left:3px solid {accent}; margin-bottom:20px;">{rows_html}</div>'
 
             # V28.8: Branded Divider (clean separation from news list)
             divider = f'<div style="text-align:center; color:{accent}; font-family:monospace !important; font-size:14px; font-weight:900; letter-spacing:4px; text-transform:uppercase; padding:35px 0 20px 0; border-bottom:2px solid {accent}; width:100%;">LIVE NEWS UPDATES</div>'
 
-            exec_summary = f'{access_tip}<div class="hdr-title" style="{summary_hdr_style}; font-family:monospace !important;">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6; margin-bottom:15px; font-family:monospace !important;">{lead_vibe_html}</div><div style="margin-bottom:20px;">{rows_html}</div>{divider}'
+            exec_summary = f'{access_tip}<div class="hdr-title" style="{summary_hdr_style}; font-family:monospace !important;">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6; margin-bottom:15px; font-family:monospace !important;">{lead_vibe_html}</div>{rows_container}{divider}'
         else:
             exec_summary = f'{access_tip}<div class="hdr-title" style="{summary_hdr_style}; font-family:monospace !important;">EXECUTIVE SUMMARY: <span style="color:{accent};">INTEL</span></div><div style="font-size:16px; color:{text_bright}; line-height:1.6; font-family:monospace !important;">The session is carving out a {vibe_status} posture (F&G: {m_fg}). Liquidity is shifting across tech sectors.</div>'
 

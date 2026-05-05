@@ -1,13 +1,13 @@
-### 🚀 Active Context: V30.4.17 (Narrative Hardening & Intelligence Strips)
+### 🚀 Active Context: V30.4.19 (Unified Narrative & Anchor Fidelity)
 [Status Synchronized - 2026-05-05]
 
-### 🚀 Current Milestone: V30.4.17 - Narrative Hardening & Intelligence Strips [2026-05-05]
-- **Intelligence Strips**: Fully migrated News Portal synopsis to structured, alternating-background intelligence strips.
-- **Narrative Sanitization**: Eliminated `&;&;` artifacts and "doubling" content via aggressive regex-based NLP synthesis.
-- **Portal Parity**: Achieved 100% rendering alignment between Email Dossiers and the News Cockpit.
-- **Price Flair Injection**: Injected high-density ticker flair directly into intelligence strips for instant context.
+### 🚀 Current Milestone: V30.4.19 - Unified Narrative & Anchor Fidelity [2026-05-05]
+- **Unified Narrative Aesthetic**: Consolidated alternating news analysis bullets into a single, high-density institutional background container.
+- **Anchor Price Fidelity**: Standardized `prev_close` as the authoritative denominator for all session-aware percentage calculations.
+- **Portal Consistency**: Synchronized background styling between Email Dossiers and the News Cockpit for visual parity.
+- **Price Flair Hardening**: Reinforced flair injection to use true prior-day close anchors during extended sessions.
 
-## 🚀 Version: V30.4.17 (Narrative Hardening & Intelligence Strips)
+## 🚀 Version: V30.4.19 (Unified Narrative & Anchor Fidelity)
 Status: **PRODUCTION DEPLOYED — VERIFIED ✅ 2026-05-05**
 
 📊 **Project Status: Sovereign Intel**
