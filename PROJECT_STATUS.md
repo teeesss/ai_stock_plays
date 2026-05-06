@@ -1,10 +1,11 @@
 # Project Status: Sovereign Intelligence Engine
 
-## 🚀 Current Milestone: V30.6.10 — Cross-Channel Pricing Parity [2026-05-05]
-- **Single Source of Truth**: `ticker_utils.py` is now the authoritative module for ALL ticker legitimacy checks (`is_legit_ticker`), session data (`get_ticker_session_data`), and valuation rendering (`render_valuation_row`).
-- **News/Email Parity**: Both `/news` and `/email` portals now consume the identical pricing and session logic — zero divergence.
-- **Preposition Flair Fix**: `TICKER_BLACKLIST` in `ticker_utils.py` now includes common English words (ON, AT, BY, IF, IN, TO, OF...) preventing false price flair in news headlines.
-- **Ticker Cockpit (V30.6.9)**: Dashboard decoupled to `engine/ticker_dashboard.py`. Columns: PRICE | AH/OVN/PRE/L | % CHG | CLOSE | C % | MCAP | '26 P/E | '27 P/E.
+## 🚀 Current Milestone: V30.6.10 — Intelligence Pipeline Hardening [2026-05-05]
+- **Hardened Ticker Engine**: `ticker_dashboard.py` now includes an **Auto-Dependency Guardian** (`dependency_mgr`) and robust import fallbacks to prevent "N/A" watchlist artifacts.
+- **Session-Relative Momentum**: `% CHG` in extended sessions is now calculated against the **today's close** (momentum-only) rather than yesterday's close, aligning with institutional data standards.
+- **Mobile Responsive Cockpit**: The web dashboard now dynamically collapses to 6 columns on mobile to maintain density and readability.
+- **Extensionless Deployment**: Ticker dashboard is now served at `bmwseals.com/stocks/tickers` (extensionless) for a cleaner, professional URL structure.
+- **Single Source of Truth**: `ticker_utils.py` remains the authoritative leader for session data, valuation rendering, and ticker legitimacy.
 
 Status: **PRODUCTION DEPLOYED — VERIFIED ✅ 2026-05-05**
 
@@ -14,12 +15,12 @@ Status: **PRODUCTION DEPLOYED — VERIFIED ✅ 2026-05-05**
 Status: **PRODUCTION DEPLOYED — VERIFIED ✅ 2026-05-05**
 
 📊 **Project Status: Sovereign Intel**
-- **Current Tier**: V30.6.10 (Cross-Channel Pricing Parity)
-- **Critical Progress**: News and email pipelines now share identical pricing, session, and valuation logic.
+- **Current Tier**: V30.6.10 (Intelligence Pipeline Hardening)
+- **Critical Progress**: Watchlist engine hardened with dependency-awareness, momentum-relative pricing, and mobile-responsive high-density layouts.
 - **Next Milestone**: V30.7 — Automated sector-specific weighting for narrative generation.
 
 Date: 2026-05-05
-Tests: **158 passing / 0 failing ✅**
+Tests: **168 passing / 0 failing ✅**
 
 ---
 
@@ -41,7 +42,7 @@ Tests: **158 passing / 0 failing ✅**
 |-----|-------------|
 | `bmwseals.com/stocks/email` | `database/synopsis_preview.html` |
 | `bmwseals.com/stocks/news` | `database/news_preview.html` |
-| `bmwseals.com/stocks/tickers.html` | `database/tickers_preview.html` |
+| `bmwseals.com/stocks/tickers` | `database/tickers_preview.html` |
 | `bmwseals.com/stocks/ai` | `web/ai/index.html` |
 
 ---

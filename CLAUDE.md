@@ -1,13 +1,13 @@
-### 🚀 Active Context: V30.6.10 (Cross-Channel Pricing Parity)
+### 🚀 Active Context: V30.6.10 (Intelligence Pipeline Hardening)
 [Status Synchronized - 2026-05-05]
 
-### 🚀 Current Milestone: V30.6.10 - Cross-Channel Pricing Parity [2026-05-05]
-- **Single Source of Truth**: `ticker_utils.py` is the SOLE authority for `is_legit_ticker`, `get_ticker_session_data`, and `render_valuation_row`. NEVER duplicate these in individual engines.
-- **Preposition Flair Fix**: `TICKER_BLACKLIST` now includes common English words (ON, AT, BY, IF, IN, TO...) to prevent false price flair.
-- **News/Email Cross-Channel Parity**: Both `/news` and `/email` portals now use the exact same pricing and session logic. Zero divergence.
-- **Close Price Fidelity**: News watchlist now shows `CLOSE: $X.XX ±X.X%` anchored to `get_authoritative_prev_close`.
-- **Numerical High-to-Low Sorting**: News watchlist sorted by `pct` descending — consistent with email dashboard.
-- **Ticker Cockpit (V30.6.9 legacy)**: Engine decoupled into `engine/ticker_dashboard.py`. Columns: PRICE | AH/OVN/PRE/L | % CHG | CLOSE | C % | MCAP | '26 P/E | '27 P/E.
+### 🚀 Current Milestone: V30.6.10 - Intelligence Pipeline Hardening [2026-05-05]
+- **Extensionless URLs**: Deployment target for tickers updated to `bmwseals.com/stocks/tickers` (no extension) for a cleaner, professional URL structure.
+- **Session-Relative Momentum**: Extended session `% CHG` is calculated against **today's close** (momentum-only). Regular session performance is shown as `C %`.
+- **Auto-Dependency Guardian**: `ticker_dashboard.py` uses `dependency_mgr` for automatic library recovery.
+- **Mobile Responsive Cockpit**: Dashboard automatically collapses to the first 6 columns on mobile viewports (<800px) to ensure readability.
+- **Numerical High-to-Low Sorting**: Watchlist sorted numerically by session `% CHG` descending.
+- **Ticker Bootstrapper**: `ticker.sh` is now a full venv-aware bootstrapper with automated Playwright sync.
 
 ## 🚀 Version: V30.4.19 (Unified Narrative & Anchor Fidelity)
 Status: **PRODUCTION DEPLOYED — VERIFIED ✅ 2026-05-05**

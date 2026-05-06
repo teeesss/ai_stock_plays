@@ -466,12 +466,12 @@ def get_ticker_session_data(p_data, symbol=None, ms=None):
     ext_type = p_data.get("ext_type")
     effective_sess = sess
 
-    if ext_type and ext_type in ["OVN", "PRE", "POST", "AH"]:
+    if ext_type and ext_type in ["OVN", "PRE", "PM", "POST", "AH"]:
         # Session Match Logic
         match = (
             (ext_type == sess)
             or (sess == "AH" and ext_type in ["POST", "AH"])
-            or (sess == "PRE" and ext_type == "PRE")
+            or (sess == "PRE" and ext_type in ["PRE", "PM"])
             or (sess == "OVN" and ext_type in ["POST", "AH", "OVN"])
         )
 
@@ -490,7 +490,13 @@ def get_ticker_session_data(p_data, symbol=None, ms=None):
                 elif p_data.get("ext_pct") is not None:
                     pct = p_data.get("ext_pct")
 
-                effective_sess = ext_type if ext_type != "POST" else "AH"
+                # Normalize the display label
+                if ext_type == "POST":
+                    effective_sess = "AH"
+                elif ext_type == "PM":
+                    effective_sess = "PRE"
+                else:
+                    effective_sess = ext_type
         elif sess == "LIVE":
             effective_sess = "LIVE"
         else:

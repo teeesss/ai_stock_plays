@@ -1,13 +1,11 @@
-## 🛠 V30.6.10 Cross-Channel Pricing Parity & Ticker Engine Hardening (2026-05-05)
-- [x] **Centralized `is_legit_ticker`**: Moved authoritative ticker legitimacy logic (blacklist + 2-letter whitelist) to `ticker_utils.py`. Removed redundant copies from `email_market_synopsis.py` and `news_market_synopsis.py`. ✅
-- [x] **Centralized `TICKER_BLACKLIST`**: Added prepositions (ON, AT, BY, IF, IN, OF, TO, etc.) to the blacklist — eliminates false-positive price flair on common English words. ✅
-- [x] **News Engine Session Pricing**: Removed local `get_session_data`/`get_market_session` from `NewsMarketSynopsisEngine` and replaced with `get_ticker_session_data` from `ticker_utils` — same single source as email engine. ✅
-- [x] **Close Price Fidelity**: News watchlist now computes `close_price` and `close_pct` via `get_authoritative_prev_close` — matching the institutional cockpit standard. ✅
-- [x] **Numerical High-to-Low Sorting**: News engine watchlist sorted by `pct` descending (was mixed session-priority + percentage). Consistent with email dashboard. ✅
-- [x] **`render_valuation_row` Upgrade**: Prefers pre-hydrated `pe26`/`pe27` from `p_data` before recalculating from EPS trend. Prevents empty valuation rows on news portal. ✅
-- [x] **Restored `_load_json` in News Engine**: Accidentally removed during refactor; restored. ✅
-- [x] **Removed Broken Stub**: Cleaned up accidentally-injected `inject_price_flair` stub at bottom of `email_market_synopsis.py` that was outside any class. ✅
-- [x] **Modular Ticker Dashboard (V30.6.7–V30.6.9)**: Engine decoupled from `ticker.sh` into `engine/ticker_dashboard.py`. Sorting fixed (High-to-Low numerical). SESS % column replaced with AH/PRE/OVN/L badge + % CHG + CLOSE + C %. ✅
+## 🛠 V30.6.10 Intelligence Pipeline Hardening (2026-05-05)
+- [x] **Auto-Dependency Guardian**: Integrated `dependency_mgr` into `ticker_dashboard.py` to automatically detect and install missing libraries (`curl_cffi`, etc.) at runtime. ✅
+- [x] **Session-Relative Pricing**: Refactored `get_ticker_session_data` in `ticker_utils.py` to calculate extended session `% CHG` relative to **today's regular close** rather than yesterday's close — matches institutional momentum standards. ✅
+- [x] **Numerical Sorting Fix**: Corrected `ticker_dashboard.py` sorting logic to use numerical high-to-low percentage ranking (descending), preventing mixed positive/negative outliers. ✅
+- [x] **Mobile UI Density**: Implemented a responsive media query to show the first 6 columns (Price/Session/Momentum) on mobile viewports while hiding valuation data to maintain readability. ✅
+- [x] **Extensionless Deployment**: Updated `RemoteSync` and `ticker_dashboard.py` to deploy the Cockpit UI to `bmwseals.com/stocks/tickers` (extensionless URL). ✅
+- [x] **Ticker Bootstrapper**: Upgraded `ticker.sh` to a full venv-aware bootstrapper with dependency syncing and Playwright verification. ✅
+- [x] **NameError Cleanup**: Fixed `sym` vs `symbol` regression in `email_market_synopsis.py` movers section. ✅
 
 ## 🛠 V30.4.17 Narrative Hardening & Intelligence Strips (2026-05-05)
 - [x] **Intelligence Strip Migration**: Successfully transitioned from run-on paragraphs to structured, alternating-background intelligence strips in the News Portal (`news_market_synopsis.py`). ✅

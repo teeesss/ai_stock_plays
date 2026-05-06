@@ -844,6 +844,7 @@ Rheinische Post Mediengruppe sites like\
 [Italia Oggi](https://www.italiaoggi.it) -
 [La Gazzetta dello Sport](https://www.gazzetta.it) -
 [Milano Finanza](https://www.milanofinanza.it) -
+[National Geographic IT](https://www.nationalgeographic.it) -
 [Sky Sport](https://sport.sky.it) -
 [Sky TG24](https://tg24.sky.it) -
 [Tuttosport](https://www.tuttosport.com)
@@ -883,6 +884,7 @@ Grouped in options:\
 [Groene Amsterdammer](https://www.groene.nl) -
 [Het Laatste Nieuws](https://www.hln.be) -
 [Linda](https://www.linda.nl) -
+[National Geographic NL](https://www.nationalgeographic.nl) -
 [NRC Handelsblad](https://www.nrc.nl) -
 [Telegraaf](https://www.telegraaf.nl) -
 [Vrij Nederland](https://www.vn.nl)

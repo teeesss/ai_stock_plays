@@ -106,7 +106,7 @@ def calculate_session_data(item: dict, tm: int) -> tuple:
     # Session Priority Logic
     if 400 <= tm < 930:  # PRE-MARKET (4:00 AM - 9:30 AM)
         if p_p is not None:
-            ext_price, ext_pct, ext_type = p_p, p_pct, "PM"
+            ext_price, ext_pct, ext_type = p_p, p_pct, "PRE"
         elif o_p is not None:
             ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
         elif a_p is not None and tm < 700:  # Early morning AH residue
@@ -118,7 +118,7 @@ def calculate_session_data(item: dict, tm: int) -> tuple:
         elif o_p is not None:
             ext_price, ext_pct, ext_type = o_p, o_pct, "OVN"
         elif p_p is not None and tm < 1630:  # Stale PRE residue? Only if close
-            ext_price, ext_pct, ext_type = p_p, p_pct, "PM"
+            ext_price, ext_pct, ext_type = p_p, p_pct, "PRE"
 
     elif tm >= 2000 or tm < 400:  # OVERNIGHT (8:00 PM - 4:00 AM)
         if o_p is not None:
@@ -126,7 +126,7 @@ def calculate_session_data(item: dict, tm: int) -> tuple:
         elif a_p is not None:
             ext_price, ext_pct, ext_type = a_p, a_pct, "AH"
         elif p_p is not None:
-            ext_price, ext_pct, ext_type = p_p, p_pct, "PM"
+            ext_price, ext_pct, ext_type = p_p, p_pct, "PRE"
 
     # Midpoint Fallback for ALL extended sessions if Price is missing but Bid/Ask exist
     if ext_price is None and bid and ask and not (930 <= tm < 1600):
@@ -137,7 +137,7 @@ def calculate_session_data(item: dict, tm: int) -> tuple:
             ext_pct = ((ext_price / price) - 1) * 100 if price else 0
             # Label based on time
             if 400 <= tm < 930:
-                ext_type = "PM"
+                ext_type = "PRE"
             elif 1600 <= tm < 2000:
                 ext_type = "AH"
             else:
@@ -194,7 +194,10 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
     except Exception:
         now = now_utc - timedelta(hours=4)
 
-    from ticker_utils import resolve_ticker
+    try:
+        from ticker_utils import resolve_ticker
+    except ImportError:
+        from engine.ticker_utils import resolve_ticker
 
     # Extract primary tickers
     # V28.3: Resolve aliases (SHINKO -> 6967.T) before batching
@@ -205,7 +208,7 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
     symbols_str = ",".join(all_symbols)
     # V22.94: Request explicit fields including Overnight (BOATS) data
     # V28.8: Added marketCap, trailingPE, totalRevenue for dashboard enrichment
-    fields = "regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketVolume,averageDailyVolume10Day,marketState,postMarketPrice,postMarketChange,postMarketChangePercent,preMarketPrice,preMarketChange,preMarketChangePercent,overnightMarketPrice,overnightMarketChange,overnightMarketChangePercent,bid,ask,fullExchangeName,exchangeName,exchange,marketCap,trailingPE,totalRevenue"
+    fields = "regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketVolume,averageDailyVolume10Day,marketState,postMarketPrice,postMarketChange,postMarketChangePercent,preMarketPrice,preMarketChange,preMarketChangePercent,overnightMarketPrice,overnightMarketChange,overnightMarketChangePercent,bid,ask,fullExchangeName,exchangeName,exchange,marketCap,trailingPE,totalRevenue,regularMarketPreviousClose"
     url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={symbols_str}&fields={fields}&overnightPrice=true&crumb={crumb}"
 
     log.debug(f"Fetching {len(all_symbols)} tickers from Yahoo...")
@@ -278,14 +281,15 @@ def fetch_batch(tickers: list[str], client, crumb: str) -> dict:
 
             vol_spike = round(volume / avg_vol, 2) if avg_vol and avg_vol > 0 else 0
 
-            # V24.2: Anchor Price Logic
-            # V30.4.18: Hardened previous close retrieval with expanded fallback
+            # V30.6.10: Authoritative Anchor Logic
+            # During PRE/AH, regularMarketPrice IS the last close.
             close_price = item.get("regularMarketPrice") or item.get("previousClose")
-            prev_close = (
-                item.get("regularMarketPreviousClose")
-                or item.get("previousClose")
-                or item.get("regularMarketPrice")
-            )
+
+            # prev_close must be the session BEFORE the last close
+            prev_close = item.get("regularMarketPreviousClose") or item.get("previousClose")
+            # Emergency fallback: if prev_close is same as close, try to calculate it
+            if prev_close == close_price and item.get("regularMarketChange") is not None:
+                prev_close = close_price - item.get("regularMarketChange")
 
             entry = {
                 "price": round(price, 2) if price is not None else None,

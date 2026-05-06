@@ -5,13 +5,14 @@ The terminal now operates via a unified Pipeline Orchestration sequence for real
 1. Initialize the **Web Server Bridge** (server.py) for the API via `start.bat`.
 2. Open **`web/semi/index_template.html`** or **`web/ai/index_template.html`** directly in the browser to view the terminals locally.
 
-## 1.5 Sovereign Intelligence Engine (SIE)
-To enable high-fidelity email dossiers and web sync:
+## 1.5 Sovereign Intelligence Engines (SIE)
+To enable high-fidelity dossiers and web sync:
 1. **Dependencies**: `pip install vaderSentiment sumy nltk scikit-learn paramiko`
 2. **Authentication**: Add `GMAIL_USER`, `GMAIL_APP_PASS`, `SFTP_HOST`, `SFTP_USER`, and `SFTP_PASS` to your `.env` file.
-3. **Dossier Dispatch**: Run `python engine/email_market_synopsis.py` to generate the dossier.
-4. **News Intelligence**: Run `./news.sh` (Linux) or `python engine/news_market_synopsis.py --tickers tickers.txt --email` to dispatch the high-density news portal dossier.
-5. **Web Sync**: The engines automatically deploy the results to `bmwseals.com/stocks/email` and `bmwseals.com/stocks/news` via `RemoteSync`.
+3. **Dossier Dispatch**: Run `python engine/email_market_synopsis.py` to generate the email dossier.
+4. **News Intelligence**: Run `./news.sh` (Linux) or `python engine/news_market_synopsis.py --tickers tickers.txt --email` to dispatch the news portal.
+5. **Ticker Dashboard**: Run `./ticker.sh` (Linux) or `python engine/ticker_dashboard.py` to generate the high-density watchlist terminal.
+6. **Web Sync**: Results automatically deploy to `bmwseals.com/stocks/email`, `bmwseals.com/stocks/news`, and `bmwseals.com/stocks/tickers` (extensionless).
 
 ## 2. Automated Synchronization
 The terminal is configured for a **"Set and Forget"** production environment:
