@@ -352,10 +352,10 @@ class TestLivePricesSource(unittest.TestCase):
         )
 
     def test_ext_type_set_to_PM(self):
-        """live_prices.py must set ext_type = 'PM' for pre-market data."""
+        """live_prices.py must set ext_type = 'PRE' for pre-market data (canonical label)."""
         self.assertTrue(
-            '"PM"' in self.src or "'PM'" in self.src,
-            "live_prices.py missing ext_type='PM' assignment",
+            '"PRE"' in self.src or "'PRE'" in self.src,
+            "live_prices.py missing ext_type='PRE' assignment (pre-market canonical label)",
         )
 
     def test_ext_price_in_entry_dict(self):

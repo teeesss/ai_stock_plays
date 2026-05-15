@@ -75,8 +75,8 @@ def test_calculate_session_data():
 
     # 1. At 8:00 AM (PRE)
     p, pct, t = calculate_session_data(item, 800)
-    # V28: calculate_session_data uses 'PM' as the premarket label (legacy compat per GEMINI.md)
-    assert t == "PM"
+    # V30.6.12: calculate_session_data uses 'PRE' as the canonical premarket label
+    assert t == "PRE"
     assert p == 12.0
     assert pct == 20.0
 
